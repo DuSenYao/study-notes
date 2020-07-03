@@ -1,1 +1,11 @@
 javaScript
+  一.类型
+    JavaScript 语言的每一个值都属于某一种数据类型。JavaScript 语言规定了 7 种语言类型。语言类型广泛用于变量、函数参数、表达式、函数返回值等场合，运行时类型是代码实际执行过程中我们用到的类型。所有的类型数据都会属于 7 个类型之一。从变量、参数、返回值到表达式中间结果，任何 JavaScript 代码运行过程中产生的数据，都具有运行时类型。
+    1.Undefined
+    2.Null
+    3.Boolean
+    4.Stirng
+    5.Number
+    6.Symbol
+    7.Object
+    有的编程规范要求用void 0代表undefined，为什么？
