@@ -1,0 +1,13 @@
+<button onclick="getOwnPro()">内置函数getOwnPropertyDescriptor获取数据属性的特征值</button>
+
+<script>
+function getOwnPro()
+{
+  // 数据属性具有4个特征
+  var o = { a : 1 };
+  o.b = 2;
+  // 可以使用内置函数getOwnPropertyDescriptor来查看
+  console.log(Object.getOwnPropertyDescriptor(o,"a")); // {value: 1, writable: true, enumerable: true, configurable: true}
+  console.log(Object.getOwnPropertyDescriptor(o,"b")); // {value: 2, writable: true, enumerable: true, configurable: true}
+}
+</script>
