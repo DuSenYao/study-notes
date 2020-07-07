@@ -1,0 +1,38 @@
+<button onclick="create()">Object.create</button>
+
+<script>
+  function create() {
+    // 创建一个对象cat
+    var cat = {
+      say() {
+        console.log("meow~");
+      },
+      jump() {
+        console.log("jump");
+      }
+    }
+
+    /*
+    *  根据cat对象做了一些修改创建了一个tiger对象
+    */
+    var tiger = Object.create(cat, {
+      say: {
+        writable: true,
+        configurable: true,
+        enumerable: true,
+        value: () => {
+          console.log("roar!");
+        }
+      }
+    })
+
+    // 使用Object.create 创建其他cat对象，可以通过控制原始cat对象来控制所有cat对象的行为
+    var anontherCat = Object.create(cat);
+    anontherCat.say();   // meow~
+    anontherCat.jump();  // jump
+
+    var anontherTiger = Object.create(tiger);
+    anontherTiger.say();   // roar!
+    anontherTiger.jump();  // jump
+  }
+</script>

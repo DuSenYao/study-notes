@@ -121,3 +121,19 @@ JavaScript
         使用Object.definePropetry，可以 改变特征值 或 定义访问器属性，但是不能同时指定 访问器属性和值或可写属性writable
         实际上JS对象的运行时是一个“具有高度动态性的属性集合”，属性以 字符串 或 Symbol 为 key，以 数据属性特征值 和 访问器属性特征值 为value。对象是一个属性的索引结构（索引结构是一种常见的数据结构，可以把它理解为一个能够以较快速度用key来查找value的字典），能够以Symbol为属性名是JS对象的一个特色
       
+    3. JS的原形
+      如果抛开JS用于模拟Java的复杂语法设施（如 new、Function Object、函数的prototype属性等），可以用两条概括：
+        (1) 如果所有对象都有私有字段[[prototype]]，就是对象的原形
+        (2) 读一个属性，如果对象没有，则会继续访问对象的原形，直到原形为空或找到为止
+      
+      ES6以来，JS提供了一系列的内置函数，以便更为直接的访问操纵原形
+        ① Object.create：根据指定的原形创建新对象，原形可以是null
+        ② Object.getPrototypeOf：获得一个对象的原形
+        ③ Object.setPrototypeOf：设置一个对象的原形
+
+      早期版本中的类与原型
+        在早期版本的JS中，“类”的定义是一个私有属性[[class]]，语言标准为内置类型如：Number、String、Date等指定了[[class]]属性，以表示它们的类。唯一可以访问[[class]]属性的方式是 Object.prototype.toString
+        从ES5开始，[[class]]私有属性被Symbol.toStringTag替代，Object.prototype.toString的意义从命名上不再跟class相关，甚至可以自定义。
+        使用 Symbol.toStringTag 来自定义 Object.prototype.toString
+          var o = { [Symbol.toStringTag] : "MY"} // 创建一个对象，给它唯一的属性Symbol.toStringTag
+          console.log(o + "") // [object MY]     使用 + 来触发Object.prototype.toString的调用，发现这个属性最终对Object.prototype.toSting 的结果产生了影响
