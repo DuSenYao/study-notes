@@ -123,7 +123,10 @@ JavaScript
       
     3. JS的原形
       如果抛开JS用于模拟Java的复杂语法设施（如 new、Function Object、函数的prototype属性等），可以用两条概括：
-        (1) 如果所有对象都有私有字段[[prototype]]，就是对象的原形
+        (1) 如果所有对象都有私有字段[[prototype]]（即__proto__），就是对象的原形
+          注释：
+            [[prototype]]是对象的私有属性，而prototype是只有函数才有的属性，__proto__是JS的非标准但许多浏览器实现的属性，即[[prototype]]，Object.[[prototype]] === Object.getPrototypeOf(someObject) === someObject.__proto__（Object.[[prototype]]浏览器不支持这样操作，Object.getPrototypeOf()是ES6的方法）
+            所有的JS对象都有一个指向它的原形对象的内部链接[[prototype]]，但只有函数才有prototype这个属性
         (2) 读一个属性，如果对象没有，则会继续访问对象的原形，直到原形为空或找到为止
       
       ES6以来，JS提供了一系列的内置函数，以便更为直接的访问操纵原形
