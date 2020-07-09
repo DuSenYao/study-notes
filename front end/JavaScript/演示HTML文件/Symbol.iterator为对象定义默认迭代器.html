@@ -1,5 +1,8 @@
+<link rel="stylesheet" href="base.css">
+
 <button onclick="symbol()">测试Symbol.iterator迭代器</button>
 <button onclick="symbol2()">向o对象传参</button>
+
 <script>
 // Symbol.iterator 为每一个对象定义了默认的迭代器。该迭代器可以被 for...of 循环使用。当需要对一个对象进行迭代时（比如开始用于一个for..of循环中），它的Symbol.iterator方法都会在不传参情况下被调用，返回的迭代器用于获取要迭代的值。
   var o = new Object;

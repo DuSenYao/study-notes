@@ -1,4 +1,5 @@
-<button onclick="create()">Object.create</button>
+<link rel="stylesheet" href="base.css">
+<button onclick="create()">ES6内置函数访问操纵原形</button>
 
 <script>
   function create() {
@@ -30,9 +31,21 @@
     var anontherCat = Object.create(cat);
     anontherCat.say();   // meow~
     anontherCat.jump();  // jump
+    // 使用Object。getPrototypeOf 来获得一个对象的原形
+    console.log(Object.getPrototypeOf(anontherCat)); // {say: ƒ, jump: ƒ}
 
     var anontherTiger = Object.create(tiger);
     anontherTiger.say();   // roar!
     anontherTiger.jump();  // jump
+    console.log(Object.getPrototypeOf(anontherTiger)); // {say: ƒ}
+
+    var blueTiger = new Object();
+    blueTiger.name = "小明";
+    blueTiger.eat  = () => { console.log("eat meat"); }
+    console.log(blueTiger.name); // 小明
+    blueTiger.eat(); // eat meat
+    // 使用 Object.setPrototypeOf(a, b) 来设置对象的原形  a 是 要设置的对象，b是原形
+    Object.setPrototypeOf(blueTiger, tiger);
+    console.log(blueTiger.say()); // roar!
   }
 </script>

@@ -1,0 +1,72 @@
+<link rel="stylesheet" href="base.css">
+
+<button onclick="classES6()">ES6的类写法</button>
+<button onclick="classInherited()">类的继承</button>
+
+<script>
+  function classES6()
+  {
+    // 类的基本写法
+    class Rectangle{
+      // 数据成语最好写在构造器里
+      constructor(width, height) {
+        this.width  = width;
+        this.height = height;
+      }
+      // 在现有的类语法中，getter/setter和method 是兼容性最好的
+      // 通过get关键字来创建 getter
+      get area() {
+        return this.calcArea();
+      }
+
+      calcArea() {
+        return this.width * this.height;
+      }
+    }
+    let r = new Rectangle(2, 6);
+    console.log(r.area);       // 12
+    console.log(r.calcArea()); // 12
+  }
+
+  // 类的继承
+  function classInherited()
+  {
+    class Animal{
+      constructor(name, sex){
+        this.name = name;
+        this.sex  = sex;
+      }
+
+      get h(){
+        console.log(this.name + " is " + this.sex);
+      }
+
+      set s(s)
+      {
+        console.log(s + this.name);
+      }
+
+      speak() {
+        console.log(this.name + " makes a noise!");
+      }
+    }
+    
+    // Dog类 通过 extends 关键字继承了 Animal类
+    // 使用 extends 关键字自动设置了 constructor，并且会自动调用父类的构造函数
+    class Dog extends Animal{
+      constructor(name){
+        super(name); // 调用super()类构造函数并传递name参数
+      }
+
+      speak() {
+        console.log(this.name + " barks!");
+      }
+    }
+
+    let d = new Dog("HanHan");
+    d.speak(); // HanHan barks!
+    d.eat(); // 16 is HanHan
+    d.h; // HanHan is undefined
+    d.s = 2; // 2HanHan
+  }
+</script>
