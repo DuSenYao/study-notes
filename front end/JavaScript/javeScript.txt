@@ -154,4 +154,13 @@ JavaScript
         在现有的类语法中，getter/setter 和 method 是兼容性最好的。
         我们通过 get/set 关键字来创建 getter，通过括号和大括号来创建方法，数据型成员最好写在构造器里面。
         类的写法实际上也是由原型运行时来承载的，逻辑上 JS 认为每个类是有共同原型的一组对象，类中定义的方法和属性则会被写在原型对象之上。
-        类通过extends关键字提供了继承能力，使用 extends 关键字会自动设置了 constructor，并且会自动调用父类的构造函数。
+        类通过extends关键字提供了继承能力，使用 extends 关键字会自动设置了 constructor，并且会自动调用父类的构造函数。使用类的思想来设计代码时，应该尽量使用 class 来声明类，而不是用函数来模拟对象。
+      
+
+  四.JS的对象
+    1.对象的分类
+      (1)宿主对象（host Object）： 由 JS 宿主环境提供的对象，它们的行为完全由宿主环境决定
+      (2)内置对象（Buitt-in Object）：由 JS 语言提供的对象
+        固有对象（intrinsic Object）：由标准规定，随着JS运行时创建而自动创建的对象实例。
+        原生对象（Native Object）：可以由用户通过Array、RegExp等内置构造器或特殊语法创建的对象。
+        普通对象（Ordinary Object）：由{}语法、Object构造器或 class 关键字定义类创建的对象，它能够被原形继承。
