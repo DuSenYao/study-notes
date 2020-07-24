@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <link rel="stylesheet" href="base.css">
 
 <button onclick="getOwnPro()">内置函数getOwnPropertyDescriptor获取数据属性的特征值</button>
@@ -18,12 +19,13 @@ function getOwnPro()
 function definePro()
 {
   var o = { a : 1 };
-  // Object.defineProperty 可以改变特征值
+  // Object.defineProperty 可以改变特征值 
+  Object.defineProperty(o, "a", {writable:false});
   Object.defineProperty(o, "b", {value: 2, writable:false, enumerable:false, configurable:true});
-  console.log(Object.getOwnPropertyDescriptor(o, "a")); // {value: 1, writable: true, enumerable: true, configurable: true}
+  console.log(Object.getOwnPropertyDescriptor(o, "a")); // {value: 1, writable: false, enumerable: true, configurable: true}
   console.log(Object.getOwnPropertyDescriptor(o, "b")); // {value: 2, writable: false, enumerable: false, configurable: true}
   o.b = 3;
-  console.log(o.b); // 2
+  console.log(o.b); // 2 writable: false o对象的b属性不能被赋值
 }
 
 // object.defineProperty 使用 get 和 set 关键字来创建访问器属性
