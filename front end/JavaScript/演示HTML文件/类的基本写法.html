@@ -9,7 +9,7 @@
   {
     // 类的基本写法
     class Rectangle{
-      // 数据成语最好写在构造器里
+      // 数据型成员最好写在构造器里
       constructor(width, height) {
         this.width  = width;
         this.height = height;
@@ -42,9 +42,18 @@
         console.log(this.name + " is " + this.sex);
       }
 
-      set s(s)
+      set sex(sex)
       {
-        console.log(s + this.name);
+        // 创建一个新的数据型成员_sex 和 sex 不是同一个值
+        // 不可以写 this.sex = sex，因为定义了sex的读写器，给 this.sex 赋值的时候会调用 set sex ，这样会导致无限递归直到栈溢出
+        this._sex = sex;
+        console.log(this.name + " is " + this._sex);
+      }
+      
+      set setName(name)
+      {
+        this.name = name;
+        console.log("My name is " + this.name);
       }
 
       speak() {
@@ -62,12 +71,18 @@
       speak() {
         console.log(this.name + " barks!");
       }
+
+      // 使用 static 关键字定义静态方法
+      static formatName(name){
+        return name[2].toUpperCase();
+      }
     }
 
     let d = new Dog("HanHan");
     d.speak(); // HanHan barks!
-    d.eat(); // 16 is HanHan
     d.h; // HanHan is undefined
-    d.s = 2; // 2HanHan
+    d.sex = "男"; // HanHan is 男
+    d.setName = "Tom"; // My name is Tom
+    console.log(Dog.formatName("HanKe")); // N
   }
 </script>
