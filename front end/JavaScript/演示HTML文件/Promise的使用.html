@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<!--rel 属性规定了当前文档与被链接文档/资源之间的关系 stylesheet 指向要导入的样式表的URL-->
+<link rel="stylesheet" href="base.css">
+
+<!--Promise是JS语言提供的一种标准化的异步管理方式-->
+<div class="main">
+  <button onclick="sleep(1000).then( () => console.log('finished') )" >Promise的基本用法</button>
+  <button onclick="promiseExecutionOrder()">promise的执行顺序</button>
+  <button onclick="blendPromise()">微任务与宏任务的执行顺序</button>
+  <button onclick="pricedePromise()">微任务始终先于宏任务执行</button>
+</div>
+
+<script>
+  // 宿主发起的任务称为宏观任务， JS引擎发起的任务称为微观任务
+  function sleep(duration)
+  {
+    return new Promise(function(resolve, reject) {
+      setTimeout(resolve, duration);
+    })
+  }
+
+  // promise 的执行顺序
+  function promiseExecutionOrder()
+  {
+    var r = new Promise(function(resolve, reject) {
+      console.log("a");
+      resolve();
+    });
+    // 在进入 console.log("c")之前，r 已经得到了 resolve，但是Promise 的 resolve始终是异步操作，所以b是在c的后面，Promise永远在队列尾部添加微观任务
+    r.then( () => console.log("b") );
+    console.log("c");
+    // a c b 执行顺序
+  }
+
+  function blendPromise()
+  {
+    var r = new Promise(function(resolve, reject){
+      console.log("a");
+      resolve();
+    });
+    // 不论代码执行顺序如何，d一定在b之后，因为Promise产生的是JS引擎内部的微任务，而setTimeout是浏览器API，它产生宏任务，微任务始终先于宏任务执行
+    setTimeout(() => console.log("d") , 0);
+    r.then( () => { console.log("b") });
+    console.log("c");
+    // a c b d 执行顺序
+  }
+
+  function pricedePromise()
+  {
+    setTimeout( () => { console.log("d")}, 0);
+    var r = new Promise(function(resolve, reject) {
+      resolve();
+    });
+    r.then(() => {
+      var begin = Date.now();
+      while (Date.now() - begin < 1000);
+      console.log("c1");
+      new Promise(function(resolve, reject) {
+        resolve();
+      }).then(() => console.log("c2") );
+    });
+    // c1 c2 d 执行顺序
+  }
+
+  function encapsulationSetTimeout()
+  {
+    
+  }
+</script>
