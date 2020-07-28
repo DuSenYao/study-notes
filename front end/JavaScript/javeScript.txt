@@ -225,5 +225,11 @@ JavaScript
           3. 根据调用顺序确定宏任务中微任务的执行顺序
           4. 根据宏任务的触发规则和调用次序，确定宏任务的执行顺序
           5. 确定整个顺序
+
+      3. async/await
+        async/await是ES6新加入的特性，它提供了for、if等代码结构来编写异步的方式。它的运行基础是 Promise。
+        async 函数必定返回 Promise，所有返回 Promise 的函数都可以认为是异步函数。
+        async 函数是一种特殊语法，特征是在 function 关键字前加上 async 关键字，就定义了 async 函数，可以在其中使用await来等待一个 Promise。
+        asycn 函数是可以嵌套的。
         
         

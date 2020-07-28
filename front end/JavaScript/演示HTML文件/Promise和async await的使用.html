@@ -9,8 +9,11 @@
   <button onclick="blendPromise()">微任务与宏任务的执行顺序</button>
   <button onclick="pricedePromise()">微任务始终先于宏任务执行</button>
   <button onclick="encapsulation()">利用Promise把setTimeout封装成可以用于异步的函数</button>
+  <button onclick="foo()">async/await 新特性</button>
+  <button onclick="showName2()">async函数的嵌套</button>
 </div>
 
+<div id="traffic-lights" style="background-color:aqua;width: 50px;height: 50px;border-radius: 50%;border: 1px solid #ccc;" onclick="trafficLights()"></div>
 <script>
   // 宿主发起的任务称为宏观任务， JS引擎发起的任务称为微观任务
   function sleep(duration)
@@ -64,10 +67,13 @@
     // c1 c2 d 执行顺序
   }
 
+
+  // 使用 Promise 把 setTimeout 封装成可以异步的函数
   function encapsulationSetTimeout(duration)
   {
     return new Promise(function(resolve, reject){
-      console.log("b");
+      // console.log("b");
+      // setTimeout 把整个代码分成了两个宏观任务
       setTimeout(resolve, duration);
     })
   }
@@ -76,5 +82,54 @@
     console.log("a");
     encapsulationSetTimeout(5000).then( () => { console.log("c") } );
     //a b c 执行顺序
+  }
+
+  // async 函数必定返回 Promise
+  async function foo()
+  {
+    console.log("a");
+    // 使用await来等待一个Promise
+    await encapsulationSetTimeout(2000);
+    console.log("c")
+    // a b    c  执行顺序
+  }
+
+  // async函数的嵌套
+  async function showName(name)
+  {
+    await encapsulationSetTimeout(2000);
+    console.log(name);
+  }
+
+  async function showName2()
+  {
+    await showName("Tom");
+    await showName("Bob");
+    // Tom Bob
+  }
+
+  // 红绿灯 红灯3秒 黄灯两秒 绿灯一秒
+  async function trafficLights()
+  {
+    while(true)
+    {
+      await changeColor(3000, "red");
+      await changeColor(2000, "yellow");
+      await changeColor(1000, "green");
+    }
+  }
+  
+  function wait(duration)
+  {
+    return new Promise(function(resolve, reject){
+      setTimeout(resolve, duration);
+    });
+  }
+
+  async function changeColor(duration, color)
+  {
+    // 设置div颜色
+    document.getElementById("traffic-lights").style.background = color;
+    await wait(duration);
   }
 </script>
