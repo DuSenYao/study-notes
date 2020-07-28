@@ -8,6 +8,7 @@
   <button onclick="promiseExecutionOrder()">promise的执行顺序</button>
   <button onclick="blendPromise()">微任务与宏任务的执行顺序</button>
   <button onclick="pricedePromise()">微任务始终先于宏任务执行</button>
+  <button onclick="encapsulation()">利用Promise把setTimeout封装成可以用于异步的函数</button>
 </div>
 
 <script>
@@ -26,7 +27,7 @@
       console.log("a");
       resolve();
     });
-    // 在进入 console.log("c")之前，r 已经得到了 resolve，但是Promise 的 resolve始终是异步操作，所以b是在c的后面，Promise永远在队列尾部添加微观任务
+    // 在进入 console.log("c")之前，r 已经得到了 resolve，但是 Promise 的 resolve 始终是异步操作，所以b是在c的后面，Promise永远在队列尾部添加微观任务
     r.then( () => console.log("b") );
     console.log("c");
     // a c b 执行顺序
@@ -52,6 +53,7 @@
       resolve();
     });
     r.then(() => {
+      // 强制1秒的执行耗时 
       var begin = Date.now();
       while (Date.now() - begin < 1000);
       console.log("c1");
@@ -62,8 +64,17 @@
     // c1 c2 d 执行顺序
   }
 
-  function encapsulationSetTimeout()
+  function encapsulationSetTimeout(duration)
   {
-    
+    return new Promise(function(resolve, reject){
+      console.log("b");
+      setTimeout(resolve, duration);
+    })
+  }
+  function encapsulation()
+  {
+    console.log("a");
+    encapsulationSetTimeout(5000).then( () => { console.log("c") } );
+    //a b c 执行顺序
   }
 </script>

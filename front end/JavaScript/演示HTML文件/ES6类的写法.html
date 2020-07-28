@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <link rel="stylesheet" href="base.css">
 
-<button onclick="classES6()">ES6的类写法</button>
-<button onclick="classInherited()">类的继承</button>
+<div class="main">
+  <button onclick="classES6()">ES6的类写法</button>
+  <button onclick="classInherited()">类的继承</button>
+</div>
 
 <script>
   function classES6()
@@ -17,7 +19,7 @@
       // 在现有的类语法中，getter/setter和method 是兼容性最好的
       // 通过get关键字来创建 getter
       get area() {
-        return this.calcArea();
+        return this.height - this.width;
       }
 
       calcArea() {
@@ -25,7 +27,7 @@
       }
     }
     let r = new Rectangle(2, 6);
-    console.log(r.area);       // 12
+    console.log(r.area);       // 4
     console.log(r.calcArea()); // 12
   }
 
