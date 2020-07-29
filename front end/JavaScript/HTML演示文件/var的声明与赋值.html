@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="base.css">
 
 <div class="main">
-    <button onclick=""></button>
+    <button onclick="withIIFE()">with中var的赋值</button>
 </div>
 
 <script>
@@ -28,4 +28,22 @@
     //code
   }();
 
+  // 值得特别注意的是，有时候 var 的特性会导致声明的变量和被赋值的变量是两个b，JS 中有特例，那就是使用 with 的时候
+  function withIIFE()
+  {
+    var b;
+    void function()
+    {
+      var env = { b : 1};
+      b = 2;
+      // with 内的 var b;作用到了function内
+      console.log("In function b: " + b); // 2
+      with(env)
+      {
+        var b = 3;
+        console.log("In with b: " + b); // 3
+      }
+    }();
+    console.log("Global b: " + b); // undefined
+  }
 </script>

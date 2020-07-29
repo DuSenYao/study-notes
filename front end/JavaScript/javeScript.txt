@@ -267,7 +267,35 @@ JavaScript
           4. this 指向哪个对象
         这些信息需要执行上下文来给出，这段代码出现在不同的位置，关联到不同的上下文，同样的代码会产生不一样的行为。
 
-      3.var 声明与赋值
-        
+      3.var的声明与赋值
+        var 声明作用域函数执行的作用域，也就是，var会穿透for、if等语句。
+        在只有 var，没有 let 的旧 JavaScript 时代，诞生了一个技巧，叫做：立即执行的函数表达式（IIFE），通过创建一个函数，并且立即执行，来构造一个新的域，从而控制 var 的范围。
+        由于语法规定了 function 开头的是函数声明，所以想要让函数变成函数表达式，必须加点东西。
+        使用 void 关键字
+        void function(){ var a; }();
+        这有效的避免了语法问题，同时语义上 void 运算表示忽略后面表达式的值，变成undefined，IIFE不关心函数的返回值，所以语义也比较合理。
+        void是运算符，其后跟一个表达式，无论 void 后的表达式是什么都会执行，void 操作符都会返回 undefined。
+        在JS中一般有3种作用：
+          ① 返回 undefined
+            undefined在JS中不是保留字，可以定义undefined这个变量，使用全局的undefined可能会被局部变量覆盖，所以使用 void 0来代替undefined。
+          ② 执行无用操作
+            如果有a链接，不希望点击的时候跳转，不写又会刷新，通常使用：<a href="javascript:void(0)">来执行空操作
+          ③ void 执行后面的表达式，例如：var a = 1; void a++; // a = 2;
 
-        
+      4.let
+        let是 ES6 开始引入的新的变量声明模式，比起var 的诸多弊病，let 做了非常明确地梳理和规定。
+        为了实现let，JS 在运行时引入了块级作用域。
+        以下语句会使 let 使用产生作用域：
+          · for
+          · if
+          · switch
+          · try/catch/finally
+
+      5.Realm
+        在最新的标准（9.0）中，JavaScript 引入了一个新概念 Realm。
+        在 ES2016 之前的版本中，标准中甚少提及{}的原型问题。但在实际的前端开发中，通过 iframe 等方式创建多 window 环境并非罕见的操作，所以，这才促成了新概念 Realm 的引入。
+        Realm 中包含一组完整的内置对象，而且是复制关系。
+        对不同 Realm 中的对象操作，会有一些需要格外注意的问题，比如 instanceOf 几乎是失效的。
+
+      6.函数
+        (1) 普通函数，用 function 关键字定义的函数
