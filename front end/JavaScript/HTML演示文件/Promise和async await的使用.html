@@ -4,6 +4,7 @@
 
 <!--Promise是JS语言提供的一种标准化的异步管理方式-->
 <div class="main">
+  <!--使用then方法回调-->
   <button onclick="sleep(1000).then( () => console.log('finished') )" >Promise的基本用法</button>
   <button onclick="promiseExecutionOrder()">promise的执行顺序</button>
   <button onclick="blendPromise()">微任务与宏任务的执行顺序</button>
@@ -13,7 +14,7 @@
   <button onclick="showName2()">async函数的嵌套</button>
 </div>
 
-<div id="traffic-lights" style="background-color:aqua;width: 50px;height: 50px;border-radius: 50%;border: 1px solid #ccc;" onclick="trafficLights()"></div>
+<div id="traffic-lights" style="margin:0 auto;background-color:aqua;width: 50px;height: 50px;border-radius: 50%;border: 1px solid #ccc;" onclick="trafficLights()"></div>
 <script>
   // 宿主发起的任务称为宏观任务， JS引擎发起的任务称为微观任务
   function sleep(duration)
@@ -111,6 +112,7 @@
   // 红绿灯 红灯3秒 黄灯两秒 绿灯一秒
   async function trafficLights()
   {
+    // 条件为true，while循环一直执行代码块
     while(true)
     {
       await changeColor(3000, "red");
@@ -118,7 +120,8 @@
       await changeColor(1000, "green");
     }
   }
-  
+
+  // 所有返回 Promise 的函数都可以认为是异步函数
   function wait(duration)
   {
     return new Promise(function(resolve, reject){
@@ -126,10 +129,12 @@
     });
   }
 
+  // async函数必定返回 Promise
   async function changeColor(duration, color)
   {
     // 设置div颜色
     document.getElementById("traffic-lights").style.background = color;
+    // await 等待一个 Promise 返回，没有则一直中止
     await wait(duration);
   }
 </script>

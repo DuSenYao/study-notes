@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="base.css">
+
+<div class="main">
+    <button onclick=""></button>
+</div>
+
+<script>
+  /*
+   * 在只有 var，没有 let 的旧 JavaScript 时代，诞生了一个技巧，叫做：立即执行的函数表达式（IIFE），通过创建一个函数并立即执行，来构造一个新的域，从而控制var的范围
+   */
+
+  // 由于语法规定了function关键字开头是函数声明，所以要想让函数变为函数表达式，必须加点东西，最常见的做法是加括号
+  ;(function(){
+    var a;
+    // code
+  }())
+  // 括号有个缺点，如果上一行代码不写分号，括号会被解释为上一行代码最末的函数调用，产生完全不符合预期，并且难以调试的行为。
+  ;(function(){
+    var a;
+    // code
+  })()
+
+  // void 关键字，有效避免了语法问题，同时，语义上 void 运算表示忽略表达式后面的值，变成undefined，IIFE的返回值确实不需要，所以语义也更加合理。
+  void function()
+  {
+    var a;
+    //code
+  }();
+
+</script>
