@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="base.css" >
+
+<div class="main">
+    <button onclick="sThis()">不同的引用打印this</button>
+    <button onclick="arrowThis()">箭头函数打印this</button>
+</div>
+
+<script>
+  function showThis()
+  {
+    console.log(this);
+  }
+
+  var o = {
+      "showThis" : showThis
+  }
+
+  // 使用两个引用调用同一个函数，得到了不同的 this 值
+  // 普通函数的this值由“调用它所使用的引用”决定，原因在于：获取函数的表达式时，它实际上返回的不是函数本身，而是一个Reference类型。
+  function sThis()
+  {
+      showThis(); // 在浏览器中为 Window
+      // Reference 类型由两部分组成：一个对象和一个属性值。o.showThis 产生的 Reference 类型，即由对象 o 和属性值“showThis”构成。
+      // Reference 类型中的对象被当作 this 值，传入了执行函数时的上下文当中。
+      o.showThis(); // o
+  }
+
+  function arrowThis()
+  {
+    const showThis = () => {
+      console.log(this);
+    }
+
+    var o = { 
+      "showThis" : showThis
+    }
+    // 箭头函数，不论用什么引用来调用它，都不影响它的 this 值
+    showThis();    // Window
+    o.showThis();  // Window
+  }
+
+  function showClassThis()
+  {
+
+  }
+</script>

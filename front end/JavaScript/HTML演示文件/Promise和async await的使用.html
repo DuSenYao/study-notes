@@ -29,10 +29,16 @@
   {
     var r = new Promise(function(resolve, reject) {
       console.log("a");
-      resolve();
+      // resolve的作用：将Promise对象的状态由“未完成”变为“成功”（即从pending变为fulfilled），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去
+      resolve("b");
+      // reject的作用：将Promise对象的状态从“未完成”变为“失败”（即从pending变为rejected），在异步操作失败时调用，将异步操作报的错误，作为参数传递出去
+      // reject(); 数据处理失败
     });
     // 在进入 console.log("c")之前，r 已经得到了 resolve，但是 Promise 的 resolve 始终是异步操作，所以b是在c的后面，Promise永远在队列尾部添加微观任务
-    r.then( () => console.log("b") );
+    r.then(
+      res => { console.log(res) },  // 处理成功
+      err => {console.log(err)}     // 处理失败
+    );
     console.log("c");
     // a c b 执行顺序
   }
@@ -92,7 +98,7 @@
     // 使用await来等待一个Promise
     await encapsulationSetTimeout(2000);
     console.log("c")
-    // a b    c  执行顺序
+    // a b c  执行顺序
   }
 
   // async函数的嵌套
@@ -121,14 +127,6 @@
     }
   }
 
-  // 所有返回 Promise 的函数都可以认为是异步函数
-  function wait(duration)
-  {
-    return new Promise(function(resolve, reject){
-      setTimeout(resolve, duration);
-    });
-  }
-
   // async函数必定返回 Promise
   async function changeColor(duration, color)
   {
@@ -137,4 +135,13 @@
     // await 等待一个 Promise 返回，没有则一直中止
     await wait(duration);
   }
+  
+  // 所有返回 Promise 的函数都可以认为是异步函数
+  function wait(duration)
+  {
+    return new Promise(function(resolve, reject){
+      setTimeout(resolve, duration);
+    });
+  }
+
 </script>
