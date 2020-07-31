@@ -4,6 +4,7 @@
 <div class="main">
     <button onclick="sThis()">不同的引用打印this</button>
     <button onclick="arrowThis()">箭头函数打印this</button>
+    <button onclick="showClassThis()">class类打印this</button>
 </div>
 
 <script>
@@ -40,8 +41,17 @@
     o.showThis();  // Window
   }
 
+  // 生成器函数、异步生成器函数和异步普通函数跟普通函数行为是一致的，异步箭头函数与箭头函数行为是一致的。
   function showClassThis()
   {
-
+    class C{
+      showThis() {
+        console.log(this);
+      }
+    }
+    var o = new C();
+    var showThis = o.showThis;
+    showThis();   // undefined
+    o.showThis(); // o
   }
 </script>

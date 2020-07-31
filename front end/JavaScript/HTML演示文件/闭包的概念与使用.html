@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="base.css">
+
+<div class="main">
+  <button onclick="closure()">闭包</button>
+</div>
+
+<script>
+  // 闭包是一个绑定了执行环境的函数，闭包可以从内部函数访问外部函数作用域
+  function closure()
+  {
+    var name = "Jerry";
+    function displayName() { // displayName 是内部函数，是一个闭包
+      // 词法作用域根据代码中声明变量的位置来确定该变量在何处可用，嵌套函数可访问声明于它们外部作用域的变量
+      console.log(name);     // 使用了父函数中的变量
+    }
+  }
+</script>
