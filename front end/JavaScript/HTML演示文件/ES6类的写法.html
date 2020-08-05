@@ -21,7 +21,7 @@
       get area() {
         return this.height - this.width;
       }
-
+      
       calcArea() {
         return this.width * this.height;
       }
@@ -61,6 +61,12 @@
       speak() {
         console.log(this.name + " makes a noise!");
       }
+
+      setNameAndSex(name)
+      {
+        this.name = name;
+        console.log("Set name " + this.name);
+      }
     }
     
     // Dog类 通过 extends 关键字继承了 Animal类
@@ -86,5 +92,6 @@
     d.sex = "男"; // HanHan is 男
     d.setName = "Tom"; // My name is Tom
     console.log(Dog.formatName("HanKe")); // N
+    d.setNameAndSex("刘禅"); // Set name 刘禅
   }
 </script>
