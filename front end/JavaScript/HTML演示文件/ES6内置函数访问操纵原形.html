@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <!-- <!DOCTYPE> 声明必须是 HTML 文档的第一行，位于 <html> 标签之前。<!DOCTYPE> 声明不是 HTML 标签；它是指示 web 浏览器关于页面使用哪个 HTML 版本进行编写的指令。html是html5的缩写。-->
 <link rel="stylesheet" href="base.css">
-<button onclick="create()">ES6内置函数访问操纵原形</button>
+
+<div class="main">
+  <button onclick="create()">ES6内置函数访问操纵原形</button>
+</div>
 
 <script>
   function create() {
@@ -33,7 +36,7 @@
     var anontherCat = Object.create(cat);
     anontherCat.say();   // meow~
     anontherCat.jump();  // jump
-    // 使用Object。getPrototypeOf 来获得一个对象的原形
+    // 使用Object.getPrototypeOf 来获得一个对象的原形
     console.log(Object.getPrototypeOf(anontherCat)); // {say: ƒ, jump: ƒ}
 
     var anontherTiger = Object.create(tiger);
@@ -48,6 +51,7 @@
     blueTiger.eat(); // eat meat
     // 使用 Object.setPrototypeOf(a, b) 来设置对象的原形  a 是 要设置的对象，b是原形
     Object.setPrototypeOf(blueTiger, tiger);
-    console.log(blueTiger.say()); // roar!
+    blueTiger.say(); // roar!
+    blueTiger.jump(); // jump
   }
 </script>

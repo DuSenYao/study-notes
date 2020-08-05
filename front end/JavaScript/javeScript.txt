@@ -9,7 +9,7 @@ JavaScript
       6.Symbol
       7.Object
     有的编程规范要求用void 0代表undefined，为什么？
-      Undefined表示未定义，它的类型只有一个值，就是undefined。任何变量在赋值前都是Undefined类型，值为undefined，一般情况下可以用undefined（就是名为undefined的这个变量）来表达这个值，或者void运算来把任意一个表达式变成undefined值。建议使用 void 0 或 void(0) 来获取undefined值。在实际编程时，一般不会把变量赋值为 undefined，这样可以保证所有值为 undefined 的变量，都是从未赋值的自然状态。
+      Undefined表示未定义，它的类型只有一个值，就是undefined。任何变量在赋值前都是Undefined类型，值为undefined，一般情况下可以用undefined（就是名为undefined的这个全局变量）来表达这个值，或者void运算来把任意一个表达式变成undefined值。建议使用 void 0 或 void(0) 来获取undefined值。在实际编程时，一般不会把变量赋值为 undefined，这样可以保证所有值为 undefined 的变量，都是从未赋值的自然状态。
       
     Undefined 和 Null
       Undefined 和 Null 有一定的表意区别，Null表示的是："定义了但是为空"。Null的类型也只有一个值，就是null，与undefined不同null是JS关键字，在任何程序中，都可以使用null关键字来获取null值。
@@ -68,6 +68,7 @@ JavaScript
           var symbolObject = Object(Symbol("a"));
           console.log(typeof symbolObject); //object
           console.log(symbolObject instanceof Symbol); //true
+          // 原型链 symbolObject.__proto__  =>  Symbol.__proto__ => Object
           console.log(symbolObject.constructor == Symbol); //true
         每一类装箱对象都有私有的Class属性，这些属性可以用Object.prototype.toString获取
           var symbolObject = Object(Symbol("0"));
@@ -77,7 +78,7 @@ JavaScript
           console.log(typeof symbolObject); // Object
           console.log(typeof symbolT); // Symbol
         在JS中没有任何方法可以改变私有的Class属性，所以，Object.prototype.toString 可以准确识别对象对应的基本类型的方法，它比 instanceof 更准确，需要注意.call()会产生装箱操作，所以需要配合 typeof 来区分基本类型还是对象类型
-        instanceof用于识别正在处理的对象的类型，需要明确指出它要比较的类型
+        instanceof 运算符用来判断一个构造函数的prototype属性(或对象的__proto__)所指向的对象是否存在另外一个要检测对象的原型链上
 
       拆箱转换
         在JS标准中，规定了 toPrimitive 函数，它是对象类型到基本类型的转换（即拆箱转换）。对象到 String 和 Number 的转换都遵循“先拆箱再转换”的规则，通过拆箱转换，把对象先转为基本类型，再从基本类型转为对应的String或Number。所以，拆箱转换会先尝试调用 valueOf 和 toString 来获取拆箱后的基本类型，如果 typeOf 和 toString 都不存在或没有返回基本类型，则会报类型错误TypeError。
