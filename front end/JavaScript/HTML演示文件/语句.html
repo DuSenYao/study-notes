@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="base.css">
+
+<div class="main">
+  <button onclick="tryReturn()">try中有return，finally是否执行</button>
+  <button onclick="tryAndFinallyReturn()">try/finally都有return</button>
+</div>
+
+<script>
+  function tryReturn()
+  {
+    function foo()
+    {
+      try{
+        return 0;
+      }
+      catch(err){
+      }
+      finally{
+        console.log("a");
+      }
+    }
+    // return 执行了，但函数并没有立即返回，有执行了finally
+    console.log(foo()); // a 0
+  }
+
+  function tryAndFinallyReturn()
+  {
+    function foo()
+    {
+      try{
+        return 0;
+      }
+      catch(err){
+      }
+      finally
+      {
+        return 1;
+      }
+    }
+
+    // finally中的return“覆盖”了try中的return
+    console.log(foo()); // 1
+  }
+</script>
