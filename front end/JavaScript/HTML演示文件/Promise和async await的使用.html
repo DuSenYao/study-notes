@@ -29,10 +29,17 @@
   {
     var r = new Promise(function(resolve, reject) {
       console.log("a");
-      // resolve的作用：将Promise对象的状态由“未完成”变为“成功”（即从pending变为fulfilled），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去
-      resolve("b");
-      // reject的作用：将Promise对象的状态从“未完成”变为“失败”（即从pending变为rejected），在异步操作失败时调用，将异步操作报的错误，作为参数传递出去
-      // reject(); 数据处理失败
+      try
+      {
+        // resolve的作用：将Promise对象的状态由“未完成”变为“成功”（即从pending变为fulfilled），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去
+        fdsfdsaf
+        resolve("b");
+      }
+      catch(err)
+      {
+        // reject的作用：将Promise对象的状态从“未完成”变为“失败”（即从pending变为rejected），在异步操作失败时调用，将异步操作报的错误，作为参数传递出去
+        reject(err);
+      }
     });
     // 在进入 console.log("c")之前，r 已经得到了 resolve，但是 Promise 的 resolve 始终是异步操作，所以b是在c的后面，Promise永远在队列尾部添加微观任务
     r.then(
