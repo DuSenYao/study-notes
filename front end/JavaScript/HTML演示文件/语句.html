@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="css/base.css">
 
 <div class="main">
   <button onclick="tryReturn()">try中有return，finally是否执行</button>
   <button onclick="tryAndFinallyReturn()">try/finally都有return</button>
+  <button onclick="tagStatement()">标签语句的作用</button>
 </div>
 
 <script>
@@ -20,7 +21,8 @@
         console.log("a");
       }
     }
-    // return 执行了，但函数并没有立即返回，有执行了finally
+    // return 执行完毕后，但函数并没有立即返回，又执行了finally
+    // 因为finally中的语句必须执行，所以，try\catch执行完毕，即使得到的结果是非normal型的完成记录，也必须执行finally
     console.log(foo()); // a 0
   }
 
@@ -38,8 +40,23 @@
         return 1;
       }
     }
-
     // finally中的return“覆盖”了try中的return
+    // 当finally执行也得到非normal记录，则会使finally中的记录作为整个try结构的结果
     console.log(foo()); // 1
+  }
+
+  // 标签语句
+  function tagStatement()
+  {
+    // 与完成记录类型中的target配合，用于跳出多重循环
+    outer: while(true)
+    {
+      inner: while(true)
+      {
+        // break/continue 语句如果后面跟了关键字，会产生带 target 的完成记录。一旦完成记录带了 target，那么只有拥有对应 label 的循环语句会消费它。
+        break outer;
+      }
+    }
+    console.log("finished");
   }
 </script>

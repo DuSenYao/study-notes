@@ -208,7 +208,7 @@ JavaScript
 
 
   五.JS的执行
-    (1) Promise里的代码为什么比setTimeout先执行？
+    (1) Promise、async/await
       1. 宏观和微观任务
         使用 JSC引擎 的术语，把宿主发起的任务称为宏观任务，把JS引擎发起的任务称为微观任务。
         JS引擎等待宿主环境分配宏观任务，在操作系统中，通常等待的行为都是一个事件循环，所以在 Node 术语中，也会把这个部分称为 事件循环。
@@ -243,7 +243,7 @@ JavaScript
         async 函数是一种特殊语法，特征是在 function 关键字前加上 async 关键字，就定义了 async 函数，可以在其中使用 await 来等待一个 Promise。
         async 函数是可以嵌套的。
         
-    (2) 闭包和执行上下文
+    (2) JS的执行
       1.闭包
         闭包翻译自英文单词 closure，在计算机领域有三个完全不同的意义：
           编译原理：它是处理语法产生式的一个步骤
@@ -363,6 +363,7 @@ JavaScript
 
       8.语句
         语句是任何编程语言的基础结构，与JS对象一样 JS语句 有“看起来很像其他语言，但其实一点都不一样”的特点
+        JS语句存在嵌套关系，所以执行过程主要在树形结构上进行，树形结构的每一个节点执行后产生Completion Record类型，根据语句结构和Completion Record，JS实现了各种分支和跳出逻辑。
 
         Completion类型
           JS语句执行的完成状态，可以用一个标准类型来表示：Completion Record 类型
@@ -371,3 +372,117 @@ JavaScript
             · [[value]] 表示语句的返回值，如果语句没有，则是empty
             · [[target]] 表示语句的目标，通常是一个JS标签
           JS 正是依靠语句的 Completion Record 类型，方才可以在语句的复杂嵌套结构中，实现各种控制。
+
+        普通语句
+          在JS中，不带控制能力的语句称为 普通语句。有下面几种：
+            · 声明类语句
+              var声明
+              const声明
+              let声明
+              函数声明
+              类声明
+            · 表达式语句
+            · 空语句
+            · debugger语句
+          这些语句在执行时，从前到后顺序执行（先忽略var和函数声明的预处理机制），没有任何分支或重复执行逻辑。
+          普通语句执行后，会得到[[type]]为normal的Completion Record，JS引擎遇到这样的Completion Record，会继续执行下一条语句。
+          这些语句中只有表示式语句会产生[[value]]
+
+        语句块
+          语句块就是一组用大括号括起来的语句，它是一种语句的复合结构，可以嵌套。语句块内部语句的Completion Record的[[type]]如果不为normal，会打断语句块后续的语句执行。
+          在语句块中插入一条return语句，产生了一个非normal记录，那么整个语句块会成为非normal。这个结构就保证了非normal的完成类型可以穿透复杂的语句嵌套结构，产生控制效果。
+
+        控制型语句
+          控制型语句带if、switch关键字，它们会对不同类型的Completion Record产生反应。
+          控制语句分为两部分：
+            1. 对其内部造成影响，如：if、switch、while/for、try
+            2. 对外部造成影响，如：return、break、continue、throw
+          这两类的配合，会产生控制代码执行顺序和执行逻辑的效果。
+
+        带标签的语句
+          任何JavaScript语句是可以加标签的，在语句前加冒号即可：
+            firstStatement: var a = 1;
+          大部分时候，这个东西相当于注释，没有任何用处。唯一有作用的时候是：与完成记录类型中的target相配合，用于跳出多层循环。
+
+      
+    (3) JS文法
+      文法是编译原理中对语言的写法的一种规定，一般来说，文法分为词法和语法两种。
+      词法规定了语言的最下语义单位：token，可以翻译为“标记”或“词”。
+      从字符到词是没有结构的，只要符合词的规则，就构成词，一般来说，词法设计不会包含冲突。词法分析技术上可以使用状态机或正则表达式来进行。
+      
+      1. 词法
+        JS源代码中的输入分类：
+          · WhiteSpace     空白字符
+          · LineTerminator 换行符
+          · Comment 注释
+          · Token   词
+            IdentifierName  标识符名称，例如：变量名、关键字
+            Punctuator      符号，使用的运算符和大括号等符号
+            NumericLiteral  数字直接量，就是直接写的数字
+            StringLiteral   字符串直接量，就是用单引号或双引号引起来的直接量
+            Template        字符串模板，用反引号 ` 括起来的直接量 
+
+        除法与正则表达式冲突问题。JS不但支持除法运算符“/”和“/=”，还支持用正则表达式“/abc/”。
+        这时候，对于词法分析来说，其实是没有办法处理的，所以，JS的处理方案是定义两组词法，然后靠词法分析传一个标志给词法分析器，让它来决定使用哪一套词法。
+        字符串模板   `hello，${name}`
+        理论上，“${}”内部可以放任何JS表达式代码，而这些代码是以“}”结尾的，也就是说，这部分词法不允许出现“}”运算符。
+        是否允许“}”的两种情况，与除法和正则表达式的两种情况相乘就是四种词法定义，
+          · InputElementDiv;
+          · InputElementRegExp;
+          · InputElementRegExpOrTemplateTail;
+          · InputElementTemplateTail
+        为了解决这两个问题，标准中还不得不把除法、正则表达式直接量和“}”从token中单独抽出来，用词上，也从Token改为CommonToken。
+        对于一般语言的词法分析过程来说，都会丢弃除了Token之外的输入，但是对于JS来说，不太一样，换行符和注释还会影响词法分析过程，所以要实现JS的解释器，词法分析和语法分析非常麻烦，需要来回传递信息。
+
+        空白符号 WhiteSpace
+          JS可以支持18种空白符号，但在ASCII编码内，只有五种可用：
+            · <HT>（或称<TAB>）是U+0009，是缩进TAB符，也就是字符串中写的\t
+            · <VT>是U+000B，也就是垂直方向的TAB符\v，这个字符很少用。
+            · <FF>是U+000C，Form Feed分页符，字符串直接量中写作\f，现在很少有打印源程序的事情发生了，所以这个字符在JS源代码中很少用到
+            · <SP>是U+0020，就是普通的空格
+            · <NBSP>是U+00A0，非断行空格，它是SP的一个变体，在文字排版中，可以避免因为空格，在此处发生断行，其他方面与空格完全一样。HTML中，&nbsp;生成的就是它。
+            · <ZWNBSP>（旧称<BOM>）是U+FEFF，这是ES5新加入的空白符，是Unicode中的零宽非断行空格，在以UTF编码格式的文件中，常常在文件首插入一个额外的U+FEFF，解析UTF文件的程序可以根据U+FEFF的表示方式猜测文件采用哪种UTF编码方式。这个字符也叫做“bit order mark”
+
+        换行符 LineTerminator
+          JS中提供了4种换行符
+            · <LF>是U+000A，就是正常的换行符，是字符串中的\n
+            · <CR>是U+000D，就是“回车”，在字符串中式\r，在一部分Windows风格的编辑器中，换行是两个字符\r\n
+            · <LS>是U+2028，是Unicode中的行分隔符
+            · <PS>是U+2029，是Unicode中的段落分隔符
+          大部分的换行符在被词法分析器扫描出之后，会被语法分析器丢弃，但是换行符会影响JS的两个重要语法特征：自动插入分号和“no line terminator”规则
+
+        注释 Comment
+          JS的注释分为单行注释和多行注释：
+            /* MultiLineCommentChars */
+            // SingleLineCommentChars
+          多行注释中允许出现除了*之外的所有字符，而每一个*之后，不能出现正斜杠符\
+          除了四种LineTerminator之外，任何字符都可以作为单行注释
+          需要注意，多行注释是否包含换行符，会对 JS 语法产生影响，对于“no line terminator”规则来说，带换行符的多行注释和换行符是等效的
+
+        标识符名称 IdentifierName
+          IdentifierName可以以美元符"$"、下划线“_”、或者Unicode字母开始，除了开始字符意外，IdentifierName中还可以使用Unicode连接标记，字符以及连接符号。
+          IdentifierName的任意字符可以使用JS的Unicode转义写法，在使用Unicode的转义写法时，没有任何字符限制。
+          IdentifierName可以是Identifier、NullLiteral、BooleanLiteral或者keyword，在ObjectLiteral中，IdentifierName还可以被直接当做属性名称使用。
+          仅当不是保留字的时候，IdentifierName会被解析为Identifier
+          注意<ZWNJ>和<ZWJ>是ES5新加的两个格式控制字符，它们都是0宽
+          在JS中，有34个关键字：
+            await break case catch class const continue debugger default delete do else export extends finally for function if import ininstance of new return super switch this throw try typeof var void while with yield
+          除了上面的内容外，还有一个为未来使用而保留的关键字：
+            enum
+          在严格模式下，有一些额外的为未来使用而保留的关键字：
+            implements package protected interface private public
+          除了这些，NullLiteral（null）和BooleanLiteral（true false）也是保留字，不能用于Identifier
+
+        符号 Punctuator
+          因为除法和正则问题，/和/=两个运算符被拆分为DivPunctuator，因为字符串模板问题，} 也被独立拆分，所有符号为：
+            { ( ) [ ] . ... ; , < > <= >= == != === !== + - * % ** ++ -- << >> >>> & | ^ ! ~ && || ? : = += -= *= %= **= <<= >>= >>>= &= |= ^= => / /= }
+
+        数字直接量 NumericLiteral
+          JS规范中规定的数字直接量可以支持四种写法：十进制数、二进制整数、八进制整数、十六进制整数
+          十进制的Number可以带小数，小数点前后都可以忽略，但不能同时忽略，例：.01  12.  2.1
+          数字直接量还支持科学计数法，e后面的部分只允许使用整数，例：10.24E+2  10.24e-2  10.24e2
+            0x开头为十六进制：oxFB     0o开头为八进制：0o79     0b开头为二进制：0b1000
+
+        字符串直接量 StringLiteral
+          JS中的StringLiteral支持单引号和双引号两种写法。
+          

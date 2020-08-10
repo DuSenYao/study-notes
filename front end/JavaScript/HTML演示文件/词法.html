@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="css/base.css">
+
+<div class="main">
+  <button onclick="stringTemplate()">字符串模板</button>
+</div>
+
+<script>
+  // 字符串模板
+  function stringTemplate()
+  {
+    const ME = {
+      "name" : "Tom",
+      "sex"  : "male",
+      "race" : "cat",
+      "weight" : 18,
+      "age"  : 3,
+      "marital status" : false
+    };
+
+    Object.defineProperty(ME, "introduce", {
+      get: () =>{
+        return ME.name + " is " + ME.sex;
+      },
+      set: (age) =>{
+        ME.age = age;
+      },
+      enumerable : false,
+      configurable : false
+    });
+
+    var temp = `My name is ${ME.name}`;
+    console.log(temp); // My name is Tom
+    console.log(ME.introduce); // Tom is male
+  }
+
+  // toString()的报错
+  function toStringError()
+  {
+    // 这时候12.会被当作省略了小数点后面部分的数字，而单独看成一个整体 
+    // 12.toString(); Invalid or unexpected token
+    
+    12 .toString; // 让 . 单独称为一个token，就要加入空格
+  }
+</script>
