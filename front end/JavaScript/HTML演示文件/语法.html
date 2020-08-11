@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="css/base.css">
+
+<div class="main">
+  <button onclick="autoInsertSemicolon2()">自动插入分号规则</button>
+</div>
+
+<script>
+  // 自动插入分号规则
+  function autoInsertSemicolon(){
+    // void 关键字接在1之后是不合法的，因此会在 void 前插入分号
+    let a = 1
+    void function(a){
+      console.log(a);
+    }(a);
+  }
+
+  function autoInsertSemicolon2(){
+    var a = 1, b = 1, c = 1;
+    // a后面有换行符，后面遇到了++，a后面跟++是合法的语法，但是在JS标准定义中，有[no LineTerminator here]，所以a后面要插入一个分号
+    a
+    ++
+    b
+    ++
+    c
+    console.log(a, b, c); // 1 2 2
+  }
+</script>

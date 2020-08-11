@@ -3,6 +3,7 @@
 
 <div class="main">
   <button onclick="stringTemplate()">字符串模板</button>
+  <button onclick="handleF()">字符串模板支持添加处理函数</button>
 </div>
 
 <script>
@@ -39,7 +40,38 @@
   {
     // 这时候12.会被当作省略了小数点后面部分的数字，而单独看成一个整体 
     // 12.toString(); Invalid or unexpected token
-    
+
     12 .toString; // 让 . 单独称为一个token，就要加入空格
+  }
+
+  // 模板字符串支持添加处理函数的写法，这时模板的各段会被拆开，传递给函数当参数
+  function handleF()
+  {
+    function f()
+    {
+      console.log(f.length); // 0 指明函数的形参个数，形参的数量不包括剩余参数个数，仅包括第一个具有默认值之前的参数个数。
+      // arguments 是一个对应于传递给函数的参数的类数组对象
+      // arguments 对象是所有（非箭头）函数中都可用的局部变量，此对象包含传递给函数的每个参数，可以使用arguments对象在函数中引用函数的参数。
+      // arguments对象不是一个 Array。它类似于Array，但除了length属性和索引元素之外没有任何Array属性。例如，它没有 pop 方法。但是它可以被转换为一个真正的Array
+      console.log(arguments);
+      /*
+        {
+          {
+            "Hello ",   模板头
+            "！ My ",   模板中段
+            " is ",     模板中段
+            "."         模板尾
+          },
+          World,        普通标识符
+          name,
+          Tom
+        }
+      */
+      console.log(arguments.length); // 4
+    }
+    var a = "World";
+    var b = "name";
+    var c = "Tom";
+    f`Hello ${a}！ My ${b} is ${c}.`;
   }
 </script>
