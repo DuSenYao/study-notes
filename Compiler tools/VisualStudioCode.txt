@@ -1,0 +1,12 @@
+VSCode编辑器 常用使用方法备忘录
+  常用命令
+    Ctrl + p: 文件跳转
+    Ctrl + Shift + Tab：在所有打开的文件中跳转
+    Ctrl + Shift + P：  打开命令面板
+    Ctrl + Shift + O：  跳转到文件中的符号
+    Ctrl + G：跳转到文件中的某一行
+
+  常用设置
+    “editor.minimap.enabled”:false  控制缩略图显隐
+
+  
