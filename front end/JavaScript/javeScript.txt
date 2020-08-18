@@ -448,7 +448,7 @@ JavaScript
             · <ZWNBSP>（旧称<BOM>）是U+FEFF，这是ES5新加入的空白符，是Unicode中的零宽非断行空格，在以UTF编码格式的文件中，常常在文件首插入一个额外的U+FEFF，解析UTF文件的程序可以根据U+FEFF的表示方式猜测文件采用哪种UTF编码方式。这个字符也叫做“bit order mark”
 
         换行符 LineTerminator
-          JS中提供了4种换行符
+          JS中提供了4种换行符：
             · <LF>是U+000A，就是正常的换行符，是字符串中的\n
             · <CR>是U+000D，就是“回车”，在字符串中是\r，在一部分Windows风格的编辑器中，换行是两个字符\r\n
             · <LS>是U+2028，是Unicode中的行分隔符
@@ -459,7 +459,7 @@ JavaScript
           JS的注释分为单行注释和多行注释：
             /* MultiLineCommentChars */
             // SingleLineCommentChars
-          多行注释中允许出现除了*之外的所有字符，而每一个*之后，不能出现正斜杠符\
+          多行注释中允许出现除了*之外的所有字符，而每一个*之后，不能出现正斜杠符/
           除了四种LineTerminator之外，任何字符都可以作为单行注释
           注意：多行注释是否包含换行符，会对 JS 语法产生影响，对于“no line terminator”规则来说，带换行符的多行注释和换行符是等效的
 
@@ -469,8 +469,8 @@ JavaScript
           IdentifierName可以是Identifier、NullLiteral、BooleanLiteral或者keyword，在ObjectLiteral中，IdentifierName还可以被直接当做属性名称使用。
           仅当不是保留字的时候，IdentifierName会被解析为Identifier
           注意<ZWNJ>和<ZWJ>是ES5新加的两个格式控制字符，它们都是0宽
-          在JS中，有34个关键字：
-            await break try catch class const continue debugger default delete else export extends finally for function if import ininstance of new return super switch case this throw typeof var void do while with yield
+          在JS中，有33个关键字：
+            await break try catch class const continue debugger default delete else export extends finally for function if import instanceof new return super switch case this throw typeof var void do while with yield
           除了上面的内容外，还有一个为未来使用而保留的关键字：
             enum
           在严格模式下，有一些额外的为未来使用而保留的关键字：
