@@ -5,8 +5,18 @@ VSCode编辑器 常用使用方法备忘录
     Ctrl + Shift + P：  打开命令面板
     Ctrl + Shift + O：  跳转到文件中的符号
     Ctrl + G：跳转到文件中的某一行
+    Shift + Alt：列选择
+    Ctrl + Shift + [ / ]：折叠或展开当前代码块
+
 
   常用设置
-    “editor.minimap.enabled”:false  控制缩略图显隐
+    "editor.minimap.enabled":false  控制缩略图显隐
+    "workbench.editor.showTabs":false 控制TAB显隐
+    "workbench.editor.openPositioning":"left" 设置新TAB的出现位置
 
-  
+  常用知识
+    1. 单击搜索输入框下方的省略号或使用Ctrl+Shift+J快捷键，可以调出高级搜索选项：要包含的文件 和 排除的文件，需要以.开头并且全拼
+    2.
+
+
+  常用功能
