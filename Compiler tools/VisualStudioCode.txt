@@ -1,22 +1,83 @@
 VSCode编辑器 常用使用方法备忘录
   常用命令
-    Ctrl + p: 跳转到最近打开的文件
-    Ctrl + Shift + Tab：在已打开的文件中跳转
-    Ctrl + Shift + P：  打开命令面板
-    Ctrl + Shift + O：  跳转到文件中的符号
-    Ctrl + G：跳转到文件中的某一行
-    Shift + Alt：列选择
-    Ctrl + Shift + [ / ]：折叠或展开当前代码块
+    1.通用快捷键
+      Ctrl + Shift + P 或 F1： 打开命令面板
+      Ctrl + K Ctrl + S：      打开快捷键编辑器
+      Ctrl + W：               关闭当前窗口
+      Ctrl + ,：               打开用户设置
+      Ctrl + `：               打开集成终端
+      Shift + Alt + 鼠标左键：  列选择
+    2.跳转
+      Ctrl + p:            跳转到最近打开的文件
+      Ctrl + Shift + Tab： 在已打开的文件中跳转
+      Ctrl + Shift + O：   跳转到文件中的符号
+      Ctrl + G：           跳转到文件中的某一行
+    3.基本编辑
+      Ctrl + Shift + [ / ]：折叠或展开当前代码块
+      Ctrl + K Ctrl + C：   添加行注释
+      Alt + ← / →：         向前/向后跳转    
+      Alt + ↑ / ↓：         把当前行内容向上/下复制
+      Ctrl + Shift + K：    删除当前行
+      Ctrl + /：            添加或删除当前行的注释
+      Home/end：            光标移动到当前行的起始/结尾
+    4.编程语言编辑
+      Ctrl + Shift + I：  格式化文档
+      Ctrl + K Ctrl + F： 格式化选定内容
+      F12：               跳转到定义
+      Alt + F12：         在当前页查看定义
+      Shift + F12：       查看引用
+      F2：                重命名符号
+      Ctrl + .：          快速修复
+    5.搜索与替换
+      Ctrl + F：        搜索
+      Ctrl + H：        替换
+      Ctrl + Shift + F：全局搜索
+      Ctrl + Shift + H：全局替换
+    6.多光标与选择
+      Alt + 鼠标左键：        插入一个新的光标
+      Shift + Alt + Down/Up：在上/下方添加一个光标
+      Ctrl + L：             选中当前行
+      Shift + Alt + →：      扩大选中的范围
+      Shift + Alt + ←：      缩小选中的范围
+    7.显示
+      Ctrl + =：放大
+      Ctrl + -：缩小
+    8.编辑器管理
+      Ctrl + \：   向右分割编辑器
+      Ctrl +1/2/3：把焦点移动到不同的编辑器组
+    9.文件管理
+      Ctrl + N：           新建文件
+      Ctrl + O：           打开文件
+      Ctrl + Tab：         向前在已打开的文件中选择一个
+      Ctrl + Shift + Tab： 向后在已打开的文件中选择一个   
 
 
   常用设置
-    "editor.minimap.enabled":false  控制缩略图显隐
-    "workbench.editor.showTabs":false 控制TAB显隐
-    "workbench.editor.openPositioning":"left" 设置新TAB的出现位置
+    "editor.minimap.enabled":false     控制缩略图显隐
+    "workbench.editor.showTabs":false  控制TAB显隐
+    "workbench.editor.openPositioning":"left"  设置新TAB的出现位置
+    "terminal.integrated.shell.*"  配置Shell
+    "terminal.integrated.cwd": "/hone/user"    配置终端的打开路径，终端默认在当前文件夹下打开
+    
 
   常用知识
     1. 单击搜索输入框下方的省略号或使用Ctrl+Shift+J快捷键，可以调出高级搜索选项：要包含的文件 和 排除的文件，需要以.开头并且全拼
-    2.
+    2.编程语言定义代码块的起始和结束区域的标记
+        编程语言                        起始区域                            结束区域
+      CSS/Less/SCSS                  /*#region*/                        /*#endregion*/
+      C/C++                          #pragma region                     #pragma endregion
+      Java                          //#region或//<editor-flod>         //#endregion或//</editor-flod>
+      Python                        #region                            #endregion
+      TypeScript/JS                 //#region或//region                //#endregion或//endregion\
+      Markdown                      <!--#region-->                     <!--endregion-->
+    3.VSCode会自动检测打开的文档来确定所使用的代码缩进，通过自动检测所得出的缩进配置，会覆盖默认配置
 
 
   常用功能
+    1.多光标
+      (1) Alt + 鼠标左键
+      (2) Ctrl + Alt + Down：会在当前光标的下方，添加一个新的光标
+      (3) Ctrl + Alt + Up：  会在当前光标的上方，添加一个新的光标
+      (4) Ctrl + D：         第一次按下快捷键会选择当前光标处的单词，再次按下快捷键，会在下一个相同单词的位置添加一个新光标
+      (5) Ctrl + Shift + L： 会在当前光标处的单词所有出现的位置，都添加光标
+    
