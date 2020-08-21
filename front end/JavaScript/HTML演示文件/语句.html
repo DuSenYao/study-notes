@@ -8,16 +8,11 @@
 </div>
 
 <script>
-  function tryReturn()
-  {
-    function foo()
-    {
-      try{
+  function tryReturn() {
+    function foo() {
+      try {
         return 0;
-      }
-      catch(err){
-      }
-      finally{
+      } catch (err) {} finally {
         console.log("a");
       }
     }
@@ -26,17 +21,11 @@
     console.log(foo()); // a 0
   }
 
-  function tryAndFinallyReturn()
-  {
-    function foo()
-    {
-      try{
+  function tryAndFinallyReturn() {
+    function foo() {
+      try {
         return 0;
-      }
-      catch(err){
-      }
-      finally
-      {
+      } catch (err) {} finally {
         return 1;
       }
     }
@@ -46,13 +35,10 @@
   }
 
   // 标签语句
-  function tagStatement()
-  {
+  function tagStatement() {
     // 与完成记录类型中的target配合，用于跳出多重循环
-    outer: while(true)
-    {
-      inner: while(true)
-      {
+    outer: while (true) {
+      inner: while (true) {
         // break/continue 语句如果后面跟了关键字，会产生带 target 的完成记录。一旦完成记录带了 target，那么只有拥有对应 label 的循环语句会消费它。
         break outer;
       }
