@@ -8,7 +8,7 @@ VSCode编辑器 常用使用方法备忘录
       Ctrl + `：               打开集成终端
       Shift + Alt + 鼠标左键：  列选择
     2.跳转
-      Ctrl + P:            跳转到最近打开的文件
+      Ctrl + P:            跳转到最近打开的文件            
       Ctrl + Shift + Tab： 在已打开的文件中跳转
       Ctrl + Shift + O：   跳转到文件中的符号
       Ctrl + G：           跳转到文件中的某一行
@@ -28,6 +28,7 @@ VSCode编辑器 常用使用方法备忘录
       Shift + F12：       查看引用
       F2：                重命名符号
       Ctrl + .：          快速修复
+      Ctrl + Shift + \：  在匹配的括号之间跳转
     5.搜索与替换
       Ctrl + F：        搜索
       Ctrl + H：        替换
@@ -51,7 +52,7 @@ VSCode编辑器 常用使用方法备忘录
       Ctrl + N：           新建文件
       Ctrl + O：           打开文件
       Ctrl + Tab：         向前在已打开的文件中选择一个
-      Ctrl + Shift + Tab： 向后在已打开的文件中选择一个   
+      Ctrl + Shift + Tab： 向后在已打开的文件中选择一个
 
 
   常用设置
@@ -76,8 +77,15 @@ VSCode编辑器 常用使用方法备忘录
     4. 命令行
       在命令行中输入code . ，可以启动VSCode并直接打开当前文件夹
     5. Shift + Alt + F12快捷键或编辑邮件菜单中的Find All Reference，可以打开结果视图查看一个符号的所有引用
+    6. Ctrl +Shift + O可以跳转到当前文件中的不同符号，通过输入":"，所有的符号都会按类型进行分组
 
 
 
   常用功能
-    
+    1. 代码片段
+      使用方式
+        (1) 通过Ctrl + Shift + P 快捷键打开命令面板，输入并执行Insert Snipper命令，会显示适合当前语言的所有代码片段的列表。
+        (2) 在编辑器中编写代码时，VSCode 会提供智能提示功能，通过智能提示即可插入代码片段。
+    2. 创建自定义的代码片段
+      文件 -> 首选项 -> 用户片段，或 命令面板的 Preferences：Configure User Snippets
+      
