@@ -88,4 +88,12 @@ VSCode编辑器 常用使用方法备忘录
         (2) 在编辑器中编写代码时，VSCode 会提供智能提示功能，通过智能提示即可插入代码片段。
     2. 创建自定义的代码片段
       文件 -> 首选项 -> 用户片段，或 命令面板的 Preferences：Configure User Snippets
+      代码片段的定义文件是JSON格式的，并且支持C语言风格的注释
+      创建：
+        "For Loop": { // 代码片段名称
+          "prefix": ["for", "for-const"], // 定义了代码片段扎起 InteliSense中触发的单词。字符串的子串也可以作为触发条件。fc也会匹配for-const
+          // body 包含了三个占位符 ${2:element} ${1:array} 和 $0，在插入代码片段后，可以通过Tab键在占位符之间按顺序进行跳转，冒号后面是默认的文本，前面的数字是出现的顺序，0是最终的位置
+          "body": ["for (const ${2:element} of ${1:array}) {", "\t$0", "}"], // 定义了要被插入的代码片段，它使用了数组，每一个元素表示一行独立的内容。这里有3行代码片段
+          "description": "A for loop." // 可选项，定义了在 IntelliSense 中显示的描述性文本
+        }
       
