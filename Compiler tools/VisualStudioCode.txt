@@ -15,7 +15,7 @@ VSCode编辑器 常用使用方法备忘录
     3.基本编辑
       Ctrl + Shift + [ / ]：折叠或展开当前代码块
       Ctrl + K Ctrl + C：   添加行注释
-      Alt + ← / →：         向前/向后跳转    
+      Alt + ← / →：         向前/向编辑位置后跳转    
       Alt + ↑ / ↓：         把当前行内容向上/下复制
       Ctrl + Shift + K：    删除当前行
       Ctrl + /：            添加或删除当前行的注释
@@ -64,7 +64,7 @@ VSCode编辑器 常用使用方法备忘录
 
   常用知识
     1. 单击搜索输入框下方的省略号或使用Ctrl+Shift+J快捷键，可以调出高级搜索选项：要包含的文件 和 排除的文件，需要以.开头并且全拼
-    2.编程语言定义代码块的起始和结束区域的标记
+    2. 编程语言定义代码块的起始和结束区域的标记
         编程语言                        起始区域                            结束区域
       CSS/Less/SCSS                  /*#region*/                        /*#endregion*/
       C/C++                          #pragma region                     #pragma endregion
@@ -73,6 +73,10 @@ VSCode编辑器 常用使用方法备忘录
       TypeScript/JS                 //#region或//region                //#endregion或//endregion\
       Markdown                      <!--#region-->                     <!--endregion-->
     3.VSCode会自动检测打开的文档来确定所使用的代码缩进，通过自动检测所得出的缩进配置，会覆盖默认配置
+    4. 命令行
+      在命令行中输入code . ，可以启动VSCode并直接打开当前文件夹
+    5. Shift + Alt + F12快捷键或编辑邮件菜单中的Find All Reference，可以打开结果视图查看一个符号的所有引用
+
 
 
   常用功能
