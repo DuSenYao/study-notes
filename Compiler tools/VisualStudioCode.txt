@@ -144,15 +144,27 @@ VSCode编辑器 常用使用方法备忘录
               BLOCK_COMMENT_END；    块注释的结束符。比如，HTML是-->
               LINE_COMMENT：         行注释，比如，HTML是<!---->
               
-              {
-                "key": "ctrl+shift+7",                     快捷键绑定命令
-                "command": "editor.action.insertSnippet",  要执行的命令的名称，这里的名称是 插入片段
-                "when": "editorTextFocus",                 快捷键处于可以触发的条件，这里是 编辑文本焦点
-                "args": {
-                  "snippet": "console.log($1)$0",          设置的代码片段
-                  "langId": "javascript",                  引入代码片段的语言ID
-                  "name": "For Loop"                       引入语言JSON文件中的代码片段名称
-                }
+          打开命令面板，输入并执行Preferences：Open Keyboard Shortcuts(JSON)命令，可以打开定义快捷键的keybindings.json文件
+            {
+              "key": "ctrl+shift+7",                     快捷键绑定命令
+              "command": "editor.action.insertSnippet",  要执行的命令的名称，这里的名称是 插入片段
+              "when": "editorTextFocus",                 快捷键处于可以触发的条件，这里是 编辑文本焦点
+              "args": {
+                "snippet": "console.log($1)$0",          设置的代码片段
+                "langId": "javascript",                  引入代码片段的语言ID
+                "name": "For Loop"                       引入语言JSON文件中的代码片段名称
               }
+            }
 
     3. Task，把重复的工作自动化
+      许多工具都可以把重复的任务自动化，包括代码静态检查、编译、打包、测试、部署等。如：
+        编译：TypeScript编译器、Java编译器等
+        静态检查：ESLint、TSLint等
+        代码构建：Make、Ant、Gulp等
+      Task（任务）可以被用来运行脚本或启动一个进程。因此，许多工具都可以通过Task直接在VSCode中运行，而不需要额外再命令行中输入命令。Task被配置在.vscode文件夹的tasks.json文件中。
+      Task只能配置在有文件夹打开的项目中。
+      
+      配置Task
+        终端 -> 配置任务
+        终端 -> 运行任务，会显示出所有可以运行的Task，选择一个Task后，会选择要针对何种错误和警告扫描Task的输出。选择后，一个新的终端被创建，echo Hello命令在终端中执行。按下让任意键，终端会被关闭。
+        

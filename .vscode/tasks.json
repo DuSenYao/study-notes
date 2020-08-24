@@ -1,0 +1,25 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "echo",  // 在用户界面上展示的Task标签
+      "type": "shell",  // Task的类型，分为shell 和 process 两种。shell：作为Shell命令运行（如bash、cmd、PowerShell等） process：作为一个进程运行
+      "command": "echo Hello", // 真正执行的命令
+      "windows": { // Windows中的特定属性。相应的属性会在Window中覆盖默认的属性定义
+        "command": ".\\scripts\\test.cmd"
+      },
+      "group": "test",  // 定义Task属于哪一个组。分为 test（测试） 和 build（生成）。命令面板有 运行测试任务 和 运行生成任务 两个组
+      "presentation": { // 定义用户界面如何处理Task的输出
+        "reveal": "always", // 控制运行运行任务的终端是否显示
+        "focus": true,      // 控制面板是否获取焦点
+        "clear": false,     // 控制是否在执行任务前清除终端
+        "echo": true,       // 控制是否将执行的命令显示到面板中
+        "revealProblems": "", // 控制执行此任务时是否显示问题面板，优先于“显示”选项
+        "showReuseMessage": true,
+        "panel" : "new"
+      }
+    }
+  ]
+}
