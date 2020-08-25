@@ -4,6 +4,7 @@
   "description": "学习笔记",
   "main": "index.js",
   "dependencies": {
+    "eslint": "^7.7.0",
     "jshint": "^2.12.0"
   },
   "devDependencies": {},
