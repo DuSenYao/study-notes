@@ -16,9 +16,9 @@
         "focus": true,      // 控制面板是否获取焦点
         "clear": false,     // 控制是否在执行任务前清除终端
         "echo": true,       // 控制是否将执行的命令显示到面板中
-        "revealProblems": "", // 控制执行此任务时是否显示问题面板，优先于“显示”选项
-        "showReuseMessage": true,
-        "panel" : "new"
+        "revealProblems": "onProblem", // 控制执行此任务时是否显示问题面板，优先于“显示”选项
+        "showReuseMessage": true,   // 控制是否显示“按任意键关闭终端”
+        "panel" : "shared"          // 同一任务使用相同面板还是每次运行时创建一个新面板
       }
     }
   ]
