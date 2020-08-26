@@ -555,8 +555,25 @@ JavaScript
 
     
     (4) JS语法
-      JS有两种源文件：一. 脚本 二. 模块。这个区分是在ES6引入了模块机制开始的。
+      JS有两种源文件：一. 脚本 二. 模块。这个区分是在ES6引入了模块机制开始的，ES6以前只有脚本。
         脚本可以由浏览器或node引入执行的，而模块只能由JS代码用import引入执行
         从概念上，可以认为脚本具有主动性的JS代码，是控制宿主完成一定任务的代码；而模块是被动性的代码，是等待被调用的库
         浏览器支持用<script>引入模块，但必须给<script>标签添加type="module"。如果引入脚本，则不需要type
-        脚本中可以包含语句，模块中可以包含3中内容：import声明、export声明和语句。
+        脚本中可以包含语句，模块中可以包含3种内容：import声明、export声明和语句。
+      
+      1. import声明
+        import声明有两种用法：
+          ①.直接import一个模块
+            import "mod";
+            这样只能保证这个代码模块被执行，引用它的模块是无法获得它的任何信息的。
+          ②.带from的import
+            带from的import的意思是引入模块中的一部分信息，可以把它们变成本地的变量。
+            带from的import又有三种细分：
+              · import x from "./a.js"; 引入模块中导出的默认值
+              · import {a as x, modify} from "./a.js"; 引入模块中的变量
+              · import * as x from "./a.js"; 把模块中所有的变量以类似对象属性的方式引入
+            第一种方式还可以跟后面两种组合使用：
+              · import d,{a as x, modify} from "./a.js";
+              · import d,* as x from "./a.js";
+            语法要求不带as的默认值永远在最前。注意这里的变量实际上仍然可以受到原来模块的控制。
+
