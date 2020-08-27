@@ -1,3 +1,4 @@
 export var a = 1;
-export function modify() {a = 2; sfdsa 
+export function modify() {
+  a = 2;
 }
