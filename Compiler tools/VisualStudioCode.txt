@@ -90,6 +90,7 @@ VSCode编辑器 常用使用方法备忘录
     2. 创建自定义的代码片段
       文件 -> 首选项 -> 用户片段，或 命令面板的 Preferences：Configure User Snippets
       代码片段的定义文件是JSON格式的，并且支持C语言风格的注释
+
       创建：
         "For Loop": { // 代码片段名称
           "prefix": ["for", "for-const"], // 定义了代码片段在 InteliSense 中触发的单词。字符串的子串也可以作为触发条件。fc也会匹配for-const
@@ -156,7 +157,31 @@ VSCode编辑器 常用使用方法备忘录
               }
             }
 
-    3. Task，把重复的工作自动化
+    3. Git 版本控制插件
+      Git分支
+        在左下角的状态栏中会显示当前的Git分支。
+      当你对本地Git仓库的文件进行更改时，在编辑器的行号与源代码之间的沟槽中会有相应的提示，对于增删改，有以下三种不同的提示：
+        · 蓝色条：表明这些行的代码有更改
+        · 绿色条：表明新增了代码
+        · 红色小三角：表明当前位置删除了代码
+      合并冲突
+        当VSCode检测到Git合并冲突时，冲突的部分会被高亮显示，还会有不同的内联操作帮助快速解决冲突，如下所示：
+          · Accept Current Change：  保留当前的更改
+          · Accept Incoming Change： 保留新进来的更改
+          · Accept Both Changes:     保留所有的更改
+          · Compare Changes：        在diff视图中比较更改
+      把VSCode作为Git编辑器
+        (1)在命令行中，运行 git config --global core.editor "code --wait"，把VSCode设为Git的默认编辑器
+        (2)命令行中运行 git config --global -e，就会调出VSCode来打开全局的.gitconfig文件，以配置Git
+        (3)在.gitconfig文件中添加以下配置，把VSCode设置成Git的比较及合并工具
+          [diff]
+            tool = default-difftool
+          [difftool "default-difftool"]
+          cmd = code --wait --diff $LOCAL $REMOTE
+          [merge]
+            tool = code
+
+    4. Task，把重复的工作自动化
       许多工具都可以把重复的任务自动化，包括代码静态检查、编译、打包、测试、部署等。如：
         编译：TypeScript编译器、Java编译器等
         静态检查：ESLint、TSLint等
@@ -167,4 +192,4 @@ VSCode编辑器 常用使用方法备忘录
       配置Task
         终端 -> 配置任务
         终端 -> 运行任务，会显示出所有可以运行的Task，选择一个Task后，会选择要针对何种错误和警告扫描Task的输出。选择后，一个新的终端被创建，echo Hello命令在终端中执行。按下让任意键，终端会被关闭。
-            
+          
