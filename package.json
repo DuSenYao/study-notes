@@ -4,10 +4,13 @@
   "description": "学习笔记",
   "main": "index.js",
   "dependencies": {
-    "eslint": "^7.7.0",
     "jshint": "^2.12.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^3.10.1",
+    "@typescript-eslint/parser": "^3.10.1",
+    "eslint": "^7.7.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
