@@ -46,7 +46,8 @@ JavaScript
 
       JS在语言设计上试图模糊基本类型与对象之间的关系，在日常代码中可以把对象的方法放在基本类型上使用，如：console.log("ab".charAt(0));
       甚至在原型上添加方法都可以应用于基本类型， “.”运算符提供了装箱操作，它会根据基础类型构造一个临时对象，使得我们能在基础类型上调用对应对象的方法。
-      
+
+
   二.类型转换
     JS是弱类型语言，所以类型转换发生的非常频繁，大部分我们熟悉的运算都会先进行类型转换。
       StringToNumber
@@ -91,7 +92,8 @@ JavaScript
       5. Property Descriptor：用于描述对象的属性。
       6. Lexical Environment 和 Environment Record：用于描述变量和作用域。
       7. Data Block：用于描述二进制数据。
-    
+
+
   三.面向对象
     JS标准对于 基于对象 的定义：语言和宿主的基础设施由对象来提供，并且JS程序即是一系列互相通讯的对象的集合。
     1. JS对象的特征
@@ -158,7 +160,7 @@ JavaScript
         我们通过 get/set 关键字来创建 getter/setter，通过括号和大括号来创建方法，数据型成员最好写在构造器里面。
         类的写法实际上也是由原型运行时来承载的，逻辑上 JS 认为每个类是有共同原型的一组对象，类中定义的方法和属性则会被写在原型对象之上。
         类通过extends关键字提供了继承能力，使用 extends 关键字会自动设置了 constructor，并且会自动调用父类的构造函数。使用类的思想来设计代码时，应该尽量使用 class 来声明类，而不是用函数来模拟对象。
-      
+
 
   四.JS的对象
     1.对象的分类
@@ -404,7 +406,6 @@ JavaScript
             firstStatement: var a = 1;
           大部分时候，这个东西相当于注释，没有任何用处。唯一有作用的时候是：与完成记录类型中的target相配合，用于跳出多层循环。
 
-      
     (3) JS文法
       文法是编译原理中对语言的写法的一种规定，一般来说，文法分为 词法 和 语法 两种。
       词法规定了语言的最小语义单位：token，可以翻译为“标记”或“词”。
@@ -553,7 +554,6 @@ JavaScript
           · 以 Template 开头的语句
           例子在：HTML演示文件/语法.html
 
-    
     (4) JS语法
       JS有两种源文件：一. 脚本 二. 模块。这个区分是在ES6引入了模块机制开始的，ES6以前只有脚本。
         脚本可以由浏览器或node引入执行的，而模块只能由JS代码用import引入执行
@@ -569,11 +569,56 @@ JavaScript
           ②.带from的import
             带from的import的意思是引入模块中的一部分信息，可以把它们变成本地的变量。
             带from的import又有三种细分：
-              · import x from "./a.js"; 引入模块中导出的默认值
-              · import {a as x, modify} from "./a.js"; 引入模块中的变量
-              · import * as x from "./a.js"; 把模块中所有的变量以类似对象属性的方式引入
+              · import x from "./a.js";  引入模块中导出的默认值
+              · import {a as x, modify} from "./a.js";  引入模块中的变量
+              · import * as x from "./a.js";  把模块中所有的变量以类似对象属性的方式引入
             第一种方式还可以跟后面两种组合使用：
               · import d,{a as x, modify} from "./a.js";
               · import d,* as x from "./a.js";
             语法要求不带as的默认值永远在最前。注意这里的变量实际上仍然可以受到原来模块的控制。
 
+      2. export声明
+        export承担的是导出的任务
+        导出变量的方式有两种：
+          ①.独立使用export声明
+            export {a,b,c};
+          ②.直接在声明型语句前加 export 关键字，这里的export可以加在任何声明性质的语句前，整理如下：
+            · var
+            · function(含async和generator)
+            · class
+            · let
+            · const
+          export还有一种特殊的用法，就是跟default联合使用。export default 表示导出一个默认变量值，它可以用于function 和 class。这里导出的变量是没有名称的，可以使用 import x from "./a.js" 这样的语法，从模块中导出。
+          export default 还支持一种语法，后面跟一个表达式，例如：
+            var a = {}; export default a; // 这里导出的是值，以后a的变化与导出的值无关
+          import语句前无法加入export，但是可以直接使用 export from 语法
+            export x from "a.js";
+
+      3. 函数体
+        执行函数的行为通常是在JS代码执行时，注册宿主环境的某些事件触发的，而执行过程，就是函数体。
+        宏任务可能执行的代码包括"脚本(script)"，"模块(module)"，"函数体(function body)"。
+        函数体其实也是一个语句的列表。跟脚本和模块相比，函数体的语句列表中多了return语句可用。
+        函数体实际上有以下四种：
+          · 普通函数体
+            function foo(){ //function body }
+          · 异步函数体
+            async function foo(){ //function body }
+          · 生成器函数体
+            function *foo() { //function body }
+          · 异步生成器函数体
+            async function *foo() { //function body }
+        这四种函数体的区别在于：能否使用 await 或 yield 语句
+
+      4. 预处理
+        JS执行前会对，脚本、模块和函数体中的语句进行预处理，预处理的过程将会提前处理var、函数声明、class、const、let这些语句，以确定其中变量的含义。
+      
+      5. var声明
+        var声明永远作用于脚本、模块、函数体这个级别，在预处理阶段，不关心赋值的部分，只管在当前作用域声明这个变量。
+        var的作用域能够穿透一切语句结构，它只认脚本、模块和函数体三种语法结构。
+
+      6. function声明
+        function声明的行为原本跟 var 非常相似，但在最新的JS标准中，对它进行了一定的修改。
+        在全局（模块、脚本和函数体），function声明表现跟var相似，不同之处在于，function声明不仅在作用域中加入变量，还会给它赋值。
+        function声明出现在 if 等语句中的情况有点复杂，它仍然作用于脚本、模块和函数体级别的，在预处理阶段，仍然会产生变量，但它不再被提前赋值，出现在 if 等语句的function，在if创建的作用域中仍然会被提前赋值。
+
+      7. class声明

@@ -177,7 +177,7 @@ VSCode编辑器 常用使用方法备忘录
           [diff]
             tool = default-difftool
           [difftool "default-difftool"]
-          cmd = code --wait --diff $LOCAL $REMOTE
+            cmd = code --wait --diff $LOCAL $REMOTE
           [merge]
             tool = code
 

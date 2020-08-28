@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<link href="css/base.css" rel="stylesheet">
+
+<div class="main">
+  <button onclick="varStatement()">var声明</button>
+  <button onclick="varIF()">var的作用域</button>
+</div>
+
+<script>
+  // var声明永远作用于脚本、模块和函数体这个级别，在预处理阶段，不关心赋值的部分，只管在当前作用域声明这个变量
+  function varStatement() {
+    var a = 1; // 先声明了一个a
+
+    function foo() {
+      console.log(a);
+      var a = 2; // 在console.log之后又声明了一个a，预处理把声明提到最前，所以不会去访问更外层的a，而这个a在console.log的时候还没有被赋值，所以是 undefined
+    }
+    foo(); // undefined
+  }
+
+  function varIF() {
+    var a = 1;
+
+    function foo() {
+      console.log(a);
+      if (false) {
+        var a = 2; // 这里面的语句不可能执行，但预处理阶段不管这个，var的作用域能够穿透一切语句结构，它只认脚本、模块和函数体三种语法结构
+      }
+    }
+    foo(); // undefined
+  }
+</script>

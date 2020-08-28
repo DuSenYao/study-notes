@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<link href="css/base.css" rel="stylesheet">
+
+<div class="main">
+  <button onclick="generator_Demo()">生成器函数例子</button>
+  <button onclick="generatorFunction()">用GeneratorFunction构造函数创建一个生成器函数</button>
+  <button onclick="genNext()">生成器函数的next()方法返回一个对象</button>
+  <button onclick="generator_next_param()">生成器函数的next()方法传入参数</button>
+</div>
+
+<script>
+  // 生成器函数例子
+  // 语法：function* name()([param[, param[, ... param]]]) { statements }
+  /* 描述：
+        生成器函数能在执行时暂停，后面又能从暂停处继续执行。
+        调用一个生成器函数并不会马上执行它里面的语句，而是返回一个这个生成器的迭代器(iterator)对象。当这个迭代器的next()方法被调用时，其内的语句会执行到出现yield的位置为止，yield后紧跟迭代器要返回的值。如果用的是yield*，则表示将执行权移交给另一个生成器函数（当前生成器函数停止执行）
+        生成器函数里可以用return，return下面的语句不会执行
+        生成器函数不能当构造器使用
+  */
+  function generator_Demo() {
+    function* generator(i) {
+      yield i;
+      yield i + 10;
+    }
+    const gen = generator(10);
+    console.log(gen.next().value); // 10
+    console.log(gen.next().value); // 20
+  }
+
+  // 用GeneratorFunction构造函数创建一个生成器函数
+  function generatorFunction() {
+    var GeneratorFunction = Object.getPrototypeOf(function* () {}).constructor;
+    var g = new GeneratorFunction("a", "yield a * 2");
+    var iterator = g(10);
+    console.log(iterator.next().value); // 20
+  }
+
+  // next()方法返回一个对象，这个对象包含两个属性：value 和 done，value属性表示本次yield表达式的返回值，done属性为布尔类型，表示生成器后续是否还有yield语句，即生成器函数是否执行完毕并返回。
+  function genNext() {
+    function* generator() {
+      var index = 0;
+      while (index < 2) {
+        yield index++;
+      }
+    }
+    var gen = generator();
+    console.log(gen.next()); // {value: 0, done: false}
+    console.log(gen.next()); // {value: 1, done: false}
+    console.log(gen.next()); // {value: undefined, done: true}
+  }
+
+  // 调用next()方法时，如果传入了参数，那么这个参数会传给 上一条执行的yield语句左边的变量
+  function generator_next_param() {
+    function* generator() {
+      let first = yield 1;
+      let second = yield first + 2; // 4 + 2 first = 4 是next(4)将参数赋值给上一条yield语句左边的变量
+      yield second + 3;
+    }
+    var gen = generator();
+    console.log(gen.next());   // {value: 1, done: false}
+    console.log(gen.next(4));  // {value: 6, done: false}
+    console.log(gen.next(5));  // {value: 8, done: false}
+    console.log(gen.next());   // {value: undefined, done: false}
+  }
+</script>
