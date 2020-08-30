@@ -6,8 +6,12 @@
   <button onclick="generatorFunction()">用GeneratorFunction构造函数创建一个生成器函数</button>
   <button onclick="genNext()">生成器函数的next()方法返回一个对象</button>
   <button onclick="generator_next_param()">生成器函数的next()方法传入参数</button>
+  <button onclick="gerenator_for_of()">生成器函数和for of循环的配合</button>
+  <button onclick="gerenator_for_await_of()">生成器函数和for await of循环</button>
 </div>
-
+<div class="main">
+  <span class="hour">00</span>:<span class="minute">00</span>:<span class="second">00</span>
+</div>
 <script>
   // 生成器函数例子
   // 语法：function* name()([param[, param[, ... param]]]) { statements }
@@ -57,9 +61,55 @@
       yield second + 3;
     }
     var gen = generator();
-    console.log(gen.next());   // {value: 1, done: false}
-    console.log(gen.next(4));  // {value: 6, done: false}
-    console.log(gen.next(5));  // {value: 8, done: false}
-    console.log(gen.next());   // {value: undefined, done: false}
+    console.log(gen.next()); // {value: 1, done: false}
+    console.log(gen.next(4)); // {value: 6, done: false}
+    console.log(gen.next(5)); // {value: 8, done: false}
+    console.log(gen.next()); // {value: undefined, done: false}
+  }
+
+  // 生成器函数和for of循环的配合
+  function gerenator_for_of() {
+    function* foo() {
+      yield 0;
+      yield 1;
+      yield 2;
+    }
+    for (let e of foo()) {
+      console.log(e);
+    }
+  }
+
+  // JS为异步生成器函数配备了异步的for of
+  async function gerenator_for_await_of() {
+    function sleep(duration) {
+      return new Promise((resolve, reject) => {
+        setTimeout(resolve, duration);
+      });
+    }
+
+    async function* foo() {
+      let hour, minute, second;
+      hour = minute = second = 0;
+      while (true) {
+        await sleep(1000);
+        yield second += 1;
+        if (second >= 60) {
+          second = 0;
+          minute += 1;
+        }
+        if (minute >= 60) {
+          minute = 0;
+          hour += 1;
+        }
+        if (hour >= 24) {
+          hour = 0;
+        }
+        document.getElementsByClassName("hour")[0].innerHTML = hour < 10 ? "0" + hour : hour;
+        document.getElementsByClassName("minute")[0].innerHTML = minute < 10 ? "0" + minute : minute;
+        document.getElementsByClassName("second")[0].innerHTML = second < 10 ? "0" + second : second;
+      }
+    }
+
+    for await (let e of foo()) {}
   }
 </script>

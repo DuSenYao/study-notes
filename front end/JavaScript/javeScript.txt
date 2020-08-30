@@ -558,10 +558,10 @@ JavaScript
       JS有两种源文件：一. 脚本 二. 模块。这个区分是在ES6引入了模块机制开始的，ES6以前只有脚本。
         脚本可以由浏览器或node引入执行的，而模块只能由JS代码用import引入执行
         从概念上，可以认为脚本具有主动性的JS代码，是控制宿主完成一定任务的代码；而模块是被动性的代码，是等待被调用的库
-        浏览器支持用<script>引入模块，但必须给<script>标签添加type="module"。如果引入脚本，则不需要type
+        浏览器支持用<script>引入模块，但必须给<script>标签添加type="module"。如果引入脚本，则不需要type。
         脚本中可以包含语句，模块中可以包含3种内容：import声明、export声明和语句。
       
-      1. import声明
+      1.import声明
         import声明有两种用法：
           ①.直接import一个模块
             import "mod";
@@ -577,7 +577,7 @@ JavaScript
               · import d,* as x from "./a.js";
             语法要求不带as的默认值永远在最前。注意这里的变量实际上仍然可以受到原来模块的控制。
 
-      2. export声明
+      2.export声明
         export承担的是导出的任务
         导出变量的方式有两种：
           ①.独立使用export声明
@@ -588,13 +588,13 @@ JavaScript
             · class
             · let
             · const
-          export还有一种特殊的用法，就是跟default联合使用。export default 表示导出一个默认变量值，它可以用于function 和 class。这里导出的变量是没有名称的，可以使用 import x from "./a.js" 这样的语法，从模块中导出。
+          export还有一种特殊的用法，就是跟default联合使用。export default 表示导出一个默认变量值，它可以用于function 和 class。这里导出的变量是没有名称的，可以使用 import x from "./a.js" 这样的语法，从模块中引入。
           export default 还支持一种语法，后面跟一个表达式，例如：
             var a = {}; export default a; // 这里导出的是值，以后a的变化与导出的值无关
           import语句前无法加入export，但是可以直接使用 export from 语法
             export x from "a.js";
 
-      3. 函数体
+      3.函数体
         执行函数的行为通常是在JS代码执行时，注册宿主环境的某些事件触发的，而执行过程，就是函数体。
         宏任务可能执行的代码包括"脚本(script)"，"模块(module)"，"函数体(function body)"。
         函数体其实也是一个语句的列表。跟脚本和模块相比，函数体的语句列表中多了return语句可用。
@@ -609,16 +609,105 @@ JavaScript
             async function *foo() { //function body }
         这四种函数体的区别在于：能否使用 await 或 yield 语句
 
-      4. 预处理
+      4.预处理
         JS执行前会对，脚本、模块和函数体中的语句进行预处理，预处理的过程将会提前处理var、函数声明、class、const、let这些语句，以确定其中变量的含义。
       
-      5. var声明
+      5.var声明
         var声明永远作用于脚本、模块、函数体这个级别，在预处理阶段，不关心赋值的部分，只管在当前作用域声明这个变量。
-        var的作用域能够穿透一切语句结构，它只认脚本、模块和函数体三种语法结构。
+        var的作用域能够穿透一切语句结构，它只认脚本、模块和函数体这三种语法结构。
 
-      6. function声明
+      6.function声明
         function声明的行为原本跟 var 非常相似，但在最新的JS标准中，对它进行了一定的修改。
         在全局（模块、脚本和函数体），function声明表现跟var相似，不同之处在于，function声明不仅在作用域中加入变量，还会给它赋值。
         function声明出现在 if 等语句中的情况有点复杂，它仍然作用于脚本、模块和函数体级别的，在预处理阶段，仍然会产生变量，但它不再被提前赋值，出现在 if 等语句的function，在if创建的作用域中仍然会被提前赋值。
 
-      7. class声明
+      7.class声明
+        class声明在全局的行为跟function和var都不一样。
+        在class声明前使用class名会抛错，class声明也是会被预处理的，它会在作用域中创建变量，并且要求访问它时抛出错误
+        class声明的作用不会穿透if等语句结构，所以只有写在全局环境才会有声明作用
+        这样的class设计比function和var更符合直觉，而且遇到一些比较奇怪的用法时，倾向于抛出错误。
+        按照现代语言设计的评价标准，及早抛错是好事，它能帮助我们尽量在开发阶段就发现代码的可能问题。
+    
+      8.指令序言机制
+        脚本和模块都支持一种特别的语法，叫做指令序言（Directive Prologs）。
+        这里的指令序言最早是为 use strict 设计的，它规定了一种给JS代码添加元信息的方式。
+        "use strict"是JS标准中规定的唯一一种指令序言，但是指令序言的目的是，留给JS的引擎和实现者一些统一的表达方式，在静态扫描时指定JS代码的一些特性。
+        JS的指令序言是只有一个字符串直接量的表达式语句，它只能出现在脚本、模块和函数体的最前面。
+
+      9.语句
+        JS遵循了一般编程语言的“语句-表达式”结构。
+        在JS标准中，把语句分成了两种：声明型语句和普通语句，这两种语句最大的区别就是声明型语句响应预处理过程，普通语句只有执行过程。
+        普通语句：
+          ① 语句块：
+            {
+              var x,y;
+              x = 10;
+              y = 20;
+            }
+            语句块的意义和好处在于：可以把多行语句视为同一行语句，这样if、for等语句定义起来就比较简单。
+            需要注意：语句块会产生作用域
+
+          ② 空语句
+            空语句就是一个独立的分号，实际上没什么大用。
+            空语句的存在仅仅是从语言设计完备性的角度考虑，容许插入多个分号而不抛出错误。
+          
+          ③ if语句
+            if语句是条件语句。
+            作用：
+              在满足条件时执行它的语句内容，这个语句可以是一个语句块，这样就可以实现有条件地执行多个语句。
+            if语句还有else结构，用于不满足条件时执行，常见的用法是：利用语句的嵌套能力，把if和else连写成多分支条件判断。
+
+          ④ switch语句
+            switch 语句继承自 Java，Java 中的 switch 语句继承自 C 和 C++，原本 switch 语句是跳转的变形，所以我们如果要用它来实现分支，必须要加上 break。
+            在 C 时代，switch 生成的汇编代码性能是略优于 if else 的，但是对 JS 来说，则无本质区别。
+
+          ⑤ 循环语句
+            ❶ while循环 和 do while循环
+              while(boolean){}
+              do{} while(boolean)
+              while循环与do while循环的区别在于do while循环至少执行一次。
+            ❷ 普通for循环
+              for(var i = 0;i < 100;i++){ console.log(i); }
+            ❸ for in 循环
+              for in 循环枚举对象的属性
+            ❹ for of 循环和 for await of 循环
+              for of循环背后机制是 iterator机制
+              for await of循环，必须放在async函数中。
+          
+          ⑥ return
+            return语句用于函数中，它终止函数的运行，并且返回函数的指定值
+          
+          ⑦ break 和 continue
+            break用于跳出循环语句或switch语句，continue语句用于结束本次循环并继续循环。
+            这两个语句都是控制型语句。都有带标签的用法
+              outer:for(let i = 0; i < 100; i++)
+                  inner:for(let j = 0; j < 100; j++)
+                      if( i == 50 && j == 50)
+                          break outer;
+              outer:for(let i = 0; i < 100; i++)
+                  inner:for(let j = 0; j < 100; j++)
+                      if( i >= 50 && j == 50)
+                          continue outer;
+              带标签的break和continue可以控制自己被外层的哪个语句结构消费，这可以跳出复杂的语句结构。
+
+          ⑧ try 语句和 throw语句
+            try语句和throw语句用于处理异常，它们是配合使用的。在大型的应用中，异常机制非常重要。
+              try{
+                throw new Erro("error");
+              }catch(e) {
+                console.log(e);
+              }finally {
+                console.log("finally");
+              }
+            一般来说，throw用于抛出异常，但是单纯从语言的角度，它可以抛出任何值，不一定是异常逻辑，但是为了保证语义清晰，不建议用throw表达任何非异常逻辑。
+            try语句用于捕获异常，用 throw 抛出的异常，可以在try语句的结构中被处理掉：try部分用于标识捕获异常的代码段，catch部分用于捕获异常后做一些处理，而finally则是用于执行后做一些必须执行的清理工作。
+            catch 结构会创建一个局部的作用域，并且把抛出的错误当做参数写入其中。
+            在 catch 中重新抛出错误的情况非常常见，在设计比较底层的函数时，常常会这样做，保证抛出的错误能被理解。
+            finally语句一般用于释放资源，它一定会被执行，即使再try中出现return，finally中的语句也一定要被执行。
+
+          ⑨ debugger语句
+            debugger语句的作用：通知调试器在此断点。在没有调试器挂载时，它不产生任何效果。
+            
+        声明型语句
+          ① var
+            var声明语句是古典的JS中声明变量的方式。而现在，在绝大多数情况下，let和const都是更好的选择。
