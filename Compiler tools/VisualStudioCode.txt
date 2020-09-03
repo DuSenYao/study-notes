@@ -1,5 +1,5 @@
 VSCode编辑器 常用使用方法备忘录
-  常用命令
+  一.常用命令
     1.通用快捷键
       Ctrl + Shift + P 或 F1： 打开命令面板
       Ctrl + K Ctrl + S：      打开快捷键编辑器
@@ -56,7 +56,7 @@ VSCode编辑器 常用使用方法备忘录
       Ctrl + Shift + Tab： 向后在已打开的文件中选择一个
 
 
-  常用设置
+  二.常用设置
     "editor.minimap.enabled":false     控制缩略图显隐
     "workbench.editor.showTabs":false  控制TAB显隐
     "workbench.editor.openPositioning":"left"  设置新TAB的出现位置
@@ -64,7 +64,7 @@ VSCode编辑器 常用使用方法备忘录
     "terminal.integrated.cwd": "/hone/user"    配置终端的打开路径，终端默认在当前文件夹下打开
     
 
-  常用知识
+  三.常用知识
     1. 单击搜索输入框下方的省略号或使用Ctrl+Shift+J快捷键，可以调出高级搜索选项：要包含的文件 和 排除的文件，需要以.开头并且全拼
     2. 编程语言定义代码块的起始和结束区域的标记
         编程语言                        起始区域                            结束区域
@@ -82,7 +82,7 @@ VSCode编辑器 常用使用方法备忘录
 
 
 
-  常用功能
+  五.常用功能
     1. 代码片段
       使用方式
         (1) 通过Ctrl + Shift + P 快捷键打开命令面板，输入并执行Insert Snipper命令，会显示适合当前语言的所有代码片段的列表。
@@ -311,11 +311,43 @@ VSCode编辑器 常用使用方法备忘录
           *.code-workspace 工作区文件的属性：
             · path：文件夹的路径，可以是绝对路径，也可以是相对路径
             · name: 文件的显示名
-            · settings: 
-            · extensions: 
+            · settings: 为了避免各个文件设置的冲突，可以通过设置全局的工作区配置，对当前工作区的所有文件夹进行设置，
+            · extensions: 插件推荐，可以为当前的工作区项目推荐相应的插件。通过在extensions.recommendations数组中添加插件的ID（{publisherName}.{extensionName}）实现插件推荐
         ③ 用户界面
           与单文件夹界面的区别：
             · 显示相对路径和符号
             · 面包屑导航会显示多文件夹的文件夹名
             · Ctrl+P 快速打开文件时，文件列表会显示文件夹名
-            · 搜索时，搜索结果会按照文件夹来分组显示
+            · 搜索时，搜索结果会按照文件夹来分组显示、
+      (3)源代码管理
+        多文件夹项目如果有多个git的文件夹，那么扎起源代码管理视图中会显示SOURCE CONTROL PROVIDERS，在 SOURCE CONTROL PROVIDERS 中点击代码仓库，可以在下方看到代码更改的详情。
+    
+    6. 调试与运行
+      (1)插件调试器
+        VSCode内置了对Node.js运行时的调试支持，无须安装额外的插件就能调试JS和TS。其他编程语言，需要额外安装相应的调试器插件。
+      (2)调试模式与运行模式
+        在VSCode中，内置的 Node.js 调试器及其他调试器插件支持以下两种模式：
+          · 调试模式: 快捷键为F5，命令为 Start Debugging
+          · 运行模式: 快捷键为Ctrl+F5，命令为 Run Without Debugging
+      (3)launch.json调试配置
+        对于一些更加复杂的调试场景，需要创建调试配置，以便后续进行定制化调试。VSCode的调试配置被存储在.vscode文件夹的 launch.json文件中。可以通过以下步骤来创建一个调试配置：
+          ① 运行 -> 添加配置
+          ② VSCode会在 .vscode 文件夹中创建并打开一个launch.json文件，文件中定义了调试所需要的的配置
+      (4)launch.json 属性
+        必要属性：
+          · type: 调试器的类型。例如：内置的Node.js调试器是node
+          · request: 调试的模式，有以下两种模式：
+            launch: 启动程序（该程序定义在program设置项中）并调试
+            attach: 将程序附加到一个正在运行的进程中进行调试。
+          · name: 调试配置的名字
+        可选项：
+          · presentation: 使用 order、group和hidden属性来定义调试配置的显示
+          · preLaunchTask: 定义在调试前要运行的任务
+          · postDebugTask: 定义在调试结束时要运行的任务
+          · internalConsoleOptions: 定义调试控制台的显示
+          · serverReadyAction: 设置在调试时自动在浏览器中打开URL
+        大多数调试器插件还支持以下属性：
+          · program: 要运行的可执行文件或源代码的路径
+          · args: 要传递给program的参数
+          · env: 环境变量
+          · cwd: 调试器的工作目录，默认值是${workspaceFolder}
