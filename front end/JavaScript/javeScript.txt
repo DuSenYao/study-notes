@@ -740,13 +740,12 @@ JavaScript
             PrimaryExpression还可以是 this 或 变量，在语法上，把变量称为“标识符引用”。
               this;  myVar;
             任何表达式加上圆括号，都会被认为是 PrimaryExpression，这个机制使得圆括号称为改变运算优先级的手段。
-          ② MemberExpression 成员表达式
-            MemberExpression通常用于访问对象成员，它有几种形式：
+          ② Member Expression 成员表达式
+            Member Expression通常用于访问对象成员，它有几种形式：
               · 标识符的属性访问: a.b;
               · 字符串的属性访问: a["b"];
               · 判断函数是否被new调用：new.target;
               · 构造函数中，用于访问父类的属性的语法：super b;
+              下面这两种被放入Member Expression，仅仅意味着它们跟属性运算属于同一优先级，没有任何语义上的关联
               · 带函数的模板，这个表示把模板的各个部分算好后传递给函数：f`a${b}c`;
-              · 带参数列表的new运算: new Cls(a, b, c); 注意：
-
-            
+              · 带参数列表的new运算: new Cls(a, b, c); 注意：不带参数列表的new运算优先级更低，不属于Member Expression
