@@ -351,3 +351,28 @@ VSCode编辑器 常用使用方法备忘录
           · args: 要传递给program的参数
           · env: 环境变量
           · cwd: 调试器的工作目录，默认值是${workspaceFolder}
+          · port: 要附加到进程的端口
+          · stopOnEntry: 是否在程序入口进行断点
+          · console: 指定程序输出的位置
+            internalConsole：VSCode的调试控制台
+            integratedTerminal：VSCode的集成终端
+            externalTerminal：系统的终端
+      (5)全局的launch.json配置
+        VSCode 支持添加全局的 launch.json配置。可以在全局的 settings.json文件中使用“launch”属性设置全局的的调试配置
+      (6)多目标调试
+        VSCode的多目标调试支持同时调试多个应用程序的代码。在launch.json文件中，通过compound属性，可以配置多目标调试
+        
+        
+  六.插件
+    插件市场主页： https://marketplace.visualstudio.com/vscode
+    1. 插件市场
+      (1)首页
+        首页有四个分组
+        · Featured: 推荐插件
+        · Trending: 每日插件安装数量榜
+        · Most Popular: 插件总安装量榜
+        · Recently Added: 最新发布的插件
+    2. 优秀的插件
+      (1) REST Clinet
+        测试REST API的工具。REST API是前后端分离最佳实践，是开发的一套标准或者说是一套规范。
+      
