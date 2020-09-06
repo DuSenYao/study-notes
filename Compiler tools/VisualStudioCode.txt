@@ -373,6 +373,18 @@ VSCode编辑器 常用使用方法备忘录
         · Most Popular: 插件总安装量榜
         · Recently Added: 最新发布的插件
     2. 优秀的插件
-      (1) REST Clinet
+      (1)REST Clinet
         测试REST API的工具。REST API是前后端分离最佳实践，是开发的一套标准或者说是一套规范。
+        REST Client支持cURL和RFC2616这两种业界标准来调用REST API。
+          test.http
+      (2)HTTP语言
+        REST Client插件添加了HTTP语言的定义，支持把以.http或.rest结尾的文件中的代码当作HTTP语言进行处理，提供了语法高亮、代码智能提示、代码注释等功能。
+        通过###分隔符，同一个http文件中可以涵盖多个HTTP请求。
+      (3)代码生成
+        在HTTP语言文件的邮件菜单中，可以通过Generate Code Snippet命令来讲HTTP请求生成不同编程语言的代码。
+      (4)高阶功能
+        · 身份认证: REST Client支持Basic Auth、SSL Client Certificates、Azure Active Directory等多挣验证机制。
+        · 支持Cookies
+        · 支持HTTP3xx的重定向
+        · 支持多种变量: 环境变量、文件变量、预定义的系统变量等  
       
