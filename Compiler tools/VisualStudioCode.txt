@@ -377,14 +377,24 @@ VSCode编辑器 常用使用方法备忘录
         测试REST API的工具。REST API是前后端分离最佳实践，是开发的一套标准或者说是一套规范。
         REST Client支持cURL和RFC2616这两种业界标准来调用REST API。
           test.http
-      (2)HTTP语言
-        REST Client插件添加了HTTP语言的定义，支持把以.http或.rest结尾的文件中的代码当作HTTP语言进行处理，提供了语法高亮、代码智能提示、代码注释等功能。
-        通过###分隔符，同一个http文件中可以涵盖多个HTTP请求。
-      (3)代码生成
-        在HTTP语言文件的邮件菜单中，可以通过Generate Code Snippet命令来讲HTTP请求生成不同编程语言的代码。
-      (4)高阶功能
-        · 身份认证: REST Client支持Basic Auth、SSL Client Certificates、Azure Active Directory等多挣验证机制。
-        · 支持Cookies
-        · 支持HTTP3xx的重定向
-        · 支持多种变量: 环境变量、文件变量、预定义的系统变量等  
-      
+        ① HTTP语言
+          REST Client插件添加了HTTP语言的定义，支持把以.http或.rest结尾的文件中的代码当作HTTP语言进行处理，提供了语法高亮、代码智能提示、代码注释等功能。
+          通过###分隔符，同一个http文件中可以涵盖多个HTTP请求。
+        ② 代码生成
+          在HTTP语言文件的邮件菜单中，可以通过Generate Code Snippet命令来讲HTTP请求生成不同编程语言的代码。
+        ③ 高阶功能
+          · 身份认证: REST Client支持Basic Auth、SSL Client Certificates、Azure Active Directory等多挣验证机制。
+          · 支持Cookies
+          · 支持HTTP3xx的重定向
+          · 支持多种变量: 环境变量、文件变量、预定义的系统变量等  
+      (2)Code Runer
+        代码一键运行，支持40多种语言
+        ① 代码一键运行
+          有四种方式可以运行代码
+            · 通过快捷键Ctrl+Alt+N
+            · 打开命令面板，输入并执行Run Code
+            · 在编辑区域的右键菜单中单击Run Code
+            · 在左侧的文件管理器中找到要运行的文件，在其右键菜单中单击Run Code
+            · 单击右上角的“运行”小三角按钮
+          注意：Code Runer插件并不包含各个编程语言的编译器。需要自行安装相应编程语言的编译器，并且把路径添加到PATH环境变量中。
+          
