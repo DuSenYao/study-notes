@@ -9,6 +9,9 @@
     "esbenp.prettier-vscode",
     "msjsdiag.debugger-for-chrome",
     "dbaeumer.vscode-eslint",
-    "shan.code-settings-sync"
+    "shan.code-settings-sync",
+    "coenraads.bracket-pair-colorizer-2",
+    "oderwat.indent-rainbow",
+    "visualstudioexptteam.vscodeintellicode"
   ]
 }

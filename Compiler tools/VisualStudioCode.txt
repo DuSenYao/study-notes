@@ -389,11 +389,38 @@ VSCode编辑器 常用使用方法备忘录
       (2)Code Runer
         代码一键运行，支持40多种语言
         ① 代码一键运行
-          有四种方式可以运行代码
+          有四种方式可以运行代码：
             · 通过快捷键Ctrl+Alt+N
             · 打开命令面板，输入并执行Run Code
             · 在编辑区域的右键菜单中单击Run Code
             · 在左侧的文件管理器中找到要运行的文件，在其右键菜单中单击Run Code
             · 单击右上角的“运行”小三角按钮
           注意：Code Runer插件并不包含各个编程语言的编译器。需要自行安装相应编程语言的编译器，并且把路径添加到PATH环境变量中。
-          
+        ② 停止代码运行
+          有三种方式可以停止代码运行：
+            · 通过 Ctrl+Alt+M 快捷键
+            · 命令面板，输入并执行 Stop Code Run
+            · 在输出面板的右键菜单中单击 Stop Code Run
+        ③ 在集成终端中运行代码
+          默认情况下，Code Runer 会把运行输出结果打印在输出面板中。在 Code Runer 插件的GitHub上，用户最多的问题是如何解决乱码问题和怎样支持输入。通过设置，把代码放到VSCode内置的集成终端来运行，就可以解决上面的两个问题。
+          设置 -> Run Code configuration，勾上Run In Terminal选项。]
+        ④ 自定义运行逻辑
+          设置 -> Executor Map -> 点击Edit in settings.json
+          在settings.json文件中，添加code-runer.executorMap设置，然后就可以对不同的语言设置自定义的运行逻辑了。
+    (3)Bracket Pair Colorizer 2
+      它为代码中的各种结对的括号提供了颜色高亮等功能。
+      常用设置项：
+        · bracket-pair-colorizer-2.forceUniqueOpeningColor: 颜色的唯一性设置
+        · bracket-pair-colorizer-2.colorMode: 颜色的模式，有Consecutive和Independent两种
+          Consecutive: 所有的括号共享一个颜色集合
+          Independent：不同类型的括号使用自己的颜色集合
+        · bracket-pair-colorizer-2.highlightActiveScope: 是否对当前范围的括号进行高亮显示。
+        · bracket-pair-colorizer-2.activeScopeCSS: 设置颜色高亮显示的括号的CSS
+    (4)indent-rainbow
+      缩进颜色支持
+    (5)Peacock
+      为VSCode窗口配置颜色。
+      命令面板 -> Peacock: Change to a Favorite Color 选择颜色
+      设置 -> peacock.surpriseMeOnStartup 是否为新开的VSCode窗口随机选择一个颜色
+    (6)Git集成
+    
