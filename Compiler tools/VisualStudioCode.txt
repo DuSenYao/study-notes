@@ -422,5 +422,17 @@ VSCode编辑器 常用使用方法备忘录
       为VSCode窗口配置颜色。
       命令面板 -> Peacock: Change to a Favorite Color 选择颜色
       设置 -> peacock.surpriseMeOnStartup 是否为新开的VSCode窗口随机选择一个颜色
-    (6)Git集成
-    
+    (6)Git集成②
+      ① GitHub Pull requests
+        GitHub的代码审查插件
+      ② GitLens
+        功能非常丰富的git插件
+    (7)Web开发利器
+      ① Web Template Studio
+        可以在VSCode中通过基于图形用户界面的向导快速创建Web应用。
+        打开命令面板，输入并执行Web Template Studio：launch，创建Web项目
+        打开命令面板，输入并执行Web Template Studio：Deploy App，部署Web项目
+        该插件支持3个前端框架：React、Vue、Angular，支持的后端框架有选择Node的Express、Flask、Molecular
+      ② Debugger for Chrome
+        Debugger for Chrome插件除了可以调试运行在Google Chrome浏览器中的JS代码，还可以调试运行在支持Chrome DevTools Protocol的浏览器中的JS代码，如：Chromium浏览器和其他基于 Blink渲染引擎的浏览器。
+        
