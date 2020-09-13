@@ -11,17 +11,39 @@
       "program": "${file}"
     },
     {
-      "name": "Launch localhost",
+      "name": "Launch chrome localhost",
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost/mypage.html",
       "webRoot": "${workspaceFolder}/wwwroot"
     },
     {
-      "name": "Launch Current File",
+      "name": "Launch chrome Current File",
       "type": "chrome",
       "request": "launch",
       "file": "${file}"
+    },
+    {
+      "name": "Attach to url with files served from ./out",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9222,
+      "url": "C://Program Files (x86)/Google/Chrome/Application/chrome.exe",
+      "webRoot": "${workspaceFolder}/out"
+    },
+    {
+      "name": "Launch firefox Current File",
+      "type": "firefox",
+      "request": "launch",
+      "reAttach": true,
+      "file": "${file}"
+    },
+    {
+      "name": "Launch firefox localhost",
+      "type": "firefox",
+      "request": "launch",
+      "url": "http://localhost/index.html",
+      "webRoot": "${workspaceFolder}"
     }
   ],
   "compounds": [

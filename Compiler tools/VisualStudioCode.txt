@@ -435,4 +435,7 @@ VSCode编辑器 常用使用方法备忘录
         该插件支持3个前端框架：React、Vue、Angular，支持的后端框架有选择Node的Express、Flask、Molecular
       ② Debugger for Chrome
         Debugger for Chrome插件除了可以调试运行在Google Chrome浏览器中的JS代码，还可以调试运行在支持Chrome DevTools Protocol的浏览器中的JS代码，如：Chromium浏览器和其他基于 Blink渲染引擎的浏览器。
-        
+        在调试视图选择 launch.json 文件中的 Launch chrome Current File选项，然后按F5快捷键，VSCode就会启动Chrome浏览器。
+      ③ Debugger for Firefox
+        Debugger for Firefox插件除了可以调试运行在Firefox浏览器中的JS代码，还可以调试Firefox浏览器插件。需要设置Firefox浏览器启动文件的绝对路径。 
+        在调试视图中选择 Launch firefox Current File，然后按F5，VSCode就会启动Firefox浏览器
