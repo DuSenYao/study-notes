@@ -439,3 +439,25 @@ VSCode编辑器 常用使用方法备忘录
       ③ Debugger for Firefox
         Debugger for Firefox插件除了可以调试运行在Firefox浏览器中的JS代码，还可以调试Firefox浏览器插件。需要设置Firefox浏览器启动文件的绝对路径。 
         在调试视图中选择 Launch firefox Current File，然后按F5，VSCode就会启动Firefox浏览器
+      ⑤ SQL Server(mssql)
+        支持连接到Microsoft SQL Server，还支持连接到Azure SQL Database 和 Azure Synapse Analytics。
+        插件主要包含以下几个功能：
+          · 创建和管理数据库连接，以及最近使用的数据库连接
+          · T-SQL的编辑支持，包括智能提示、代码片段、语法高亮、错误检测等
+          · 执行SQL脚本，并且以表格的形式展示结果
+          · 把SQL脚本运行的运行结果以JSON或CSV格式保存
+    (8)提高开发性能
+      ① Code Spell Checker
+        可以对代码进行拼写检查，并且提供了自动修复的功能
+      ② Better Comments
+        为数十种语言提供了更好的代码注释功能。插件把注释分为警告、高亮、待办事项等分类，并提供了不同的颜色显示。
+      ③ Image Preview
+        通过这个插件，可以方便快捷的预览图片，支持SVG、PNG、JPG、GIF等多种图片格式。
+      ④ Output Colorizer
+        插件为.log日志文件和VSCode的输出面板提供了语法高亮功能。方便进行日志分析。
+      ⑤ Debug Visualizer
+        插件提供了实时的可视化调试方式，可以一键解析代码结构，并支持多种主流的编程语言。
+    (9)好用的工具类插件
+      ① Polacode
+        插件可以把选中的代码导出为图片格式，并且完全保留代码在VSCode中原本的字体和颜色主题。
+      
