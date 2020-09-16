@@ -457,7 +457,25 @@ VSCode编辑器 常用使用方法备忘录
         插件为.log日志文件和VSCode的输出面板提供了语法高亮功能。方便进行日志分析。
       ⑤ Debug Visualizer
         插件提供了实时的可视化调试方式，可以一键解析代码结构，并支持多种主流的编程语言。
+      ⑥ EditorConfig for VSCode
+        可以在不同的编辑器和IDE之间定义和维护一致的编码样式。通过一个名为.editorconfig的文件，可以定义统一的编码样式。
+        在安装了EditorConfig for VSCode插件后，打开任何一个文件时，插件都会从当前文件夹开始向它的父文件夹寻找.editorconfig文件，直到找到一个最上层的.editorconfig文件，或者找到一个包含root=true的.editorconfig文件。
+        .editorconfig文件的匹配规则是从上往下的，即先定义的规则优先级比后定义的要高。
+        EditorConfig for VSCode插件支持以下设置项：
+          · indent_style: 设置缩进分割，可以设置为tab或space
+          · indent_size: 设置缩进的大小
+          · tab_width: 设置tab的大小，默认情况下与indent_size的值相同
+          · end_of_line: 设置结尾换行符，可设置为If、cr或crIf
+          · insert_final_newline: 保存文件时，是否在文件末尾添加换行符
+          · trim_trailing_whitespace: 保存文件时，是否删除多余的空白字符 
     (9)好用的工具类插件
       ① Polacode
-        插件可以把选中的代码导出为图片格式，并且完全保留代码在VSCode中原本的字体和颜色主题。
+        插件可以把选中的代码导出为图片格式，并且完全保留代码在VSCode中原本的字体和颜色主题。在命令面板中，输入Polacode并执行。
+      ② TODO Tree
+        插件可以把当前工作区中所有代码的TODO标签的内容显示在树状视图中。可以方便的通过树状视图在不同的TODO标签中跳转。
+      ③ Bookmarks
+        可以为任何一行代码添加书签，并跳转到不同的书签。
+      ④ Paste JSON as code
+        可以把JSON或TS转换成其他编程语言，包括TS、Python、GO、Ruby、Java、Swift、C++、JS等。
+    (10)容器开发
       
