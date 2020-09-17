@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/base.css" />
 
 <div class="main">
   <button onclick="stringTemplate()">字符串模板</button>
@@ -8,26 +8,25 @@
 
 <script>
   // 字符串模板
-  function stringTemplate()
-  {
+  function stringTemplate() {
     const ME = {
-      "name" : "Tom",
-      "sex"  : "male",
-      "race" : "cat",
-      "weight" : 18,
-      "age"  : 3,
-      "marital status" : false
+      name: "Tom",
+      sex: "male",
+      race: "cat",
+      weight: 18,
+      age: 3,
+      "marital status": false,
     };
 
     Object.defineProperty(ME, "introduce", {
-      get: () =>{
-        return ME.name + " is " + ME.sex; 
+      get: () => {
+        return ME.name + " is " + ME.sex;
       },
-      set: (age) =>{
+      set: (age) => {
         ME.age = age;
       },
-      enumerable : false,
-      configurable : false
+      enumerable: false,
+      configurable: false,
     });
 
     var temp = `My name is ${ME.name}`;
@@ -36,19 +35,16 @@
   }
 
   // toString()的报错
-  function toStringError()
-  {
-    // 这时候12.会被当作省略了小数点后面部分的数字，而单独看成一个整体 
+  function toStringError() {
+    // 这时候12.会被当作省略了小数点后面部分的数字，而单独看成一个整体
     // 12.toString(); Invalid or unexpected token
 
-    12 .toString; // 让 . 单独称为一个token，就要加入空格
+    (12).toString; // 让 . 单独称为一个token，就要加入空格
   }
 
   // 模板字符串支持添加处理函数的写法，这时模板的各段会被拆开，传递给函数当参数
-  function handleF()
-  {
-    function f()
-    {
+  function handleF() {
+    function f() {
       console.log(f.length); // 0 指明函数的形参个数，形参的数量不包括剩余参数个数，仅包括第一个具有默认值之前的参数个数。
       // arguments 是一个对应于传递给函数的参数的类数组对象
       // arguments 对象是所有（非箭头）函数中都可用的局部变量，此对象包含传递给函数的每个参数，可以使用arguments对象在函数中引用函数的参数。
