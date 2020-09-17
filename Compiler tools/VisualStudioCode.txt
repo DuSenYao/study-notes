@@ -456,7 +456,7 @@ VSCode编辑器 常用使用方法备忘录
       ④ Output Colorizer
         插件为.log日志文件和VSCode的输出面板提供了语法高亮功能。方便进行日志分析。
       ⑤ Debug Visualizer
-        插件提供了实时的可视化调试方式，可以一键解析代码结构，并支持多种主流的编程语言。
+        插件提供了实时的可视化调试方式，可以一键解析代码结构，并支持多种主流的编程语言。打开命令面板输入并执行Debug Visualizer
       ⑥ EditorConfig for VSCode
         可以在不同的编辑器和IDE之间定义和维护一致的编码样式。通过一个名为.editorconfig的文件，可以定义统一的编码样式。
         在安装了EditorConfig for VSCode插件后，打开任何一个文件时，插件都会从当前文件夹开始向它的父文件夹寻找.editorconfig文件，直到找到一个最上层的.editorconfig文件，或者找到一个包含root=true的.editorconfig文件。
