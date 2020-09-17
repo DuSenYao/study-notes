@@ -1,0 +1,16 @@
+#告诉EditorConfig插件，这是根文件，不用继续往上查找
+root = true
+#对扩展名为js和py的文件设置字符集
+[*.{js,py}]
+charset = utf-8
+insert_final_newline = false
+trim_trailing_whitespace = true
+#对扩展名为py的文件设置缩进风格和大小
+[*.py]
+indent_style = space
+indent_size = 2
+end_of_line = unset
+#对lib文件夹下扩展名为py的文件设置缩进风格和大小
+[lib/**.py]
+indent_style = space
+indent_size = 2
