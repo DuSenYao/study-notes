@@ -478,4 +478,17 @@ VSCode编辑器 常用使用方法备忘录
       ④ Paste JSON as code
         可以把JSON或TS转换成其他编程语言，包括TS、Python、GO、Ruby、Java、Swift、C++、JS等。
     (10)容器开发
-      
+      ① Docker插件
+        为Docker和Docker Compare 提供了语法高亮、静态代码检查、智能代码提示等语言功能。此外，插件还提供了Docker资源管理器，可以方便地查看和管理Docker容器、镜像、网络等。
+      ② Kubernetes插件
+        插件为Kubernetes开发提供了极为丰富的功能，可以在VSCode中开发、部署和调试Kubernetes应用程序。
+    (11)移动开发
+      ① Flutter插件
+        可以让开发者高效地编辑、运行并调试Flutter应用程序，并支持Dart语言。
+      ② Cordova tools
+        为Apache Cordova开发提供了代码提示、调试、集成命令等功能。
+      ③ Ionic Snippets
+        为加速Ionic开发提供了丰富的代码片段
+
+  七.语言深入
+    
