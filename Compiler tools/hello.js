@@ -1,4 +1,5 @@
-msg = "Hello World";
+//@ts-check 启用类型检查
+var msg = "Hello World";
 console.log(msg);
 /**
  * Document JSDoc描述

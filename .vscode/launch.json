@@ -5,9 +5,10 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch Node",
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "skipFiles": ["<node_internals>/**"],
       "program": "${file}"
     },
     {

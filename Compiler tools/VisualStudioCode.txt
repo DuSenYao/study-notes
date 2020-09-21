@@ -560,4 +560,70 @@ VSCode编辑器 常用使用方法备忘录
         JS代码支持会在类、函数、属性等上方的CodeLes上显示代码被引用的数量。
         默认情况下，在JS代码中不会显示CodeLens。通过把javascript.referencesCodeLens.enabled设置为true，就可以启用CodeLens来显示代码被引用的数量了。
       10.类型检查
-        
+        对于普通的JS文件，可以使用TS的高级功能来进行类型检查。这可以在代码编译和运行之前发现潜在的代码错误。同时，这些类型检查的功能还为JS提供了快速修复的功能，如：添加缺失的导入语句、添加缺失的属性等。
+        与.ts文件一样，TS可以对.js文件进行类型推断。如果无法进行类型推断、那么会尝试使用JSDoc。
+        VSCode自带的类型检查工具可以与其他JS检测工具（如：ESlint、JSHint）并存。可以通过以下方式启用：
+          (1)按文件启用
+            启用类型检查最简单的方式就是在JS文件的顶部添加 //@ts-check
+          (2)通过设置项启用
+            通过把 javascript.implicitProjectConfig.checkJs设置为true，可以从全局范围内启用类型检查，而且不用改变任何一行代码。优先级比jsconfig或tsconfig低。
+            在JS文件的顶部添加// @ts-nocheck，可以针对某一个文件禁用类型检查。此外，在代码的前一行添加//@ts-ignore可以禁用当前行的类型检查。
+          (3)使用jsconfig或tsconfig启用
+            如果项目中包含 jsconfig.json 或 tsconfig.json 文件，那么可以在编辑器选项中添加"checkJs":true，如下：
+              在jsconfig.json文件中添加"checkJs":true，如下：
+              {
+                "compilerOptions": { "checkJs":true },
+                "exclude": {"node_modules", "**/node_modules/*"}
+              }
+              在tsconfig.json文件中添加"checkJs":true，如下：
+              {
+                "compilerOptions" : {
+                  "allowJs":true,
+                  "checkJs":true
+                },
+                "exclude": {"node_modules", "**/node_modules/*"}
+              }
+      11.调试
+        通过VSCode内置的调试器，即可调试Node.js的应用。
+        服务器端调试
+          (1)一键调试
+            在相应的代码行按下F9快捷键添加断点，或者单击编辑区域左侧的边槽。添加断点后，左侧的边槽会出现一个红色圆点。然后，切换到调试视图，启动JS调试器。可以打开调试控制台，对JS变量和表达式直接进行计算。
+          (2)创建调试配置
+            对于一些复杂的项目，需要创建调试配置，以便后续进行定制化操作。
+            VSCode的调试配置会被存储在.vscode文件夹的launch.json文件中，可以通过下面的步骤来创建一个调试配置：
+              ① 切换到视图，点击添加配置
+              ② VSCode会在.vscode文件夹中创建并打开一个launch.json文件，该文件中定义了调试所需的配置。
+          (3)调试配置属性
+            对于调试Node.js应用，VSCode支持两种调试模式：launch(启动) 和 attach(附加)。
+            在launch.json文件中，除了基本的调试属性（如：type、request、name等），Node.js调试器还有一些特殊的属性：
+              可以被定义在launch和attach的调试配置中：
+                · protocol: 调试协议
+                · port: 调试端口
+                · address: 调试端口的TCP/IP地址。
+                · sourceMaps: 是否启用源代码映射。默认值为true
+                · outFiles: 定义生成的JS文件的位置
+                · restart: 在调试会话结束后，是否重启Node.js调试器。默认值为false
+                · timeout: 定义何时重启一个调试会话。单位为毫秒
+                · stopOnEntry: 是否在程序入口设置断点
+                · loacalRoot: 定义本地的根目录。在远程调试中使用
+                · remoteRoot: 定义远程的根目录。在远程调试中使用
+                · smartStep: 在调试过程中，是否智能地忽略没有定义在源代码映射中的文件
+                · skipFiles: 定义在调试过程中需要忽略的文件
+                · trace: 是否输出诊断信息
+              只能被定义在 launch 的调试配置中：
+                · program: Node.js应用程序的绝对路径
+                · args: 传给Node.js应用程序的参数
+                · cwd: 指定调试器的工作目录。默认值是${workspaceFolder}（在VSCode中打开的文件夹的完整路径）
+                · runtimeExecutable: Node.js运行时的绝对路径。默认值为node
+                · runtimeArgs: 传给Node.js运行时的参数。
+                · runtimeVersion: 定义Node.js运行时的版本
+                · env: 设置环境变量
+                · envFile: 设置.env文件的路径
+                · console: 设置程序输出在哪里。该属性的可选值如下：
+                  internalConsole：在VSCode的调试控制台输出，该值为默认值
+                  integratedTerminal：在VSCode的集成终端输出
+                  externalTerminal：在系统的终端输出
+                · outputCapture: 如果设置为 std，那么Node.js进程的stdout（标准输出）和 stderr（标准错误）就会显示在调试控制台中。
+                · autoAttachChildProcesses: 是否自动附加被调试进程中的所有子进程。默认值为false。
+              只能被定义在 attach 的调试配置中：
+                · processId: 可以定义附加的进程ID，如果被设置为${command:PickProcess}，那么可以在调试器启动时显示的进程列表中选择需要调试的进程。
