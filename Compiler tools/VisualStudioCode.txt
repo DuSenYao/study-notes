@@ -65,8 +65,8 @@ VSCode编辑器 常用使用方法备忘录
     
 
   三.常用知识
-    1. 单击搜索输入框下方的省略号或使用Ctrl+Shift+J快捷键，可以调出高级搜索选项：要包含的文件 和 排除的文件，需要以.开头并且全拼，文件后缀名用 , 分隔
-    2. 编程语言定义代码块的起始和结束区域的标记
+    1.单击搜索输入框下方的省略号或使用Ctrl+Shift+J快捷键，可以调出高级搜索选项：要包含的文件 和 排除的文件，需要以.开头并且全拼，文件后缀名用 , 分隔
+    2.编程语言定义代码块的起始和结束区域的标记
         编程语言                        起始区域                            结束区域
       CSS/Less/SCSS                  /*#region*/                        /*#endregion*/
       C/C++                          #pragma region                     #pragma endregion
@@ -75,10 +75,11 @@ VSCode编辑器 常用使用方法备忘录
       TypeScript/JS                 //#region或//region                //#endregion或//endregion\
       Markdown                      <!--#region-->                     <!--endregion-->
     3.VSCode会自动检测打开的文档来确定所使用的代码缩进，通过自动检测所得出的缩进配置，会覆盖默认配置
-    4. 命令行
+    4.命令行
       在命令行中输入code . ，可以启动VSCode并直接打开当前文件夹
     5. Shift + Alt + F12快捷键或编辑邮件菜单中的Find All Reference，可以打开结果视图查看一个符号的所有引用
     6. Ctrl +Shift + O可以跳转到当前文件中的不同符号，通过输入":"，所有的符号都会按类型进行分组
+    7. 通过 files.associations 设置项，可以把一个新的文件扩展名添加到已有的编程语言中。
 
 
   五.常用功能
@@ -491,4 +492,72 @@ VSCode编辑器 常用使用方法备忘录
         为加速Ionic开发提供了丰富的代码片段
 
   七.语言深入
-    
+    ① JavaScript
+      ECMAScript是一种在ECMA-262标准中定义的脚本语言规范。而JavaScript是一种编程语言它实现了ECMAScript所定义的规范。
+      一般来说，JS包含以下几部分：
+        · ECMAScript: 描述了该语言的语法和基本对象
+        · 文档对象模型（DOM）: 描述处理网页内容的方法和接口
+        · 浏览器对象模型（BOM）: 描述与浏览器惊醒交互的方法和接口
+      Node.js和JS的区别和联系：
+        · Node.js是一个JS运行时。JS可以运行在浏览器或Node.js中
+        · 在浏览器运行时中，JS可以访问document、window等浏览器对象
+        · 在Node.js运行时中，JS可以访问与操作系统、文件系统等相关的API
+    ② 代码编辑
+      1.IntelliSense
+        IntelliSense提供了代码补全功能，可以显示悬停信息、参数信息、快速信息等。
+        (1)自动类型获取
+          JS库和框架的IntelliSense由TS的类型声明文件（.d.ts文件）驱动。许多JS的npm软件包会包含.d.ts文件，这样在VSCode中就能直接获得IntelliSense功能。
+          如果JS的npm软件包中没有包含.d.ts文件，那么VSCode的自动类型获取就会自动下载社区维护的.d.ts文件，进而获取IntelliSense功能。
+        (2)JSDoc
+          除了可以通过类型推断和自动类型获取提供IntelliSense功能，VSCode还可以通过JSDoc来提供。
+          在函数上方输入/**，就能触发代码片段提示，自动生成以下的JSDoc。
+            /**
+            * 
+            * @param {*} a 
+            * @param {*} b 
+            */
+          可以根据函数定义添加对应的详细JSDoc描述。这样在其他地方引用对应函数时，就能显示详细的函数提示了。
+          通过设置"javascript.suggest.completeJSDoces:false"，可以禁用JSDoc的提示。
+      2.自动导入
+        自动导入可以在你编写代码时提示变量及相应的依赖。当你选择了其中某一个建议的选项后，VSCode会在文件的顶部自动导入相应的依赖。
+        通过"javascript.suggest.autoImports:false"，可以禁用自动导入。
+      3.JSX
+        在JSX文件中，也可以使用JS的完整功能。在*.js和*.jsx文件中，都能使用JSX的语法。VSCode也支持自动添加闭标签。
+        通过"javascript.autoClosingTags:false"，可以禁用闭标签的自动补全。
+      4.代码导航
+        对于JS代码，在编辑区域的右键菜单中可以看到以下几种主要的代码导航方式。
+          · Go to Definition（转到定义）: 跳转到定义当前符号的代码，快捷键为F12。
+          · Peek Definition（查看定义）: 与Go to Definition类似，但会直接在内联编辑器中展示定义的代码，快捷键为Alt+F12。
+          · Go to References（转到引用）: 跳转到引用当前符号的代码，快捷键为Shift+F12。
+          · Go to Definition（转到类型定义）: 跳转到当前符号的类型定义。
+      5.重构
+        VSCode对JS支持以下几种重构命令：
+          · 提取到函数
+          · 提取到变量
+          · 在命名的导入与名字空间的导入之间切换
+          · 移动到新的文件
+      6.移除无用的代码和变量 
+        如果VSCode发现有不可达的代码，相应的代码颜色就会变浅，而且可以通过命令快速移除。
+        通过"editor.showUnused:fasle"，可以禁用使不可达代码颜色变浅。此外，还可以根据语言来进行设置
+          "[javascript]" : {
+            "editor.showUnused" :false
+          }
+      7.整理导入语句
+        通过Organize Imports源代码操作，可以对JS的import语句进行排序，并且移除没有是哟红的导入语句，操作步骤：
+          · 右键菜单选择Source Action选项，然后选择Organize Imports命令
+          · 快捷键 Shift + Alt + O
+        通过以下设置，还可以在保存文件时自动触发导入语句的整理
+          "editor.codeActionsOnSave": {
+            "source.organizeImport" : true
+          }
+      8.文件移动时更新导入语句
+        在JS项目中，如果一个文件被其他文件引用，那么当它被移动或改名时，VSCode可以自动更新所有相关的导入语句的文件路径。
+        通过"javascript.updateImportsOnFileMove.enabled"设置项可以进行进一步配置，该配置项的可选值如下：
+          · prompt: 默认值。在更新前会弹窗询问是否要更新路径
+          · always: 自动更新路径
+          · never: 不更新路径
+      9.引用的CodeLens
+        JS代码支持会在类、函数、属性等上方的CodeLes上显示代码被引用的数量。
+        默认情况下，在JS代码中不会显示CodeLens。通过把javascript.referencesCodeLens.enabled设置为true，就可以启用CodeLens来显示代码被引用的数量了。
+      10.类型检查
+        
