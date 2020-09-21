@@ -12,6 +12,7 @@
     "shan.code-settings-sync",
     "coenraads.bracket-pair-colorizer-2",
     "oderwat.indent-rainbow",
-    "visualstudioexptteam.vscodeintellicode"
+    "visualstudioexptteam.vscodeintellicode",
+    "formulahendry.auto-rename-tag"
   ]
 }
