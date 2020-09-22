@@ -93,7 +93,7 @@ VSCode编辑器 常用使用方法备忘录
 
       创建：
         "For Loop": { // 代码片段名称
-          "prefix": ["for", "for-const"], // 定义了代码片段在 InteliSense 中触发的单词。字符串的子串也可以作为触发条件。fc也会匹配for-const
+          "prefix": ["for", "for-const"], // 定义了代码片段在 IntelliSense 中触发的单词。字符串的子串也可以作为触发条件。fc也会匹配for-const
           // body 包含了三个占位符 ${2:element} ${1:array} 和 $0，在插入代码片段后，可以通过Tab键在占位符之间按顺序进行跳转，冒号后面是默认的文本，前面的数字是出现的顺序，0是最终的位置
           "body": ["for (const ${2:element} of ${1:array}) {", "\t$0", "}"], // 定义了要被插入的代码片段，它使用了数组，每一个元素表示一行独立的内容。这里有3行代码片段
           "description": "A for loop." // 可选项，定义了在 IntelliSense 中显示的描述性文本
@@ -214,7 +214,7 @@ VSCode编辑器 常用使用方法备忘录
             · ESLint Compact: $eslint-compact
             · ESLint Stylish: $eslint-stylish
             · Go: $go
-            · CSHarp and VB Compiler: $mscompile
+            · CSHarp and VB Compiler: $msCompile
             · Lessc compiler: $lessc
             · Node Sass compiler: $node-sass
         (4)命令参数
@@ -245,7 +245,7 @@ VSCode编辑器 常用使用方法备忘录
             · reevaluateOnRerun：在执行 Rerun Last Task命令时，控制是否重新计算变量。默认值是true
             · runOn：指定何时运行Task。其设置包含以下两种：
                 default：只有在运行Run Task命令时，才会触发运行
-                foderOpen：当包含这个tasks.json的文件夹被打开时，便会触发运行。在运行前，VSCode会询问你是否要运行。
+                folderOpen：当包含这个tasks.json的文件夹被打开时，便会触发运行。在运行前，VSCode会询问你是否要运行。
         (7)变量替换
           在tasks.json中，VSCode可以进行变量替换。
           ① 预定义的变量
@@ -285,7 +285,7 @@ VSCode编辑器 常用使用方法备忘录
           不同操作系统中的Task命令也可能不同。在Windows上使用windows属性，在Linux上使用linux属性，在macOS上使用osx属性。
           Task的属性可以被定义在全局范围。除非具体的某一个Task定义了相应的属性，否则就使用全局属性
         (9)后台运行的Task
-          一些工具可以在后台运行，当文件更新时，便会触发相应的操作。比如：TypeScript的编译器tsc通过--wacth参数对此功能提供了内置的支持。
+          一些工具可以在后台运行，当文件更新时，便会触发相应的操作。比如：TypeScript的编译器tsc通过--watch参数对此功能提供了内置的支持。
     
     5. 多项目工作区（multi-root Workspaces)
       在VSCode中，可以方便地管理多个文件夹。
@@ -373,7 +373,7 @@ VSCode编辑器 常用使用方法备忘录
         · Most Popular: 插件总安装量榜
         · Recently Added: 最新发布的插件
     2. 优秀的插件
-      (1)REST Clinet
+      (1)REST Client
         测试REST API的工具。REST API是前后端分离最佳实践，是开发的一套标准或者说是一套规范。
         REST Client支持cURL和RFC2616这两种业界标准来调用REST API。
           test.http
@@ -387,7 +387,7 @@ VSCode编辑器 常用使用方法备忘录
           · 支持Cookies
           · 支持HTTP3xx的重定向
           · 支持多种变量: 环境变量、文件变量、预定义的系统变量等  
-      (2)Code Runer
+      (2)Code Runner
         代码一键运行，支持40多种语言
         ① 代码一键运行
           有四种方式可以运行代码：
@@ -396,18 +396,18 @@ VSCode编辑器 常用使用方法备忘录
             · 在编辑区域的右键菜单中单击Run Code
             · 在左侧的文件管理器中找到要运行的文件，在其右键菜单中单击Run Code
             · 单击右上角的“运行”小三角按钮
-          注意：Code Runer插件并不包含各个编程语言的编译器。需要自行安装相应编程语言的编译器，并且把路径添加到PATH环境变量中。
+          注意：Code Runner插件并不包含各个编程语言的编译器。需要自行安装相应编程语言的编译器，并且把路径添加到PATH环境变量中。
         ② 停止代码运行
           有三种方式可以停止代码运行：
             · 通过 Ctrl+Alt+M 快捷键
             · 命令面板，输入并执行 Stop Code Run
             · 在输出面板的右键菜单中单击 Stop Code Run
         ③ 在集成终端中运行代码
-          默认情况下，Code Runer 会把运行输出结果打印在输出面板中。在 Code Runer 插件的GitHub上，用户最多的问题是如何解决乱码问题和怎样支持输入。通过设置，把代码放到VSCode内置的集成终端来运行，就可以解决上面的两个问题。
+          默认情况下，Code Runner 会把运行输出结果打印在输出面板中。在 Code Runner 插件的GitHub上，用户最多的问题是如何解决乱码问题和怎样支持输入。通过设置，把代码放到VSCode内置的集成终端来运行，就可以解决上面的两个问题。
           设置 -> Run Code configuration，勾上Run In Terminal选项。]
         ④ 自定义运行逻辑
           设置 -> Executor Map -> 点击Edit in settings.json
-          在settings.json文件中，添加code-runer.executorMap设置，然后就可以对不同的语言设置自定义的运行逻辑了。
+          在settings.json文件中，添加code-runner.executorMap设置，然后就可以对不同的语言设置自定义的运行逻辑了。
     (3)Bracket Pair Colorizer 2
       它为代码中的各种结对的括号提供了颜色高亮等功能。
       常用设置项：
@@ -538,7 +538,7 @@ VSCode编辑器 常用使用方法备忘录
           · 移动到新的文件
       6.移除无用的代码和变量 
         如果VSCode发现有不可达的代码，相应的代码颜色就会变浅，而且可以通过命令快速移除。
-        通过"editor.showUnused:fasle"，可以禁用使不可达代码颜色变浅。此外，还可以根据语言来进行设置
+        通过"editor.showUnused:false"，可以禁用使不可达代码颜色变浅。此外，还可以根据语言来进行设置
           "[javascript]" : {
             "editor.showUnused" :false
           }
@@ -605,7 +605,7 @@ VSCode编辑器 常用使用方法备忘录
                 · restart: 在调试会话结束后，是否重启Node.js调试器。默认值为false
                 · timeout: 定义何时重启一个调试会话。单位为毫秒
                 · stopOnEntry: 是否在程序入口设置断点
-                · loacalRoot: 定义本地的根目录。在远程调试中使用
+                · localRoot: 定义本地的根目录。在远程调试中使用
                 · remoteRoot: 定义远程的根目录。在远程调试中使用
                 · smartStep: 在调试过程中，是否智能地忽略没有定义在源代码映射中的文件
                 · skipFiles: 定义在调试过程中需要忽略的文件
@@ -627,3 +627,27 @@ VSCode编辑器 常用使用方法备忘录
                 · autoAttachChildProcesses: 是否自动附加被调试进程中的所有子进程。默认值为false。
               只能被定义在 attach 的调试配置中：
                 · processId: 可以定义附加的进程ID，如果被设置为${command:PickProcess}，那么可以在调试器启动时显示的进程列表中选择需要调试的进程。
+          (4)附加到Node.js程序
+            如果想把VSCode的Node.js调试器附加到Node.js应用程序，就需要在调试模式下启动Node.js应用程序，在VSCode的集成终端运行以下命令：
+              node --inspect program.js
+            如果需要让Node.js应用程序等待调试而不运行，则在VSCode的集成终端运行以下命令：
+              node --inspect-brk program.js
+            VSCode提供了3种方式可以使调试器附加到Node.js应用程序。
+              ❶ 自动附加
+                打开命令面板，输入并执行Toggle Auto Attach命令。
+                在启动Node.js应用程序时，只要添加了 --inspect、--inspect-brk、--inspect-port、--debug、--debug-brk、--debug-port中的任何一个参数，Node.js调试器就可以自动附加到该应用程序。
+              ❷ Attach to Node Process命令
+                打开命令面板，然后输入并执行Attach to Node Process命令。
+                会显示所有的Node.js进程列表。选择要调试的进程，Node.js调试器就会附加到相应的进程。
+              ❸ 创建“附加”调试配置
+                如果一个Node.js进程没有在调试模式下启动，那么通过指定进程ID（processId），Node.js调试器依旧可以附加到相应的进程。
+                通过把processId属性设置为${command:PickProcess}，可以使调试器在启动时动态地显示Node.js进程列表，可以方便地选择需要调试的Node.js进程。
+                  例子：launch.json -> "Attach to Process"
+          (5)远程调试
+            VSCode内置的Node.js调试器支持远程调试，只需要在launch.json文件中添加一个address属性即可。
+              例子：launch.json -> "Attach to remote"
+            默认情况下，VSCode会把远程Node.js程序文件中的源代码展示在本地，但这些文件都是只读的。可以对文件中的源代码进行单步调试，但不可以修改它。如果想在VSCode中打开可编辑的源代码，那么就需要设置远程文件夹与本地文件夹的映射。在launch.json文件中。可以通过添加localRoot和remoteRoot属性来进行映射。
+            localRoot用于定义本地文件夹的根目录，remoteRoot则用于定义远程文件夹的根目录。 
+              例子：launch.js -> "Attach to remote Edit Source code"
+
+        客户端调试

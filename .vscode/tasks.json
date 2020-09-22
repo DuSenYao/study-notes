@@ -3,13 +3,16 @@
   // for the documentation about the tasks.json format
   "version": "2.0.0",
   "isBackground": true,
-  "inputs": [{
-    "id": "terminate",
-    "type": "command",
-    "command": "workbench.action.tasks.terminate",
-    "args": ["terminateAll"]
-  }],
-  "tasks": [{
+  "inputs": [
+    {
+      "id": "terminate",
+      "type": "command",
+      "command": "workbench.action.tasks.terminate",
+      "args": ["terminateAll"]
+    }
+  ],
+  "tasks": [
+    {
       "label": "echo",
       "type": "shell",
       "command": "echo Hello",
@@ -32,9 +35,7 @@
       "type": "npm",
       "script": "lint",
       "group": "test",
-      "problemMatcher": [
-        "$eslint-stylish"
-      ]
+      "problemMatcher": ["$eslint-stylish"]
     },
     {
       "label": "dir",

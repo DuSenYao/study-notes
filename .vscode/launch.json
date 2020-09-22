@@ -11,6 +11,13 @@
       "skipFiles": ["<node_internals>/**"],
       "program": "${file}"
     },
+    // 通过把processId属性设置为${command:PickProcess}，可以使调试器在启动时动态地显示Node.js进程列表
+    {
+      "name": "Attach to Process",
+      "type": "node",
+      "request": "attach",
+      "processId": "${command:PickProcess}"
+    },
     {
       "name": "Launch chrome localhost",
       "type": "chrome",
@@ -18,6 +25,7 @@
       "url": "http://localhost/mypage.html",
       "webRoot": "${workspaceFolder}/wwwroot"
     },
+    // 在chrome调试当前文件
     {
       "name": "Launch chrome Current File",
       "type": "chrome",
@@ -32,6 +40,7 @@
       "url": "C://Program Files (x86)/Google/Chrome/Application/chrome.exe",
       "webRoot": "${workspaceFolder}/out"
     },
+    // 在Firefox调试当前文件
     {
       "name": "Launch firefox Current File",
       "type": "firefox",
@@ -45,12 +54,31 @@
       "request": "launch",
       "url": "http://localhost/index.html",
       "webRoot": "${workspaceFolder}"
+    },
+    // 远程调试，只需要添加一个address属性
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to remote",
+      "address": "TCP/IP address of process to be debugged",
+      // 9229 是 --inpect 和 --inspect-brk的默认调试端口
+      "port": 9229
+    },
+    // 远程调试，设置本地文件夹的根目录（localRoot），设置远程文件夹的根目录（remoteRoot），设置后，可以在本地打开远程的可编辑源代码
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to remote Edit Source code",
+      "address": "TCP/IP address of process to  be debugger",
+      "port": 9229,
+      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "C:\\User\\username\\progject\\server"
     }
   ],
   "compounds": [
     {
       "name": "Launch localhost",
-      "configurations": ["Launch localhost"],
+      "configurations": ["Launch chrome Current File"],
       "preLaunchTask": "${defaultBuildTask}"
     }
   ]
