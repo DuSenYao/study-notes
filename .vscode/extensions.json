@@ -13,6 +13,7 @@
     "coenraads.bracket-pair-colorizer-2",
     "oderwat.indent-rainbow",
     "visualstudioexptteam.vscodeintellicode",
-    "formulahendry.auto-rename-tag"
+    "formulahendry.auto-rename-tag",
+    "mkxml.vscode-filesize"
   ]
 }
