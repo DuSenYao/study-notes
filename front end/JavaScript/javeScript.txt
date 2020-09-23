@@ -34,7 +34,7 @@ JavaScript
     Symbol
       Symbol是ES6中引入的新类型，他是一切非字符串的对象key的集合，在ES6规范中，整个对象系统被用Symbol重塑。
       Symbol可以具有字符串类型的描述，但是即使描述相同，Symbol也不相等。
-      创建Symbeol的方式是使用全局的Symbol函数。例如：var symbol = Symbol("my symbol");
+      创建Symbol的方式是使用全局的Symbol函数。例如：var symbol = Symbol("my symbol");
       Symbol.iterator 为每一个对象定义了默认的迭代器。该迭代器可以被 for...of 循环使用。当需要对一个对象进行迭代时（比如开始用于一个for..of循环中），它的Symbol.iterator方法都会在不传参情况下被调用，返回的迭代器用于获取要迭代的值。
 
     Object
@@ -125,7 +125,7 @@ JavaScript
         4. configurable：决定该属性能否被删除或者改变特征值
         
         访问器属性使得属性在读和写时执行代码，它允许使用者在写和读时得到完全不同的值，它可以视为函数的一种语法糖。
-        使用Object.definePropetry，可以 改变特征值 或 定义访问器属性，但是不能同时指定 访问器属性和值或可写属性writable
+        使用Object.defineProperty，可以 改变特征值 或 定义访问器属性，但是不能同时指定 访问器属性和值或可写属性writable
         实际上JS对象的运行时是一个“具有高度动态性的属性集合”，属性以 字符串 或 Symbol 为 key，以 数据属性特征值 和 访问器属性特征值 为value。对象是一个属性的索引结构（索引结构是一种常见的数据结构，可以把它理解为一个能够以较快速度用key来查找value的字典），能够以Symbol为属性名是JS对象的一个特色
       
     3. JS的原形
@@ -167,7 +167,7 @@ JavaScript
       (1) 宿主对象（host Object）： 由 JS 宿主环境提供的对象，它们的行为完全由宿主环境决定
         在浏览器环境中，全局对象是window，window上又有很多属性，如：document，window上的属性，一部分来自JS语言，另一部分来自浏览器环境。JS标准中规定了全局对象属性，W3C的各种标准中规定了Window对象的其他属性。宿主对象也分 固有 和 用户可创建，比如：document.createElement就可以创建一些DOM对象
 
-      (2) 内置对象（Buitt-in Object）：由 JS 语言提供的对象
+      (2) 内置对象（Built-in Object）：由 JS 语言提供的对象
         固有对象（intrinsic Object）：由标准规定，随着JS运行时创建而自动创建的对象实例。
           固有对象在JS代码执行前就被创建出来了，它们通常扮演着类似基础库的角色。ECMA标准提供了150+个固有对象，可以通过 https://www.ecma-international.org/ecma-262/9.0/index.html#sec-well-known-intrinsic-objects
           
@@ -267,7 +267,7 @@ JavaScript
           · lexical environment：  词法环境，当获取变量或者 this 值时使用。
           · variable environment： 变量环境，当声明变量时使用。
           · code evaluation state：用于恢复代码执行位置。
-          · Funtion：执行的任务是函数时使用，表示正在被执行的函数。
+          · Function：执行的任务是函数时使用，表示正在被执行的函数。
           · ScriptOrModule：执行的任务是脚本或模块时使用，表示正在被执行的代码。
           · Realm：使用的基础库和内置对象实例。
           · Generator：仅生成器上下文有这个属性，表示当前生成器
@@ -693,7 +693,7 @@ JavaScript
           ⑧ try 语句和 throw语句
             try语句和throw语句用于处理异常，它们是配合使用的。在大型的应用中，异常机制非常重要。
               try{
-                throw new Erro("error");
+                throw new Error("error");
               }catch(e) {
                 console.log(e);
               }finally {
@@ -798,3 +798,8 @@ JavaScript
               在ES2018中，跟早期版本有所不同，前后自增自减运算被放到同一优先级。
           ⑩ UnaryExpression 一元运算表达式
             delete a.b;  void a;  typeof a;  - a;  ~ a;  ! a;  await a;
+            特点就是一个更新表达式搭配了一个一元运算符。a本身就是一个更新表达式。
+          ⑪ ExponentiationExpression 乘方表达式
+            乘法表达式也是由更新表达式构成的。它使用 ** 号。
+              2 ** 3 // 正确
+              -2 ** 3 // 错误

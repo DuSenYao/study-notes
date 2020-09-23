@@ -70,7 +70,7 @@ VSCode编辑器 常用使用方法备忘录
         编程语言                        起始区域                            结束区域
       CSS/Less/SCSS                  /*#region*/                        /*#endregion*/
       C/C++                          #pragma region                     #pragma endregion
-      Java                          //#region或//<editor-flod>         //#endregion或//</editor-flod>
+      Java                          //#region或//<editor-fold>         //#endregion或//</editor-fold>
       Python                        #region                            #endregion
       TypeScript/JS                 //#region或//region                //#endregion或//endregion\
       Markdown                      <!--#region-->                     <!--endregion-->
