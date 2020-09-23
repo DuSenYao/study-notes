@@ -32,12 +32,13 @@
       "request": "launch",
       "file": "${file}"
     },
+    // 将VSCode附加到Chrome浏览器，需要在远程调试模式下启动Chrome浏览器，在命令行输入命令来启动Chrom浏览器。
     {
       "name": "Attach to url with files served from ./out",
       "type": "chrome",
       "request": "attach",
       "port": 9222,
-      "url": "C://Program Files (x86)/Google/Chrome/Application/chrome.exe",
+      "url": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
       "webRoot": "${workspaceFolder}/out"
     },
     // 在Firefox调试当前文件

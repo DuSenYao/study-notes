@@ -437,9 +437,16 @@ VSCode编辑器 常用使用方法备忘录
       ② Debugger for Chrome
         Debugger for Chrome插件除了可以调试运行在Google Chrome浏览器中的JS代码，还可以调试运行在支持Chrome DevTools Protocol的浏览器中的JS代码，如：Chromium浏览器和其他基于 Blink渲染引擎的浏览器。
         在调试视图选择 launch.json 文件中的 Launch chrome Current File选项，然后按F5快捷键，VSCode就会启动Chrome浏览器。
+          例子：launch.json -> "Launch chrome Current File"
+        如果想要将VSCode附加到Chrome浏览器，需要在远程调试模式下启动Chrome浏览器，针对不同系统，在命令行输入不同的命令来启动Chrome浏览器。
+          在Windows下：<path to chrome>/chrome.exe --remote-debugging-port-9222
+          在macOS下：  /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote--debugging-port=9222
+          在Linux下：  google-chrome --remote-debugging-port=9222
+          例子：launch -> "Attach to url with files served from ./out" 
       ③ Debugger for Firefox
         Debugger for Firefox插件除了可以调试运行在Firefox浏览器中的JS代码，还可以调试Firefox浏览器插件。需要设置Firefox浏览器启动文件的绝对路径。 
         在调试视图中选择 Launch firefox Current File，然后按F5，VSCode就会启动Firefox浏览器
+          例子：launch.json -> "Launch firefox Current File"
       ⑤ SQL Server(mssql)
         支持连接到Microsoft SQL Server，还支持连接到Azure SQL Database 和 Azure Synapse Analytics。
         插件主要包含以下几个功能：
@@ -651,3 +658,38 @@ VSCode编辑器 常用使用方法备忘录
               例子：launch.js -> "Attach to remote Edit Source code"
 
         客户端调试
+          本文件 328 和 437行。
+      
+      12.静态代码检查
+        静态代码检查工具能够在编写代码时，提前发现代码中的问题。
+        (1)ESLint
+          通过 npm install eslint 或者 npm install -g eslint 在当前工作区或全局安装ESLint，然后创建一个.eslintrc配置文件。通过 eslint.run 设置项，可以设定是保存时（onSave）还是在输入时（onType）运行ESlint静态检查。
+      13.测试
+        (1)Mocha Test Explorer
+          Mocha是常用的JS测试框架之一。Mocha Test Explorer支持Mocha测试框架，支持的功能包括：
+            · 单元测试的树状图单独显示在专有的测试资源管理器中。
+            · 运行或调试单元测试
+            · 测试覆盖率报告
+            · 并行的运行测试
+            · 保存文件时自动运行测试 
+      14.JS插件推荐
+        (1)Path IntelliSense
+          在JS文件中，通过Path IntelliSense插件可以对文件路径进行自动补全。此外，该插件也支持在HTML和CSS文件中对文件路径进行自动补全。
+        (2)Import Cost
+          在JS和TS文件中，通过Import Cost插件可以内联地显示导入的npm包的大小。通过以下格式的代码可计算出npm包的大小。
+            · import Func from "utils";
+            · import * as Utils from "utils"; 
+            · import {Func} from "utils";
+            · import {orig as alias} from "utils";
+            · import Func from "utils/Func";
+            · const Func = require('utils').Func;
+        (3)CodeMetrics
+          插件可以计算代码的复杂度，对于复杂度高的代码给出详细的信息。开发者可以根据复杂度的提示来优化代码。插件支持JS、TS、和Lua 三种语言的代码复杂度计算。
+        (4)JavaScript Booster
+          提供了数十种代码操作，可以帮助开发者轻松重构并优化JS代码。
+        (5)Turbo Console Log
+          Turbo Console Log插件可以根据JS代码的上下文自动生成有意义的 console.log(); 代码，以便以后进行运行和调试。
+    
+    ③ TypeScript
+      TypeScript是JavaScript的超集，可以编译成JavaScript。与JavaScript类似，不需要安装额外的插件，VSCode为TypeScript提供了开箱即用的支持，包括但不限于：IntelliSense、调试、代码格式化、代码导航、代码重构、以及其他高级功能。
+      

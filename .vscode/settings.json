@@ -18,5 +18,6 @@
     "proto",
     "typeof"
   ],
-  "todo-tree.tree.scanMode": "workspace"
+  "todo-tree.tree.scanMode": "workspace",
+  "eslint.enable": true
 }
