@@ -54,11 +54,12 @@
       "detail": "windows命令提示符-cmd目录操作-dir命令的帮助提示"
     },
     {
-      "label": "TypeScript compile",
+      "label": "tsc: build - tsconfig.json",
       "type": "shell",
       "group": "build",
-      "command": "tsc ${file}",
-      "problemMatcher": ["$tsc"]
+      "command": "tsc --build ${relativeFileDirname}\\tsconfig.json",
+      "problemMatcher": "$tsc",
+      "detail": "编译当前文件夹下的TS文件"
     },
     {
       "label": "Terminate All Tasks",
@@ -67,9 +68,9 @@
       "detail": "停止所有Task"
     },
     {
-      "label": "npx tsc watch",
+      "label": "tsc watch",
       "type": "shell",
-      "command": "npx tsc",
+      "command": "tsc",
       "args": ["--watch"],
       "isBackground": true,
       "problemMatcher": {

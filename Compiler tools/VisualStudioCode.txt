@@ -692,4 +692,43 @@ VSCode编辑器 常用使用方法备忘录
     
     ③ TypeScript
       TypeScript是JavaScript的超集，可以编译成JavaScript。与JavaScript类似，不需要安装额外的插件，VSCode为TypeScript提供了开箱即用的支持，包括但不限于：IntelliSense、调试、代码格式化、代码导航、代码重构、以及其他高级功能。
-      
+      (1)安装TypeScript编译器
+        安装Node.js，安装完成后，需要确保Node.js已经被添加到PATH环境变量中。
+        通过npm包管理工具安装TypeScript，npm install -g typescript
+        在命令行输入 tsc --version，来验证TypeScript是否安装成功。
+      (2)编译TypeScript文件
+        TS文件需要先编译成JS文件后才能运行。打开VSCode的集成终端，在终端集成中输入tsc file.ts。TS的编译器（tsc）会对file.ts进行编译，并在同一目录下生成一个file.js的JS文件。
+      (3)一键运行TypeScript
+        在VSCode中使用Code Runner插件，可以一键运行TypeScript代码。但是，需要安装ts-node，ts-node是一个基于Node.js的TS执行器。
+        安装ts-node，需要Node.js运行时及TypeScript编译器，在命令行输入以下命令，安装ts-node
+          npm install -g ts-node
+        在安装了Code Runner插件后，可以使用以下几种方式快捷的运行代码：
+          · 输入快捷键 Ctrl+Alt+N
+          · 通过 Ctrl+Shift+P 快捷键打开命令面板，输入并执行Run Code
+          · 在编辑区域的右侧菜单中选择Run Code
+          · 在右侧的文件管理器中找到要运行的文件，在其右键菜单中选择Run Code
+          · 单击右上角的运行小三角按钮
+      (4)编译
+        TS提供了丰富的项目设置和编译设置，以便后续进行项目管理及代码调试。
+        1.tsconfig.json
+          tsconfig.json 文件定义了TS的项目设置及编译设置。
+            例子：Compiler tools\tsconfig.json
+          打开集成终端，只需要输入tsc（注意：tsconfig.json文件需要在根目录），TS编译器就会根据tsconfig.json文件的配置对当前的TS项目进行编译。
+        2.源代码映射
+          如果需要调试TS文件，则需要把TS文件与生成的JS文件进行映射。有两种方式可以生成映射文件。
+            ❶ 在tsc命令中添加--sourcemap参数，如下：
+              tsc hello.ts --sourcemap
+            ❷ 在tsconfig.json文件中添加sourceMap属性，并将该属性设置为true，然后在集成终端中输入tsc并执行。
+              例子：Compiler tools\tsconfig.json
+          通过以上任意一种方式，都会生成一个file.js.map的源代码映射文件。
+        3.生成文件的位置
+          默认情况下，生成的JS文件会和TS文件在同一个文件夹中。如果项目很大，则会产生很多JS文件，不便于管理。可以在tsconfig.json文件中添加outDir属性，来指定JS文件的目录。
+            例子：Compiler tools\tsconfig.json
+      (5)调试
+        1.快速调试
+          VSCode依赖于TS的映射文件将原始的TS文件与生成的JS文件进行映射。
+            ❶ 在tsconfig.json文件中需要添加sourceMap属性，并将其设置为true。
+            ❷ 在集成终端中输入并执行 tsc。这条命令执行完毕后会在“outDir”属性定义的目录中生成一个file.js.map的源代码映射文件和一个file.js文件。
+            ❸ 在需要的TS文件处添加断点，然后切换到调试视图，选择预设的调试任务。就可以进行调试。在左侧的调试视图中可以看到与当前代码相关的变量信息，在调试控制台，可以对TS变量和表达式直接进行运算。
+            
+          

@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "CommonJS",
+    // 调试TS文件，需要把TS文件和生成的JS文件进行映射，是否生成映射文件
+    "sourceMap": true,
+    // 指定输出JS文件的目录
+    "outDir": "./out"
+  }
+}

@@ -4,6 +4,29 @@
   // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
+    // 解决文件地址中有UTF-8字符，导致报错的问题
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Launch program pwa-node",
+      "attachSimplePort": 0,
+      "program": "${file}"
+    },
+    {
+      "type":"pwa-node",
+      "request": "launch",
+      "name": "TS Launch Node",
+      "skipFiles":[
+        "<node_internals>/**"
+      ],
+      "attachSimplePort": 0,
+      "program": "${file}",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/out/*.js",
+        "!**/node_modules/**"
+      ]
+    },
     {
       "name": "Launch Node",
       "type": "node",
