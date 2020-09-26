@@ -1,7 +1,6 @@
 {
   "cSpell.words": [
     "Cordova",
-    "Doces",
     "Extname",
     "IIFE",
     "Kubernetes",
@@ -10,6 +9,7 @@
     "ZWNJ",
     "difftool",
     "editorconfig",
+    "htmlhintrc",
     "iframe",
     "instanceof",
     "lessc",
@@ -19,5 +19,6 @@
     "typeof"
   ],
   "todo-tree.tree.scanMode": "workspace",
-  "eslint.enable": true
+  "eslint.enable": true,
+  "html.customData": ["./html.html-data.json"]
 }

@@ -12,6 +12,7 @@
       "attachSimplePort": 0,
       "program": "${file}"
     },
+    // TS文件编译并调试
     {
       "type":"pwa-node",
       "request": "launch",
@@ -21,9 +22,8 @@
       ],
       "attachSimplePort": 0,
       "program": "${file}",
-      "preLaunchTask": "tsc: build - tsconfig.json",
+      "preLaunchTask": "tsc: -p tsconfig.json",
       "outFiles": [
-        "${workspaceFolder}/out/*.js",
         "!**/node_modules/**"
       ]
     },

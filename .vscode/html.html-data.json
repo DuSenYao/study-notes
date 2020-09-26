@@ -1,0 +1,45 @@
+{
+  "version": 1.1,
+  "tags": [
+    {
+      "name": "foo",
+      "description": "The foo element",
+      "attributes": [
+        {
+          "name": "bar"
+        },
+        {
+          "name": "baz",
+          "values": [{ "name": "baz-val-1" }]
+        }
+      ]
+    }
+  ],
+  "globalAttributes": [
+    {
+      "name": "data-code",
+      "description": "data-code Attribute"
+    },
+    {
+      "name": "data-name",
+      "description": "data-name Attributes",
+      "valueSet": "name"
+    }
+  ],
+  "valueSets": [
+    {
+      "name": "name",
+      "description": "data-name valueSets",
+      "values": [
+        {
+          "name": "file",
+          "description": "file value"
+        },
+        {
+          "name": "attr",
+          "description": "attr value"
+        }
+      ]
+    }
+  ]
+}

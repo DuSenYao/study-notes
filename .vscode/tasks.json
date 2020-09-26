@@ -54,10 +54,19 @@
       "detail": "windows命令提示符-cmd目录操作-dir命令的帮助提示"
     },
     {
-      "label": "tsc: build - tsconfig.json",
+      "label": "tsc: -p tsconfig.json",
       "type": "shell",
       "group": "build",
-      "command": "tsc --build ${relativeFileDirname}\\tsconfig.json",
+      "command": "tsc",
+      "args": ["-p", "${relativeFileDirname}"],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
       "problemMatcher": "$tsc",
       "detail": "编译当前文件夹下的TS文件"
     },
@@ -71,7 +80,7 @@
       "label": "tsc watch",
       "type": "shell",
       "command": "tsc",
-      "args": ["--watch"],
+      "args": ["--watch", "${relativeFileDirname}"],
       "isBackground": true,
       "problemMatcher": {
         "owner": "typescript",

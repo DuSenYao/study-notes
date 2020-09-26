@@ -524,7 +524,7 @@ VSCode编辑器 常用使用方法备忘录
             * @param {*} b 
             */
           可以根据函数定义添加对应的详细JSDoc描述。这样在其他地方引用对应函数时，就能显示详细的函数提示了。
-          通过设置"javascript.suggest.completeJSDoces:false"，可以禁用JSDoc的提示。
+          通过设置"javascript.suggest.completeJSDocs:false"，可以禁用JSDoc的提示。
       2.自动导入
         自动导入可以在你编写代码时提示变量及相应的依赖。当你选择了其中某一个建议的选项后，VSCode会在文件的顶部自动导入相应的依赖。
         通过"javascript.suggest.autoImports:false"，可以禁用自动导入。
@@ -729,6 +729,107 @@ VSCode编辑器 常用使用方法备忘录
           VSCode依赖于TS的映射文件将原始的TS文件与生成的JS文件进行映射。
             ❶ 在tsconfig.json文件中需要添加sourceMap属性，并将其设置为true。
             ❷ 在集成终端中输入并执行 tsc。这条命令执行完毕后会在“outDir”属性定义的目录中生成一个file.js.map的源代码映射文件和一个file.js文件。
-            ❸ 在需要的TS文件处添加断点，然后切换到调试视图，选择预设的调试任务。就可以进行调试。在左侧的调试视图中可以看到与当前代码相关的变量信息，在调试控制台，可以对TS变量和表达式直接进行运算。
-            
-          
+            ❸ 在需要的TS文件处添加断点，然后切换到调试视图，选择预设的调试任务（launch.json -> TS Launch Node），就可以进行调试。在左侧的调试视图中可以看到与当前代码相关的变量信息，在调试控制台，可以对TS变量和表达式直接进行运算。
+        2.调试配置
+          TS文件在调试前，需要编译，所以使用了一下两个属性：
+            · preLaunchTask: 定义了在调试前要运行的任务（在tasks.json文件中设置），在调试TS之前，需要先编译TS文件
+            · outFiles: 定义了JS文件的输出路径，优先级小于tsconfig.json中的定义。
+      (6)代码编辑
+        在VSCode中的代码编辑功能方面，TS和JS非常相似，具体功能使用参考 行:512。
+        1.代码编辑的配置
+          在代码编辑方面，TS和JS主要的不同之处就是设置项的不同。
+            功能                 TS的设置项                                         JS的设置项
+            启用JSDoc            typescript.suggest.completeJSDocs                 javascript.suggest.completeJSDocs
+            启用自动导入          typescript.autoImportSuggestions.enabled          javascript.suggest.autoImports
+            启用代码格式化        typescript.format.enable                          javascript.format.enable
+            启用闭标签的自动补全   typescript.autoClosingTags                        javascript.autoClosingTags
+            设置文件移动时如何更新导入 typescript.updateImportsOnFileMove.enabled    javascript.updateImportsOnFileMove.enabled
+            是否显示CodeLens      typescript.referencesCodeLens.enabled             javascript.referencesCodeLens.enabled
+        2.隐藏JS文件
+          打开命令面板，输入并执行Preferences: Oen Settings(JSON)，打开settings.json文件，在该文件下添加以下以下配置：
+            "files.exclude": {
+              "**/*.js":{
+                "when": "$(basename).ts"
+              }
+            }
+          通过上面的配置，可以把与TS同名同级的JS文件隐藏。
+        3.使用不同版本的TS
+          有两种方式：
+            · 点击TS文件底部状态栏的TS的版本号，单击版本号选择切换
+            · 在TS文件中，打开命令面板，输入并执行 TypeScript: Select TypeScript Version
+      
+
+  八.前端开发
+    VSCode 使用前端技术栈(HTML、CSS和TS)开发而成。同时VSCode对于前端开发也提供了极佳的支持。
+    一.HTML
+      VSCode内置了对HTML的支持，包括语法高亮、代码补全、代码格式化等各类功能。
+      (1)IntelliSense
+        在HTML中编写代码时，VSCode提供了强大的智能提示。还可以通过 Ctrl + Space 快捷键触发智能提示。
+      (2)自动闭合标签
+        · 在输入>字符后，VSCode会自动插入闭合标签。
+        · 在输入/字符后，VSCode会自动插入闭合标签。
+        可以通过以下设置来禁用自动闭合标签的功能：
+          "html.autoClosingTags": false  
+      (3)颜色选择器
+        对于嵌入HTML文件的CSS样式，VSCode也会支持颜色选择器。把鼠标悬停在颜色定义上，会显示颜色选择器。单击颜色选择器顶部的颜色字符串，可以切换不同的颜色模式：#203AAD、rgb(32,58,173)及hsl(229,69%,40%)
+      (4)验证嵌入的JS和CSS
+        VSCode支持对嵌入HTML文件的JS脚本和CSS样式进行语法验证。
+        可以通过以下设置来禁用或启用验证功能，默认为启用状态：
+          // 是否对嵌入的脚本进行验证
+          "html.validate.scripts":true
+          //是否对嵌入的样式进行验证
+          "html.validate.styles":true
+      (5)代码折叠
+        代码折叠有以下两种方式：
+          · 通过单击行号与代码之间的折叠图标，可以对HTML代码进行代码折叠
+          · 通过区域标记(<!--#region-->)和(!--endregion-->)来定义代码折叠的范围
+        可以通过以下设置来切换折叠的策略
+          "[html]":{
+            "editor.foldingStrategy": "indentation"
+          }
+      (6)代码格式化
+        VSCode为HTML语言提供了代码格式化的支持，代码格式化的操作有以下两种：
+          · 格式化文档（Shift+Alt+F 快捷键）: 格式化当前的整个文件
+          · 格式化选定文件（Ctrl+K -> Ctrl+F 快捷键）: 格式当前文件所选定的文本
+        HTML代码格式化是基于js-beautify npm库进行的，通过 "html.format.*" 中的设置可以对HTML代码格式化进行定制。
+      (7)自定义HTML数据格式
+        VSCode可以自定义额外的HTML数据格式。自定义的HTML标签、属性及属性的值可以获得自动补全、显示悬停信息等功能。
+        ① 创建一个名为html.html-data.json的HTML数据格式文件
+          例子：.vscode -> html.html-data.json
+        ② 在.vscode/settings.json文件中通过html.customData设置项引入相应的HTML数据格式文件，然后，重启VSCode。
+      (8)HTML插件推荐
+        ① HTMLHint
+          这个插件式基于htmlHint npm库进行开发的，可以为HTML文件提供静态代码检查。可以在根目录创建一个.htmlhintrc文件用于配置静态代码检查的规则。详细情况看官网。
+        ② lit-html
+          lit-html基于lit-html模板库，为嵌入JS和TS 模板字符串中的HTML 提供了完善的功能。
+
+    二. CSS、SCSS和Less
+      (1)IntelliSense
+        输入CSS属性时，会有相应的提示列表。通过Ctrl+Space快捷键可以触发智能提示。
+      (2)颜色预览
+        在颜色定义的左侧有一个小方块，显示了CSS定义的颜色预览。
+        可以通过以下设置来隐藏颜色预览：
+          "editor.colorDecorators": false
+      (3)颜色选择器
+        把鼠标悬停在颜色定义上，会显示颜色选择器。单击颜色选择器顶部的颜色字符串，可以切换不同的颜色模式。
+      (4)代码折叠
+        · 通过单击行号与代码之间的折叠图标，VSCode支持对CSS代码进行代码折叠。
+        · 可以通过区域标记来定义代码折叠的范围：
+          CSS/SCSS/Less: /*#region*/ 和 /*#endregion*/
+          SCSS/Less: //#region 和 //#endregion
+        可以通过以下设置来切换折叠的策略：
+          "[CSS]": {
+            "editor.foldingStrategy": "indentation"
+          }
+      (5)静态代码检查
+        VSCode支持对CSS、SCSS和Less进行代码检查。
+        通过设置可以分别禁用或启用对CSS、SCSS和Less的静态代码检查，默认为开启状态。
+          {
+            "css.validate": true,
+            "scss.validate": true,
+            "less.validate": true,
+          }
+      (6)跳转到CSS符号
+        使用Ctrl+Shift+O 快捷键，可以快速对当前文件中的所有CSS符号进行搜索。
+      (7)悬停预览
+        把鼠标放到CSS选择器上，可以预览匹配CSS选择器的HTML代码片段。
