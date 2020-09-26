@@ -12,13 +12,16 @@
     "htmlhintrc",
     "iframe",
     "instanceof",
+    "laravel",
     "lessc",
     "mssql",
     "nocheck",
+    "nunjucks",
     "proto",
     "typeof"
   ],
   "todo-tree.tree.scanMode": "workspace",
   "eslint.enable": true,
-  "html.customData": ["./html.html-data.json"]
+  "html.customData": ["./.vscode/html.html-data.json"],
+  "css.customData": ["./.vscode/css.css-data.json"]
 }

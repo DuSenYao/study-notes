@@ -798,9 +798,7 @@ VSCode编辑器 常用使用方法备忘录
           例子：.vscode -> html.html-data.json
         ② 在.vscode/settings.json文件中通过html.customData设置项引入相应的HTML数据格式文件，然后，重启VSCode。
       (8)HTML插件推荐
-        ① HTMLHint
-          这个插件式基于htmlHint npm库进行开发的，可以为HTML文件提供静态代码检查。可以在根目录创建一个.htmlhintrc文件用于配置静态代码检查的规则。详细情况看官网。
-        ② lit-html
+        ① lit-html
           lit-html基于lit-html模板库，为嵌入JS和TS 模板字符串中的HTML 提供了完善的功能。
 
     二. CSS、SCSS和Less
@@ -833,3 +831,21 @@ VSCode编辑器 常用使用方法备忘录
         使用Ctrl+Shift+O 快捷键，可以快速对当前文件中的所有CSS符号进行搜索。
       (7)悬停预览
         把鼠标放到CSS选择器上，可以预览匹配CSS选择器的HTML代码片段。
+      (8)自定义CSS数据格式
+        VSCode可以自定义额外的CSS数据格式。自定义的CSS属性、伪类等信息可以获得自动补全、显示悬停信息等功能。
+        ① 创建一个名为css.css-data.json的CSS数据格式文件。
+          例子：.vscode/css.css-data.json
+        ② 在settings.json 文件中通过 css.customData 设置项引用相应的CSS数据格式文件。
+      (9)CSS插件提示
+        ① HTML CSS Support
+          这个插件为多种HTML相关语言提供了CSS的自动补全功能。支持的语言ID如下：
+            html、laravel-blade、razor、vue、pug、jade、handlebars、php、twig、md、nunjucks、javascript、javascriptreact、typescript、typescriptreact
+        ② SCSS IntelliSense
+          这个插件为SCSS语言听了丰富的支持
+        ③ Easy LESS
+          每次保存LESS文件后，这个插件都会自动编译Less文件，然后生成CSS文件。还可以通过 Ctrl+Shift+P 快捷键打开命令面板，然后输入并执行 Compile LESS to CSS 命令。
+    
+    三. Emmet
+      Emmet是Web开发者必不可少的工具，为HTML和CSS提供了丰富的功能，VSCode内置了Emmet。
+      (1)Emmet的支持范围
+        默认情况下，Emmet缩写扩展功能会在html、haml、jade、slim、jsx、xml、xsl、css、scss、sass、less、和stylus这些类型的文件中开启，此外，还会在继承于上述的文件的语言(如：Handlebars和php)中开启。

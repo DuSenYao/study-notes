@@ -28,8 +28,8 @@
   ],
   "valueSets": [
     {
-      "name": "name",
-      "description": "data-name valueSets",
+      "name": "data-sn",
+      "description": "data-sn valueSets",
       "values": [
         {
           "name": "file",
