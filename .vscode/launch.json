@@ -79,6 +79,13 @@
       "url": "http://localhost/index.html",
       "webRoot": "${workspaceFolder}"
     },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome Vue",
+      "url" : "http://localhost:8080",
+      "webRoot": "${workspaceFolder}"
+    },
     // 远程调试，只需要添加一个address属性
     {
       "type": "node",
