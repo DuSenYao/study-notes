@@ -849,3 +849,74 @@ VSCode编辑器 常用使用方法备忘录
       Emmet是Web开发者必不可少的工具，为HTML和CSS提供了丰富的功能，VSCode内置了Emmet。
       (1)Emmet的支持范围
         默认情况下，Emmet缩写扩展功能会在html、haml、jade、slim、jsx、xml、xsl、css、scss、sass、less、和stylus这些类型的文件中开启，此外，还会在继承于上述的文件的语言(如：Handlebars和php)中开启。
+      (2)在HTML中使用Emmet
+        在HTML文件中输入以下Emmet缩写：
+          #page>div.log+ul#navigation>li*5>a{Item $}
+        在输入Emmet缩写的过程中，Emmet 缩写会出现在建议列表中，并且会有相应的HTML预览。按下Tab键或Enter键，VSCode会在HTML文件中插入代码。
+      (3)在CSS中使用Emmet
+        在CSS属性中输入Emmet的缩写，会显示相应的CSS预览。
+      (4)使用Tab键展开Emmet缩写
+        如果想用Tab键来展开Emmet缩写，可以通过下面的设置项来设置：
+          "emmet.triggerExpansionOnTab": true 
+      (5)在建议列表禁用Emmet缩写
+        通过以下设置，可以在建议列表中禁用Emmet缩写：
+          "emmet.showExpandedAbbreviation": "never"
+      (6)Emmet缩写在建议列表中的顺序
+        通过以下设置项，可以把Emmet缩写始终放在建议列表的顶部：
+          "emmet.showSuggestionsAsSnippets": true
+          "editor.snippetSuggestions": "top"
+      (7)在其他文件中启用Emmet缩写
+        通过对 emmet.includeLanguages 进行设置，把文件类型绑定到其他支持 Emmet 的文件上，就能启用相应的文件，如可以把JS文件绑定到JavaScript React文件上
+          例子：settings.json
+        此外，可以通过以下设置，使 Emmet 缩写只在与HTML/CSS相关的文件中启用。
+          "emmet.showExpandedAbbreviation": "isMarkupAndStyleSheetFilesOnly"
+      (8)Emmet 设置项
+        可以通过 "emmet.*" 的设置项，对 Emmet 进行设置。
+      
+    四.Vue
+      Vue是一个用于构建Web应用用户界面的JS库。VSCode内置了对HTML、CSS和JS的支持，可以安装Vetur插件，为 Vue开发提供更丰富的支持。
+      (1)快速开始
+        开始进行Vue开发之前，需要安装 Vue CLI，用于生成Vue应用。
+        1.安装 Vue CLI
+          在命令行中输入以下命令来安装 Vue CLI
+            npm install -g @vue/cli
+        2.创建Vue项目
+          在命令行中输入以下命令来创建Vue应用
+            vue create my-app
+        3.运行 Vue 应用
+          在VSCode中打开集成终端，并输入以下命令，可以运行Vue应用，本地端口默认为 8080
+            npm run serve
+      (2)Vetur插件
+        Vetur插件为 Vue 开发提供了极为丰富的支持，功能包括但不限于：
+          · 语法高亮
+          · 代码片段提示
+          · Emmet缩写
+          · 静态代码检查
+          · 代码格式化
+          · 自动补全
+          · 调试
+      (3)调试Vue
+        1.添加断点
+          打开需要调试的Vue文件，在相应的代码处添加断点。
+        2.配置调试文件
+          例子：launch.json -> "Launch Chrome Vue"
+        3.配置webpack
+          需要为Webpack配置源代码映射的设置项。在 Vue 项目的根目录中创建一个vue.config.js文件，然后在文件中填入以下配置
+            module.exports = {
+              configureWebpack:{
+                devtool : 'source-map'
+              }
+            }
+        4.运行Vue应用
+          npm run server
+        5.启动调试
+          有三种方式启动调试：
+            · 在顶部的菜单栏中选择 Debug-Start Debugging
+            · 使用F5快捷键
+            · 通过左侧的活动栏切换到调试视图，然后单击绿色的调试按钮
+        6.静态代码检查
+          Vetur插件总内置了 Vue ESLint插件（eslint-plugin-vue），为 Vue 提供了强大的静态代码检查功能。对于检查出的错误或警告，会在代码下方显示波浪线，把鼠标悬停在代码上，会显示详细的错误提示信息。
+  
+  
+  九.远程开发
+    
