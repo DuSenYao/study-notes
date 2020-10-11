@@ -6,6 +6,7 @@
   <button onclick="arrayNoBranch()">以数组开头的语句不写分号</button>
   <button onclick="regularNoBrackets()">以正则表达式开头的语句不写分号</button>
   <button onclick="templateNoBrackets()">以字符串模板量开头的语句不写分号</button>
+  <button onclick="XORExchangesIntegerValues()">用异或运算交换两个整数值</button>
 </div>
 
 <script>
@@ -71,7 +72,7 @@
   }
 
   // 4. throw 和 Exception 之间不能插入换行符
-  function throwExceptionNoLineTerminatroHere(){
+  function throwExceptionNoLineTerminatorHere(){
     throw /*no LineTerminator here*/ new Exception("error");
   }
 
@@ -130,5 +131,16 @@
     var g = f/*这里没有插入分号*/
     `Template`.match(/(a)/)
     console.log(RegExp.$1)
+  }
+
+  // 异或运算小技巧：用异或运算交换两个整数的值
+  // 异或运算有个特征，两次异或运算相当于取消
+  function XORExchangesIntegerValues()
+  {
+    let a = 102; let b = 304;
+    a = a ^ b; // 342  102 ^ 304 = 342
+    b = a ^ b; // 102  342 ^ 304 = 102
+    a = a ^ b; // 304  342 ^ 102 = 304
+    console.log(a, b); // 304 102
   }
 </script>
