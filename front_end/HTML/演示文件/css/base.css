@@ -1,3 +1,5 @@
+@charset "utf-8"; /*提示CSS文件使用的字符编码方式*/
+
 body {
   margin: 0;
   padding: 0;

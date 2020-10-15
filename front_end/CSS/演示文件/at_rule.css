@@ -1,0 +1,80 @@
+@charset "utf-8"; /*提示CSS文件使用的字符编码方式*/
+
+@import "./qualified_rule.css";
+
+/*如果屏幕宽度小于600px则修改背景色*/
+@media screen and (max-width: 600px) {
+  body {
+    background-color: pink;
+  }
+}
+
+@page {
+  size: 8.5in 11in;
+  margin: 10%;
+
+  @top-left {
+    content: "Hamlet";
+  }
+
+  @top-right {
+    content: "Page " counter(page);
+  }
+}
+
+@counter-style circled-alpha {
+  system: "fixed";
+  symbols: Ⓐ Ⓑ Ⓒ Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ;
+  suffix: " ";
+}
+ul li {
+  list-style: circled-alpha;
+}
+
+@keyframes diagonal-slide {
+  from {
+    left: 0;
+    top: 0;
+  }
+
+  to {
+    left: 100px;
+    top: 100px;
+  }
+}
+
+@font-face {
+  font-family: Gentium;
+  src: url(http://example.com/fonts/Gentium.woff);
+}
+p {
+  font-family: Gentium, serif;
+}
+
+/*如果浏览器支持display:flex;那么div的样式就是display:flex*/
+@supports (display: flex) {
+  div {
+    display: flex;
+  }
+}
+/*如果浏览器不支持display:flex;且支持float:right;那么div的样式就是float:right;*/
+@supports (not (display: flex)) and (float: right) {
+  div {
+    float: right;
+  }
+}
+
+@namespace url(http://www.w3.org/1999/xhtml);
+@namespace svg url(http://www.w3.org/2000/svg);
+/* 匹配所有的XHTML <a> 元素, 因为 XHTML 是默认无前缀命名空间 */
+a {
+  color: #444;
+}
+/* 匹配所有的 SVG <a> 元素 */
+svg|a {
+  color: #696;
+}
+/* 匹配 XHTML 和 SVG <a> 元素 */
+*|a {
+  color: #444;
+}

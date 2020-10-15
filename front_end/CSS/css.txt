@@ -3,4 +3,37 @@ CSS 层叠样式表
   一.CSS语法
     1.at-rule at规则
       at-rule 由一个@关键字和后续的一个区块组成，如果没有区块，则以分号结束。这些 at-rule 在开发中使用的机会远远小于普通规则。
-      (1)
+      (1) @charset
+        用于提示CSS文件使用的字符编码方式，它如果被使用，必须出现在最前面，这个规则只在给出语法解析阶段前使用，并不影响页面上的展示效果。
+          例：@charset "utf-8";
+      (2) @import
+        用于引入一个CSS文件，除了@charset规则不会引入，@import可以引入另一个文件的全部内容。
+          例：@import "base.css";  @import url("base.css");
+      (3) @media
+        是有名的 media query 使用的规则，它能够对设备的类型进行一些判断。针对不同的屏幕尺寸设置不同的样式，适用于设计响应式页面。在media的区块内，就是普通规则。
+          例：@media screen and (max-width:600px) { body { background-color:pink;} } /*如果屏幕宽度小于600px则修改背景色*/
+      (4) @page
+        用于分页媒体访问网页时的表现设置，页面是一种特殊的盒模型结构，除了页面本身，还可以设置它周围的盒。
+          例: front_end\CSS\演示文件\at_rule.css 行10
+      (5) @counter-style
+        产生一种数据，用于定义列表项的表现。
+          例：front_end\CSS\演示文件\at_rule.css 行25
+      (6) @key-frames
+        产生一种数据，定义动画关键帧。
+          例：front_end\CSS\演示文件\at_rule.css 行34
+      (7) @fontface
+        用于定义一种字体，icon font 技术就是利用这个特性实现的。
+          例：front_end\CSS\演示文件\at_rule.css 行46
+      (8) @support
+        检查环境的特性，它与 media 比较类似。
+          例：front_end\CSS\演示文件\at_rule.css 行54
+      (9) @namespace
+        用来定义使用在CSS样式表中的XML命名空间的@规则。定义的命名空间可以把通配、元素和属性选择器限制在指定命名空间里的元素。
+        @namespace规则通常在处理包含多个namespaces的文档时才有用，比如HTML5里内联的SVG、MathML或者混合多个词汇表的XML。
+        注意：任何 @namespace 规则都必须在所有的 @charset 和 @import 规则之后, 并且在样式表中，位于其他任何 样式声明 之前。
+          例：front_end\CSS\演示文件\at_rule.css 行67
+      (10) @viewport
+        用于设置视口的一些特性，不过兼容性目前不是很好，多数时候被 HTML 的 meta 代替。
+
+    2.普通规则
+      普通规则主要由选择器和声明区块构成。声明区块又由属性和值构成。
