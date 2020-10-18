@@ -20,7 +20,7 @@ HTML 超文本标记语言
         语义化的HTML能够支持自动生成目录结构，HTML标准中专门规定了生成目录结构的算法。
         一篇文章会有一个树形的目录结构，它由各个级别的标题组成。这个树形结构可能不会跟HTML元素的嵌套关系一致。
         在HTML5中，有 section 标签，这个标签不仅仅是一个“有语义的div”，它会改变h1-h6的语义。section 的嵌套会使其中的h1-h6下降一级，因此，在HTML5以后，只需要 section 和 h1 就足以形成文档的树形结构。
-          例子：front_end\HTML\演示文件\语义类标签.html
+          例：front_end\HTML\演示文件\语义类标签.html
       3.适合机器阅读的整体结构
         越来越多的浏览器推出“阅读模式”，以及各种非浏览器终端的出现，语义化的HTML适合机器阅读的特性变得越来越重要。
         应用了语义化结构的页面，可以明确的提示出页面信息的主次关系，它能让浏览器很好的支持“阅读视图功能”，还可以让搜索引擎的命中率提升，同时，它也对视障用户的读屏软件更友好。
@@ -53,5 +53,80 @@ HTML 超文本标记语言
           · q: 表示短的引用，通常会在引用的内容周围添加引号。
           · figure: 规定具有一定  自包含性的内容（如：图片、代码、表格等），其内容应该与主内  容相关，同时元素的  位置相对于主内容是独立的，如果删除，则不应对文档流产生影响。  
           · figcaption: 为 figure元素 定义标题，应被置于figure元素的第一个或最后一个元素的位置。
-              例子：front_end\HTML\演示文件\语义类标签.html
+              例：front_end\HTML\演示文件\语义类标签.html
+          
+  二.元信息类标签
+    是什么？
+      所谓元信息，是指描述自身的信息，元信息类标签，就是HTML用于描述文档自身的一类标签，它们通常出现在 head 标签中，一般不会在页面被显示出来。
+      元信息多数情况下是给浏览器、搜索引擎等机器阅读的，有时候这些信息会在页面之外显示给用户。
+      1. head 标签
+        head 标签本身不携带任何信息，它主要是作为盛放其它语义类标签的容器使用。
+        head 标签规定了自身必须是 html 标签中的第一个标签，它的内容必须包含一个title，并且最多只能包含一个base。如果文档作为iframe，或者有其他指定了文档标题时，可以允许不包含title标签。
+      2. title 标签
+        title 标签表示文档的标题。title 应该是完整地概括整个网页的内容的。
+      3.base 标签
+        base 标签实际上是个历史遗留标签。它的作用是给页面上所有的 URL 相对地址提供一个基础。base 标签最多只有一个，它改变全局的链接地址。
+          注意：它是一个非常危险的标签，容易造成跟 JS 的配合问题，所以在实际开发中，建议使用 JS 来代替 base 标签。
+      4. meta 标签
+        meta 标签是一组键值对，它是一种通用的元信息表示标签。
+        在head中可以出现任意多个 meta 标签。一般的 meta 标签由 name 和 content 两个属性来定义。name表示元信息的名称，content表示元信息的值。
+        基本用法如下：
+          <meta name=application-name content="value">
+        这里的 name 是一种比较自由的约定，HTTP标准规定了一些 name作为公用的，也鼓励大家使用自己的name。
+        除了基本用法，meta标签还有一些变体，主要用于简化书写方式或者声明自动化行为，主要如下：
+          ① 具有 charset 属性的 meta
+            从HTML5开始，为了简化写写法，meta标签新增了 charset 属性。添加了 charset 属性的 meta 标签无需再有 name 和 content。
+              例：<meat charset="UTF-8">
+            charset型meta标签非常关键，它描述了HTML文档自身的编码形式。建议，放到head的第一个。
+            浏览器在读到这个标签前，处理的所有字符都是ASCII字符，ASCII字符是UTF-8和绝大多数字符集编码的子集，所以，在读到meta之前，浏览器理解文档大多数都不会出错，这样可以最大程度的保证不出乱码。
+            一般情况下，HTTP服务端会通过http头来指定正确的编码方式，但是有些特殊情况需要使用file协议打开一个HTML文件，则没有http头，这种时候，charset meta就非常重要。
+          ② 具有http-equiv属性的 meta
+            具有 http-equiv 属性的 meta 标签，表示执行一个命令。这样的 meta 标签可以不需要name属性了。
+              例：<meta http-equiv="content-type" content="text/html; charset=UTF-8;">  // 相当于添加了 content-type 这个http头，并且指定了 http 编码方式。
+            除了content-type，还有以下几种命令：
+              · default-style: 指定默认样式表
+                例：<meta http-equiv="default-style" content="the document's preferred stylesheet">、
+                  注意：上面 content 属性的值必须匹配同一文档中的一个 link 元素上的 title 属性的值，或者必须匹配同一文档中的一个 style 元素上的 title 属性的值。
+              · refresh: 如果 content 只包含一个正整数，则为重新载入页面的时间间隔(秒)；如果content包含一个正整数，并且后面跟着字符串";href="和一个合法的URL，则是重定向到指定链接的时间间隔(秒)。
+                例：<meta http-equiv="refresh" content="3;href=https://www.baidu.com"> // 3秒后重定向到百度
+              · set-cookie: 模拟http头 set-cookie，设置cookie
+                例：＜meta http-equiv="Set-Cookie" content="cookieValue=xxx;expires=Wednesday, 20-Jun-2007 22:33:00 GMT； path=/"＞
+                  注意：过期时间必须使用GMT的时间格式
+              · x-ua-compatible: 模拟http头 x-ua-compatible，声明ua兼容性
+                例：<meta http-equiv="X-UA-Compatible" content="IE=edge"/> // ie浏览器将执行当前支持的最高版本，大小写不敏感
+                还有特殊写法：<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/> // 安装了 Google Chrome Frame （谷歌浏览器內嵌框架）则使用谷歌浏览器内核模式，否则使用最新的IE模式
+              · content-security-policy: 模拟http头 content-security-policy，声明内容安全策略。内容策略主要指定允许的服务器源和脚本端点，这有助于防止跨站点攻击脚本攻击。
+                例：<meta http-equiv="Content-Security-Policy" content="default-src https:"> // 禁用不安全的内联，仅允许通过https加载资源
+          ③ name为viewport的meta
+            meta可以被自由定义，只要写入和读取的双方约定好 name 和 content 的格式就行。
+            它没有在HTML标准中定义，却是移动端开发的事实标准；它就是name为viewport的meta，这类的name属性为 viewport，它的 content 是一个用逗号分隔的键值对。
+              例：<meta name="viewport" content="width:500, initial-scale=1"> // 页面宽度为500，初始缩放比例为1
+            它能表示的全部属性如下：
+              · width: 页面宽度，可以取值具体的数字，也可以是 device-width，表示跟设备宽度相等。
+              · height: 页面高度，可以取值具体的数字，也可以是 device-height，表示跟设置高度相等。
+              · initial-scale: 初始缩放比例
+              · minimum-scale: 最小缩放比例
+              · maximum-scale: 最大缩放比例
+              · user-scale: 是否允许用户缩放
+            一个标准的viewport meat，如下：
+              例：<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scale=no" >
+          ④ 其他预定义的 meta
+            · application-name: 如果页面是 Web application，用这个标签表示应用名称
+            · author: 页面作者
+              例：<meta name="author" content="DSY">
+            · description: 页面描述，这个属性可以被用于搜索引擎
+            · generator: 生成页面所使用的工具，主要用于可视化编辑器。如果是手写 HTML的网页，不需要加这个 meta
+              例：<meat name="generator" content="VSCode1.50.1" >
+            · keywords: 规定一个逗号分隔的关键词列表，对于SEO非常重要
+              例： <meta name="keywords" content="HTML, meta tag, tag reference">
+            · referrer: 主要用于控制网页发送给服务器的referrer信息，可以告诉服务器端用户是从哪个页面来到当前网页的
+              例：<meat name="referrer" content="no-referrer" >
+              referrer的content常用属性值：
+                · no-referrer: 任何情况下都不发送Referrer信息
+                · no-referrer-when-downgrade: 仅当协议降级（如从HTTPS页面跳转到HTTP页面）时不发送Referrer信息。是大部分浏览器默认策略
+                · origin: 发送只包含host部分的referrer信息，也就是只包含了协议和域名的url，不包含域名后面部分，比如，来源网页url是https://www.liudaima.com/1.html，但referrer值只包含https://www.liudaima.com；
+                · origin-when-cross-origin: 仅在发生跨域访问时，发送只包含host的Referrer信息，但在同域下还是完整的，而只有协议、域名和端口都一致时，浏览器才认为是同域。
+                · unsafe-url: 全部都发送Referrer信息，是最宽松，也是最不安全的策略
+            · theme-color: 页面风格颜色，实际并不会影响页面，但是浏览器可能据此调整页面之外的 UI（如窗口边框或者 tab 的颜色）
+              例：<meta name="theme-color" content="#2932e1">
           

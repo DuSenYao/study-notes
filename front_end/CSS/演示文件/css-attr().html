@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<style>
+  .wrap {
+    margin-top: 20%;
+    margin-left: 48%;
+  }
+  .btn {
+    display: inline-block;
+    padding: 5px 20px;
+    border-radius: 4px;
+    background-color: #6495ed;
+    color: #fff;
+    text-decoration: none;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+  }
+  .btn::before {
+    content: attr(data-tip);
+    width: 80px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    background-color: #000;
+    color: #ccc;
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translate(-50%);
+    opacity: 0;
+    transition: all 0.3s;
+  }
+  .btn::after {
+    content: "";
+    border: 8px solid transparent;
+    border-top: 8px solid #000;
+    position: absolute;
+    top: 1px;
+    left: 50%;
+    transform: translate(-50%);
+    opacity: 0;
+    transition: all .3s;
+  }
+  .btn:hover::before {
+    top: -43px;
+    opacity: 1;
+  }
+  .btn:hover::after {
+    top: -13px;
+    opacity: 1;
+  }
+</style>
+
+<div class="wrap">
+  <a class="btn" data-tip="点击回答">按钮</a>
+</div>
