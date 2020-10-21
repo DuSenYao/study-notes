@@ -16,6 +16,7 @@
     cursor: pointer;
   }
   .btn::before {
+    /*attr() 用来获取被选中元素的属性值，并且在样式文件中使用。它也可以被用在伪类元素里，在伪类元素里使用，它得到的是伪元素的原始元素的值。*/
     content: attr(data-tip);
     width: 80px;
     padding: 5px 10px;
