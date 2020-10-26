@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<head>
+  <title>link标签</title>
+  <link rel="stylesheet" href="./css/base.css"  type="text/css">
+  <!--将PC版页面指向移动版页面，有利于搜索引擎，对不同设备的用户提供不同类型的页面-->
+  <link rel="alternate" media="only screen and (max-width:640px)" href="http://m.mobile.com">
+  <!--有title属性，rel属性值同时包含alternate stylesheet的<link>作为备选样式CSS文件加载，默认不渲染-->
+  <link href="./css/alternate-red.css" rel="alternate stylesheet"  type="text/css" title="红色">
+  <link href="./css/alternate-green.css" rel="alternate stylesheet" type="text/css" title="绿色">
+</head>
+
+<div class="main">
+  <button onclick="changeBackground('红色')">切换红色背景</button>
+  <button onclick="changeBackground('绿色')">切换绿色背景></button>
+</div>
+
+<script>
+  function changeBackground(color)
+  {
+    document.querySelectorAll("link[title]").forEach(function(link) {
+      link.disabled = true;
+    });
+    document.querySelector("link[title=" + color + "]").disabled = false;
+  }
+</script>
