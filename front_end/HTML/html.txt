@@ -143,15 +143,31 @@ HTML 超文本标记语言
       link标签的链接类型主要通过 rel 属性来区分，有以下几种：
         (1)超链接类link标签
           超链接link标签是一种被动型链接，在用户不操作的情况下，它们不会被主动下载。
-          · canonical型link: 这个标签提示页面它的主URL，在网站中常常有多个URL指向同一页面的情况，搜索引擎访问这类页面时会去掉重复的页面，这个link会提示搜索引擎保留哪一个URL。
+          ① canonical型link: 这个标签提示页面它的主URL，在网站中常常有多个URL指向同一页面的情况，搜索引擎访问这类页面时会去掉重复的页面，这个link会提示搜索引擎保留哪一个URL。
             例：<link rel="canonical" href="...">
-          · alternate型link: 这个标签提示页面它的变形形式，这个所谓的变形可能是当前页面的不同格式、不同语言或不同设备设计的版本，这种 link 通常也是提供给搜索引擎使用。
+          ② alternate型link: 这个标签提示页面它的变形形式，这个所谓的变形可能是当前页面的不同格式、不同语言或不同设备设计的版本，这种 link 通常也是提供给搜索引擎使用。
             例：front_end\HTML\演示文件\alternate型link标签.html
-          · prev型link 和 next型link: 在互联网应用中，很多网页都属于一个序列，比如分页浏览的场景，或者图片展示的场景，每个网页是序列中的一个项。这种时候，就适合使用 prev 和 next 型的 link 标签，来告诉搜索引擎或者浏览器它的前一项和后一项，这有助于页面的批量展示。因为 next 型 link 告诉浏览器“这是很可能访问的下一个页面”，HTML 标准还建议对 next 型 link 做预处理。
+          ③ prev型link 和 next型link: 在互联网应用中，很多网页都属于一个序列，比如分页浏览的场景，或者图片展示的场景，每个网页是序列中的一个项。这种时候，就适合使用 prev 和 next 型的 link 标签，来告诉搜索引擎或者浏览器它的前一项和后一项，这有助于页面的批量展示。因为 next 型 link 告诉浏览器“这是很可能访问的下一个页面”，HTML 标准还建议对 next 型 link 做预处理。
             例：<link rel="prev" href="http://www.example.com/page-2.html">  <link rel="next" href="http://www.example.com/page-4.html">
-          · 其他超链接类的 link
+          ④ 其他超链接类的 link
             其他超链接类link标签都表示一个跟当前文档相关联的信息，可以把这样的link标签视为一种带链接功能的meta标签。
             · rel="author": 链接到本页面的作者，一般是mailto协议
             · rel="help": 链接到本页面的帮助页
             · rel="license": 链接到本页面的版权信息页
-            · rel="search": 链接到本页面的搜索页面（一般是站内提供搜索时使用）            
+            · rel="search": 链接到本页面的搜索页面（一般是站内提供搜索时使用）
+        (2)外部资源类link标签
+          外部资源型link标签会被主动下载，并且根据 rel 类型作不同处理。
+          ① icon型link
+            这类链接表示页面的icon。多数浏览器会读取icon型link，并且把页面的icon展示出来。
+            icon型link是唯一一个外部资源类的元信息link，其他元信息link都是超链接，这意味着，icon型link中的图标地址默认会被浏览器下载和使用。
+            如果没有指定这样的link，多数浏览器会使用域名根目录下的 favicon.ico，即使它不存在，所以从性能的角度考虑，建议一定要保证页面中有icon型的link。
+            只有icon型link有有效的sizes属性，HTML标准允许一个页面出现多个icon型link，并用sizes指定它适合的icon尺寸。
+          ② 预处理类link
+            导航到一个网站需要经过 DNS查询、建立连接、传输数据、加载入内存、渲染等一系列的步骤。预处理类link标签就是允许控制浏览器，提前针对一些资源去做这些操作，以提高性能。
+            · dns-prefetch型link: 提前对一个域名做dns查询，这样的link里面的href实际只有域名有意义。
+            · preconnect型link: 提前对一个服务器建立TCP连接。
+            · prefetch型link: 提前取href指定的url的内容。
+            · preload型link: 提前加载href指定的内容。
+            · prerender型link: 提前渲染href指定的url
+          ③ modulepreload型link
+            
