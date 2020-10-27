@@ -170,4 +170,10 @@ HTML 超文本标记语言
             · preload型link: 提前加载href指定的内容。
             · prerender型link: 提前渲染href指定的url
           ③ modulepreload型link
-            
+            作用是预先加载一个JS的模块。这可以保证JS模块不必等到执行时才加载。这里的加载，是指完成下载并放入内存，并不会执行对应的JS。
+          ④ stylesheet型link
+            基本用法是从一个CSS文件创建一个样式表。这里可以没有type属性，如果有，必须是"text/css"才有效。
+          ⑤ pingback型link
+            表示本网页被引用时，应该使用的pingback地址，这个机制是一份独立的标准，遵守pingback协议的网页在引用本页面时，会向 pingback url 发送一个消息。常用于博客等。
+              例：<link rel="pingback" href="www.f.com/xmlrpc.php" />
+          
