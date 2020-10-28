@@ -177,3 +177,5 @@ HTML 超文本标记语言
             表示本网页被引用时，应该使用的pingback地址，这个机制是一份独立的标准，遵守pingback协议的网页在引用本页面时，会向 pingback url 发送一个消息。常用于博客等。
               例：<link rel="pingback" href="www.f.com/xmlrpc.php" />
           
+    2. a标签
+      具有href的a标签会产生超链接，也就是不会被主动下载的被动型链接。
