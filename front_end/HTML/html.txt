@@ -179,3 +179,34 @@ HTML 超文本标记语言
           
     2. a标签
       具有href的a标签会产生超链接，也就是不会被主动下载的被动型链接。
+      a标签也有rel属性，其中一些跟link中的相同，有以下几种：
+        · alternate
+        · author
+        · help
+        · license
+        · next
+        · prev
+        · search
+        这些跟link语义完全一致，不同的是，a标签产生的链接是会显示在实际网页中，而link标签仅仅是元信息。
+      a标签独有的rel属性：
+        · tag: 表示本网页所属的标签（关键字）。
+        · bookmark: 到上级文章的链接。
+      a标签辅助类型的rel，用于提示浏览器或搜索引擎做一些处理：
+        · nofollow: 此链接不会被搜索引擎索引。
+        · noopener: 此链接打开的网页无法使用 opener 来获得当前页面的窗口。
+        · noreferrer: 此链接打开的网页无法使用 referrer 来获取当前页面的url。
+        · opener: 打开的网页可以使用 window.opener 来访问当前页面的window对象，这是a标签的默认行为。
+    
+    3. area标签
+      area标签与a标签非常相似，不同的是，area标签是区域型链接。area标签支持的rel跟a标签完全一致。
+      area是整个HTML规则中唯一支持非矩形热区的标签，但area不支持各种曲线的路径，它的 shape 属性支持4种类型：
+        · circle/circ: 圆形，coords支持3个值，分别表示中心点的x，y坐标和圆形半径r。
+        · rect/rectangle: 矩形，coords支持2个值，分别表示两个对角顶点x1，y1和x2，y2。
+        · poly/polygon: 多边形，coords至少包括6个值，表示多边形的各个顶点。
+        · default: 指的是 整个图像区域。
+      使用area注意事项：
+        1. area必须跟img和map标签配合使用。area标签永远在map内部。
+        2. map：定义一个客户端图像映射。图像映射（image-map）指带有可点击区域的一幅图像。必须有name和id属性，且id和name属性的值必须相同（浏览器兼容）。
+        3. img：使用usemap是将图像定义为客户器端图像映射（以“#”开头），与map元素的name或id属性相关联。
+        4. area没有href不起作用。
+        例：front_end\HTML\演示文件\area和map标签.html

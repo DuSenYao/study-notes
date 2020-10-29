@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="./css/base.css">
+
+<div class="main">
+  <img src="../HTML与CSS知识结构.png" usemap="#shapes" alt="没有图片"> <!--usemap是将图像定义为客户器端图像映射（以“#”开头），与map元素的name或id属性相关联。-->
+  <map name="shapes" id="shapes">
+    <area shape=rect coords="200,200,100,100"> <!--没有href属性不起作用-->
+    <area shape=rect coords="25,25,125,125" href="red.html" alt="red box">
+    <area shape=circle coords="200,75,50" href="green.html">
+    <area shape=poly coords="325,25,262,125,388,125" href="blue.html">
+    <area shape=poly coords="450,25, 435,60 ,400,75, 435,90, 450,125, 465,90, 500,75, 465,60" href="yellow.html">
+    <area shape="default" href="pink.html"><!--shape的属性为default，指的是整个图像区域 -->>
+  </map>
+</div>
