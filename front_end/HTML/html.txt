@@ -178,7 +178,7 @@ HTML 超文本标记语言
               例：<link rel="pingback" href="www.f.com/xmlrpc.php" />
           
     2. a标签
-      具有href的a标签会产生超链接，也就是不会被主动下载的被动型链接。
+      具有href的a标签会产生超链接，就是不会被主动下载的被动型链接。
       a标签也有rel属性，其中一些跟link中的相同，有以下几种：
         · alternate
         · author
@@ -201,7 +201,7 @@ HTML 超文本标记语言
       area标签与a标签非常相似，不同的是，area标签是区域型链接。area标签支持的rel跟a标签完全一致。
       area是整个HTML规则中唯一支持非矩形热区的标签，但area不支持各种曲线的路径，它的 shape 属性支持4种类型：
         · circle/circ: 圆形，coords支持3个值，分别表示中心点的x，y坐标和圆形半径r。
-        · rect/rectangle: 矩形，coords支持2个值，分别表示两个对角顶点x1，y1和x2，y2。
+        · rect/rectangle: 矩形，coords支持4个值，分别表示两个对角顶点x1，y1和x2，y2。
         · poly/polygon: 多边形，coords至少包括6个值，表示多边形的各个顶点。
         · default: 指的是 整个图像区域。
       使用area注意事项：
