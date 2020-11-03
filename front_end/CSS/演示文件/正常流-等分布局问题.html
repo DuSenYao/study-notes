@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<style>
+  .inner {
+    width: 33.3%;
+    height: 100px;
+    display: inline-block;
+    outline: blue solid 1px;
+  }
+  .inner:last-child {
+    margin-right: -5px; /*解决旧版本浏览器中会换行*/
+  }
+  .outer {
+    font-size: 0;
+    width: 100px;
+  }
+</style>
+
+<div class="outer">
+  <div class="inner"></div>
+  <div class="inner"></div>
+  <div class="inner"></div>
+</div>
