@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<div>
+  <!--data uri 技巧，通常用于CSS设置背景图-->
+  <img src='data:image/svg+xml;charset=utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="100" style="fill:rgb(0,0,255);stroke-width:1;stroke:rgb(0,0,0)"/></svg>'/>
+  
+  <!--这个图片，当指定了宽度后，图片被等比例缩放了。这个特性非常重要，适用于既要限制图片尺寸，又要保持图片比例的场景。-->
+  <img src='data:image/svg+xml;charset=utf8,<svg width="600" height="400" version="1.1"
+    xmlns="http://www.w3.org/2000/svg"><ellipse cx="300" cy="150" rx="200" ry="80"
+    style="fill:rgb(200,100,50);
+    stroke:rgb(0,0,100);stroke-width:2"/></svg>' width="100"/>
+
+    <!--5像素比的设备使用2500像素的图片，以此类推。对于不支持 srcset 的浏览器，显示src的图片。srcset里没有给出像素比的设置，各个浏览器的选择策略不同-->
+    <img srcset="
+      http://placehold.it/2500 5x,
+      http://placehold.it/1500 3x,
+      http://placehold.it/1000 2x,
+      http://placehold.it/500  1x
+    "
+    src="http://placehold.it/500/abc"
+    >
+
+    <!--对于 viewport 在 500px 及以下的使用 500w 的图片，以此类推，最后一个是前面的媒体查询都不符合的情况下使用 2000w 的图片。这里如果没有相对应的 w描述，一般选择第一个大于它的。-->
+    <img
+      srcset="
+          http://placehold.it/2000 2000w,
+          http://placehold.it/1500 1500w,
+          http://placehold.it/1000 1000w,
+          http://placehold.it/500 500w
+      "
+      sizes="
+          (max-width: 500px) 500px,
+          (max-width: 1000px) 1000px,
+          (max-width: 1500px) 1500px,
+          2000px
+      "
+      alt="2"
+      src="http://placehold.it/500/abc"
+    />
+
+    <!--
+      这里图片的选择就是：viewport 宽度乘以1或0.8或0.5得到的像素来选择不同的 w 。
+      比如 viewport 为 800px ，对应 size 80vw ，就是 800*0.8=640 像素，应该加载一个 640w 的源图，但是没有找到 640w ，这时候一般选择第一个大于 640w 的，也就是 1000w。
+      对于没有给出 sizes 的，一般是按照 100vw 来选择加载图片 
+    -->
+    <img
+    srcset="
+        http://placehold.it/2000 2000w,
+        http://placehold.it/1500 1500w,
+        http://placehold.it/1000 1000w,
+        http://placehold.it/500 500w
+    "
+    sizes="
+        (max-width: 500px) 100vw,
+        (max-width: 1000px) 80vw,
+        (max-width: 1500px) 50vw,
+        2000px
+    "
+    src="http://placehold.it/500/abc"
+/>
+</div>
