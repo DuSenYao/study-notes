@@ -18,18 +18,25 @@
   "globalAttributes": [
     {
       "name": "data-code",
-      "description": "data-code Attribute"
+      "description": "data-code Attribute",
+      "references": [
+        {
+          "name": "MDN",
+          "url": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Global_attributes/data-*"
+        }
+      ],
+      "valueSet": "data-name"
     },
     {
       "name": "data-name",
       "description": "data-name Attributes",
-      "valueSet": "name"
+      "valueSet": "data-name"
     }
   ],
   "valueSets": [
     {
-      "name": "data-sn",
-      "description": "data-sn valueSets",
+      "name": "data-name",
+      "description": "data-name valueSets",
       "values": [
         {
           "name": "file",

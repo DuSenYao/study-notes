@@ -867,11 +867,14 @@ VSCode编辑器 常用使用方法备忘录
           "editor.snippetSuggestions": "top"
       (7)在其他文件中启用Emmet缩写
         通过对 emmet.includeLanguages 进行设置，把文件类型绑定到其他支持 Emmet 的文件上，就能启用相应的文件，如可以把JS文件绑定到JavaScript React文件上
-          例子：settings.json
+          例：settings.json
         此外，可以通过以下设置，使 Emmet 缩写只在与HTML/CSS相关的文件中启用。
           "emmet.showExpandedAbbreviation": "isMarkupAndStyleSheetFilesOnly"
       (8)Emmet 设置项
         可以通过 "emmet.*" 的设置项，对 Emmet 进行设置。
+      (9)自定义Emmet片段
+        创建snippets.json文件，通过 emmet.extensionsPath 设置文件位置，到文件夹，不写文件名。
+          例：.vscode\snippets.json
       
     四.Vue
       Vue是一个用于构建Web应用用户界面的JS库。VSCode内置了对HTML、CSS和JS的支持，可以安装Vetur插件，为 Vue开发提供更丰富的支持。

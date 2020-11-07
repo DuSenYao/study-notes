@@ -4,6 +4,7 @@
     {
       "name": "my-size",
       "description": "Compiles down to 'width' and 'height'. See details at https://github.com/postcss/postcss-size",
+      "relevance": 30,
       "references": [
         {
           "name": "GitHub",
