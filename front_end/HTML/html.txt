@@ -246,4 +246,52 @@ HTML 超文本标记语言
         注释：x（像素比描述） w（图片像素宽度描述）
     3.picture
       picture元素可以根据屏幕的条件为其中的 img元素 提供不同的源，是比img的srcset更好的选择。
-      
+      picture的元素设计跟 audio 和 video 保持了一致。它跟 img搭配sizes和srcset不同，它使用 source元素 来指定图片源，并且支持多个。
+      source元素的media属性是 media query，跟CSS的 @media 规则一致。
+      基本用法：
+        <picture>
+          <source srcset="image-wide.png" media="(min-width: 600px)">
+          <img src="image-narrow.png">
+        </picture>
+    4.video
+      在早期的HTML5中，video标签跟img标签类似，也是使用src属性来引入源文件的。但是，现在考虑到各个浏览器支持的视频格式不同，video标签跟picture元素一样，也是提倡使用source。
+      基本用法：
+        <video controls>
+          <source src="myVideo.mp4" type="video/mp4">
+          <source src="myVideo.webm" type="video/webm">
+          <p>Your browser doesn't support HTML5 video. Here is a <a href="myVideo.mp4">link to the video</a> instead.</p>
+        </video>
+      source标签除了支持media之外，还可以使用 type 来区分源文件的使用场景。video标签如果要支持更古老的浏览器，还可以在其中加入 object 或 embed标签。
+      video中还支持一种标签：track，track是一种播放时序相关的标签，它最常见的用途是字幕。track标签中，必须使用 srclang 来指定字幕。
+      此外track具有 kind 属性，共有五种：
+        · subtitles: 字幕，也可能是补充性说明。
+        · captions: 报幕内容，可能包含演职员表等元信息。适合听障人士或没有打开声音的人了解音频内容。
+        · descriptions: 视屏描述信息，适合视障人士或没有视屏播放功能的终端打开视屏时了解视频内容。
+        · chapters: 章节标题用于用户浏览媒体资源时。
+        · metadata: 给代码提供的元信息，对普通用户不可见。
+      一个完整的video标签可能会包含多种 track 和多个 source，这些共同构成了一个视频播放所需的全部信息。
+    5.audio
+      用于嵌入音频内容。跟 picture 和 video 两种标签一样，audio也可以使用 source 元素来指定源内容。
+        例：front_end\HTML\演示文件\替换型元素-audio.html
+    6.iframe
+      这个标签能够嵌入一个完整的网页。不过，在移动端，iframe 受到了相当多的限制，它无法指定大小，里面的内容会被完全平铺到父级页面上。同时，很多网页也会通过http协议头禁止自己被放入 iframe 中。
+      iframe也是各种安全问题的重灾区。opener、window.name、甚至 css的opacity都是黑客可以利用的漏洞。因此，任何情况下都不应该使用以前的iframe。
+      在新标准中，为iframe加入了 sandbox模式 和 srcdoc 属性，这样，给iframe带来了一定新场景。
+        例：<iframe sandbox srcdoc="<p>Yeah, you can see it <a href='/gallery?mode=cover&amp;amp;page=1'>in my gallery</a>." src="http://www.baidu.com"></iframe>
+        · sandbox: 该属性对呈现在 iframe 框架中的内容启用一些额外的限制条件。属性值可以为空字符串（这种情况下会启用所有限制），也可以是用空格分隔的一系列指定的字符串。
+        · srcdoc: 该属性是一段HTML代码，这些代码会被渲染到 iframe 中，使用srcdoc不会涉及到跨域问题。如果浏览器不支持 srcdoc 属性，则会渲染 src 属性表示的内容。
+
+  五.Flex排版
+    Flex排版的核心是 display:flex 和 flex属性，它们配合使用。具有 display:flex 的元素称为 flex容器，它们的子元素或盒被称为 flex项。
+    flex项如果有 flex属性，会根据 flex 方向代替宽/高属性，形成"填补剩余尺寸"的特性，这是一种典型的"根据外部容器决定内部尺寸"的思路，也是最常用的Windows和Apple窗口系统的设计思路。
+    flex的原理：
+      如何实现：
+        Flex布局支持横向和纵向，这样就需要做一个抽象，把 Flex 延伸的方向称为"主轴"，把跟它垂直的方向称为"交叉轴"。这样，flex项的 width 和 height 被称为交叉轴尺寸或主轴尺寸。
+        而Flex又支持反向排布，这样，又需要抽象出交叉轴起点、交叉轴终点、主轴起点、主轴终点，它们可能是 top、left、bottom、right。
+        Flex布局中有一种特殊情况，就是 flex容器没有指定主轴尺寸，这个时候，实际上 Flex 属性完全没有用了，所有 flex 尺寸都可以被当做0来处理，flex容器的主轴尺寸等于其他所有 flex 主轴尺寸之和。
+      第一步：
+        把flex项分行，有flex属性的flex项可以暂且认为主轴尺寸为0，所以，它一定可以放进当前行。
+      第二步：
+        计算每个 flex项 主轴尺寸和位置。
+      第三步：
+        计算 flex项 的交叉轴尺寸和位置。

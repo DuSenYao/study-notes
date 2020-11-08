@@ -19,7 +19,8 @@
     "nocheck",
     "nunjucks",
     "proto",
-    "typeof"
+    "typeof",
+    "vorbis"
   ],
   "todo-tree.tree.scanMode": "workspace",
   "eslint.enable": true,
