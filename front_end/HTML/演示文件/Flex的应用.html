@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<style>
+  /* 垂直居中 */
+  #parent {
+    display: flex;
+    width: 300px;
+    height: 300px;
+    outline: 1px solid;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  #child {
+    width: 100px;
+    height: 100px;
+    outline: 1px solid;
+  }
+  /* 两列等高 */
+  .parent {
+    display: flex;
+    width: 300px;
+    justify-content: center;
+    align-content: center;
+    align-items: stretch;
+    margin-bottom: 2em;
+  }
+  .child {
+    width: 100px;
+    outline: 1px solid;
+  }
+  /* 自适应宽 */
+  .parent2 {
+    display: flex;
+    width: 300px;
+    height: 200px;
+    background-color: skyblue;
+  }
+  .child1 {
+    width: 100px;
+    background-color: antiquewhite;
+    outline: 1px solid;
+  }
+  .child2 {
+    width: 100px;
+    flex: 1;
+    outline: 1px solid;
+  }
+</style>
+
+<!-- 垂直居中 -->
+<div id="parent">
+  <div id="child">垂直居中</div>
+</div>
+
+<!-- 两列等高 -->
+<div class="parent">
+  <div class="child" style="height: 100px"></div>
+  <div class="child">两列等高</div>
+</div>
+<br />
+<div class="parent">
+  <div class="child"></div>
+  <div class="child" style="height: 100px"></div>
+</div>
+
+<!-- 自适应宽 -->
+<div class="parent2">
+  <div class="child1"></div>
+  <div class="child2">自适应宽</div>
+</div>
