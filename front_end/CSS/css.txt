@@ -206,3 +206,29 @@ CSS 层叠样式表
   三.CSS动画交互
     在CSS属性中，有一类属性，它负责的不是静态的展示，而是根据用户的行为产生交互。
     1.animation属性 和 transition属性
+      (1)animation
+        animation是一个简写属性，它分为6个部分：
+          · animation-name: 动画的名称。这是一个 keyframes 类型的值
+            keyframes的主体结构是一个名称和花括号中的定义，它按百分比来规定数值（这里的0%和100%可以写成from和to），keyframes需要配合@规则使用，产生一种数据，用来定义动画关键帧，关键帧之间使用 animation-timing-function 作为时间曲线。
+          · animation-duration: 动画的时长
+          · animation-timing-function: 动画的时间曲线
+          · animation-delay: 动画开始前的延迟
+          · animation-iteration-count: 动画的次数
+          · animation-direction: 动画的方向
+          例：front_end\CSS\演示文件\动画交互-animation.html 行77
+      (2)transition
+        transition是一个简写属性，用于设置四个过渡属性：
+          · transition-property: 要变换的CSS属性名称
+          · transition-duration: 完成过渡效果需要多少秒或毫秒
+          · transition-timing-function: 时间曲线
+          · transition-delay: 延迟
+            例：front_end\CSS\演示文件\动画交互-animation.html 行80
+          这四个属性可以重复多次，指定多个属性的变化规则，用逗号隔开。
+          transition也可以和animation组合，抛弃 animation的 timing-function，以编排不同段用不同的时间曲线。
+            例：front_end\CSS\演示文件\动画交互-animation.html 行83
+    2.贝塞尔曲线
+      贝塞尔曲线是一种插值曲线，它描述了两个点之间差值来形成连续的曲线形状的规则。
+      一个量从一个值变化到另一个值，如果希望它按照一定时间平滑过渡，就必须对它进行插值。
+      贝塞尔曲线是一种被工业生产验证了很多年的曲线，它最大的特点就是“平滑”。时间曲线平滑，意味着较少突兀的变化，这是一般动画设计所追求的。
+      贝塞尔插值算法原理：front_end\CSS\演示文件\动画互动-贝塞尔曲线.html
+      理论上，贝塞尔曲线可以通过分段的方式拟合任意曲线，但是有一些特殊的曲线，是可以用贝塞尔曲线完美拟合的，比如抛物线。

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>动画互动-贝塞尔曲线模拟抛物线</title>
+    <style>
+      .ball {
+        width: 10px;
+        height: 10px;
+        background-color: black;
+        border-radius: 5px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform: translateY(180px);
+      }
+    </style>
+  </head>
+  <body>
+    <label>运动时间：<input value="3.6" type="number" id="t" />s</label><br />
+    <label>初速度：<input value="-21" type="number" id="vy" /> px/s</label
+    ><br />
+    <label>水平速度：<input value="21" type="number" id="vx" /> px/s</label
+    ><br />
+    <label>重力：<input value="10" type="number" id="g" /> px/s²</label><br />
+    <button onclick="createBall()">来一个球</button>
+  </body>
+  <script>
+    // 根据初速度、重力、时间计算贝塞尔曲线
+    function generateCubicBezier(v, g, t) {
+      var a = v / g;
+      var b = t + v / g;
+
+      return [
+        [
+          (a / 3 + (a + b) / 3 - a) / (b - a),
+          ((a * a) / 3 + (a * b * 2) / 3 - a * a) / (b * b - a * a),
+        ],
+        [
+          (b / 3 + (a + b) / 3 - a) / (b - a),
+          ((b * b) / 3 + (a * b * 2) / 3 - a * a) / (b * b - a * a),
+        ],
+      ];
+    }
+
+    function createBall() {
+      // 获取输入的数值
+      var t = Number(document.getElementById("t").value);
+      var vx = Number(document.getElementById("vx").value);
+      var vy = Number(document.getElementById("vy").value);
+      var g = Number(document.getElementById("g").value);
+      // 创建一个球
+      var ball = document.createElement("div");
+      ball.className = "ball";
+      // 将球加入页面中
+      document.body.appendChild(ball);
+      // 设置球的left时间和top贝塞尔曲线
+      ball.style.transition = `left linear ${t}s, top cubic-bezier(${generateCubicBezier(vy, g, t)}) ${t}s`;
+      // 0.1s后设置球移动的最终位置
+      setTimeout(function () {
+        ball.style.left = `${vx * t}px`;
+        ball.style.top = `${vy * t + 0.5 * g * t * t}px`;
+      }, 100);
+      // t秒后移除球
+      setTimeout(function () {
+        document.body.removeChild(ball);
+      }, t * 1000);
+    }
+  </script>
+</html>
