@@ -338,9 +338,16 @@ HTML 超文本标记语言
       CDATA 也是一种文本，它存在的意义是语法上的意义：在 CDATA 节点内，不需要考虑多数的转义情况。CDATA 内，只有字符组合]]>需要处理，这里不能使用转义，只能拆成两个 CDATA 节点。
     3.注释语法
       HTML注释语法以 <!-- 开头，以 --> 结尾，注释的内容除了 --> 外都没有问题。如果注释的内容一定要出现 -->，可以拆分成多个注释节点
-    4.DTD语法
-      SGML的 DTD语法 十分复杂，但是对于HTML来说，DTD的选项其实是有限的，浏览器在解析DTD时，把它当做几种字符串之一。
-      DTD
+    4.DTD语法（文档类型定义）
+      DTD的全称是 Document Type Defination，也就是文档类型定义。SGML用DTD来定义每一种文档类型，HTML属于SGML，在HTML5出现之前，HTML都是使用符合SGML的DTD。
+      SGML的DTD比较复杂并且没有什么实际作用（浏览器根本不会用SGML引擎去解析它们），因此，在HTML5，放弃了SGML子集这项坚持，规定了一个比较简单的DTD：
+        <!DOCTYPE html>
+      SGML的 DTD语法 十分复杂，但是对于HTML来说，DTD的选项其实是有限的，浏览器在解析DTD时，把它当做几种字符串之一。 
     5.ProcessingInstruction语法（处理指令）
       ProcessingInstruction 多数情况下，是给机器看的。HTML 中规定了可以有 ProcessingInstruction，但是并没有规定它的具体内容，所以可以把它视为一种保留的扩展机制。对浏览器而言，ProcessingInstruction 的作用类似于注释。
       ProcessingInstruction 包含两个部分，紧挨着第一个问号后，空格前的部分被称为“目标”，这个目标一般表示处理 ProcessingInstruction 的程序名。剩余部分是它的文本信息，没有任何格式上的约定，完全由文档编写者和处理程序的编写者约定。
+    6.文本实体
+      实体文本就是类似以下的代码：
+        &lt; &nbsp; &gt; &amp;
+      每一个文本实体以&开头，由;结尾，这是属于基本语法的规定，文本实体对大小写敏感。文本实体也可以用#后跟一个十进制数字，表示字符Unicode值，如下：
+        &#160;(&nbsp;)  &#60;(&lt;)  &#62;(&gt;)
