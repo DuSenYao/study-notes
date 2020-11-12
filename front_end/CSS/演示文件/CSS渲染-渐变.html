@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSS渲染-渐变</title>
+    <style>
+      #gold {
+        height: 100px;
+        width: 100px;
+        background: linear-gradient(45deg, gold 10%, yellow 50%, gold 90%);
+        margin-bottom: 60px;
+      }
+
+      .button {
+        display: inline-block;
+        outline: none;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        font: 14px/100% Arial, Helvetica, sans-serif;
+        padding: 0.5em 2em 0.55em;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+        border-radius: 0.5em;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        color: white;
+        border: solid 1px transparent;
+      }
+
+      .radial {
+        height: 100px;
+        width: 100px;
+        margin-top: 60px;
+        background: radial-gradient(circle farthest-side at top left, blue 20px, green 20px 60px, red);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="gold"></div>
+    <div class="button">按钮</div>
+    <div class="radial"></div>
+  </body>
+  <script>
+    var btn = document.querySelector(".button");
+    var h = 25;
+    // HSL颜色的应用
+    setTimeout(function () {
+      h++;
+      h = h % 360;
+      btn.style.borderColor = `hsl(${h}, 95%, 45%)`;
+      btn.style.background = `linear-gradient(to bottom,  hsl(${h},95%,54.1%),  hsl(${h},95%,84.1%))`;
+    }, 100);
+  </script>
+</html>
