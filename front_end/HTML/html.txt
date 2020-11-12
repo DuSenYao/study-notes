@@ -351,3 +351,53 @@ HTML 超文本标记语言
         &lt; &nbsp; &gt; &amp;
       每一个文本实体以&开头，由;结尾，这是属于基本语法的规定，文本实体对大小写敏感。文本实体也可以用#后跟一个十进制数字，表示字符Unicode值，如下：
         &#160;(&nbsp;)  &#60;(&lt;)  &#62;(&gt;)
+
+  七.ARIA
+    ARIA全称Accessible Rich Internet Application，它表现为一组属性，是用于可访问性的一份标准。
+    可访问性其实是一个相当大的课题，它的定义包含了各种设备访问、各种环境、各种人群访问的友好性。不单是残障人士需要用到可访问性，健康人也可能在特定时间处于需要可访问性的环境。
+    1.综述
+      整体来看，ARIA给HTML元素添加的一个核心属性是 role，
+        例：<span role="checkbox" aria-checked="false" tabindex="1" aria-labelledby="chk1-label"></span><label id="chk1-label">Remember my preferences</label>
+      这个例子中给span添加了 role="checkbox"，这样，表示这个span被用于checkbox，意味着，可能已经用JS代码绑定了这个span的click事件，并且以 checkbox 的交互方式来处理用户操作。
+      同时，ARIA系统还提供了一系列ARIA属性给 checkbox 这个 role，这意味着，可以通过HTML属性变化来理解这个JS组件的状态，读屏软件等第三方客户端，就可以理解UI变化，这就是ARIA标准的意义。
+      role的定义是一个树形的继承关系：
+             - widget
+        role - structure
+             - window
+      其中，widget表示一些可交互的组件，structure表示文档中的结构，window表示窗口。
+    2.ARIA角色
+      (1)Widget角色
+        Widget角色跟桌面开发中的组件类似，它表示一个可交互的组件，它们有：
+          front_end\CSS\演示文件\image\ARIA-Widget角色(可交互组件).jpg
+        按照继承关系有一份列表和简要说明：
+          front_end\CSS\演示文件\image\ARIA-Widget角色的继承关系列表和简要说明.jpeg
+        ARIA role 允许多继承。
+        注意：这些 role 可以出现在任何一个HTML元素上，但这些ARIA属性，不会改变任何一个元素的行为。
+        Widget角色同时还会带来对应的ARIA属性，例如：
+          · Checkbox角色: 
+            ① aria-checked: 表示复选框是否被选中
+            ② aria-labelledby: 值为某个元素的ID，表示ID对应元素的值
+          · Button: 
+            ① aria-pressed: 按钮是否已经被按下
+            ② aria-expanded：按钮控制的目标是否已经被展开
+        除了它们本身的属性外，可交互组件还有继承来的属性，比如：switch角色继承了checkbox，因此，它也可以使用 aria-checked 属性。这些ARIA属性都是需要在JS中维护的。
+        除了简单的widget，还有一些比较复杂的角色，需要多个角色一起配合，例如：
+          · Combobox: 一个带选项的输入框，常见的搜索引擎，一般提供的就是这样的输入框，当输入时，它会提供若干提示选项。
+          · Grid: 一个表格，它会分成行、列，行列又有行头和列头，表示行、列的意义。
+          · TabList: 一个可切换的结构，一般被称为选项卡，它包含了tab头和tabPanel，在tab容器中，可能包含各种组件。
+          · ListBox: 一个选中的列表，它内部具有角色为 Option 的选项。
+          · Menu: 指菜单，菜单中可加入嵌套的菜单项(Menuitem角色)，除了普通菜单项，还有 MenuitemCheckbox 带复选框的菜单项和 MenuitemRadio 带单选框的菜单栏。
+          · RadioGroup: 是一组互斥的单选框的容器，它内部可以有若干个角色为 radio的单选框。
+          · Tree: 是树形控件，它的内部有 TreeItem 树形控件项，它还有一种升级形式是 TreeGrid。
+      (2)structure角色
+        结构角色其实跟HTML5中不少新标签作用重合了，建议优先使用HTML5新标签。结构角色的作用类似于语义化标签，但是内容稍微有所不同，参考图：
+          front_end\CSS\演示文件\image\ARIA-structure(结构角色).jpg
+            注意：separator 在允许焦点时是组件，在不允许焦点时属于文档结构。
+        这里需要特别提出 LandMark角色 这个概念，它是ARIA标准中总结的Web网页中最常见的8个结构，LandMark实际上是 section 的子项，这些角色在生成页面摘要时很有可能需要被保留，8个结构分别是：
+          ①Banner 头图  ②Complementary 补充内容  ③ContentInfo 内容说明  ④From 表单  ⑤Main 主体内容  ⑥Navigation 导航  ⑦Region 区域  ⑧Search 搜索
+      (3)Window角色
+        网页中，有些元素表示"新窗口"，这是会用到 window角色，window角色非常少，只有是三个角色：
+          window
+            dialog
+              alertDialog
+          注意：dialog可能会产生"焦点陷阱"，也就是说，当这样的角色被激活时，焦点无法离开这个区域。

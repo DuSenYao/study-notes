@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>挖掘CSS属性</title>
+  </head>
+  <body>
+    <button onclick="browserImplementation()">浏览器中已实现的属性</button>
+  </body>
+  <script>
+    function browserImplementation() {
+      console.log(
+        Object.keys(document.body.style).filter((e) => !e.match(/^webkit/))
+      );
+    }
+  </script>
+</html>
