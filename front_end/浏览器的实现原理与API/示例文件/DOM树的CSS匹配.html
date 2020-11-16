@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!-- 一个 compound-selector 是检查一个元素的规则，而一个复合型选择器，则是由数个 compound-selector 通过前面讲的符号连接起来的。 -->
+
+<!-- 后代选择器"空格" -->
+<style>
+/* 
+ * 可以把一个 CSS 选择器按照 compound-selector 来拆成数段，每当满足一段条件的时候，就前进一段。 
+ * 这里，当找到了匹配 a#b 的元素时，才会开始检查它所有的子代是否匹配 .cls。
+*/
+a#b .cls{
+  width: 100px;
+}
+</style>
+<!-- 除了前进一段的情况，还需要处理后退的情况 -->
+<a id="b">
+  <span>1<span>
+  <span class="cls">2<span>
+<!-- 
+  当遇到</a>时，必须使得规则 a#b .cls 回退一步，这样第三个 span 才不会被选中
+  后代选择器的作用范围是父节点的所有子节点，因此规则是在匹配到本标签的结束标签时回退。
+-->
+</a>
+<span class="cls">3<span>
+
+<!-- 后继选择器 "~" -->
+<style>
+/* 后继选择器，跟后代选择器不同的地方是，后继选择器只作用于一层 */
+.cls~* {
+  border:solid 1px green;
+}
+</style>
+<!-- 注意：这里后继选择器，当前半段的 .cls 匹配成功时，后续 * 所匹配的所有元素的父元素都已经确定了（后继节点和当前节点父元素相同是充分必要条件） -->
+<div>
+  <span>1<span>
+  <span class=cls>2<span>
+  <span>3
+    <span>4</span>
+  <span>
+  <span>5</span>
+</div>
+
+<!-- 子代选择器 ">" -->
+<style>
+div>.cls {
+  border:solid 1px green;
+}
+</style>
+<!-- 当 DOM 树构造到 div 时，匹配了 CSS 规则的第一段，因为是子代选择器，激活后面的 .cls 选择条件，并且指定父元素必须是当前 div。 -->
+<div>
+  <span>1<span>
+  <span class=cls>2<span>
+  <span>3
+    <span>4</span>
+  <span>
+  <span>5</span>
+</div>
