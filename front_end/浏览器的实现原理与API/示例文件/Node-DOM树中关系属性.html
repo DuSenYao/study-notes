@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Node-DOM树中关系属性</title>
+  </head>
+  <style>
+    .main {
+      display: flex;
+      width: 80%;
+      margin: 0 auto;
+      border: 1px solid #ccc;
+      padding: 12px;
+    }
+    .main button {
+      border-radius: 5px;
+      flex: 1;
+      height: 36px;
+      background-color: #FFF;
+    }
+    .example {
+      width: 30%;
+      margin: 100px auto;
+      border: 1px solid #ccc;
+    }
+    .output{
+      width: 30%;
+      margin: 100px auto;
+      border: 6px solid green;
+      border-radius: 8px;
+      padding: 4px 8px;
+    }
+  </style>
+  <body>
+    <div class="example">
+      <ul class="fir">
+        <li>A</li>
+        <li>B</li>
+      </ul>
+      <ul>
+        <li>C</li>
+        <li>D</li>
+      </ul>
+    </div>
+    <div class="output"><span>输出：</span><span class="output_span"></span></div>
+    <div class="main">
+      <button onclick="getUlParentNode()">获取第一个列表的父元素(parentNode)</button>
+      <button onclick="getUlChildNodes()">获取第一个列表的子节点集合(childNodes)</button>
+      <button onclick="getFirstChild()">获取第一个列表的第一个子节点(firstChild)</button>
+    </div>
+  </body>
+  <script>
+    // parentNode 返回某节点的父元素
+    function getUlParentNode() {
+      alert(document.getElementsByClassName("fir")[0].parentNode.className);
+    }
+    // childNodes 返回节点的子节点集合
+    function getUlChildNodes() {
+      let node = document.getElementsByClassName("fir")[0].childNodes;
+      let txt  = "";
+      for (let i = 0; i < node.length; i++) {
+        txt += node[i].nodeName + "; ";
+      }
+      document.getElementsByClassName("output_span")[0].innerHTML = txt;
+    }
+    // firstChild 返回节点的第一个子节点
+    function getFirstChild()
+    {
+      console.log(document.getElementsByClassName("fir")[0].firstChild.nextSibling);
+    }
+  </script>
+</html>

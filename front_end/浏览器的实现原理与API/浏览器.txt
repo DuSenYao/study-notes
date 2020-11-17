@@ -212,5 +212,37 @@
 
   二.浏览器API
     1.DOM API
-      DOM API 是最早被设计出来的一批API，也是用途最广泛的API，这里的DOM，指的是狭义的文档对象模型。
-      (1)
+      (1)介绍
+        DOM API 是最早被设计出来的一批API，也是用途最广泛的API，这里的DOM，指的是狭义的文档对象模型。
+        文档对象模型是用来描述文档，这里的文档，是特指HTML文档(或XML文档)。同时它又是一个"对象模型"，这意味它使用的是对象这样的概念来描述HTML文档。
+        HTML文档是一个由标签嵌套而成的树形结构，因此，DOM也是使用树形的对象模型来描述一个HTML文档。
+        DOM API 大致会包含四个部分：
+          · 节点: DOM树形结构中的节点相关APi
+          · 事件: 触发与监听事件相关的API
+          · Range: 操作文字相关的API
+          · 遍历: 遍历DOM需要的API
+      (2)节点
+        DOM的树形结构所有节点有统一的接口Node：
+          图片：front_end\浏览器的实现原理与API\示例文件\image\DOM节点类型-继承关系.png
+        在这些节点中，除了Document和DocumentFragment，都有对应的HTML写法：
+          · Element: <tagName>...</tagName>
+          · Text: text
+          · Comment: <!-- comments -->
+          · DocumentType: <!DOCTYPE html>
+          · ProcessingInstruction(处理信息): <?a 1?>
+        HTML代码运行后，会在内存中得到一棵DOM树，HTML的写法会被转换成对应的文档模型，可以通过JS等语言去访问这个文档模型。
+        这里每天需要用到，要重点掌握的是：Document、Element、Text节点。DocumentFragment(文档片段)也非常有用，它常常被用来高性能的批量添加节点。Comment、DocumentType 和 ProcessingInstruction 很少需要运行时去修改和操作。
+      (3)Node
+        Node是DOM树继承关系的根节点，它定义了DOM节点在DOM树上的操作，首先，Node提供了一组属性，来表示它在DOM树中的关系：
+          · parentNode: 返回某节点的父元素，如果没有返回null
+          · childNodes: 返回节点的子节点集合，一个 nodeList 对象
+          · firstChild: 返回节点的第一个子节点
+          · lastChild: 返回节点的最后一个子节点
+          · nextSibling: 返回节点的下一个节点(同一树层级)
+          · previousSibling: 返回节点的上一个节点(同一树层级)
+        操作DOM树的API，主要有以下几种：
+          · appendChild: 可向节点的子节点列表末尾添加新的子节点。
+            如果要添加的子节点，是DOM树中已经存在了的，添加的子节点将从DOM树中删除，然后重新插入它的新位置。如果要添加的子节点是 DocumentFragment 节点，则不会直接插入它，而是把它的子节点按序插入当前节点的子节点列表末尾。
+          · insertBefore: 向指定的已有子节点之前插入新的子节点
+          · removeChild: 从子节点列表中删除某个节点
+          · replaceChild: 将某个子节点替换成另一个
