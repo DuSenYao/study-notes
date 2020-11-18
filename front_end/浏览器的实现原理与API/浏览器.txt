@@ -235,14 +235,22 @@
       (3)Node
         Node是DOM树继承关系的根节点，它定义了DOM节点在DOM树上的操作，首先，Node提供了一组属性，来表示它在DOM树中的关系：
           · parentNode: 返回某节点的父元素，如果没有返回null
+            例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行48
           · childNodes: 返回节点的子节点集合，一个 nodeList 对象
+            例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行49
           · firstChild: 返回节点的第一个子节点
+            例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行50
           · lastChild: 返回节点的最后一个子节点
+            例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行51
           · nextSibling: 返回节点的下一个节点(同一树层级)
           · previousSibling: 返回节点的上一个节点(同一树层级)
         操作DOM树的API，主要有以下几种：
           · appendChild: 可向节点的子节点列表末尾添加新的子节点。
             如果要添加的子节点，是DOM树中已经存在了的，添加的子节点将从DOM树中删除，然后重新插入它的新位置。如果要添加的子节点是 DocumentFragment 节点，则不会直接插入它，而是把它的子节点按序插入当前节点的子节点列表末尾。
+              例：front_end\浏览器的实现原理与API\示例文件\操作DOM树的API.html 行45
           · insertBefore: 向指定的已有子节点之前插入新的子节点
-          · removeChild: 从子节点列表中删除某个节点
-          · replaceChild: 将某个子节点替换成另一个
+            例：front_end\浏览器的实现原理与API\示例文件\操作DOM树的API.html 行47
+          · removeChild: 删除一个子节点，返回删除的节点
+            例：front_end\浏览器的实现原理与API\示例文件\操作DOM树的API.html 行50
+          · replaceChild: 用指定节点替换当前节点的一个子节点，并返回被替换的节点
+            例：front_end\浏览器的实现原理与API\示例文件\操作DOM树的API.html 行51

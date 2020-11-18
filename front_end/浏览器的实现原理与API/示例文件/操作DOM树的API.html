@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>操作DOM树的API</title>
+  </head>
+  <style>
+    .main {
+      display: flex;
+      width: 80%;
+      margin: 0 auto;
+      border: 1px solid #ccc;
+      padding: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .main button {
+      border-radius: 5px;
+      flex: 1;
+      height: 36px;
+      background-color: #fff;
+      white-space: nowrap;
+      border: 1px solid #999;
+      margin: 4px 8px;
+    }
+    .example {
+      width: 30%;
+      margin: 100px auto;
+      border: 1px solid #ccc;
+    }
+  </style>
+  <body>
+    <div class="example">
+      <ul class="fir">
+        <li>A</li>
+        <li>B</li>
+      </ul>
+      <ul class="second">
+        <li>C</li>
+        <li>D</li>
+      </ul>
+    </div>
+    <div class="main">
+      <button onclick="setAppendChild()">添加新的列(appendChild)</button>
+      <button onclick="setAppendChild_OldNode()">一个列表向另一个列表中移动列表项(appendChild)</button>
+      <button onclick="setInsertBefore()">向指定的已有子节点之前插入新的子节点(insertBefore)</button>
+      <button onclick="setInsertBefore_OldNode()">把已有节点插入指定子节点之前(insertBefore)</button>
+      <button onclick="setInsertAfter()">把已有节点插入指定子节点之前(insertBefore & nextSibling)</button>
+      <button onclick="setRemoveChild()">删除子节点，返回删除的节点(removeChild)</button>
+      <button onclick="setReplaceChild()">用指定节点替换当前节点的一个子节点，并返回被替换的节点(replaceChild)</button>
+    </div>
+  </body>
+  <script>
+    // appendChild 向节点的子节点列表末尾添加新的子节点
+    function setAppendChild() {
+      var node = document.createElement("li");
+      var textNode = document.createTextNode("*");
+      node.appendChild(textNode);
+      document.getElementsByClassName("second")[0].appendChild(node);
+    }
+    // 把一个已有元素移动到另一个元素中
+    function setAppendChild_OldNode() {
+      // 如果没有返回 undefined
+      var node = document
+        .getElementsByClassName("second")[0]
+        .getElementsByTagName("li")[0];
+      if (undefined != node) {
+        document.getElementsByClassName("fir")[0].appendChild(node);
+      }
+    }
+    // 向指定的已有子节点之前插入新的子节点
+    function setInsertBefore() {
+      var node = document.createElement("li");
+      var textNode = document.createTextNode("&");
+      node.appendChild(textNode);
+      var list = document.getElementsByClassName("fir")[0];
+      list.insertBefore(node, list.childNodes[0]);
+    }
+    // 把已有的节点移动到指定子节点之前
+    function setInsertBefore_OldNode() {
+      var node = document
+        .getElementsByClassName("second")[0]
+        .getElementsByTagName("li")[0];
+      if(undefined != node) {
+        var list = document.getElementsByClassName("fir")[0];
+        list.insertBefore(node, list.childNodes[0]);
+      }
+    }
+    // 使用 insertBefore 和 nextSibling 把已有的节点移动到指定子节点之后
+    function setInsertAfter() {
+      var node = document
+        .getElementsByClassName("second")[0]
+        .getElementsByTagName("li")[0];
+      if(undefined != node) {
+        var list = document.getElementsByClassName("fir")[0];
+        list.insertBefore(node, list.firstChild.nextSibling.nextSibling); // "空白符"问题 解决方案 front_end\浏览器的实现原理与API\示例文件\操作DOM树的API.html
+      }
+    }
+    // 删除节点，返回删除的节点 let oldChild = parentNode.removeChild(child);
+    function setRemoveChild() {
+      var node = document
+        .getElementsByClassName("second")[0]
+        .getElementsByTagName("li")[0];
+      if(undefined != node && node.parentNode) {
+        let oldChild = node.parentNode.removeChild(node);
+        console.log(oldChild); // 删除的节点
+      }
+    }
+    // 用指定节点替换当前节点的一个子节点，并返回被替换的节点
+    function setReplaceChild() {
+      var newNode = document
+        .getElementsByClassName("second")[0]
+        .getElementsByTagName("li")[0];
+      var oldNode = document.getElementsByClassName("fir")[0].getElementsByTagName("li")[0];
+      if(undefined != oldNode && oldNode.parentNode) {
+        let node = oldNode.parentNode.replaceChild(newNode, oldNode);
+        console.log(node); // 被替换的节点
+      }
+    }
+  </script>
+</html>

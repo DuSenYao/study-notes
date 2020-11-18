@@ -48,6 +48,7 @@
       <button onclick="getUlParentNode()">获取第一个列表的父元素(parentNode)</button>
       <button onclick="getUlChildNodes()">获取第一个列表的子节点集合(childNodes)</button>
       <button onclick="getFirstChild()">获取第一个列表的第一个子节点(firstChild)</button>
+      <button onclick="getLastChild()">获取第一个列表的最后一个子节点(lastChild)</button>
     </div>
   </body>
   <script>
@@ -62,12 +63,71 @@
       for (let i = 0; i < node.length; i++) {
         txt += node[i].nodeName + "; ";
       }
-      document.getElementsByClassName("output_span")[0].innerHTML = txt;
+      // 空白换行在DOM树中会被视为文本，文本视为节点
+      document.getElementsByClassName("output_span")[0].innerHTML = txt; // #text; LI; #text; LI; #text;
     }
     // firstChild 返回节点的第一个子节点
     function getFirstChild()
     {
-      console.log(document.getElementsByClassName("fir")[0].firstChild.nextSibling);
+      // 空白换行在DOM树中会被视为文本，文本视为节点
+      var node = document.getElementsByClassName("fir")[0].firstChild
+      console.log(node); // #text
+      // 解决"空白符"方案
+      while(node) {
+        if(!is_ignorable(node)) {
+          console.log(node); // <li>A</li>
+          break;
+        }
+        node = node.nextSibling;
+      }
+      document.getElementsByClassName("output_span")[0].innerHTML = node.nodeName + "  " + node.innerHTML;
+    }
+    // lastChild 返回节点的最后一个子节点
+    function getLastChild() {
+      var node = document.getElementsByClassName("fir")[0].lastChild;
+      console.log(node); // #text
+      // 解决空白符方案
+      while (node) {
+        if(!is_ignorable(node)) {
+          console.log(node); //<li>B</li>
+          break;
+        }
+        node = node.previousSibling;
+      }
+      document.getElementsByClassName("output_span")[0].innerHTML = node.nodeName + "  " + node.innerHTML;
+    }
+
+
+
+    /**
+    * 测知某节点的文字内容是否全为空白。
+    *
+    * @参数   node类的节点
+    * @返回值  若 |node| 的文字内容全为空白则传回 true，否则传回 false。
+    */
+    function is_all_ws(node)
+    {
+      /**
+       * 以下是所谓的“空白符”代表：
+       *  "\t" TAB \u0009 （制表符）
+       *  "\n" LF  \u000A （换行符）
+       *  "\r" CR  \u000D （回车符）
+       *  " "  SPC \u0020 （真正的空格符）
+       *
+       * 不包括 JavaScript 的“\s”，因为这个表示：不断行字符等其他字符。
+       */
+      return !(/[^\t\n\r ]/.test(node.data));
+    }
+    /**
+    * 测知是否该略过某节点。
+    *
+    * @参数    |Node| 对象
+    * @返回值  若 |Text| 节点内仅有"空白符"或为 |Comment| 节点时，传回 true，否则传回 false。
+    */
+    function is_ignorable(node)
+    {
+      return (node.nodeType == 8) || // 注释节点
+              ((node.nodeType == 3) && is_all_ws(node)); // 仅含"空白符"的文字节点
     }
   </script>
 </html>
