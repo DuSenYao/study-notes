@@ -235,13 +235,13 @@
       (3)Node
         Node是DOM树继承关系的根节点，它定义了DOM节点在DOM树上的操作，首先，Node提供了一组属性，来表示它在DOM树中的关系：
           · parentNode: 返回某节点的父元素，如果没有返回null
-            例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行48
+            例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行53
           · childNodes: 返回节点的子节点集合，一个 nodeList 对象
-            例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行49
+            例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行54
           · firstChild: 返回节点的第一个子节点
-            例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行50
+            例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行55
           · lastChild: 返回节点的最后一个子节点
-            例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行51
+            例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行56
           · nextSibling: 返回节点的下一个节点(同一树层级)
           · previousSibling: 返回节点的上一个节点(同一树层级)
         操作DOM树的API，主要有以下几种：
@@ -254,3 +254,24 @@
             例：front_end\浏览器的实现原理与API\示例文件\操作DOM树的API.html 行50
           · replaceChild: 用指定节点替换当前节点的一个子节点，并返回被替换的节点
             例：front_end\浏览器的实现原理与API\示例文件\操作DOM树的API.html 行51
+          从设计的角度上，这几个修改型的API，全都是在父元素上操作的，这样的设计是符合面向对象的基本原则的。"拥有哪些元素"是父元素的一种状态，所以修改状态是父元素的一种行为。
+        Node还提供了一些高级API，如下：
+          · compareDocumentPosition: 可以比较当前节点与任意文档中另一个节点的位置关系，返回值是一个位掩码。
+            例：front_end\浏览器的实现原理与API\示例文件\Node高级API.html 行46
+          · contains: 检查传入节点是否为当前节点的后代节点，返回布尔值
+            例：front_end\浏览器的实现原理与API\示例文件\Node高级API.html 行47
+          · isEqualNode: 检查两个节点是否完全相同
+            例：front_end\浏览器的实现原理与API\示例文件\Node高级API.html 行48
+          · isSameNode: 检查两个节点是否是同一个节点，实际上在JS中可以用"==="
+            例：front_end\浏览器的实现原理与API\示例文件\Node高级API.html 行49
+          · cloneNode: 复制一个节点，如果传入参数true，则会连同子元素做深拷贝
+        DOM标准规定了节点必须从文档的 create 方法创建出来，不能使用JS的new运算，所以 document 有以下方法：
+          · createElement: 创建并返回一个由标签名称指定的HTML元素
+          · createTextNode: 创建并返回一个新的文本节点。这个方法可以用来转义HTML字符。
+          · createCDATASection: 创建并返回一个新的CDATA节点
+          · createComment: 创建并返回一个注释节点
+          · createProcessingInstruction: 创建并返回一个新的处理指令节点
+          · createDocumentFragment: 创建并返回一个新的空白文档片段。
+            DocumentFragment是DOM节点，但不是主DOM树的一部分。通常用于创建文档片段，将元素附加到文档片段，然后将文档片段附加到DOM树，在DOM树中，文档片段被其所有的子元素代替。
+            因为文档片段存在于内存中，并不在DOM树中，所以将子元素插入到文档片段时不会引起页面回流(对元素位置和几何的计算)，因此，使用文档片段通常会带来更好的性能。
+          · createDocumentType: 创建并返回一个 DocumentType 对象。

@@ -847,32 +847,30 @@ VSCode编辑器 常用使用方法备忘录
     
     三. Emmet
       Emmet是Web开发者必不可少的工具，为HTML和CSS提供了丰富的功能，VSCode内置了Emmet。
-      (1)Emmet的支持范围
+      1.Emmet的支持范围
         默认情况下，Emmet缩写扩展功能会在html、haml、jade、slim、jsx、xml、xsl、css、scss、sass、less、和stylus这些类型的文件中开启，此外，还会在继承于上述的文件的语言(如：Handlebars和php)中开启。
-      (2)在HTML中使用Emmet
+      2.在HTML中使用Emmet
         在HTML文件中输入以下Emmet缩写：
           #page>div.log+ul#navigation>li*5>a{Item $}
         在输入Emmet缩写的过程中，Emmet 缩写会出现在建议列表中，并且会有相应的HTML预览。按下Tab键或Enter键，VSCode会在HTML文件中插入代码。
-      (3)在CSS中使用Emmet
+      3.在CSS中使用Emmet
         在CSS属性中输入Emmet的缩写，会显示相应的CSS预览。
-      (4)使用Tab键展开Emmet缩写
-        如果想用Tab键来展开Emmet缩写，可以通过下面的设置项来设置：
-          "emmet.triggerExpansionOnTab": true 
-      (5)在建议列表禁用Emmet缩写
-        通过以下设置，可以在建议列表中禁用Emmet缩写：
-          "emmet.showExpandedAbbreviation": "never"
-      (6)Emmet缩写在建议列表中的顺序
-        通过以下设置项，可以把Emmet缩写始终放在建议列表的顶部：
-          "emmet.showSuggestionsAsSnippets": true
-          "editor.snippetSuggestions": "top"
-      (7)在其他文件中启用Emmet缩写
-        通过对 emmet.includeLanguages 进行设置，把文件类型绑定到其他支持 Emmet 的文件上，就能启用相应的文件，如可以把JS文件绑定到JavaScript React文件上
-          例：settings.json
-        此外，可以通过以下设置，使 Emmet 缩写只在与HTML/CSS相关的文件中启用。
-          "emmet.showExpandedAbbreviation": "isMarkupAndStyleSheetFilesOnly"
-      (8)Emmet 设置项
-        可以通过 "emmet.*" 的设置项，对 Emmet 进行设置。
-      (9)自定义Emmet片段
+      4.设置Emmet
+        (1)如果想用Tab键来展开Emmet缩写，可以通过下面的设置项来设置：
+            "emmet.triggerExpansionOnTab": true 
+        (2)通过以下设置，可以在建议列表中禁用Emmet缩写：
+            "emmet.showExpandedAbbreviation": "never"
+        (3)通过以下设置项，可以把Emmet缩写始终放在建议列表的顶部：
+            "emmet.showSuggestionsAsSnippets": true
+            "editor.snippetSuggestions": "top"
+        (4)在其他文件中启用Emmet缩写
+          通过对 emmet.includeLanguages 进行设置，把文件类型绑定到其他支持 Emmet 的文件上，就能启用相应的文件，如可以把JS文件绑定到JavaScript React文件上。
+            例：settings.json
+          此外，还可以通过以下设置，使 Emmet 缩写只在与HTML/CSS相关的文件中启用：
+            "emmet.showExpandedAbbreviation": "isMarkupAndStyleSheetFilesOnly"
+        (5)Emmet 设置项
+          可以通过 "emmet.*" 的设置项，对 Emmet 进行设置。
+      5.自定义Emmet片段
         创建snippets.json文件，通过 emmet.extensionsPath 设置文件位置，到文件夹，不写文件名。
           例：.vscode\snippets.json
       

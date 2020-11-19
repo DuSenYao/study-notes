@@ -46,7 +46,7 @@
       <button onclick="setAppendChild_OldNode()">一个列表向另一个列表中移动列表项(appendChild)</button>
       <button onclick="setInsertBefore()">向指定的已有子节点之前插入新的子节点(insertBefore)</button>
       <button onclick="setInsertBefore_OldNode()">把已有节点插入指定子节点之前(insertBefore)</button>
-      <button onclick="setInsertAfter()">把已有节点插入指定子节点之前(insertBefore & nextSibling)</button>
+      <button onclick="setInsertAfter()">把已有节点插入指定子节点之后(insertBefore & nextSibling)</button>
       <button onclick="setRemoveChild()">删除子节点，返回删除的节点(removeChild)</button>
       <button onclick="setReplaceChild()">用指定节点替换当前节点的一个子节点，并返回被替换的节点(replaceChild)</button>
     </div>
@@ -93,8 +93,8 @@
         .getElementsByClassName("second")[0]
         .getElementsByTagName("li")[0];
       if(undefined != node) {
-        var list = document.getElementsByClassName("fir")[0];
-        list.insertBefore(node, list.firstChild.nextSibling.nextSibling); // "空白符"问题 解决方案 front_end\浏览器的实现原理与API\示例文件\操作DOM树的API.html
+        var list = document.getElementsByClassName("fir")[0].getElementsByTagName("li")[0];
+        list.parentNode.insertBefore(node, list.nextSibling);
       }
     }
     // 删除节点，返回删除的节点 let oldChild = parentNode.removeChild(child);

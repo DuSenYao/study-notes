@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Node高级API</title>
+  </head>
+  <style>
+    .main {
+      display: flex;
+      width: 80%;
+      margin: 0 auto;
+      border: 1px solid #ccc;
+      padding: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .main button {
+      border-radius: 5px;
+      cursor: pointer;
+      flex: 1;
+      height: 36px;
+      background-color: #fff;
+      white-space: nowrap;
+      border: 1px solid #999;
+      margin: 4px 8px;
+    }
+    .example {
+      width: 30%;
+      margin: 100px auto;
+      border: 1px solid #ccc;
+    }
+  </style>
+  <body>
+    <div class="example">
+      <ul class="first">
+        <li>A</li>
+        <li>B</li>
+      </ul>
+      <ul class="second">
+        <li>C</li>
+        <li>D</li>
+      </ul>
+    </div>
+    <div class="main">
+      <button onclick="seeCompareDocumentPosition()">比较当前节点与任意文档中另一个节点的位置关系(compareDocumentPosition)</button>
+      <button onclick="checkUpContains()">检查传入节点是否为当前节点的后代节点(contains)</button>
+      <button onclick="checkUpIsEqualNode()">检查两个元素是否是同一个节点(isEqualNode)</button>
+    </div>
+  </body>
+  <script>
+    /* 比较当前节点与任意文档中另一个节点的位置关系，返回值是具有以下值的位掩码，也可以是它们的组合：
+    *
+    *  常量名                                       十进制值      含义
+    *  DOCUMENT_POSITION_DISCONNECTED               1           不在同一文档中
+    *  DOCUMENT_POSITION_PRECEDING                  2           otherNode在node之前
+    *  DOCUMENT_POSITION_FOLLOWING                  4           otherNode在node之后
+    *  DOCUMENT_POSITION_CONTAINS                   8           otherNode包含node
+    *  DOCUMENT_POSITION_CONTAINED_BY               16          otherNode被node包含
+    *  DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC    32          待定
+    */
+    function seeCompareDocumentPosition() {
+      var node = document.getElementsByClassName("first")[0].getElementsByTagName("li")[0];
+      console.log(node.compareDocumentPosition(document.body)); // 10  DOCUMENT_POSITION_PRECEDING + DOCUMENT_POSITION_CONTAINS
+      if(node.compareDocumentPosition(document.body) & Node.DOCUMENT_POSITION_FOLLOWING) { // compareDocumentPosition 返回的是一个位掩码，所以必须再使用按位与运算才能得到有意义的值
+        alert("另一节点不在当前节点之后");
+      }
+      else if(node.compareDocumentPosition(document.body) & Node.DOCUMENT_POSITION_CONTAINS){
+        alert("另一节点包含当前节点");
+      }
+    }
+    // 检查传入节点是否为当前节点的后代节点，返回布尔值
+    function checkUpContains() {
+      var node = document.getElementsByClassName("first")[0];
+      console.log(node.contains(node.childNodes[0])); // true
+      console.log(node.contains(node.parentNode));    // false
+    }
+    // 检查两个元素是否完全相同
+    function checkUpIsEqualNode() {
+      // TODO
+      
+    }
+  </script>
+</html>
