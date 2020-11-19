@@ -77,7 +77,7 @@
       // 空白换行在DOM树中会被视为文本，文本视为节点
       var node = document.getElementsByClassName("fir")[0].firstChild
       console.log(node); // #text
-      // 解决"空白符"方案
+      // 解决"空白符"方案  也可以使用 nextElementSibling
       while(node) {
         if(!is_ignorable(node)) {
           console.log(node); // <li>A</li>
@@ -91,7 +91,7 @@
     function getLastChild() {
       var node = document.getElementsByClassName("fir")[0].lastChild;
       console.log(node); // #text
-      // 解决空白符方案
+      // 解决"空白符"方案，也可以使用 previousElementSibling 
       while (node) {
         if(!is_ignorable(node)) {
           console.log(node); //<li>B</li>

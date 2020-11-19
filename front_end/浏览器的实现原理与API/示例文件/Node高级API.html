@@ -41,11 +41,18 @@
         <li>C</li>
         <li>D</li>
       </ul>
+      <ul>
+        <li>A</li>
+        <li>E</li>
+      </ul>
     </div>
     <div class="main">
       <button onclick="seeCompareDocumentPosition()">比较当前节点与任意文档中另一个节点的位置关系(compareDocumentPosition)</button>
       <button onclick="checkUpContains()">检查传入节点是否为当前节点的后代节点(contains)</button>
-      <button onclick="checkUpIsEqualNode()">检查两个元素是否是同一个节点(isEqualNode)</button>
+      <button onclick="checkUpIsEqualNode()">检查两个元素是否完全相同(isEqualNode)</button>
+      <button onclick="checkUpIsSameNode()">检查两个元素是否是同一个节点，实际上在JS中可以用"==="(isSameNode)</button>
+      <button onclick="cloneNode_LI()">复制一个节点，不传参数或传false只复制当前节点(cloneNode)</button>
+      <button onclick="deepCloneNode()">复制一个节点，如果传入参数true，则会连同子元素做深拷贝(cloneNode)</button>
     </div>
   </body>
   <script>
@@ -77,8 +84,31 @@
     }
     // 检查两个元素是否完全相同
     function checkUpIsEqualNode() {
-      // TODO
-      
+      var node = document.getElementsByClassName("first")[0].getElementsByTagName("li")[0]; // 第一个列表的第一个列
+      var node2 = document.getElementsByTagName("ul")[2].getElementsByTagName("li")[0];     // 第三个列表的第一个列
+      console.log(node.isEqualNode(node2)); // true
+      console.log(node.isEqualNode(node2.nextElementSibling)); // false node2.nextElementSibling node2的下一个兄弟元素
+    }
+    // 检查两个元素是否是同一个节点
+    function checkUpIsSameNode() {
+      var node = document.getElementsByClassName("first")[0].children[0];
+      var node2 = document.getElementsByTagName("li")[0];
+      var node3 = document.querySelector("div > ul:nth-child(3) li:first-child");
+      console.log(node.isSameNode(node3)); // false
+      console.log(node.isSameNode(node2)); // true
+      // 实际上在JS中可以用"==="
+      console.log(node3 === node);  // false
+      console.log(node === node2);  // true
+    }
+    // 复制一个节点
+    function cloneNode_LI() {
+      var item = document.querySelector("div > ul:nth-child(3) li:last-child").cloneNode();
+      document.getElementsByClassName("first")[0].appendChild(item);
+    }
+    // 复制一个节点，如果传入参数 true，则会连同子元素做深拷贝
+    function deepCloneNode() {
+      var item = document.querySelector("div > ul:nth-child(3) li:last-child").cloneNode(true);
+      document.getElementsByClassName("first")[0].appendChild(item);
     }
   </script>
 </html>

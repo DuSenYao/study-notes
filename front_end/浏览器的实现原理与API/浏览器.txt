@@ -236,14 +236,18 @@
         Node是DOM树继承关系的根节点，它定义了DOM节点在DOM树上的操作，首先，Node提供了一组属性，来表示它在DOM树中的关系：
           · parentNode: 返回某节点的父元素，如果没有返回null
             例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行53
-          · childNodes: 返回节点的子节点集合，一个 nodeList 对象
+          · childNodes: 返回节点的子节点集合，一个 nodeList 对象（返回所有的节点，包括文本节点、注释节点）
             例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行54
           · firstChild: 返回节点的第一个子节点
             例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行55
           · lastChild: 返回节点的最后一个子节点
             例：front_end\浏览器的实现原理与API\示例文件\Node-DOM树中关系属性.html 行56
-          · nextSibling: 返回节点的下一个节点(同一树层级)
-          · previousSibling: 返回节点的上一个节点(同一树层级)
+          · nextSibling: 返回节点的下一个节点(同一树层级，包括文本节点、注释节点)
+          · previousSibling: 返回节点的上一个节点(同一树层级，包括文本节点、注释节点)
+          // IE9以上支持
+          · nextElementSibling: 返回节点的下一个节点(同一树层级，不包括文本节点、注释节点)
+          · previousElementSibling : 返回节点的前一个节点(同一树层级，不包括文本节点、注释节点)
+          · children: 返回元素的子元素集合，是一个 HTMLCollection 对象（只返回元素节点）
         操作DOM树的API，主要有以下几种：
           · appendChild: 可向节点的子节点列表末尾添加新的子节点。
             如果要添加的子节点，是DOM树中已经存在了的，添加的子节点将从DOM树中删除，然后重新插入它的新位置。如果要添加的子节点是 DocumentFragment 节点，则不会直接插入它，而是把它的子节点按序插入当前节点的子节点列表末尾。
@@ -257,14 +261,15 @@
           从设计的角度上，这几个修改型的API，全都是在父元素上操作的，这样的设计是符合面向对象的基本原则的。"拥有哪些元素"是父元素的一种状态，所以修改状态是父元素的一种行为。
         Node还提供了一些高级API，如下：
           · compareDocumentPosition: 可以比较当前节点与任意文档中另一个节点的位置关系，返回值是一个位掩码。
-            例：front_end\浏览器的实现原理与API\示例文件\Node高级API.html 行46
+            例：front_end\浏览器的实现原理与API\示例文件\Node高级API.html 行50
           · contains: 检查传入节点是否为当前节点的后代节点，返回布尔值
-            例：front_end\浏览器的实现原理与API\示例文件\Node高级API.html 行47
+            例：front_end\浏览器的实现原理与API\示例文件\Node高级API.html 行51
           · isEqualNode: 检查两个节点是否完全相同
-            例：front_end\浏览器的实现原理与API\示例文件\Node高级API.html 行48
+            例：front_end\浏览器的实现原理与API\示例文件\Node高级API.html 行52
           · isSameNode: 检查两个节点是否是同一个节点，实际上在JS中可以用"==="
-            例：front_end\浏览器的实现原理与API\示例文件\Node高级API.html 行49
+            例：front_end\浏览器的实现原理与API\示例文件\Node高级API.html 行53
           · cloneNode: 复制一个节点，如果传入参数true，则会连同子元素做深拷贝
+            例：front_end\浏览器的实现原理与API\示例文件\Node高级API.html 行54
         DOM标准规定了节点必须从文档的 create 方法创建出来，不能使用JS的new运算，所以 document 有以下方法：
           · createElement: 创建并返回一个由标签名称指定的HTML元素
           · createTextNode: 创建并返回一个新的文本节点。这个方法可以用来转义HTML字符。
