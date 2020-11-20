@@ -272,11 +272,20 @@
             例：front_end\浏览器的实现原理与API\示例文件\Node高级API.html 行54
         DOM标准规定了节点必须从文档的 create 方法创建出来，不能使用JS的new运算，所以 document 有以下方法：
           · createElement: 创建并返回一个由标签名称指定的HTML元素
+            例：front_end\浏览器的实现原理与API\示例文件\DOM-create API.html 行44
           · createTextNode: 创建并返回一个新的文本节点。这个方法可以用来转义HTML字符。
+            例：front_end\浏览器的实现原理与API\示例文件\DOM-create API.html 行45
           · createCDATASection: 创建并返回一个新的CDATA节点
+            例：front_end\浏览器的实现原理与API\示例文件\DOM-create API.html 行46
           · createComment: 创建并返回一个注释节点
+            例：front_end\浏览器的实现原理与API\示例文件\DOM-create API.html 行47
           · createProcessingInstruction: 创建并返回一个新的处理指令节点
+            例：front_end\浏览器的实现原理与API\示例文件\DOM-create API.html 行48
           · createDocumentFragment: 创建并返回一个新的空白文档片段。
             DocumentFragment是DOM节点，但不是主DOM树的一部分。通常用于创建文档片段，将元素附加到文档片段，然后将文档片段附加到DOM树，在DOM树中，文档片段被其所有的子元素代替。
             因为文档片段存在于内存中，并不在DOM树中，所以将子元素插入到文档片段时不会引起页面回流(对元素位置和几何的计算)，因此，使用文档片段通常会带来更好的性能。
+              例：front_end\浏览器的实现原理与API\示例文件\DOM-create API.html 行49
           · createDocumentType: 创建并返回一个 DocumentType 对象。
+            例：front_end\浏览器的实现原理与API\示例文件\DOM-create API.html 行50
+      (4)Element 中的 Attribute
+        Node提供了树形结构上节点的相关操作，而大部分时候，比较关注元素，Element表示元素，它是Node子类。

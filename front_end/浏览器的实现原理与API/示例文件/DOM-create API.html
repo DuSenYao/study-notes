@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DOM create API</title>
+  </head>
+  <style>
+    .main {
+      display: flex;
+      width: 80%;
+      margin: 0 auto;
+      border: 1px solid #ccc;
+      padding: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .main button {
+      border-radius: 5px;
+      cursor: pointer;
+      flex: 1;
+      height: 36px;
+      background-color: #fff;
+      white-space: nowrap;
+      border: 1px solid #999;
+      margin: 4px 8px;
+    }
+    .example {
+      width: 30%;
+      margin: 100px auto;
+      border: 1px solid #ccc;
+    }
+  </style>
+  <body>
+    <div class="example">
+      <ul class="first">
+        <li>A</li>
+      </ul>
+      <ul class="second">
+        <li>C</li>
+      </ul>
+    </div>
+    <div class="main">
+      <button onclick="deal_createElement()">创建并返回一个由标签名称指定的HTML元素(createElement)</button>
+      <button onclick="deal_createTextNode()">创建并返回一个新的文本节点。这个方法可以用来转义HTML字符(createTextNode)</button>      
+      <button onclick="deal_createCDATASection()">创建并返回一个新的 CDATA 片段节点(createCDATASection)</button>
+      <button onclick="deal_createComment()">创建并返回一个注释节点(createComment)</button>
+      <button onclick="deal_createProcessingInstruction()">创建并返回一个处理指令节点(createProcessingInstruction)</button>
+      <button onclick="deal_createDocumentFragment()">向第二个列表添加一个文档片段(createDocumentFragment)</button>
+      <button onclick="deal_createDocumentType()">创建并返回一个 DocumentType 对象(createDocumentType)</button>
+    </div>
+  </body>
+  <script>
+    // 创建并返回一个由标签名称指定的HTML元素
+    function deal_createElement() {
+      var node = document.createElement("li");
+      var txt  = document.createTextNode("B");
+      node.appendChild(txt);
+      document.getElementsByClassName("first")[0].appendChild(node);
+    }
+    // 创建并返回一个新的文本节点。这个方法可以用来转义HTML字符
+    function deal_createTextNode() {
+      let node = document.getElementsByClassName("first")[0];
+      let txt = document.createTextNode("<br/>");
+      node.children[0].appendChild(txt);
+    }
+    // 创建并返回一个新的 CDATA 片段节点
+    function deal_createCDATASection() {
+      let docu = new DOMParser().parseFromString('<xml></xml>', 'application/xml');
+      let cdata = docu.createCDATASection("Some <CDATA> data & then some");
+      docu.getElementsByTagName("xml")[0].appendChild(cdata);
+      alert(new XMLSerializer().serializeToString(docu)); // <xml><![CDATA[Some <CDATA> data & then some]]></xml>
+    }
+    // 创建并返回一个注释节点
+    function deal_createComment() {
+      let docu = new DOMParser().parseFromString('<xml></xml>', 'application/xml');
+      let comment = docu.createComment("注释内容");
+      docu.getElementsByTagName('xml')[0].appendChild(comment);
+      alert(new XMLSerializer().serializeToString(docu)); // <xml><!--注释内容--></xml>
+    }
+    // 创建并返回一个处理指令节点
+    function deal_createProcessingInstruction() {
+      var docu = new DOMParser().parseFromString('<xml></xml>',  "application/xml")
+      var pi = docu.createProcessingInstruction('xml-stylesheet', 'href="mycss.css" type="text/css"');
+      docu.insertBefore(pi, docu.firstChild);
+      alert(new XMLSerializer().serializeToString(docu));
+    }
+    // 创建并返回一个空白文档片段
+    function deal_createDocumentFragment() {
+      let element  = document.getElementsByClassName("second")[0];
+      let fragment = document.createDocumentFragment();
+      var browsers = ['Firefox', 'Chrome'];
+      browsers.forEach(function(browser) {
+        let li = document.createElement("li");
+        li.textContent = browser;
+        fragment.appendChild(li);
+      });
+      element.appendChild(fragment);
+    }
+    // 创建并返回一个 DocumentType 对象
+    function deal_createDocumentType() {
+      let dt = document.implementation.createDocumentType('svg:svg', '-//W3C//DTD SVG 1.1//EN', 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd');
+      let d = document.implementation.createDocument('http://www.w3.org/2000/svg', 'svg:svg', dt)
+      alert(d.doctype.publicId); // -//W3C//DTD SVG 1.1//EN
+    }
+  </script>
+</html>
