@@ -1,0 +1,24 @@
+.main {
+  display: flex;
+  width: 80%;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  padding: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.main button {
+  border-radius: 5px;
+  cursor: pointer;
+  flex: 1;
+  height: 36px;
+  background-color: #fff;
+  white-space: nowrap;
+  border: 1px solid #999;
+  margin: 4px 8px;
+}
+.example {
+  width: 30%;
+  margin: 100px auto;
+  border: 1px solid #ccc;
+}

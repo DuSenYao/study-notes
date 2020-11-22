@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Element子类中的操作属性方法</title>
+    <link rel="stylesheet" href="./base.css" />
+  </head>
+  <body>
+    <div class="example">
+      <ul class="first">
+        <li data-name="A">A</li>
+        <li>B</li>
+      </ul>
+      <ul class="second">
+        <li>C</li>
+        <li data-name="D">D</li>
+      </ul>
+    </div>
+    <div class="main">
+      <button onclick="log_getAttribute()">返回元素上一个指定属性名的属性值，如不存在返回 null 或 ""(getAttribute)</button>
+      <button onclick="log_setAttribute()">设置指定元素上的某个属性的值(setAttribute)</button>
+      <button onclick="log_removeAttribute()">从指定的元素中删除一个属性(removeAttribute)</button>
+      <button onclick="log_hasAttribute()">返回一个布尔值，指示该元素是否包含有指定的属性(hasAttribute)</button>
+      <button onclick="log_getAttributeNode()">从当前元素中通过名称获取属性节点(getAttributeNode)</button>
+      <button onclick="log_setAttributeNode()">添加新的属性节点(setAttributeNode)</button>
+      <button onclick="log_addAttributeClass()">添加class类名</button>
+      <button onclick="log_deleteAttributeClass()">删除class类名</button>
+      <button onclick="log_replaceAttributeClass()">替换class类名</button>
+    </div>
+  </body>
+  <script>
+    // 返回元素上一个指定属性名的属性值，如不存在返回 null 或 ""
+    function log_getAttribute() {
+      let attribute = document.getElementsByClassName("first")[0].firstElementChild.getAttribute("data-name");
+      alert(attribute);
+    }
+    // 设置指定元素上的某个属性的值
+    function log_setAttribute() {
+      document.getElementsByClassName("first")[0].firstElementChild.setAttribute("data-name", "data-name");
+    }
+    // 从指定的元素中删除一个属性
+    function log_removeAttribute() {
+      document.getElementsByClassName("first")[0].firstElementChild.removeAttribute("data-name");
+    }
+    // 返回一个布尔值，指示该元素是否包含有指定的属性
+    function log_hasAttribute() {
+      let isHasAttr = document.getElementsByClassName("first")[0].firstElementChild.hasAttribute("data-name");
+      alert(isHasAttr);
+    }
+    // 从当前元素中通过名称获得属性节点
+    function log_getAttributeNode() {
+      let attribute = document.getElementsByClassName("second")[0].lastElementChild.getAttributeNode("data-name");
+      console.log(attribute); // data-name="D"
+      console.log(attribute.value); // D
+    }
+    // 添加新的属性节点，如果新属性节点替代了已有的属性节点，则返回被替代的属性节点，否则返回 null
+    function log_setAttributeNode() {
+      let attr = document.createAttribute("style");
+      attr.nodeValue = "color:red;";
+      let node = document.getElementsByClassName("second")[0].children[0].setAttributeNode(attr);
+      console.log(node);
+    }
+    // 添加class类名
+    function log_addAttributeClass() {
+      let node = document.getElementsByClassName("first")[0];
+      node.classList.add("add");
+    }
+    // 删除class类名
+    function log_deleteAttributeClass() {
+      let node = document.getElementsByTagName("ul")[0];
+      node.classList.remove("add");
+      // 对得到的class字符串做处理，再放入class，可以做到添加、删除、替换，用在IE10以下的浏览器
+      let newClass = node.getAttribute("class").replace("add4", "");
+      node.setAttribute("class", newClass); 
+      // node.attributes.class.value = newClass; 与上面的等效，使用了 attributes 对象
+    }
+    // 替换class类名
+    function log_replaceAttributeClass() {
+      let classList = document.getElementsByClassName("first")[0].classList;
+      classList.replace("add", "add4");
+      console.log(classList.contains("add")); // false 判断class是否存在"add"类
+    }
+  </script>
+</html>
