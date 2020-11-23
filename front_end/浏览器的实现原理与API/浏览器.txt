@@ -291,7 +291,7 @@
           · createDocumentType: 创建并返回一个 DocumentType 对象。
             例：front_end\浏览器的实现原理与API\示例文件\DOM-create API.html 行50
       (4)Element 中的 Attribute
-        Node提供了树形结构上节点的相关操作，而大部分时候，比较关注元素，Element表示元素，它是Node子类。元素对应了HTML中的标签，它既有子节点，又有属性。所以 Element 子类中，有一系列操作属性的方法。
+        Node提供了树形结构上节点的相关操作，而大部分时候，会比较关注元素，Element表示元素，它是Node子类。元素对应了HTML中的标签，它既有子节点，又有属性。所以 Element 子类中，有一系列操作属性的方法。
           注意：对DOM而言，Attribute 和 Property 是完全不同的含义，只有特殊场景下，两者才会互相关联。
           可以把元素的 Attribute 当做字符串来看，这样就有以下的API：
             · getAttribute: 返回元素上一个指定属性名的属性值，如不存在返回 null 或 ""
@@ -302,11 +302,11 @@
               例：front_end\浏览器的实现原理与API\示例文件\Element子类中的操作属性方法.html 行23
             · hasAttribute: 返回一个布尔值，指示该元素是否包含有指定的属性
               例：front_end\浏览器的实现原理与API\示例文件\Element子类中的操作属性方法.html 行24
-            · getAttributeNode: 从当前元素中通过名称获取属性节点
+            · getAttributeNode: 从当前元素中通过名称获取属性节点(性能较高)
               例：front_end\浏览器的实现原理与API\示例文件\Element子类中的操作属性方法.html 行25
-            · setAttributeNode: 添加新的属性节点，如果新属性节点替代了已有的属性节点，则返回被替代的属性节点，否则返回 null
+            · setAttributeNode: 为指定的元素添加属性节点，如果属性节点替代了已有的属性节点，则返回被替代的属性节点，否则返回 null(性能较高)
               例：front_end\浏览器的实现原理与API\示例文件\Element子类中的操作属性方法.html 行26
-          此外，还可以像 property 一样访问 attribute，还可以使用 attributes 对象，比如：
+          此外，还可以使用 attributes 对象，像 property 一样访问 attribute，比如：
             例：document.body.attributes.class = "a"  等效于  document.body.setAttribute("class", "a")
       (5)查找元素
         document节点提供了查找元素的能力，有以下几种：
@@ -333,7 +333,7 @@
           例：var fragment = range.extractContents();   range.insertNode(document.createTextNode("aaaa"));
       (7)命名空间
         在HTML场景中，需要考虑命名空间的场景不多，最主要的场景是SVG。创建元素和属性相关的API都有带有命名空间的版本：
-          document
+          Document
             · creteElementNS
             · createAttributeNS
           Element
@@ -351,7 +351,7 @@
             · document.implementation.createDocumentType
       (8)CSSOM
         HTML和CSS分别承担了语义和表现的功能，DOM和CSSOM也有语义和表现的分工。DOM中的所有属性都是用来表现语义的属性，CSSOM的都是表现的属性，width、height这类显示相关的属性，都属于CSSOM。
-        CSSOM是CSS的对象模型，在W3C标准中，它包含两个部分：描述样式表和规则等部分CSS的模型部分(CSSOM)，和跟元素视图相关的View部分(CSSOM View)。在实际使用中，CSSOM View bi CSSOM更常用，因为很少需要用代码去动态地管理样式表。
+        CSSOM是CSS的对象模型，在W3C标准中，它包含两个部分：描述样式表和规则等CSS的模型部分(CSSOM)，和跟元素视图相关的View部分(CSSOM View)。在实际使用中，CSSOM View 比 CSSOM更常用，因为很少需要用代码去动态地管理样式表。
         HTML样式表只能使用style标签或link标签创建，CSSOM API无法创建样式表，但它可以修改样式表中的内容。
         CSSOM基本用法，一般来说需要先获取文档中所有的样式表：
           例：document.styleSheets
@@ -406,34 +406,41 @@
               · scrollBy(x, y): 使页面滚动指定的距离，也支持传入配置型参数{top, left, behavior}，behavior 指定滚动是平滑还是立即跳转
                 例：window.scrollBy(0, window.innerHeight); // 向下滚动一页
             通过这些属性和方法，可以读取视口的滚动位置和操纵视口滚动。不过，要想监听视口滚动事件，需要在 document 对象上绑定事件监听函数：
-              document.addEventListener("scroll", function(event){ //... })
+              例：front_end\浏览器的实现原理与API\示例文件\CSSOM-View.html 行17
             注意：视口滚动 API 是页面的顶层容器的滚动，大部分移动端浏览器都会采用一些性能优化，它和元素滚动不完全一样。
           ❷ 元素滚动 API
             Element 类，为了支持滚动，加入了以下元素滚动API：
               · scrollTop: 元素的属性，表示Y方向上的当前滚动距离
               · scrollLeft: 元素的属性，表示X方向上的当前滚动距离
+                例：front_end\浏览器的实现原理与API\示例文件\CSSOM-View.html 行13
               · scrollWidth: 元素的属性，表示元素内部的滚动内容的宽度
               · scrollHeight: 元素的属性，表示元素内部的滚动内容的高度
+                例：front_end\浏览器的实现原理与API\示例文件\CSSOM-View.html 行14
               · scroll(x, y): 使元素滚动到特定的距离，有别名 scrollTo，也支持传入配置型参数{top, left, behavior}，behavior 指定滚动是平滑还是立即跳转
               · scrollBy(x, y): 使元素滚动指定的距离，也支持传入配置型参数{top, left, behavior}，behavior 指定滚动是平滑还是立即跳转
               · scrollIntoView(arg): 让当前的元素滚动到浏览器窗口的可视区域内，实验性功能
             可滚动的元素也支持 scroll 事件，在元素上监听它的事件即可：
-              element.addEventListener("scroll", function(event) {})
+              例：front_end\浏览器的实现原理与API\示例文件\CSSOM-View.html 行18
         ③ 布局 API
           ❶ 全局尺寸信息
             window对象上提供了一些全局的尺寸信息，它是通过属性来提供的：
               · window.innerHeight, window.innerWidth: 这两个属性表示视口的大小
               · window.outerHeight, window.outerWidth: 这两个属性表示浏览器窗口占据的大小
+                例：front_end\浏览器的实现原理与API\示例文件\CSSOM-View.html 行11
               · window.devicePixelRatio: 这个属性非常重要，表示物理像素和CSS像素单位的倍率关系，Retina屏这个值是2，后来也出现了一些3倍的Android屏
               · window.screen(屏幕尺寸相关的信息)
                 window.screen.width, window.screen.height 设备的屏幕尺寸
                 window.screen.availWidth, window.screen.availHeight 设备屏幕的可渲染尺寸，一些 Android 机器会把屏幕的一部分预留做固定按钮，所有有这两个属性
                 window.screen.colorDepth, window.screen.pixelDepth 这两个属性是固定值24，是为了以后预留
             主要使用的是 innerHeight、innerWidth 和 devicePixelRatio 三个属性，因为前端开发工作只需要跟视口打交道。
-        ④ 元素的布局信息
-          只有盒有宽和高，元素是没有的。所以获取宽高的对象应该是"盒"，于是 CSSOM View 为 Element 类添加了两个方法：
-            · getClientRects(): 返回一个指向客户端中每一个盒子的边界矩形的矩形 ClientRect 对象集合，该对象是与该元素相关的CSS边框，每个 ClientRect 对象包含一组描述该边框的只读属性——left、top、right和bottom，单位为像素，这些属性值是相对于视口的top-left的。
-            · getBoundingClientRect: 返回元素的大小及其相对于视口的位置，返回值是一个 DOMRect 对象，它是一个CSS声明块和CSS属性键值对的集合。跟元素的
-              注意：这个 API 获取的区域会包括当 overflow 为 visible 时的子元素区域
-          根据实际的精确度需要，我们可以选择何时使用这两个 API。这两个 API 获取的矩形区域都是相对于视口的坐标，这意味着，这些区域都是受滚动影响的。如果我们要获取相对坐标，或者包含滚动区域的坐标，需要一点小技巧：
-            var offsetX = document.documentElement.getBoundingClientRect().x - element.getBoundingClientRect().x;
+      (10)元素的布局信息
+        只有盒有宽和高，元素是没有的。所以获取宽高的对象应该是"盒"，于是 CSSOM View 为 Element 类添加了两个方法：
+          · getClientRects: 返回一个指向客户端中每一个盒子的边界矩形的 ClientRect 对象集合，该对象是与该元素相关的CSS边框，每个 ClientRect 对象包含一组描述该边框的只读属性——left、top、right和bottom，单位为像素，这些属性值是相对于视口的top-left的。
+          · getBoundingClientRect: 返回元素的大小及其相对于视口的位置，返回值是一个 DOMRect 对象，这个对象是由该元素的 getClientRects() 方法返回的一组矩形的集合，就是该元素的 CSS 边框大小。返回的结果是包含完整元素的最小矩形，并且拥有left, top, right, bottom, x, y, width, 和 height这几个以像素为单位的只读属性用于描述整个边框。除了width 和 height 以外的属性是相对于视图窗口的左上角来计算的。
+            注意：这个 API 获取的区域会包括当 overflow 为 visible 时的子元素区域。
+        根据实际的精确度需要，可以选择何时使用这两个 API。这两个 API 获取的矩形区域都是相对于视口的坐标，这意味着，这些区域都是受滚动影响的。如果我们要获取相对坐标，或者包含滚动区域的坐标，需要一点小技巧：
+          var offsetX = document.documentElement.getBoundingClientRect().x - element.getBoundingClientRect().x;
+
+  三.浏览器事件
+    (1)事件概述
+      一般来说，事件来自输入设备

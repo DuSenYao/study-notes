@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSSOM-View</title>
+    <link rel="stylesheet" href="base.css" />
+  </head>
+  <body>
+    <div class="main" style="position: fixed; bottom: 50px; left: 10%">
+      <button onclick="log_innerAndOuterView()">当前视口和浏览器的宽高(innerWidth、innerHeight、outerWidth、outerHeight)</button>
+      <button onclick="log_XYScroll()">X、Y方向上当前滚动距离(pageXOffset、pageYOffset)</button>
+      <button onclick="log_ScrollLeftAndScrollTop()">元素中X、Y方向上的当前滚动距离(scrollLeft、scrollTop)</button>
+      <button onclick="log_ScrollWidthAndScrollHeight()">元素内部的滚动内容的宽度、高度(scrollWidth、scrollHeight)</button>
+      <button onclick="window.scroll(100, 300)">滚动至X轴100px、Y轴300px位置(scroll)</button>
+      <button onclick="window.scrollBy(30, 100)">向X轴滚动30px、Y轴滚动100px(scrollBy)</button>
+      <button onclick="document.addEventListener('scroll', monitorViewScrollEvent(event, 300))">监听视口滚动事件</button>
+      <button onclick="monitorViewElementScrollEvent()">监听元素内部滚动事件</button>
+    </div>
+    <div class="example" style="width: 500px; height: 200px; overflow: auto">
+      <ul style="width: 1000px; height: 400px">
+        <li>1</li>
+        <li>2</li>
+      </ul>
+    </div>
+  </body>
+  <script>
+    // 全局尺寸信息
+    let innerWidth = window.innerWidth,
+      innerHeight = window.innerHeight,
+      outerWidth = window.outerWidth,
+      outerHeight = window.outerHeight,
+      devicePixelRatio = window.devicePixelRatio;
+    window.onload = function () {
+      let node = document.getElementsByClassName("example")[0];
+      node.style.marginBottom = this.outerHeight + 500 + "px";
+      node.style.marginLeft = this.innerWidth + 1000 + "px";
+      console.log(this.devicePixelRatio); // 1 表示物理像素和CSS像素单位的倍率关系
+      console.log(window.screen); // 屏幕尺寸相关的信息
+    };
+    // 当前视口和浏览器的宽高
+    function log_innerAndOuterView() {
+      console.log("innerWidth: " + this.innerWidth, "\ninnerHeight: " + this.innerHeight, "\nouterWidth: " + this.outerWidth, "\nouterHeight: " + this.outerHeight);
+    }
+    // X、Y方向上当前滚动距离
+    function log_XYScroll() {
+      let x = window.pageXOffset !== undefined ? window.pageXOffset : (document.documentElement || document.body.parentNode || document.body).scrollLeft;
+      let y = window.pageYOffset !== undefined ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+      console.log("pageXOffset: " + x, "\npageYOffset: " + y);
+    }
+    // 元素中X、Y方向上的当前滚动距离
+    function log_ScrollLeftAndScrollTop() {
+      let node = document.getElementsByTagName("div")[1];
+      console.log("scrollLeft: " + node.scrollLeft, "\nscrollTop: " + node.scrollTop);
+    }
+    // 元素内部的滚动内容的宽度、高度
+    function log_ScrollWidthAndScrollHeight() {
+      let node = document.getElementsByTagName("div")[1];
+      console.log("scrollWidth: " + node.scrollWidth, "\nscrollHeight: " + node.scrollHeight);
+    }
+    // 监听视口滚动事件，在 document 上绑定监听事件
+    // 使用了 函数节流，每300毫秒执行一次，节流，就是指连续触发事件但是在 n 秒中只执行一次函数
+    function monitorViewScrollEvent(e, wait) {
+      let timeout = null;
+      return function () {
+        if (!timeout) {
+          timeout = setTimeout(() => {
+            console.log(e);
+            timeout = null;
+          }, wait);
+        }
+      };
+    }
+    // 监听元素内部滚动事件
+    function monitorViewElementScrollEvent() {
+      document.getElementsByClassName("example")[0].addEventListener("scroll", debounce(event, 100));
+      // 使用了 函数防抖，所谓防抖，就是指触发事件后在 n 秒内函数只能执行一次，如果在 n 秒内又触发了事件，则会重新计算函数执行时间
+      function debounce(e, wait) {
+        let timeout;
+        return function () {
+          // 使用这两行代码来获取 this 和 参数，是为了让 函数最终返回的函数 this 指向不变以及依旧能接受到 e 参数。
+          let context = this;
+          let args = arguments;
+
+          if (timeout) {
+            clearInterval(timeout);
+          }
+
+          timeout = setTimeout(() => {
+            console.log(e);
+            timeout = null;
+          }, wait);
+        };
+      }
+    }
+  </script>
+</html>
