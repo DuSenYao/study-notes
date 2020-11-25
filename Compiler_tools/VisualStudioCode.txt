@@ -9,7 +9,7 @@ VSCode编辑器 常用使用方法备忘录
       Shift + Alt + 鼠标左键：  列选择
     2.跳转
       Ctrl + P:            跳转到最近打开的文件            
-      Ctrl + Shift + Tab： 在已打开的文件中跳转
+      Ctrl + Shift + Tab / Ctrl + Tab： 在已打开的文件中跳转
       Ctrl + Shift + O：   跳转到文件中的符号
       Ctrl + G：           跳转到文件中的某一行
     3.基本编辑
@@ -22,7 +22,7 @@ VSCode编辑器 常用使用方法备忘录
       Ctrl + /：            添加或删除当前行的注释
       Home/end：            光标移动到当前行的起始/结尾
     4.编程语言编辑
-      Shift + Alt + F：   格式化文档
+      Ctrl + Shift + I：  格式化文档
       Ctrl + K Ctrl + F： 格式化选定内容
       F12：               跳转到定义
       Alt + F12：         在当前页查看定义
@@ -65,7 +65,7 @@ VSCode编辑器 常用使用方法备忘录
     
 
   三.常用知识
-    1.单击搜索输入框下方的省略号或使用Ctrl+Shift+J快捷键，可以调出高级搜索选项：要包含的文件 和 排除的文件，需要以.开头并且全拼，文件后缀名用 , 分隔
+    1.单击搜索输入框下方的省略号或使用 Ctrl+Shift+J 快捷键，可以调出高级搜索选项：要包含的文件 和 排除的文件，需要以.开头并且全拼，文件后缀名用 , 分隔
     2.编程语言定义代码块的起始和结束区域的标记
         编程语言                        起始区域                            结束区域
       CSS/Less/SCSS                  /*#region*/                        /*#endregion*/
@@ -77,44 +77,44 @@ VSCode编辑器 常用使用方法备忘录
     3.VSCode会自动检测打开的文档来确定所使用的代码缩进，通过自动检测所得出的缩进配置，会覆盖默认配置
     4.命令行
       在命令行中输入code . ，可以启动VSCode并直接打开当前文件夹
-    5. Shift + Alt + F12快捷键或编辑邮件菜单中的Find All Reference，可以打开结果视图查看一个符号的所有引用
-    6. Ctrl +Shift + O可以跳转到当前文件中的不同符号，通过输入":"，所有的符号都会按类型进行分组
-    7. 通过 files.associations 设置项，可以把一个新的文件扩展名添加到已有的编程语言中。
+    5.Shift + Alt + F12快捷键或编辑邮件菜单中的Find All Reference，可以打开结果视图查看一个符号的所有引用
+    6.Ctrl +Shift + O可以跳转到当前文件中的不同符号，通过输入":"，所有的符号都会按类型进行分组
+    7.通过 files.associations 设置项，可以把一个新的文件扩展名添加到已有的编程语言中。
 
 
   五.常用功能
-    1. 代码片段
+    1.代码片段
       使用方式
-        (1) 通过Ctrl + Shift + P 快捷键打开命令面板，输入并执行Insert Snipper命令，会显示适合当前语言的所有代码片段的列表。
-        (2) 在编辑器中编写代码时，VSCode 会提供智能提示功能，通过智能提示即可插入代码片段。
-    2. 创建自定义的代码片段
-      文件 -> 首选项 -> 用户片段，或 命令面板的 Preferences：Configure User Snippets
-      代码片段的定义文件是JSON格式的，并且支持C语言风格的注释
-
-      创建：
+        (1)通过Ctrl + Shift + P 快捷键打开命令面板，输入并执行Insert Snipper命令，会显示适合当前语言的所有代码片段的列表。
+        (2)在编辑器中编写代码时，VSCode 会提供智能提示功能，通过智能提示即可插入代码片段。
+    2.创建自定义的代码片段
+      (1)在哪里
+        文件 -> 首选项 -> 用户片段，或 命令面板的 Preferences：Configure User Snippets
+        代码片段的定义文件是JSON格式的，并且支持C语言风格的注释.
+      (2)创建
         "For Loop": { // 代码片段名称
           "prefix": ["for", "for-const"], // 定义了代码片段在 IntelliSense 中触发的单词。字符串的子串也可以作为触发条件。fc也会匹配for-const
           // body 包含了三个占位符 ${2:element} ${1:array} 和 $0，在插入代码片段后，可以通过Tab键在占位符之间按顺序进行跳转，冒号后面是默认的文本，前面的数字是出现的顺序，0是最终的位置
           "body": ["for (const ${2:element} of ${1:array}) {", "\t$0", "}"], // 定义了要被插入的代码片段，它使用了数组，每一个元素表示一行独立的内容。这里有3行代码片段
           "description": "A for loop." // 可选项，定义了在 IntelliSense 中显示的描述性文本
         }
-      代码片段的生效范围：
+      (3)代码片段的生效范围：
         有两个维度的生效范围：
-          (1) 语言维度：定义代码对于哪些语言生效
+          ① 语言维度：定义代码对于哪些语言生效
             每一个代码片段都可以在一种、多种或所有语言的范围内生效。
-              ① 一种语言的代码片段会被定义在对应语言的代码片段定义文件中，比如：JavaScript的代码片段被定义在javascript.json中
-              ② 多语言的代码片段被定义在以.code-snippets为结尾的JSON文件中，这个文件中有一个scope属性，它会包含一个或多个语言ID，从而定义当前的代码片段对哪些语言生效，如果没有scope属性，当前的代码片段会对所有语言生效。
-            
-          (2) 项目维度：定义代码片段实在当前项目中生效还是在全局范围内生效
+              ❶ 一种语言的代码片段会被定义在对应语言的代码片段定义文件中
+                例：JavaScript的代码片段被定义在javascript.json中
+              ❷ 多语言的代码片段被定义在以.code-snippets为结尾的JSON文件中，这个文件中有一个scope属性，它会包含一个或多个语言ID，从而定义当前的代码片段对哪些语言生效，如果没有scope属性，当前的代码片段会对所有语言生效。
+          ② 项目维度：定义代码片段实在当前项目中生效还是在全局范围内生效
             创建代码片段时的，New Snippets file for '...' 选项创建的是当前项目的代码片段，当前项目的代码片段的定义文件位于.vscode文件夹下的.code-snippets结尾的JSON文件中。对于多人协同开发的项目，当前项目维度的代码片段会十分有用。
-      代码片段的语法
-        (1)Tabstops
+      (4)代码片段的语法
+        ① Tabstops
           通过Tabstops，可以使光标在代码片段中跳转。可以使用$1、$2、$3等代码片段中的字符来指定光标的位置。光标会根据指定的位置对$1、$2、$3等依次进行遍历。比较特殊的字符是$0，它是光标抵达的最后一个字符。对于数字一样的Tabstops，在编辑代码片段时，Tabstops中的文本内容也会随之更新。
-        (2)占位符
+        ② 占位符
           占位符是包含默认的Tabstops，如：${1:foo}。占位符的文本会被默认地添加到相应Tabstops的位置。
-        (3) 选择
+        ③ 选择
           占位符可以把多个值作为文本内容。多个值以逗号分隔，并且用管道字符包围，如：${1|noe,two,three|}。当代码片段被插入后，跳转到对应的占位符时，会出现下拉列表，以便选择对应的文本。
-        (4)变量
+        ④ 变量
           通过 $name 或 ${name:default}可以插入变量的值。当变量为空时，会插入默认值或空字符串。
             可以使用的变量，如下所示：
               TM_SELECTED_TEXT：当前被选中的文本
@@ -144,7 +144,7 @@ VSCode编辑器 常用使用方法备忘录
               BLOCK_COMMENT_START：  块注释的开始字符。比如，HTML是<!--
               BLOCK_COMMENT_END；    块注释的结束符。比如，HTML是-->
               LINE_COMMENT：         行注释，比如，HTML是<!---->
-              
+        ⑤ 定义代码片段快捷键      
           打开命令面板，输入并执行Preferences：Open Keyboard Shortcuts(JSON)命令，可以打开定义快捷键的keybindings.json文件
             {
               "key": "ctrl+shift+7",                     快捷键绑定命令
@@ -157,20 +157,20 @@ VSCode编辑器 常用使用方法备忘录
               }
             }
 
-    3. Git 版本控制插件
-      Git分支
+    3.Git 版本控制插件
+      (1)Git分支
         在左下角的状态栏中会显示当前的Git分支。
-      当你对本地Git仓库的文件进行更改时，在编辑器的行号与源代码之间的沟槽中会有相应的提示，对于增删改，有以下三种不同的提示：
-        · 蓝色条：表明这些行的代码有更改
-        · 绿色条：表明新增了代码
-        · 红色小三角：表明当前位置删除了代码
-      合并冲突
-        当VSCode检测到Git合并冲突时，冲突的部分会被高亮显示，还会有不同的内联操作帮助快速解决冲突，如下所示：
-          · Accept Current Change：  保留当前的更改
-          · Accept Incoming Change： 保留新进来的更改
-          · Accept Both Changes:     保留所有的更改
-          · Compare Changes：        在diff视图中比较更改
-      把VSCode作为Git编辑器
+        当你对本地Git仓库的文件进行更改时，在编辑器的行号与源代码之间的沟槽中会有相应的提示，对于增删改，有以下三种不同的提示：
+          · 蓝色条：表明这些行的代码有更改
+          · 绿色条：表明新增了代码
+          · 红色小三角：表明当前位置删除了代码
+        合并冲突
+          当VSCode检测到Git合并冲突时，冲突的部分会被高亮显示，还会有不同的内联操作帮助快速解决冲突，如下所示：
+            · Accept Current Change：  保留当前的更改
+            · Accept Incoming Change： 保留新进来的更改
+            · Accept Both Changes:     保留所有的更改
+            · Compare Changes：        在diff视图中比较更改
+      (2)把VSCode作为Git编辑器
         (1)在命令行中，运行 git config --global core.editor "code --wait"，把VSCode设为Git的默认编辑器
         (2)命令行中运行 git config --global -e，就会调出VSCode来打开全局的.gitconfig文件，以配置Git
         (3)在.gitconfig文件中添加以下配置，把VSCode设置成Git的比较及合并工具
@@ -181,18 +181,17 @@ VSCode编辑器 常用使用方法备忘录
           [merge]
             tool = code
 
-    4. Task，把重复的工作自动化
+    4.Task，把重复的工作自动化
       许多工具都可以把重复的任务自动化，包括代码静态检查、编译、打包、测试、部署等。如：
         编译：TypeScript编译器、Java编译器等
         静态检查：ESLint、TSLint等
         代码构建：Make、Ant、Gulp等
       Task（任务）可以被用来运行脚本或启动一个进程。因此，许多工具都可以通过Task直接在VSCode中运行，而不需要额外再命令行中输入命令。Task被配置在.vscode文件夹的tasks.json文件中。
       Task只能配置在有文件夹打开的项目中。
-      
-      配置Task
+      (1)配置Task
         终端 -> 配置任务
-        终端 -> 运行任务，会显示出所有可以运行的Task，选择一个Task后，会选择要针对何种错误和警告扫描Task的输出。选择后，一个新的终端被创建，echo Hello命令在终端中执行。按下让任意键，终端会被关闭。
-        (1)配置Task定义的属性
+        终端 -> 运行任务，会显示出所有可以运行的Task，选择一个Task后，会选择要针对何种错误和警告扫描Task的输出。选择后，一个新的终端被创建，echo Hello命令在终端中执行。按下任意键，终端会被关闭。
+        ① 配置Task定义的属性
           · label：在用户界面上展示的Task标签
           · type:  Task的类型，分为 shell 和 process 两种，具体如下所示：
               shell：作为Shell命令运行（如 bash、cmd、PowerShell等）
@@ -203,9 +202,9 @@ VSCode编辑器 常用使用方法备忘录
           · presentation：定义用户界面如何处理Task的输出。
           · options：定义cwd（当前工作目录）、env（环境变量）和shell的值。
           · runOptions：定义Task何时运行及如何运行
-        (2)自定义自动检测的Task
+        ② 自定义自动检测的Task
           Terminal->Run Task->npm:test的齿轮按钮，tasks.json文件中就会添加一个npm test的配置项，可以基于它来定义更多的设置。
-        (3)问题匹配器
+        ③ 问题匹配器
           通过问题匹配器，可以对Task的输出进行扫描，找到对应的错误和警告。VSCode中内置了一系列的问题匹配器，可以在tasks.json中使用problemMatcher属性来定义对应相应的问题匹配器。不同语言的problemMatcher属性如下所示：
             · TypeScript: $tsc
             · TypeScript Watch: $tsc-watch
@@ -217,7 +216,7 @@ VSCode编辑器 常用使用方法备忘录
             · CSHarp and VB Compiler: $msCompile
             · Lessc compiler: $lessc
             · Node Sass compiler: $node-sass
-        (4)命令参数
+        ④ 命令参数
           对于复杂的命令可以在tasks.json中使用args属性来定义命令的参数。
             {                                           {
               "label": "dir",                             "label": "dir",
@@ -225,7 +224,7 @@ VSCode编辑器 常用使用方法备忘录
               "command": "dir",                           "command": "dir /b",
               "args": ["/b"]                            }
             }
-        (5)输出行为
+        ⑤ 输出行为
           控制集成终端的输出行为，所有与输出相关的行为，都可以通过tasks.json中的presentation属性来定义，主要包含以下属性：
             · reveal: 控制集成终端是否显示。其设置包含以下三种：
                 always：集成终端总是会在Task启动时显示。默认设置
@@ -240,15 +239,15 @@ VSCode编辑器 常用使用方法备忘录
                 new：每次运行Task都会创建一个新的集成终端
             · clear：控制在Task运行前，是否清除集成终端的输出。默认值是false
             · group: 控制Task是否在同一个集成终端中运行。如果不同Task的group属性相同，那么它们会复用同一个集成终端。
-        (6)运行行为
+        ⑥ 运行行为
           通过tasks.json中的runOptions属性可以定义Task的运行行为，runOptions属性主要包含以下属性：
             · reevaluateOnRerun：在执行 Rerun Last Task命令时，控制是否重新计算变量。默认值是true
             · runOn：指定何时运行Task。其设置包含以下两种：
                 default：只有在运行Run Task命令时，才会触发运行
                 folderOpen：当包含这个tasks.json的文件夹被打开时，便会触发运行。在运行前，VSCode会询问你是否要运行。
-        (7)变量替换
+        ⑦ 变量替换
           在tasks.json中，VSCode可以进行变量替换。
-          ① 预定义的变量
+          ❶ 预定义的变量
             · ${workspaceFolder}：在VSCode中打开的文件夹的完整路径
             · ${workspaceFolderBasename}: 在VSCode中打开的文件夹名
             · ${file}：当前打开文件的完整路径
@@ -263,12 +262,12 @@ VSCode编辑器 常用使用方法备忘录
             · ${selectedText}：当前 打开的文件中选中的文本
             · ${execPath}：VSCode可执行文件的完整路径
             · ${defaultBuildTask}：默认的Build Task的名字 
-          ② 环境变量
+          ❷ 环境变量
             通过${env:Name}的语法，可以引用环境变量。
-          ③ 配置变量
+          ❸ 配置变量
             通过${config:Name}的语法，可以引用VSCode的设置项。
             比如${config:editor.fontSize}会得到编辑器的字体大小
-          ④ 输入变量
+          ❹ 输入变量
             有些时候，在运行Task时，每次都需要传入不同的变量，通过输入变量，可以轻松地对Task进行定制化。输入变量的语法是${input:variableID}，variableID引用了tasks.json中的inputs部分的配置内容
             VSCode支持以下三种类型的输入变量：
               · promptString：展示输入框，并获得用户的输入字符串
@@ -281,13 +280,13 @@ VSCode编辑器 常用使用方法备忘录
               · command：     运行任意的命令
                   command：要运行的命令
                   args：   运行命令的参数（可选）
-        (8)操作系统的相关属性
-          不同操作系统中的Task命令也可能不同。在Windows上使用windows属性，在Linux上使用linux属性，在macOS上使用osx属性。
-          Task的属性可以被定义在全局范围。除非具体的某一个Task定义了相应的属性，否则就使用全局属性
-        (9)后台运行的Task
-          一些工具可以在后台运行，当文件更新时，便会触发相应的操作。比如：TypeScript的编译器tsc通过--watch参数对此功能提供了内置的支持。
+      (2)操作系统的相关属性
+        不同操作系统中的Task命令也可能不同。在Windows上使用windows属性，在Linux上使用linux属性，在macOS上使用osx属性。
+        Task的属性可以被定义在全局范围。除非具体的某一个Task定义了相应的属性，否则就使用全局属性
+      (93)后台运行的Task
+        一些工具可以在后台运行，当文件更新时，便会触发相应的操作。比如：TypeScript的编译器tsc通过--watch参数对此功能提供了内置的支持。
     
-    5. 多项目工作区（multi-root Workspaces)
+    5.多项目工作区（multi-root Workspaces)
       在VSCode中，可以方便地管理多个文件夹。
       (1)管理文件夹
         ① 添加文件夹
@@ -322,7 +321,7 @@ VSCode编辑器 常用使用方法备忘录
       (3)源代码管理
         多文件夹项目如果有多个git的文件夹，那么扎起源代码管理视图中会显示SOURCE CONTROL PROVIDERS，在 SOURCE CONTROL PROVIDERS 中点击代码仓库，可以在下方看到代码更改的详情。
     
-    6. 调试与运行
+    6.调试与运行
       (1)插件调试器
         VSCode内置了对Node.js运行时的调试支持，无须安装额外的插件就能调试JS和TS。其他编程语言，需要额外安装相应的调试器插件。
       (2)调试模式与运行模式
@@ -365,21 +364,20 @@ VSCode编辑器 常用使用方法备忘录
         
   六.插件
     插件市场主页： https://marketplace.visualstudio.com/vscode
-    1. 插件市场
+    1.插件市场
       (1)首页
         首页有四个分组
         · Featured: 推荐插件
         · Trending: 每日插件安装数量榜
         · Most Popular: 插件总安装量榜
         · Recently Added: 最新发布的插件
-    2. 优秀的插件
+    2.优秀的插件
       (1)REST Client
         测试REST API的工具。REST API是前后端分离最佳实践，是开发的一套标准或者说是一套规范。
         REST Client支持cURL和RFC2616这两种业界标准来调用REST API。
-          test.http
+          例：Compiler_tools\test.http
         ① HTTP语言
-          REST Client插件添加了HTTP语言的定义，支持把以.http或.rest结尾的文件中的代码当作HTTP语言进行处理，提供了语法高亮、代码智能提示、代码注释等功能。
-          通过###分隔符，同一个http文件中可以涵盖多个HTTP请求。
+          REST Client插件添加了HTTP语言的定义，支持把以.http或.rest结尾的文件中的代码当作HTTP语言进行处理，提供了语法高亮、代码智能提示、代码注释等功能。通过###分隔符，同一个http文件中可以涵盖多个HTTP请求。
         ② 代码生成
           在HTTP语言文件的邮件菜单中，可以通过Generate Code Snippet命令来讲HTTP请求生成不同编程语言的代码。
         ③ 高阶功能
@@ -423,7 +421,7 @@ VSCode编辑器 常用使用方法备忘录
       为VSCode窗口配置颜色。
       命令面板 -> Peacock: Change to a Favorite Color 选择颜色
       设置 -> peacock.surpriseMeOnStartup 是否为新开的VSCode窗口随机选择一个颜色
-    (6)Git集成②
+    (6)Git集成
       ① GitHub Pull requests
         GitHub的代码审查插件
       ② GitLens
@@ -499,23 +497,23 @@ VSCode编辑器 常用使用方法备忘录
         为加速Ionic开发提供了丰富的代码片段
 
   七.语言深入
-    ① JavaScript
-      ECMAScript是一种在ECMA-262标准中定义的脚本语言规范。而JavaScript是一种编程语言它实现了ECMAScript所定义的规范。
+    1.JavaScript
+      ECMAScript是一种在ECMA-262标准中定义的脚本语言规范。而JavaScript是一种编程语言，它实现了ECMAScript所定义的规范。
       一般来说，JS包含以下几部分：
         · ECMAScript: 描述了该语言的语法和基本对象
         · 文档对象模型（DOM）: 描述处理网页内容的方法和接口
-        · 浏览器对象模型（BOM）: 描述与浏览器惊醒交互的方法和接口
+        · 浏览器对象模型（BOM）: 描述与浏览器进行交互的方法和接口
       Node.js和JS的区别和联系：
         · Node.js是一个JS运行时。JS可以运行在浏览器或Node.js中
         · 在浏览器运行时中，JS可以访问document、window等浏览器对象
         · 在Node.js运行时中，JS可以访问与操作系统、文件系统等相关的API
-    ② 代码编辑
-      1.IntelliSense
+    2.代码编辑
+      (1)IntelliSense
         IntelliSense提供了代码补全功能，可以显示悬停信息、参数信息、快速信息等。
-        (1)自动类型获取
+        ① 自动类型获取
           JS库和框架的IntelliSense由TS的类型声明文件（.d.ts文件）驱动。许多JS的npm软件包会包含.d.ts文件，这样在VSCode中就能直接获得IntelliSense功能。
           如果JS的npm软件包中没有包含.d.ts文件，那么VSCode的自动类型获取就会自动下载社区维护的.d.ts文件，进而获取IntelliSense功能。
-        (2)JSDoc
+        ②JSDoc
           除了可以通过类型推断和自动类型获取提供IntelliSense功能，VSCode还可以通过JSDoc来提供。
           在函数上方输入/**，就能触发代码片段提示，自动生成以下的JSDoc。
             /**
@@ -525,57 +523,57 @@ VSCode编辑器 常用使用方法备忘录
             */
           可以根据函数定义添加对应的详细JSDoc描述。这样在其他地方引用对应函数时，就能显示详细的函数提示了。
           通过设置"javascript.suggest.completeJSDocs:false"，可以禁用JSDoc的提示。
-      2.自动导入
+      (2)自动导入
         自动导入可以在你编写代码时提示变量及相应的依赖。当你选择了其中某一个建议的选项后，VSCode会在文件的顶部自动导入相应的依赖。
         通过"javascript.suggest.autoImports:false"，可以禁用自动导入。
-      3.JSX
+      (3)JSX
         在JSX文件中，也可以使用JS的完整功能。在*.js和*.jsx文件中，都能使用JSX的语法。VSCode也支持自动添加闭标签。
         通过"javascript.autoClosingTags:false"，可以禁用闭标签的自动补全。
-      4.代码导航
-        对于JS代码，在编辑区域的右键菜单中可以看到以下几种主要的代码导航方式。
+      (4)代码导航
+        对于JS代码，在编辑区域的右键菜单中可以看到以下几种主要的代码导航方式:
           · Go to Definition（转到定义）: 跳转到定义当前符号的代码，快捷键为F12。
           · Peek Definition（查看定义）: 与Go to Definition类似，但会直接在内联编辑器中展示定义的代码，快捷键为Alt+F12。
           · Go to References（转到引用）: 跳转到引用当前符号的代码，快捷键为Shift+F12。
           · Go to Definition（转到类型定义）: 跳转到当前符号的类型定义。
-      5.重构
+      (5)重构
         VSCode对JS支持以下几种重构命令：
           · 提取到函数
           · 提取到变量
           · 在命名的导入与名字空间的导入之间切换
           · 移动到新的文件
-      6.移除无用的代码和变量 
+      (6)移除无用的代码和变量 
         如果VSCode发现有不可达的代码，相应的代码颜色就会变浅，而且可以通过命令快速移除。
         通过"editor.showUnused:false"，可以禁用使不可达代码颜色变浅。此外，还可以根据语言来进行设置
           "[javascript]" : {
             "editor.showUnused" :false
           }
-      7.整理导入语句
-        通过Organize Imports源代码操作，可以对JS的import语句进行排序，并且移除没有是哟红的导入语句，操作步骤：
+      (8)整理导入语句
+        通过Organize Imports源代码操作，可以对JS的import语句进行排序，并且移除没有使用的导入语句，操作步骤：
           · 右键菜单选择Source Action选项，然后选择Organize Imports命令
           · 快捷键 Shift + Alt + O
         通过以下设置，还可以在保存文件时自动触发导入语句的整理
           "editor.codeActionsOnSave": {
             "source.organizeImport" : true
           }
-      8.文件移动时更新导入语句
+      (8)文件移动时更新导入语句
         在JS项目中，如果一个文件被其他文件引用，那么当它被移动或改名时，VSCode可以自动更新所有相关的导入语句的文件路径。
         通过"javascript.updateImportsOnFileMove.enabled"设置项可以进行进一步配置，该配置项的可选值如下：
           · prompt: 默认值。在更新前会弹窗询问是否要更新路径
           · always: 自动更新路径
           · never: 不更新路径
-      9.引用的CodeLens
+      (9)引用的CodeLens
         JS代码支持会在类、函数、属性等上方的CodeLes上显示代码被引用的数量。
         默认情况下，在JS代码中不会显示CodeLens。通过把javascript.referencesCodeLens.enabled设置为true，就可以启用CodeLens来显示代码被引用的数量了。
-      10.类型检查
+      (10)类型检查
         对于普通的JS文件，可以使用TS的高级功能来进行类型检查。这可以在代码编译和运行之前发现潜在的代码错误。同时，这些类型检查的功能还为JS提供了快速修复的功能，如：添加缺失的导入语句、添加缺失的属性等。
         与.ts文件一样，TS可以对.js文件进行类型推断。如果无法进行类型推断、那么会尝试使用JSDoc。
         VSCode自带的类型检查工具可以与其他JS检测工具（如：ESlint、JSHint）并存。可以通过以下方式启用：
-          (1)按文件启用
+          ① 按文件启用
             启用类型检查最简单的方式就是在JS文件的顶部添加 //@ts-check
-          (2)通过设置项启用
+          ② 通过设置项启用
             通过把 javascript.implicitProjectConfig.checkJs设置为true，可以从全局范围内启用类型检查，而且不用改变任何一行代码。优先级比jsconfig或tsconfig低。
             在JS文件的顶部添加// @ts-nocheck，可以针对某一个文件禁用类型检查。此外，在代码的前一行添加//@ts-ignore可以禁用当前行的类型检查。
-          (3)使用jsconfig或tsconfig启用
+          ③ 使用jsconfig或tsconfig启用
             如果项目中包含 jsconfig.json 或 tsconfig.json 文件，那么可以在编辑器选项中添加"checkJs":true，如下：
               在jsconfig.json文件中添加"checkJs":true，如下：
               {
@@ -590,17 +588,17 @@ VSCode编辑器 常用使用方法备忘录
                 },
                 "exclude": {"node_modules", "**/node_modules/*"}
               }
-      11.调试
+      (11)调试
         通过VSCode内置的调试器，即可调试Node.js的应用。
         服务器端调试
-          (1)一键调试
+          ① 一键调试
             在相应的代码行按下F9快捷键添加断点，或者单击编辑区域左侧的边槽。添加断点后，左侧的边槽会出现一个红色圆点。然后，切换到调试视图，启动JS调试器。可以打开调试控制台，对JS变量和表达式直接进行计算。
-          (2)创建调试配置
+          ② 创建调试配置
             对于一些复杂的项目，需要创建调试配置，以便后续进行定制化操作。
             VSCode的调试配置会被存储在.vscode文件夹的launch.json文件中，可以通过下面的步骤来创建一个调试配置：
-              ① 切换到视图，点击添加配置
-              ② VSCode会在.vscode文件夹中创建并打开一个launch.json文件，该文件中定义了调试所需的配置。
-          (3)调试配置属性
+              ❶ 切换到视图，点击添加配置
+              ❷ VSCode会在.vscode文件夹中创建并打开一个launch.json文件，该文件中定义了调试所需的配置。
+          ③ 调试配置属性
             对于调试Node.js应用，VSCode支持两种调试模式：launch(启动) 和 attach(附加)。
             在launch.json文件中，除了基本的调试属性（如：type、request、name等），Node.js调试器还有一些特殊的属性：
               可以被定义在launch和attach的调试配置中：
@@ -634,7 +632,7 @@ VSCode编辑器 常用使用方法备忘录
                 · autoAttachChildProcesses: 是否自动附加被调试进程中的所有子进程。默认值为false。
               只能被定义在 attach 的调试配置中：
                 · processId: 可以定义附加的进程ID，如果被设置为${command:PickProcess}，那么可以在调试器启动时显示的进程列表中选择需要调试的进程。
-          (4)附加到Node.js程序
+          ④ 附加到Node.js程序
             如果想把VSCode的Node.js调试器附加到Node.js应用程序，就需要在调试模式下启动Node.js应用程序，在VSCode的集成终端运行以下命令：
               node --inspect program.js
             如果需要让Node.js应用程序等待调试而不运行，则在VSCode的集成终端运行以下命令：
@@ -650,32 +648,31 @@ VSCode编辑器 常用使用方法备忘录
                 如果一个Node.js进程没有在调试模式下启动，那么通过指定进程ID（processId），Node.js调试器依旧可以附加到相应的进程。
                 通过把processId属性设置为${command:PickProcess}，可以使调试器在启动时动态地显示Node.js进程列表，可以方便地选择需要调试的Node.js进程。
                   例子：launch.json -> "Attach to Process"
-          (5)远程调试
+          ⑤ 远程调试
             VSCode内置的Node.js调试器支持远程调试，只需要在launch.json文件中添加一个address属性即可。
               例子：launch.json -> "Attach to remote"
             默认情况下，VSCode会把远程Node.js程序文件中的源代码展示在本地，但这些文件都是只读的。可以对文件中的源代码进行单步调试，但不可以修改它。如果想在VSCode中打开可编辑的源代码，那么就需要设置远程文件夹与本地文件夹的映射。在launch.json文件中。可以通过添加localRoot和remoteRoot属性来进行映射。
             localRoot用于定义本地文件夹的根目录，remoteRoot则用于定义远程文件夹的根目录。 
               例子：launch.js -> "Attach to remote Edit Source code"
-
         客户端调试
           本文件 328 和 437行。
       
-      12.静态代码检查
+      (12)静态代码检查
         静态代码检查工具能够在编写代码时，提前发现代码中的问题。
-        (1)ESLint
+        ① ESLint
           通过 npm install eslint 或者 npm install -g eslint 在当前工作区或全局安装ESLint，然后创建一个.eslintrc配置文件。通过 eslint.run 设置项，可以设定是保存时（onSave）还是在输入时（onType）运行ESlint静态检查。
-      13.测试
-        (1)Mocha Test Explorer
+      (13)测试
+        ① Mocha Test Explorer
           Mocha是常用的JS测试框架之一。Mocha Test Explorer支持Mocha测试框架，支持的功能包括：
             · 单元测试的树状图单独显示在专有的测试资源管理器中。
             · 运行或调试单元测试
             · 测试覆盖率报告
             · 并行的运行测试
             · 保存文件时自动运行测试 
-      14.JS插件推荐
-        (1)Path IntelliSense
+      (14)JS插件推荐
+        ① Path IntelliSense
           在JS文件中，通过Path IntelliSense插件可以对文件路径进行自动补全。此外，该插件也支持在HTML和CSS文件中对文件路径进行自动补全。
-        (2)Import Cost
+        ② Import Cost
           在JS和TS文件中，通过Import Cost插件可以内联地显示导入的npm包的大小。通过以下格式的代码可计算出npm包的大小。
             · import Func from "utils";
             · import * as Utils from "utils"; 
@@ -683,14 +680,14 @@ VSCode编辑器 常用使用方法备忘录
             · import {orig as alias} from "utils";
             · import Func from "utils/Func";
             · const Func = require('utils').Func;
-        (3)CodeMetrics
+        ③ CodeMetrics
           插件可以计算代码的复杂度，对于复杂度高的代码给出详细的信息。开发者可以根据复杂度的提示来优化代码。插件支持JS、TS、和Lua 三种语言的代码复杂度计算。
-        (4)JavaScript Booster
+        ④ JavaScript Booster
           提供了数十种代码操作，可以帮助开发者轻松重构并优化JS代码。
-        (5)Turbo Console Log
+        ⑤ Turbo Console Log
           Turbo Console Log插件可以根据JS代码的上下文自动生成有意义的 console.log(); 代码，以便以后进行运行和调试。
     
-    ③ TypeScript
+    3.TypeScript
       TypeScript是JavaScript的超集，可以编译成JavaScript。与JavaScript类似，不需要安装额外的插件，VSCode为TypeScript提供了开箱即用的支持，包括但不限于：IntelliSense、调试、代码格式化、代码导航、代码重构、以及其他高级功能。
       (1)安装TypeScript编译器
         安装Node.js，安装完成后，需要确保Node.js已经被添加到PATH环境变量中。
@@ -710,33 +707,33 @@ VSCode编辑器 常用使用方法备忘录
           · 单击右上角的运行小三角按钮
       (4)编译
         TS提供了丰富的项目设置和编译设置，以便后续进行项目管理及代码调试。
-        1.tsconfig.json
+        ① tsconfig.json
           tsconfig.json 文件定义了TS的项目设置及编译设置。
             例子：Compiler tools\tsconfig.json
           打开集成终端，只需要输入tsc（注意：tsconfig.json文件需要在根目录），TS编译器就会根据tsconfig.json文件的配置对当前的TS项目进行编译。
-        2.源代码映射
+        ② 源代码映射
           如果需要调试TS文件，则需要把TS文件与生成的JS文件进行映射。有两种方式可以生成映射文件。
             ❶ 在tsc命令中添加--sourcemap参数，如下：
               tsc hello.ts --sourcemap
             ❷ 在tsconfig.json文件中添加sourceMap属性，并将该属性设置为true，然后在集成终端中输入tsc并执行。
               例子：Compiler tools\tsconfig.json
           通过以上任意一种方式，都会生成一个file.js.map的源代码映射文件。
-        3.生成文件的位置
+        ③ 生成文件的位置
           默认情况下，生成的JS文件会和TS文件在同一个文件夹中。如果项目很大，则会产生很多JS文件，不便于管理。可以在tsconfig.json文件中添加outDir属性，来指定JS文件的目录。
             例子：Compiler tools\tsconfig.json
       (5)调试
-        1.快速调试
+        ① 快速调试
           VSCode依赖于TS的映射文件将原始的TS文件与生成的JS文件进行映射。
             ❶ 在tsconfig.json文件中需要添加sourceMap属性，并将其设置为true。
             ❷ 在集成终端中输入并执行 tsc。这条命令执行完毕后会在“outDir”属性定义的目录中生成一个file.js.map的源代码映射文件和一个file.js文件。
             ❸ 在需要的TS文件处添加断点，然后切换到调试视图，选择预设的调试任务（launch.json -> TS Launch Node），就可以进行调试。在左侧的调试视图中可以看到与当前代码相关的变量信息，在调试控制台，可以对TS变量和表达式直接进行运算。
-        2.调试配置
+        ② 调试配置
           TS文件在调试前，需要编译，所以使用了一下两个属性：
             · preLaunchTask: 定义了在调试前要运行的任务（在tasks.json文件中设置），在调试TS之前，需要先编译TS文件
             · outFiles: 定义了JS文件的输出路径，优先级小于tsconfig.json中的定义。
       (6)代码编辑
         在VSCode中的代码编辑功能方面，TS和JS非常相似，具体功能使用参考 行:512。
-        1.代码编辑的配置
+        ① 代码编辑的配置
           在代码编辑方面，TS和JS主要的不同之处就是设置项的不同。
             功能                 TS的设置项                                         JS的设置项
             启用JSDoc            typescript.suggest.completeJSDocs                 javascript.suggest.completeJSDocs
@@ -745,7 +742,7 @@ VSCode编辑器 常用使用方法备忘录
             启用闭标签的自动补全   typescript.autoClosingTags                        javascript.autoClosingTags
             设置文件移动时如何更新导入 typescript.updateImportsOnFileMove.enabled    javascript.updateImportsOnFileMove.enabled
             是否显示CodeLens      typescript.referencesCodeLens.enabled             javascript.referencesCodeLens.enabled
-        2.隐藏JS文件
+        ② 隐藏JS文件
           打开命令面板，输入并执行Preferences: Oen Settings(JSON)，打开settings.json文件，在该文件下添加以下以下配置：
             "files.exclude": {
               "**/*.js":{
@@ -753,7 +750,7 @@ VSCode编辑器 常用使用方法备忘录
               }
             }
           通过上面的配置，可以把与TS同名同级的JS文件隐藏。
-        3.使用不同版本的TS
+        ③ 使用不同版本的TS
           有两种方式：
             · 点击TS文件底部状态栏的TS的版本号，单击版本号选择切换
             · 在TS文件中，打开命令面板，输入并执行 TypeScript: Select TypeScript Version
@@ -761,7 +758,7 @@ VSCode编辑器 常用使用方法备忘录
 
   八.前端开发
     VSCode 使用前端技术栈(HTML、CSS和TS)开发而成。同时VSCode对于前端开发也提供了极佳的支持。
-    一.HTML
+    1.HTML
       VSCode内置了对HTML的支持，包括语法高亮、代码补全、代码格式化等各类功能。
       (1)IntelliSense
         在HTML中编写代码时，VSCode提供了强大的智能提示。还可以通过 Ctrl + Space 快捷键触发智能提示。
@@ -795,13 +792,13 @@ VSCode编辑器 常用使用方法备忘录
       (7)自定义HTML数据格式
         VSCode可以自定义额外的HTML数据格式。自定义的HTML标签、属性及属性的值可以获得自动补全、显示悬停信息等功能。
         ① 创建一个名为html.html-data.json的HTML数据格式文件
-          例子：.vscode -> html.html-data.json
+          例子：.vscode\html.html-data.json
         ② 在.vscode/settings.json文件中通过html.customData设置项引入相应的HTML数据格式文件，然后，重启VSCode。
       (8)HTML插件推荐
         ① lit-html
-          lit-html基于lit-html模板库，为嵌入JS和TS 模板字符串中的HTML 提供了完善的功能。
+          lit-html基于lit-html模板库，为嵌入 JS 和 TS 模板字符串中的 HTML 提供了完善的功能。
 
-    二. CSS、SCSS和Less
+    2.CSS、SCSS和Less
       (1)IntelliSense
         输入CSS属性时，会有相应的提示列表。通过Ctrl+Space快捷键可以触发智能提示。
       (2)颜色预览
@@ -812,6 +809,7 @@ VSCode编辑器 常用使用方法备忘录
         把鼠标悬停在颜色定义上，会显示颜色选择器。单击颜色选择器顶部的颜色字符串，可以切换不同的颜色模式。
       (4)代码折叠
         · 通过单击行号与代码之间的折叠图标，VSCode支持对CSS代码进行代码折叠。
+        · 使用 Ctrl + Shift + [/] 来折叠展开代码
         · 可以通过区域标记来定义代码折叠的范围：
           CSS/SCSS/Less: /*#region*/ 和 /*#endregion*/
           SCSS/Less: //#region 和 //#endregion
@@ -845,46 +843,46 @@ VSCode编辑器 常用使用方法备忘录
         ③ Easy LESS
           每次保存LESS文件后，这个插件都会自动编译Less文件，然后生成CSS文件。还可以通过 Ctrl+Shift+P 快捷键打开命令面板，然后输入并执行 Compile LESS to CSS 命令。
     
-    三. Emmet
+    3.Emmet
       Emmet是Web开发者必不可少的工具，为HTML和CSS提供了丰富的功能，VSCode内置了Emmet。
-      1.Emmet的支持范围
+      (1)Emmet的支持范围
         默认情况下，Emmet缩写扩展功能会在html、haml、jade、slim、jsx、xml、xsl、css、scss、sass、less、和stylus这些类型的文件中开启，此外，还会在继承于上述的文件的语言(如：Handlebars和php)中开启。
-      2.在HTML中使用Emmet
+      (2)在HTML中使用Emmet
         在HTML文件中输入以下Emmet缩写：
           #page>div.log+ul#navigation>li*5>a{Item $}
         在输入Emmet缩写的过程中，Emmet 缩写会出现在建议列表中，并且会有相应的HTML预览。按下Tab键或Enter键，VSCode会在HTML文件中插入代码。
-      3.在CSS中使用Emmet
+      (3)在CSS中使用Emmet
         在CSS属性中输入Emmet的缩写，会显示相应的CSS预览。
-      4.设置Emmet
-        (1)如果想用Tab键来展开Emmet缩写，可以通过下面的设置项来设置：
+      (4)设置Emmet
+        ① 如果想用Tab键来展开Emmet缩写，可以通过下面的设置项来设置：
             "emmet.triggerExpansionOnTab": true 
-        (2)通过以下设置，可以在建议列表中禁用Emmet缩写：
+        ② 通过以下设置，可以在建议列表中禁用Emmet缩写：
             "emmet.showExpandedAbbreviation": "never"
-        (3)通过以下设置项，可以把Emmet缩写始终放在建议列表的顶部：
+        ③ 通过以下设置项，可以把Emmet缩写始终放在建议列表的顶部：
             "emmet.showSuggestionsAsSnippets": true
             "editor.snippetSuggestions": "top"
-        (4)在其他文件中启用Emmet缩写
+        ④ 在其他文件中启用Emmet缩写
           通过对 emmet.includeLanguages 进行设置，把文件类型绑定到其他支持 Emmet 的文件上，就能启用相应的文件，如可以把JS文件绑定到JavaScript React文件上。
             例：settings.json
           此外，还可以通过以下设置，使 Emmet 缩写只在与HTML/CSS相关的文件中启用：
             "emmet.showExpandedAbbreviation": "isMarkupAndStyleSheetFilesOnly"
-        (5)Emmet 设置项
+        ⑤ Emmet设置项
           可以通过 "emmet.*" 的设置项，对 Emmet 进行设置。
-      5.自定义Emmet片段
+      (5)自定义Emmet片段
         创建snippets.json文件，通过 emmet.extensionsPath 设置文件位置，到文件夹，不写文件名。
           例：.vscode\snippets.json
       
-    四.Vue
+    4.Vue
       Vue是一个用于构建Web应用用户界面的JS库。VSCode内置了对HTML、CSS和JS的支持，可以安装Vetur插件，为 Vue开发提供更丰富的支持。
       (1)快速开始
         开始进行Vue开发之前，需要安装 Vue CLI，用于生成Vue应用。
-        1.安装 Vue CLI
+        ① 安装 Vue CLI
           在命令行中输入以下命令来安装 Vue CLI
             npm install -g @vue/cli
-        2.创建Vue项目
+        ② 创建Vue项目
           在命令行中输入以下命令来创建Vue应用
             vue create my-app
-        3.运行 Vue 应用
+        ③ 运行 Vue 应用
           在VSCode中打开集成终端，并输入以下命令，可以运行Vue应用，本地端口默认为 8080
             npm run serve
       (2)Vetur插件
@@ -897,27 +895,26 @@ VSCode编辑器 常用使用方法备忘录
           · 自动补全
           · 调试
       (3)调试Vue
-        1.添加断点
+        ① 添加断点
           打开需要调试的Vue文件，在相应的代码处添加断点。
-        2.配置调试文件
+        ② 配置调试文件
           例子：launch.json -> "Launch Chrome Vue"
-        3.配置webpack
+        ③ 配置webpack
           需要为Webpack配置源代码映射的设置项。在 Vue 项目的根目录中创建一个vue.config.js文件，然后在文件中填入以下配置
             module.exports = {
               configureWebpack:{
                 devtool : 'source-map'
               }
             }
-        4.运行Vue应用
+        ④ 运行Vue应用
           npm run server
-        5.启动调试
+        ⑤ 启动调试
           有三种方式启动调试：
             · 在顶部的菜单栏中选择 Debug-Start Debugging
             · 使用F5快捷键
             · 通过左侧的活动栏切换到调试视图，然后单击绿色的调试按钮
-        6.静态代码检查
+        ⑥ 静态代码检查
           Vetur插件总内置了 Vue ESLint插件（eslint-plugin-vue），为 Vue 提供了强大的静态代码检查功能。对于检查出的错误或警告，会在代码下方显示波浪线，把鼠标悬停在代码上，会显示详细的错误提示信息。
   
   
   九.远程开发
-    
