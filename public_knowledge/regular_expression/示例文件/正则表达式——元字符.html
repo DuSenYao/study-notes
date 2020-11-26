@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>正则表达式——元字符</title>
+  </head>
+  <style>
+    textarea {
+      resize: none;
+    }
+    input {
+      height: 24px;
+    }
+    div {
+      margin: 100px auto 0 auto;
+      width: 300px;
+    }
+    button {
+      padding: 5px;
+      background-color: #fff;
+      outline: 1px solid #444;
+      border-width: 0px;
+      cursor: pointer;
+    }
+  </style>
+  <body>
+    <div style="">
+      <input type="text" id="regex" />
+      <button onclick="implement()">执行</button>
+    </div>
+    <div>
+      <textarea id="text" cols="30" rows="10"></textarea>
+    </div>
+  </body>
+  <script>
+    function implement() {
+      let value = document.getElementById("regex").value;
+      let text = document.getElementById("text").value;
+      let reg = /^1[3-9]\d{9}$/; // 匹配电话
+      // 在 JS 中，正则表达式常用于两个字符串方法：search() 和 replace()，还有match()、split()
+      // JS中的RegExp对象方法有三个：exec()、test()、toString() 
+    }
+  </script>
+</html>
