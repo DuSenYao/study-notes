@@ -37,9 +37,17 @@
     function implement() {
       let value = document.getElementById("regex").value;
       let text = document.getElementById("text").value;
-      let reg = /^1[3-9]\d{9}$/; // 匹配电话
+      // let reg = /^1[3-9]\d{9}$/; // 匹配电话
+
       // 在 JS 中，正则表达式常用于两个字符串方法：search() 和 replace()，还有match()、split()
       // JS中的RegExp对象方法有三个：exec()、test()、toString() 
+      
+      // 表示次数的量词默认是贪婪模式，会尽可能多的去匹配。
+      // let r1 = "ababa".match(/a+/g); ["a", "a", "a"] 等效于 
+      // * 是 0到多次，所以空字符串也会被匹配到
+      // let r2 = "ababa".match(/a*/g); ["a", "", "a", "", "a", ""]
+      // 在量词的后面加上(?)变成懒惰模式，找出长度最小且满足要求的。
+      // let a = "ababa".match(/a*?/g); ["", "", "", "", "", ""]
     }
   </script>
 </html>
