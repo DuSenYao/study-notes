@@ -28,7 +28,8 @@
     <div style="">
       <input type="text" id="regex" />
       <button onclick="implement()">执行</button>
-      <input type="text" oninput="checkCodeFixedTwo(this)">
+      <input type="text" placeholder="只能输入两位小数和8位整数" oninput="checkCodeFixedTwo(this)">
+      <button onclick="searchSticky()">使用粘性搜索(sticky)</button>
     </div>
     <div>
       <textarea id="text" cols="30" rows="10"></textarea>
@@ -50,15 +51,25 @@
       // 在量词的后面加上(?)变成懒惰模式，找出长度最小且满足要求的。
       // let a = "ababa".match(/a*?/g); ["", "", "", "", "", ""]
     }
+
+    // 只能输入两位小数和8位整数(不能输入负数)
     function checkCodeFixedTwo(obj)
     {
-      console.time("a");
-      let value = obj.value;
-      value = value.replace(/[^\d+.]/g,"");  // 清除"数字"和"."以外的字符  
-      value = value.replace(/\.{2,}/g,"."); // 只保留第一个 "." 清除多余的
-      value = value.replace(".","$#$").replace(/\./g,"").replace("$#$","."); 
-      obj.value = value.replace(/^(\d+)\.(\d\d).*$/,'$1.$2'); // 只能输入一位小数(不能输入负数)
-      console.timeEnd("a");
+      // 清除"数字"和"."以外的字符，"."只留一个 只能输入两位小数和8位整数(不能输入负数) ?: 不保存子组
+      obj.value = obj.value.replace(/[^\d.]/g,"").replace(/^\./, "0.").replace(/^(\d{1,8})(?:\d*)(\.\d{0,2}|\.?).*$/, "$1$2");
+    }
+
+    // 使用粘性搜索
+    function searchSticky()
+    {
+      let str = "#foo#";
+      let reg = new RegExp("foo", "y");
+      console.log(reg.lastIndex); // 0
+      reg.lastIndex = 1;
+      console.log(reg.test(str)); // true
+      console.log(reg.lastIndex); // 4 最后一个索引被拷贝到reg
+      console.log(reg.test(str)); // false
+      console.log(reg.lastIndex); // 0 匹配失败后重置
     }
   </script>
 </html>
