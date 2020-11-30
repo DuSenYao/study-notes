@@ -23,13 +23,25 @@
       border-width: 0px;
       cursor: pointer;
     }
+    .press {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+    .press button{
+      padding: 3px 6px;
+      margin: 8px;
+    }
   </style>
   <body>
-    <div style="">
+    <div>
       <input type="text" id="regex" />
       <button onclick="implement()">执行</button>
-      <input type="text" placeholder="只能输入两位小数和8位整数" oninput="checkCodeFixedTwo(this)">
-      <button onclick="searchSticky()">使用粘性搜索(sticky)</button>
+      <input type="text" placeholder="只能输入两位小数和8位整数" oninput="checkCodeFixedTwo(this)" />
+      <div class="press">
+        <button onclick="searchSticky()">使用粘性搜索(sticky)</button>
+        <button onclick="wordBoundary()">单词边界</button>
+        <button onclick="lookAround()">断言-环视</button>
+      </div>
     </div>
     <div>
       <textarea id="text" cols="30" rows="10"></textarea>
@@ -42,10 +54,10 @@
       // let reg = /^1[3-9]\d{9}$/; // 匹配电话
 
       // 在 JS 中，正则表达式常用于两个字符串方法：search() 和 replace()，还有match()、split()
-      // JS中的RegExp对象方法有三个：exec()、test()、toString() 
-      
+      // JS中的RegExp对象方法有三个：exec()、test()、toString()
+
       // 表示次数的量词默认是贪婪模式，会尽可能多的去匹配。
-      // let r1 = "ababa".match(/a+/g); ["a", "a", "a"] 等效于 
+      // let r1 = "ababa".match(/a+/g); ["a", "a", "a"] 等效于
       // * 是 0到多次，所以空字符串也会被匹配到
       // let r2 = "ababa".match(/a*/g); ["a", "", "a", "", "a", ""]
       // 在量词的后面加上(?)变成懒惰模式，找出长度最小且满足要求的。
@@ -53,15 +65,16 @@
     }
 
     // 只能输入两位小数和8位整数(不能输入负数)
-    function checkCodeFixedTwo(obj)
-    {
+    function checkCodeFixedTwo(obj) {
       // 清除"数字"和"."以外的字符，"."只留一个 只能输入两位小数和8位整数(不能输入负数) ?: 不保存子组
-      obj.value = obj.value.replace(/[^\d.]/g,"").replace(/^\./, "0.").replace(/^(\d{1,8})(?:\d*)(\.\d{0,2}|\.?).*$/, "$1$2");
+      obj.value = obj.value
+        .replace(/[^\d.]/g, "")
+        .replace(/^\./, "0.")
+        .replace(/^(\d{1,8})(?:\d*)(\.\d{0,2}|\.?).*$/, "$1$2");
     }
 
     // 使用粘性搜索
-    function searchSticky()
-    {
+    function searchSticky() {
       let str = "#foo#";
       let reg = new RegExp("foo", "y");
       console.log(reg.lastIndex); // 0
@@ -70,6 +83,27 @@
       console.log(reg.lastIndex); // 4 最后一个索引被拷贝到reg
       console.log(reg.test(str)); // false
       console.log(reg.lastIndex); // 0 匹配失败后重置
+    }
+
+    // 单词边界
+    function wordBoundary() {
+      // 单词的组成一般可以用元字符 \w+ 来表示，\w 包括了大小写字母、下划线和数字（即 [A-Za-z0-9_]）。那单词的边界，也就是出现了 \w 表示的范围以外的字符，比如引号、空格、标点、换行等这些符号，因此，可以在正则中使用 \b 来表示单词的边界。 \b 中的 b 可以理解为是边界（Boundary）这个单词的首字母。
+      let str = "tom asked me if I would go fishing with him tomorrow.";
+      let s = str.replace(/\btom\b/g, "Jom");
+      console.log(s); 
+      // 匹配非单词边界。这是上一个字符和下一个字符属于同一类型的位置
+      let str2 = "on noon";
+      let t = str2.replace(/\Bon/, "A");
+      console.log(t); // on noA
+    }
+
+    // 环视
+    function lookAround() {
+      // 匹配11位数字，前后无数字
+      let str = "12345678911";
+      let reg = /(?<!\d)\d{11}(?!\d)/;
+      let a = reg.exec(str);
+      console.log(a);
     }
   </script>
 </html>
