@@ -20,6 +20,7 @@
     "mssql",
     "nocheck",
     "nunjucks",
+    "oneline",
     "proto",
     "typeof",
     "vorbis"
@@ -27,5 +28,8 @@
   "todo-tree.tree.scanMode": "workspace",
   "eslint.enable": true,
   "html.customData": [".vscode/html.html-data.json"],
-  "css.customData": [".vscode/css.css-data.json"]
+  "css.customData": [
+    ".vscode/css.css-data.json"
+  ],
+  "commentTranslate.targetLanguage": "zh-CN"
 }
