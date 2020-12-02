@@ -1,0 +1,18 @@
+Git 
+  一.Git基础
+    (1)特点
+      · 最优的存储能力
+      · 高性能
+      · 开源
+      · 容易备份
+      · 支持离线操作
+      · 容易定制工作流程
+    (2)基本设置
+      1.配置 user 信息
+        · 添加配置
+          git config [--local|--global|--system] user.name 'You name'
+          git config [--local|--global|--system] user.email 'You email'
+        · 查看配置
+          git config --list [--local|--global|--system]
+        · 区别
+          local：区域为本仓库  global: 当前用户的所有仓库  system: 本系统的所有用户
