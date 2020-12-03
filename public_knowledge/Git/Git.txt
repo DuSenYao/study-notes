@@ -7,8 +7,40 @@ Git
       · 容易备份
       · 支持离线操作
       · 容易定制工作流程
-    (2)基本设置
-      1.配置 user 信息
+    (2)基础知识
+      1.基础命令
+        · git status : 查看仓库当前的状态，显示有变更的文件。加上 -s 参数可以获取简短的输出
+        · git clone 网址 : 克隆Git仓库到本地
+        · git add ./文件名/文件夹名: 将文件添加到暂存区，. 表示所有文件
+        · git diff [file]: 显示暂存区与工作区的差异
+        · git diff --cached|--staged [file]: 显示暂存区和上一次提交(commit)的差异
+        · git diff [first-branch]...[second-branch]: 显示两次提交之间的差异
+          例: git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1
+              git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1...e77f6c3cc85fd535c36df30813ed23e9fb8255d3
+        · git commit -m [message]: 将暂存区内容添加到本地仓库中，message是一些备注信息
+        · git reset [--soft | --mixed | --hard] [HEAD]: 用于回退版本，可以指定退回某一次提交的版本
+          --mixed 为默认，可以不用带该参数，用于重置暂存区的文件与上一次的提交(commit)保持一致，工作区文件内容保持不变。
+            例: git reset HEAD^            # 回退所有内容到上一个版本  
+                git reset HEAD^ hello.css  # 回退 hello.css 文件的版本到上一个版本  
+                git reset  052e            # 回退到指定版本
+          --soft 参数用于回退到某个版本。
+            例: git reset --soft HEAD      # 回退到当前版本
+          --hard 参数撤销工作区中所有未提交的修改内容，将暂存区与工作区都回到上一次版本，并删除之前的所有信息提交，慎用。
+            例: git reset –hard HEAD~3            # 回退上上上一个版本  
+                git reset –hard bae128            # 回退到某个版本回退点之前的所有信息。 
+                git reset --hard origin/master    # 将本地的状态回退到和远程的一样 
+          HEAD说明: HEAD 表示当前版本，HEAD^ 上一个版本，HEAD^^ 上上一个版本，以此类推...，也可以使用 ～数字 表示，HEAD~0 表示当前版本，HEAD~1 上一个版本，以此类推...            
+        · git rm <file>: 将文件从暂存区和工作区中删除
+            例: git rm hello.txt
+          如果删除之前修改过并且已经放到暂存区域的话，则必须要用强制删除选项 -f
+            例: git rm -f hello.txt
+          如果想把文件从暂存区域移除，但仍然希望保留在当前工作目录中，换句话说，仅是从跟踪清单中删除，使用 --cached 选项即可
+            例: git rm --cached hello.txt
+          可以递归删除，即如果后面跟的是一个目录做为参数，则会递归删除整个目录中的所有子目录和文件
+            例: git rm –r *   #删除当前目录下的所有文件和子目录
+        · git mv [file] [newFile]: 用于移动或重命名一个文件、目录或软连接，如果重命名，可以使用 -f 参数
+          例: git mv -f hello.txt hello.css
+      2.配置 user 信息
         · 添加配置
           git config [--local|--global|--system] user.name 'You name'
           git config [--local|--global|--system] user.email 'You email'
@@ -16,3 +48,13 @@ Git
           git config --list [--local|--global|--system]
         · 区别
           local：区域为本仓库  global: 当前用户的所有仓库  system: 本系统的所有用户
+      3.建Git仓库
+        ① 把已有的项目代码纳入Git管理
+          cd 项目代码所在的文件夹
+          git init
+        ② 新建的项目直接用Git管理
+          cd 文件夹
+          git init 项目文件名 #会在当前路径下创建和项目名称同名的文件夹
+      4.添加文件流程
+        git add files            工作目录 --> 暂存区
+        git commit -m"原因"      暂存区   --> 仓库
