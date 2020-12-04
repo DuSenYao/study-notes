@@ -57,4 +57,4 @@ Git
           git init 项目文件名 #会在当前路径下创建和项目名称同名的文件夹
       4.添加文件流程
         git add files            工作目录 --> 暂存区
-        git commit -m"原因"      暂存区   --> 仓库
+        git commit -m"原因"      暂存区   --> 本地仓库
