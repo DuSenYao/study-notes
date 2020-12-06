@@ -20,11 +20,12 @@ Git
       2.查看Git
         · git status : 查看仓库当前的状态，显示有变更的文件。加上 -s 参数可以获取简短的输出
         · git diff [file]: 显示暂存区与工作区的差异
-        · git diff --cached|--staged [file]: 显示暂存区和上一次提交(commit)的差异
-        · git diff [first-branch]...[second-branch]: 显示两次提交之间的差异
-        例: git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1
-            git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1...e77f6c3cc85fd535c36df30813ed23e9fb8255d3
-        · git log -[number] [分支名]: 查看历史提交记录
+          例: git diff HEAD 显示工作区和暂存区与最后一次commit之间的差异
+          ① [--cached|--staged] [file]: 显示暂存区和最后一次提交(commit)的差异
+          ② [first-branch]...[second-branch]: 显示两次提交之间的差异
+            例: git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1
+                git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1...e77f6c3cc85fd535c36df30813ed23e9fb8255d3
+        · git log [-number] [分支名]: 查看历史提交记录
           例: git log -2  // 查看最近的两次提交记录
           ① --oneline 查看简要历史记录
           ② --graph   查看图形化的日志
@@ -77,25 +78,28 @@ Git
         · git checkout [分支名]: 切换分支
           ① -b 创建并直接切换到新分支
             例: git checkout -b test
+          ② -- [file]: 将工作区文件恢复为和暂存区一样
+            例: git checkout -- index.html
       6.版本操作
         · git commit: 主要是将暂存区里的改动给提交到本地的版本库
           ① -m 'message': 填写摘要信息
           ② -a 跳过暂存区，从工作区直接提交到本地版本库
           ③ --amend 追加提交，在不增加一个新的commit的情况下，将新修改的代码追加到前一次的commit中
-        · git reset [--soft | --mixed | --hard] [HEAD]: 用于回退版本，可以指定退回某一次提交的版本
-          ① --mixed 为默认，可以不用带该参数，用于重置暂存区的文件与上一次的提交(commit)保持一致，工作区文件内容保持不变。
-            例: git reset HEAD^            # 回退所有内容到上一个版本  
-                git reset HEAD^ hello.css  # 回退 hello.css 文件的版本到上一个版本  
+        · git reset [--soft | --mixed | --hard] [HEAD] [-- file]: 用于回退版本，可以指定暂存区退回某一次提交的版本
+          ① --mixed 为默认，可以不用带该参数，清空暂存区，工作区文件内容保持不变。
+            例: git reset HEAD^            # 回退所有内容到上一个版本
+                git reset HEAD^ hello.css  # 回退 hello.css 文件的版本到上一个版本
                 git reset  052e            # 回退到指定版本
-          ② --soft 参数用于回退到某个版本。
+          ② --soft 保留工作区和暂存区的内容，并把重置版本带来的差异放入暂存区
             例: git reset --soft HEAD      # 回退到当前版本
-          ③ --hard 参数撤销工作区中所有未提交的修改内容，将暂存区与工作区都回到上一次版本，并删除之前的所有信息提交，慎用。
+          ③ --hard 将指定版本的内容放入暂存区和工作区，也就是所有没有commit的修改都会丢失，慎用！
             例: git reset –hard HEAD~3            # 回退上上上一个版本  
                 git reset –hard bae128            # 回退到某个版本回退点之前的所有信息。 
-                git reset --hard origin/master    # 将本地的状态回退到和远程的一样
+                git reset --hard origin/master    # 将本地的状态回退到和远程的某个分支一样
+          ④ edition -- file: 取消部分文件的更改
+            例: git reset HEAD -- index.html
         · git rebase: 合并提交记录
-          ① -i 打开vim编辑模式，执行会自动打开vim编辑模式，合并的记录都有相同的指令 pick，下面有commands，根据这些指令可以修改，修改后ESC -> wq! 保存并退出，就会进入注释界面，编辑好后退出即可。
-        
+          ① -i 打开vim编辑模式，执行会自动打开vim编辑模式，合并的记录都有相同的指令 pick，下面有commands，根据这些指令可以修改，修改后ESC -> wq! 保存并退出，就会进入注释界面，编辑好后退出即可。使用各种指令可以完成各种commit提交记录的合并
       7.其他
         · gitk: 打开 git 自带的图形界面工具
     (2)基础知识
