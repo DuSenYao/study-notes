@@ -9,7 +9,7 @@ Git
       · 容易定制工作流程
     (2)Git命令
       1.创建仓库命令
-        · git clone 网址 : 克隆Git仓库到本地
+        · git clone 网址: 克隆Git仓库到本地
         · git init: 创建Git仓库
           ① 把已有的项目代码纳入Git管理
             cd 项目代码所在的文件夹
@@ -22,9 +22,10 @@ Git
         · git diff [file]: 显示暂存区与工作区的差异
           例: git diff HEAD 显示工作区和暂存区与最后一次commit之间的差异
           ① [--cached|--staged] [file]: 显示暂存区和最后一次提交(commit)的差异
-          ② [first-branch]...[second-branch]: 显示两次提交之间的差异
+          ② [first-branch]...[second-branch] [-- file]: 显示两次提交或两个分支之间的差异，如果最后有--文件名，就是对比两次提交指定文件的差异
             例: git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1
                 git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1...e77f6c3cc85fd535c36df30813ed23e9fb8255d3
+                git diff temp master
         · git log [-number] [分支名]: 查看历史提交记录
           例: git log -2  // 查看最近的两次提交记录
           ① --oneline 查看简要历史记录
@@ -37,13 +38,21 @@ Git
           ② -s 查看git对象的大小
           ③ -p 查看git对象的内容
             例: git cat-file -p 003e2f133adc5a53f21a72ca5b62eb08566121d1
+        · git config: 查看或设置配置
+          ①  [--local|--global|--system] [config 'message']: 设置配置
+            例: git config [--local|--global|--system] user.name 'You name'
+                git config [--local|--global|--system] user.email 'You email'
+          ② git config --list [--local|--global|--system]: 查看配置
+            例: git config --list --local
+          区别:
+             local：当前仓库  global: 当前用户的所有仓库  system: 本系统的所有用户
       3.文件操作
         · git add ./文件名/文件夹名: 将文件添加到暂存区，. 表示所有文件
         · git rm <file>: 将文件从暂存区和工作区中删除
             例: git rm hello.txt
           ① -f 如果删除之前修改过并且已经放到暂存区域的话，则必须要用强制删除选项
             例: git rm -f hello.txt
-          ② --cached 想把文件从暂存区域移除，但仍然保留在当前工作目录中，换句话说，仅是从跟踪清单中删除
+          ② --cached 把文件从暂存区域移除，但仍然保留在当前工作目录中，换句话说，仅是从跟踪清单中删除
             例: git rm --cached hello.txt
           ③ -r 可以递归删除，即如果后面跟的是一个目录做为参数，则会递归删除整个目录中的所有子目录和文件
             例: git rm –r *   #删除当前目录下的所有文件和子目录
@@ -102,26 +111,18 @@ Git
           ① -i 打开vim编辑模式，执行会自动打开vim编辑模式，合并的记录都有相同的指令 pick，下面有commands，根据这些指令可以修改，修改后ESC -> wq! 保存并退出，就会进入注释界面，编辑好后退出即可。使用各种指令可以完成各种commit提交记录的合并
       7.其他
         · gitk: 打开 git 自带的图形界面工具
-    (2)基础知识
-      1.配置 user 信息
-        · 添加配置
-          git config [--local|--global|--system] user.name 'You name'
-          git config [--local|--global|--system] user.email 'You email'
-        · 查看配置
-          git config --list [--local|--global|--system]
-        · 区别
-          local：区域为本仓库  global: 当前用户的所有仓库  system: 本系统的所有用户
-      2.建Git仓库
-        ① 把已有的项目代码纳入Git管理
-          cd 项目代码所在的文件夹
-          git init
-        ② 新建的项目直接用Git管理
-          cd 文件夹
-          git init 项目文件名 #会在当前路径下创建和项目名称同名的文件夹
-      3.添加文件流程
+        · git stash: 临时保存和恢复修改，可跨分支，在未add之前才能执行
+          ① [save message]: 保存
+          ② list: 显示所有保存的记录列表
+          ③ pop stash@{num}: 恢复，num是可选值，通过 git stash list 查看具体值，只能恢复一次
+          ④ apply stash@{num}: 恢复，num是可选值，通过 git stash list 查看具体值，可恢复多次
+          ⑤ drop stash@{num}: 删除某个保存
+          ⑥ clear: 删除所有保存
+    (3)基础知识
+      1.添加文件流程
         git add files            工作目录 --> 暂存区
         git commit -m"原因"      暂存区   --> 本地仓库
-      4. .git文件夹下的文件
+      2. .git文件夹下的文件
         · HEAD: 指向当前所在的分支
         · config: 当前git的配置文件，这是个引用指向refs文件夹下的heads文件夹里的分支
         · refs文件夹: 
@@ -129,17 +130,17 @@ Git
            ② remotes文件夹: 存放远程分支
            ③ tags文件夹: 存放当前项目的所有标签
         · objects文件夹: 存放所有的git对象，对象哈希值前 2 位作为文件夹名称，后 38 位作为对象文件名, 可通过 git cat-file -p 命令，拼接文件夹名称+文件名查看
-      5.git中 commit、tree和blob三个对象的关系
+      3.git中 commit、tree和blob三个对象的关系
         commit是一个提交，它里面有一个tree对象对应唯一的tree，这个tree里面又有包含了多个tree和blob对象，每个tree对象又包含了多个tree和blob，文件的的最终形式是blob。对于blob，git会认为文件内容相同时，就使用同一个blob，这样就极大的避免了频繁提交时，git的存储空间大幅上升。
           图片: public_knowledge\Git\示例文件\image\Git课件.pdf
-      6.git的底层运行流程
+      4.git的底层运行流程
         添加或者修改了文件并且add到Stage Area之后，首先会根据文件内容创建不同的blob，当进行提交之后马上创建一个tree组件把需要的blob组件添加进去，之后再封装到一个commit组件中完成本次提交。
         在将来进行reset的时候可以直接使用git reset --hard xxxxx可以恢复到某个特定的版本，在reset之后，git会根据这个commit组件的id快速的找到tree组件，然后根据tree找到blob组件，之后对仓库进行还原，整个过程都是以hash和二进制进行操作，所以git执行效率非常之高。
         没有文件也就是没有blob对象的目录是不会被git管理的，因为git是对文件进行版本管理，所以没有必要对空目录生成对象。
-      7.分离头指针情况下的注意事项
+      5.分离头指针情况下的注意事项
         分离头指针是指在没有任何分支的情况下做commit。
         优缺点: 用于实验性的更改与提交，随时可以放弃，而不影响任何分支的状态。缺点也是没有分支，意味着一旦切换分支，这些commit都会被当做垃圾丢弃。
-      8.HEAD与branch
+      6.HEAD与branch
         HEAD在brach时，指代最新的commit，而在分离头状态时指代具体的commit。
         用法:
           · 一个节点，可以包含多个子节点(checkout出多个分支)
@@ -147,3 +148,5 @@ Git
           · ^是~都是父节点，区别是跟随数字时候，^2 是第二个父节点，而~2是父节点的父节点
           · ^和~可以组合使用
             例: HEAD~2^2  最新commit的父节点的父节点的第二个父节点 
+      7.在 .gitignore 文件里可以指定不需要Git管理的文件
+        例: .gitignore
