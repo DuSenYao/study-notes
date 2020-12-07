@@ -20,6 +20,7 @@
     "mssql",
     "nocheck",
     "nunjucks",
+    "oneline",
     "proto",
     "typeof",
     "vorbis"
