@@ -10,6 +10,9 @@ Git
     (2)Git命令
       1.创建仓库命令
         · git clone 网址: 克隆Git仓库到本地
+          ① --bare: 新建一个裸仓库，不将代码放到 <directory>/.git 中，而是将 <directory> 本身设置为仓库，无法签出工作树，此外，远程的分支头直接复制到相应的本地分支头，而不将它们映射到refs/remotes/origin/。使用此选项时，既不会创建远程跟踪分支，也不会创建相关的配置变量。
+          ② 
+          ③ 
         · git init: 创建Git仓库
           ① 把已有的项目代码纳入Git管理
             cd 项目代码所在的文件夹
@@ -61,11 +64,13 @@ Git
             例: git mv -f hello.txt hello.css
       4.远程操作
         · git remote: 用于在远程仓库的操作
-          git remote -v: 显示所有远程仓库
-          git remote show [remote]: 显示某个远程仓库的信息
+          ① -v: 显示所有远程仓库
+            例: git remote -v
+          ② show [remote]: 显示某个远程仓库的信息
             例: git remote show https://github.com/1758231591/Learning-notes-and-materials.git
-          git remote rm name: 删除远程仓库
-          git remote rename old_name new_name: 修改仓库名
+          ③ rm name: 删除远程仓库
+          ④ rename old_name new_name: 修改仓库名
+          ⑤ add <name> <new url>: :在本地仓库添加一个远程仓库
         · git fetch [alias]: 用于从远程获取代码库
           例: git fetch origin
         · git merge [alias]/[brach]: 将服务器上的任何更新合并到你的当前分支
@@ -75,8 +80,9 @@ Git
               git pull origin master:main  // 将远程主机 origin 的 master 分支拉取过来，与本地的 main 分支合并
         · git push <远程主机名> <本地分支名>:<远程分支名>: 用于从将本地的分支版本上传到远程并合并
           例: 例: git push master 相当于 git push master:master
-          ① --force 本地版本与远程版本有差异时，可以使用这个参数强制推送
-          ② --d 删除远程主机的分支
+          ① --force: 本地版本与远程版本有差异时，可以使用这个参数强制推送
+          ② --d: 删除远程主机的分支
+          ③ --all: 推送全部分支 
       5.分支操作
         · git branch [branchName]: 不加name是列出本地分支，加name是创建分支
           ① -r 查看远程分支
@@ -150,3 +156,18 @@ Git
             例: HEAD~2^2  最新commit的父节点的父节点的第二个父节点 
       7.在 .gitignore 文件里可以指定不需要Git管理的文件
         例: .gitignore
+      8.常用的传输协议
+        · 哑协议: path/to/repo.git
+        · 智能协议: file://path/to/repo.git
+        · http/https协议: http://git-server.com/path/to/repo.git
+        · ssh协议: user@git-server.com:path/to/repo.git 是工作中最常用的智能协议
+        哑协议与与智能协议的区别
+          · 哑协议传输进度不可见，智能协议传输可见
+          · 智能协议比哑协议传输速度快
+
+  二.GitHub
+    1.配置公私钥
+      在本地创建SSH秘钥
+        例: ssh-keygen -t ed25519 -C "1758231591@qq.com"
+      在 C:\Users\用户名\.ssh\known_hosts 文件里，就有创建出来的公私钥，把公钥复制出来，粘贴到GitHub上。
+      ssh协议需要这个，使用ssh传输协议，就不需要账户密码就可以连接gitHub。
