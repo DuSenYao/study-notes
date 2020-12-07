@@ -9,10 +9,8 @@ Git
       · 容易定制工作流程
     (2)Git命令
       1.创建仓库命令
-        · git clone 网址: 克隆Git仓库到本地
+        · git clone 网址 [本地文件夹名]: 克隆Git仓库到本地
           ① --bare: 新建一个裸仓库，不将代码放到 <directory>/.git 中，而是将 <directory> 本身设置为仓库，无法签出工作树，此外，远程的分支头直接复制到相应的本地分支头，而不将它们映射到refs/remotes/origin/。使用此选项时，既不会创建远程跟踪分支，也不会创建相关的配置变量。
-          ② 
-          ③ 
         · git init: 创建Git仓库
           ① 把已有的项目代码纳入Git管理
             cd 项目代码所在的文件夹
@@ -73,8 +71,11 @@ Git
           ⑤ add <name> <new url>: :在本地仓库添加一个远程仓库
         · git fetch [alias]: 用于从远程获取代码库
           例: git fetch origin
-        · git merge [alias]/[brach]: 将服务器上的任何更新合并到你的当前分支
-          例: git merge origin/master
+        · git merge [alias]/[brach]: 合并分支
+          例: git merge dev
+          ① 将服务器上的分支合并到当前分支
+            例: git merge origin/master
+          ② --allow-unrelated-histories: 用于合并后两个没有共同祖先的历史记录
         · git pull <远程主机名> <远程分支名>:<本地分支名>: 从远程获取代码并合并本地的版本，其实就是 git fetch 和 git merge FETCH_HEAD 的简写
           例: git pull origin master       // 如果远程分支是与当前分支合并，则冒号后面的部分可以省略
               git pull origin master:main  // 将远程主机 origin 的 master 分支拉取过来，与本地的 main 分支合并
@@ -115,6 +116,7 @@ Git
             例: git reset HEAD -- index.html
         · git rebase: 合并提交记录
           使用场景:
+            本地开发分支可以灵活管理
             · 在自己本地 git checkout -b local 创建一个本地开发分支
             · 在本地的开发分支上开发和测试
             · 阶段性开发完成后（包含功能代码和单元测试），可以准备提交代码
@@ -122,10 +124,8 @@ Git
             · 然后切回local分支
             · 通过git rebase -i 将本地的多次提交合并为一个，以简化提交历史。本地有多个提交时,如果不进行这一步,在git rebase master时会多次解决冲突(最坏情况下,每一个提交都会相应解决一个冲突)
             · git rebase master 将master最新的分支同步到本地，这个过程可能需要手动解决冲突(如果进行了上一步的话,只用解决一次冲突)
-            然后切换到master分支，git merge 将本地的 local 分支内容合并到 master 分支
+            然后切换到master分支，git merge local 将本地的 local 分支内容合并到 master 分支
             · git push将master分支的提交上传
-          好处:
-            本地开发分支可以灵活管理
           ① -i 打开vim编辑模式，执行会自动打开vim编辑模式，合并的记录都有相同的指令 pick，下面有commands，根据这些指令可以修改，修改后ESC -> :wq! 保存并退出，就会进入注释界面，编辑好后退出即可。使用各种指令可以完成各种commit提交记录的合并
       7.其他
         · gitk: 打开 git 自带的图形界面工具
