@@ -1,5 +1,5 @@
 Git 
-  一.Git基础
+  一.Git
     (1)特点
       · 最优的存储能力
       · 高性能
@@ -18,7 +18,7 @@ Git
           ② 新建的项目直接用Git管理
             cd 文件夹
             git init 项目文件名 #会在当前路径下创建和项目名称同名的文件夹
-      2.查看Git
+      2.Git查看
         · git status : 查看仓库当前的状态，显示有变更的文件。加上 -s 参数可以获取简短的输出
         · git diff [file]: 显示暂存区与工作区的差异
           例: git diff HEAD 显示工作区和暂存区与最后一次commit之间的差异
@@ -33,6 +33,10 @@ Git
           ② --graph   查看图形化的日志
           ③ --reverse 逆向显示日志
           ④ --author  查找指定用户的提交日志
+        · git reflog: 查看本地所有分支的所有操作记录，(包括已经被删除的commit和reset的操作)
+          ① delete: 删除指定的记录
+            例: git reflog delete HEAD@{270}
+          ② 
         · git blame <file>: 以列表形式查看指定文件的修改记录
         · git cat-file [-t|-s|-p] 哈希值:
           ① -t 查看git对象的类型
@@ -49,6 +53,7 @@ Git
              local：当前仓库  global: 当前用户的所有仓库  system: 本系统的所有用户
       3.文件操作
         · git add ./文件名/文件夹名: 将文件添加到暂存区，. 表示所有文件
+          ① -u: 仅添加已被跟踪的文件
         · git rm <file>: 将文件从暂存区和工作区中删除
             例: git rm hello.txt
           ① -f 如果删除之前修改过并且已经放到暂存区域的话，则必须要用强制删除选项
@@ -71,16 +76,11 @@ Git
           ⑤ add <name> <new url>: :在本地仓库添加一个远程仓库
         · git fetch [alias]: 用于从远程获取代码库
           例: git fetch origin
-        · git merge [alias]/[brach]: 合并分支
-          例: git merge dev
-          ① 将服务器上的分支合并到当前分支
-            例: git merge origin/master
-          ② --allow-unrelated-histories: 用于合并后两个没有共同祖先的历史记录
         · git pull <远程主机名> <远程分支名>:<本地分支名>: 从远程获取代码并合并本地的版本，其实就是 git fetch 和 git merge FETCH_HEAD 的简写
           例: git pull origin master       // 如果远程分支是与当前分支合并，则冒号后面的部分可以省略
               git pull origin master:main  // 将远程主机 origin 的 master 分支拉取过来，与本地的 main 分支合并
         · git push <远程主机名> <本地分支名>:<远程分支名>: 用于从将本地的分支版本上传到远程并合并
-          例: 例: git push master 相当于 git push master:master
+          例: git push origin master 相当于 git push origin master:master
           ① --force: 本地版本与远程版本有差异时，可以使用这个参数强制推送
           ② --d: 删除远程主机的分支
           ③ --all: 推送全部分支 
@@ -96,11 +96,18 @@ Git
             例: git checkout -b test
           ② -- [file]: 将工作区文件恢复为和暂存区一样
             例: git checkout -- index.html
+          ③ -b name origin/branchName: 基于远程的分支创建一个本地的分支，并切换到新分支
+            例: git checkout -b dev origin/dev
+        · git merge <branchName>: 合并分支
+          例: git merge dev
+          ① [alias]/[brach]: 将远程的分支合并到当前分支
+            例: git merge origin/master
+          ② --allow-unrelated-histories: 用于合并后两个没有共同祖先的历史记录
+          ③ --continue: 合并由于冲突停止后，可以使用这个参数继续合并
       6.版本操作
-        · git commit: 主要是将暂存区里的改动给提交到本地的版本库
-          ① -m 'message': 填写摘要信息
-          ② -a 跳过暂存区，从工作区直接提交到本地版本库
-          ③ --amend 追加提交，在不增加一个新的commit的情况下，将新修改的代码追加到前一次的commit中
+        · git commit -m 'message': 主要是将暂存区里的改动给提交到本地的版本库，message填写摘要
+          ① -a 跳过暂存区，从工作区直接提交到本地版本库
+          ② --amend 追加提交，在不增加一个新的commit的情况下，将新修改的代码追加到前一次的commit中
         · git reset [--soft | --mixed | --hard] [HEAD] [-- file]: 用于回退版本，可以指定暂存区退回某一次提交的版本
           ① --mixed 为默认，可以不用带该参数，清空暂存区，工作区文件内容保持不变。
             例: git reset HEAD^            # 回退所有内容到上一个版本
@@ -140,7 +147,8 @@ Git
     (3)基础知识
       1.添加文件流程
         git add files            工作目录 --> 暂存区
-        git commit -m"原因"      暂存区   --> 本地仓库
+        git commit -m "摘要"      暂存区   --> 本地仓库
+        git push 
       2. .git文件夹下的文件
         · HEAD: 指向当前所在的分支
         · config: 当前git的配置文件，这是个引用指向refs文件夹下的heads文件夹里的分支
@@ -177,10 +185,34 @@ Git
         哑协议与与智能协议的区别
           · 哑协议传输进度不可见，智能协议传输可见
           · 智能协议比哑协议传输速度快
-
+    (4)Git集成使用禁忌
+      1.git push -f: 强制推送，即使不是同一个 fast-forward
+        危害: 会使 commit 消失
+        恢复: 使用 git reflog 查找历史，然后使用 git reset --hard HEAD@{n} 恢复。
+      2.禁止向集成分支执行变更历史的操作
+        比如: 向远程仓库使用 git rebase 修改历史
   二.GitHub
-    1.配置公私钥
+    (1)配置公私钥
       在本地创建SSH秘钥
         例: ssh-keygen -t ed25519 -C "1758231591@qq.com"
       在 C:\Users\用户名\.ssh\known_hosts 文件里，就有创建出来的公私钥，把公钥复制出来，粘贴到GitHub上。
       ssh协议需要这个，使用ssh传输协议，就不需要账户密码就可以连接gitHub。
+
+  三.常见场景
+    (1)不同人修改了不同文件
+      ① 如果在进行git push之前发现远程又有了更新，可以将本地的提交回退掉，避免掉无用的远程merge本地分支的提交记录，使用如下命令：
+        · git reset HEAD~
+        · git pull
+        然后重新进行新的提交，这样就可以避免掉远程与本地分支的merge提交记录，让git的提交历史更加干净
+      ② 把本地的提交基于远端分支做 rebase ，在本地解决掉冲突并完成自测
+    (2)不同人修改了相同文件的不同区域
+      使用 git merge 远程分支名 合并分支，然后git push。
+    (3)不同人修改相同文件的相同区域
+      使用 git pull，然后手动解决冲突(与另一个提交者交流后)
+    (4)同时变更了文件名和文件内容
+      分两种情况:
+        · 没有修改相同位置，没有修改的冲突，变更文件名和变更文件内容的操作能够自动被git处理。
+        · 如果一个人既变更了文件名又修改了文件，同时另一个人也修改了该文件的同一位置的内容，就会被git识别为冲突，而不能自动进行处理了。
+      原因: git存放blob文件时是以文件内容来区分的，并不以文件名来区分。
+    (5)同一文件改成不同的文件名
+      git pull 到本地分支，git会保留两个文件，手动来处理冲突，可以用 git rm 删除不要的文件，最后提交。
