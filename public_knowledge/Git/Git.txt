@@ -105,7 +105,7 @@ Git
           ② --allow-unrelated-histories: 用于合并后两个没有共同祖先的历史记录
           ③ --continue: 合并由于冲突停止后，可以使用这个参数继续合并
       6.版本操作
-        · git commit -m 'message': 主要是将暂存区里的改动给提交到本地的版本库，message填写摘要
+        · git commit -m "message": 主要是将暂存区里的改动给提交到本地的版本库，message填写摘要
           ① -a 跳过暂存区，从工作区直接提交到本地版本库
           ② --amend 追加提交，在不增加一个新的commit的情况下，将新修改的代码追加到前一次的commit中
         · git reset [--soft | --mixed | --hard] [HEAD] [-- file]: 用于回退版本，可以指定暂存区退回某一次提交的版本
@@ -195,7 +195,7 @@ Git
     (1)配置公私钥
       在本地创建SSH秘钥
         例: ssh-keygen -t ed25519 -C "1758231591@qq.com"
-      在 C:\Users\用户名\.ssh\known_hosts 文件里，就有创建出来的公私钥，把公钥复制出来，粘贴到GitHub上。
+      在 C:\Users\用户名\.ssh\id_rsa.pub 文件里，就有创建出来的公钥，把公钥复制出来，粘贴到GitHub上。
       ssh协议需要这个，使用ssh传输协议，就不需要账户密码就可以连接gitHub。
 
   三.常见场景
