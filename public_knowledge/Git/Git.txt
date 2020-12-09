@@ -1,14 +1,14 @@
 Git 
   一.Git
-    (1)特点
+    1.特点
       · 最优的存储能力
       · 高性能
       · 开源
       · 容易备份
       · 支持离线操作
       · 容易定制工作流程
-    (2)Git命令
-      1.创建仓库命令
+    2.Git命令
+      (1)创建仓库命令
         · git clone 网址 [本地文件夹名]: 克隆Git仓库到本地
           ① --bare: 新建一个裸仓库，不将代码放到 <directory>/.git 中，而是将 <directory> 本身设置为仓库，无法签出工作树，此外，远程的分支头直接复制到相应的本地分支头，而不将它们映射到refs/remotes/origin/。使用此选项时，既不会创建远程跟踪分支，也不会创建相关的配置变量。
         · git init: 创建Git仓库
@@ -18,7 +18,7 @@ Git
           ② 新建的项目直接用Git管理
             cd 文件夹
             git init 项目文件名 #会在当前路径下创建和项目名称同名的文件夹
-      2.Git查看
+      (2)Git查看
         · git status : 查看仓库当前的状态，显示有变更的文件。加上 -s 参数可以获取简短的输出
         · git diff [file]: 显示暂存区与工作区的差异
           例: git diff HEAD 显示工作区和暂存区与最后一次commit之间的差异
@@ -51,7 +51,7 @@ Git
             例: git config --list --local
           区别:
              local：当前仓库  global: 当前用户的所有仓库  system: 本系统的所有用户
-      3.文件操作
+      (3)文件操作
         · git add ./文件名/文件夹名: 将文件添加到暂存区，. 表示所有文件
           ① -u: 仅添加已被跟踪的文件
         · git rm <file>: 将文件从暂存区和工作区中删除
@@ -65,13 +65,13 @@ Git
         · git mv [file] [newFile]: 用于移动或重命名一个文件、目录或软连接
           ① -f 重命名可以使用这个参数
             例: git mv -f hello.txt hello.css
-      4.远程操作
+      (4)远程操作
         · git remote: 用于在远程仓库的操作
           ① -v: 显示所有远程仓库
             例: git remote -v
           ② show [remote]: 显示某个远程仓库的信息
             例: git remote show https://github.com/1758231591/Learning-notes-and-materials.git
-          ③ rm name: 删除远程仓库
+          ③ remove name: 删除远程仓库
           ④ rename old_name new_name: 修改仓库名
           ⑤ add <name> <new url>: :在本地仓库添加一个远程仓库
         · git fetch [alias]: 用于从远程获取代码库
@@ -83,8 +83,10 @@ Git
           例: git push origin master 相当于 git push origin master:master
           ① --force: 本地版本与远程版本有差异时，可以使用这个参数强制推送
           ② --d: 删除远程主机的分支
-          ③ --all: 推送全部分支 
-      5.分支操作
+          ③ --all: 推送全部分支
+          ④ 使用ssh协议推送到gitHub: git push  git@github.com:1758231591/Learning-notes-and-materials.git
+            注意: 需要配置公私钥(见第二章第一节第一讲 配置公私钥)
+      (5)分支操作
         · git branch [branchName]: 不加name是列出本地分支，加name是创建分支
           ① -r 查看远程分支
             例: git branch -r
@@ -104,7 +106,7 @@ Git
             例: git merge origin/master
           ② --allow-unrelated-histories: 用于合并后两个没有共同祖先的历史记录
           ③ --continue: 合并由于冲突停止后，可以使用这个参数继续合并
-      6.版本操作
+      (6)版本操作
         · git commit -m "message": 主要是将暂存区里的改动给提交到本地的版本库，message填写摘要
           ① -a 跳过暂存区，从工作区直接提交到本地版本库
           ② --amend 追加提交，在不增加一个新的commit的情况下，将新修改的代码追加到前一次的commit中
@@ -134,7 +136,7 @@ Git
             然后切换到master分支，git merge local 将本地的 local 分支内容合并到 master 分支
             · git push将master分支的提交上传
           ① -i 打开vim编辑模式，执行会自动打开vim编辑模式，合并的记录都有相同的指令 pick，下面有commands，根据这些指令可以修改，修改后ESC -> :wq! 保存并退出，就会进入注释界面，编辑好后退出即可。使用各种指令可以完成各种commit提交记录的合并
-      7.其他
+      (7)其他
         · gitk: 打开 git 自带的图形界面工具
         · git stash: 临时保存和恢复修改，可跨分支，在未add之前才能执行
           ① [save message]: 保存修改到临时目录，并把工作区的文件还原到上一次commit
@@ -144,12 +146,12 @@ Git
             例: git stash apply stash@{0}
           ⑤ drop stash@{num}: 删除某个保存
           ⑥ clear: 删除所有保存
-    (3)基础知识
-      1.添加文件流程
+    3.基础知识
+      (1)添加文件流程
         git add files            工作目录 --> 暂存区
         git commit -m "摘要"      暂存区   --> 本地仓库
         git push 
-      2. .git文件夹下的文件
+      (2).git文件夹下的文件
         · HEAD: 指向当前所在的分支
         · config: 当前git的配置文件，这是个引用指向refs文件夹下的heads文件夹里的分支
         · refs文件夹: 
@@ -157,17 +159,17 @@ Git
            ② remotes文件夹: 存放远程分支
            ③ tags文件夹: 存放当前项目的所有标签
         · objects文件夹: 存放所有的git对象，对象哈希值前 2 位作为文件夹名称，后 38 位作为对象文件名, 可通过 git cat-file -p 命令，拼接文件夹名称+文件名查看
-      3.git中 commit、tree和blob三个对象的关系
+      (3)git中 commit、tree和blob三个对象的关系
         commit是一个提交，它里面有一个tree对象对应唯一的tree，这个tree里面又有包含了多个tree和blob对象，每个tree对象又包含了多个tree和blob，文件的的最终形式是blob。对于blob，git会认为文件内容相同时，就使用同一个blob，这样就极大的避免了频繁提交时，git的存储空间大幅上升。
           图片: public_knowledge\Git\示例文件\image\Git课件.pdf
-      4.git的底层运行流程
+      (4)git的底层运行流程
         添加或者修改了文件并且add到Stage Area之后，首先会根据文件内容创建不同的blob，当进行提交之后马上创建一个tree组件把需要的blob组件添加进去，之后再封装到一个commit组件中完成本次提交。
         在将来进行reset的时候可以直接使用git reset --hard xxxxx可以恢复到某个特定的版本，在reset之后，git会根据这个commit组件的id快速的找到tree组件，然后根据tree找到blob组件，之后对仓库进行还原，整个过程都是以hash和二进制进行操作，所以git执行效率非常之高。
         没有文件也就是没有blob对象的目录是不会被git管理的，因为git是对文件进行版本管理，所以没有必要对空目录生成对象。
-      5.分离头指针情况下的注意事项
+      (5)分离头指针情况下的注意事项
         分离头指针是指在没有任何分支的情况下做commit。
         优缺点: 用于实验性的更改与提交，随时可以放弃，而不影响任何分支的状态。缺点也是没有分支，意味着一旦切换分支，这些commit都会被当做垃圾丢弃。
-      6.HEAD与branch
+      (6)HEAD与branch
         HEAD在brach时，指代最新的commit，而在分离头状态时指代具体的commit。
         用法:
           · 一个节点，可以包含多个子节点(checkout出多个分支)
@@ -175,9 +177,9 @@ Git
           · ^是~都是父节点，区别是跟随数字时候，^2 是第二个父节点，而~2是父节点的父节点
           · ^和~可以组合使用
             例: HEAD~2^2  最新commit的父节点的父节点的第二个父节点 
-      7.在 .gitignore 文件里可以指定不需要Git管理的文件
+      (7)在 .gitignore 文件里可以指定不需要Git管理的文件
         例: .gitignore
-      8.常用的传输协议
+      (8)常用的传输协议
         · 哑协议: path/to/repo.git
         · 智能协议: file://path/to/repo.git
         · http/https协议: http://git-server.com/path/to/repo.git
@@ -185,34 +187,58 @@ Git
         哑协议与与智能协议的区别
           · 哑协议传输进度不可见，智能协议传输可见
           · 智能协议比哑协议传输速度快
-    (4)Git集成使用禁忌
-      1.git push -f: 强制推送，即使不是同一个 fast-forward
+      (9)Git解决的问题与带来的问题
+        解决的问题
+          ① 程序员之间进行协作编程的方式很少
+          ② 即使有SVN，与开源团队合作通常也需要获得项目管理员的许可才能 fork 项目的一个分支，否则便无法编辑代码，批准时间过长
+          ③ 许多开源项目都受到权限问题以及一些低效率事情的困扰
+        带来的问题
+          ① 无法帮助开发人员寻找开源项目
+          ② 开发出的优秀开源项目，很难让他人知道
+    4.Git集成使用禁忌
+      (1)git push -f: 强制推送，即使不是同一个 fast-forward
         危害: 会使 commit 消失
         恢复: 使用 git reflog 查找历史，然后使用 git reset --hard HEAD@{n} 恢复。
-      2.禁止向集成分支执行变更历史的操作
-        比如: 向远程仓库使用 git rebase 修改历史
+      (2)禁止向集成分支执行变更历史的操作
+        比如: 公共分支pull到本地做变基操作，会导致历史消失。
+
   二.GitHub
-    (1)配置公私钥
-      在本地创建SSH秘钥
-        例: ssh-keygen -t ed25519 -C "1758231591@qq.com"
-      在 C:\Users\用户名\.ssh\id_rsa.pub 文件里，就有创建出来的公钥，把公钥复制出来，粘贴到GitHub上。
-      ssh协议需要这个，使用ssh传输协议，就不需要账户密码就可以连接gitHub。
+    1.GitHub基础
+      (1)配置公私钥
+        在本地创建SSH秘钥
+          例: ssh-keygen -t ed25519 -C "1758231591@qq.com"
+        在 C:\Users\用户名\.ssh\id_rsa.pub 文件里，就有创建出来的公钥，把公钥复制出来，粘贴到GitHub上。
+        ssh协议需要这个，使用ssh传输协议，就不需要账户密码就可以连接gitHub。
+      (2)GitHub优点
+        ① 让 Git 更容易使用，使协作和编写代码更容易
+        ② 不断解决用户痛点: 不仅致力于解决疑难问题，而且还致力于解决所有开发人员遇到的问题。
+        ③ 更好、更直观的版本控制系统，具有成为 轻松、安全和远程协作项目 的潜力。
+      (3)GitHub核心功能
+        ① code review: 代码评审，人人都可以看见项目，都可以发表自己对代码的看法与改进意见
+        ② Project management: 项目管理
+        ③ integrations: 集成
+        ④ Team management: 团队管理，对不同的仓库授予不同的权限
+        ⑤ social coding: 开源代码
+        ⑥ Documentation: 可以在GIthub上做个人网页、文档
+        ⑦ code hosting: 代码托管
+      (4)快速搜索到感兴趣的开源项目
+        在搜索页，语言栏左下方有高级搜索(Advanced search)
 
   三.常见场景
-    (1)不同人修改了不同文件
+    1.不同人修改了不同文件
       ① 如果在进行git push之前发现远程又有了更新，可以将本地的提交回退掉，避免掉无用的远程merge本地分支的提交记录，使用如下命令：
         · git reset HEAD~
         · git pull
         然后重新进行新的提交，这样就可以避免掉远程与本地分支的merge提交记录，让git的提交历史更加干净
       ② 把本地的提交基于远端分支做 rebase ，在本地解决掉冲突并完成自测
-    (2)不同人修改了相同文件的不同区域
+    2.不同人修改了相同文件的不同区域
       使用 git merge 远程分支名 合并分支，然后git push。
-    (3)不同人修改相同文件的相同区域
+    3.不同人修改相同文件的相同区域
       使用 git pull，然后手动解决冲突(与另一个提交者交流后)
-    (4)同时变更了文件名和文件内容
+    4.同时变更了文件名和文件内容
       分两种情况:
         · 没有修改相同位置，没有修改的冲突，变更文件名和变更文件内容的操作能够自动被git处理。
         · 如果一个人既变更了文件名又修改了文件，同时另一个人也修改了该文件的同一位置的内容，就会被git识别为冲突，而不能自动进行处理了。
       原因: git存放blob文件时是以文件内容来区分的，并不以文件名来区分。
-    (5)同一文件改成不同的文件名
+    5.同一文件改成不同的文件名
       git pull 到本地分支，git会保留两个文件，手动来处理冲突，可以用 git rm 删除不要的文件，最后提交。
