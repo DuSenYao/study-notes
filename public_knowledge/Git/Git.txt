@@ -71,7 +71,7 @@ Git
             例: git remote -v
           ② show [remote]: 显示某个远程仓库的信息
             例: git remote show https://github.com/1758231591/Learning-notes-and-materials.git
-          ③ rm name: 删除远程仓库
+          ③ remove name: 删除远程仓库
           ④ rename old_name new_name: 修改仓库名
           ⑤ add <name> <new url>: :在本地仓库添加一个远程仓库
         · git fetch [alias]: 用于从远程获取代码库
@@ -190,7 +190,7 @@ Git
         危害: 会使 commit 消失
         恢复: 使用 git reflog 查找历史，然后使用 git reset --hard HEAD@{n} 恢复。
       2.禁止向集成分支执行变更历史的操作
-        比如: 向远程仓库使用 git rebase 修改历史
+        比如: 公共分支pull到本地做变基操作，会导致历史消失。
   二.GitHub
     (1)配置公私钥
       在本地创建SSH秘钥
