@@ -19,7 +19,8 @@ Git
             cd 文件夹
             git init 项目文件名 #会在当前路径下创建和项目名称同名的文件夹
       (2)Git查看
-        · git status : 查看仓库当前的状态，显示有变更的文件。加上 -s 参数可以获取简短的输出
+        · git status : 查看仓库当前的状态，显示有变更的文件。
+          ① -s: 简短的输出
         · git diff [file]: 显示暂存区与工作区的差异
           例: git diff HEAD 显示工作区和暂存区与最后一次commit之间的差异
           ① [--cached|--staged] [file]: 显示暂存区和最后一次提交(commit)的差异
@@ -36,7 +37,6 @@ Git
         · git reflog: 查看本地所有分支的所有操作记录，(包括已经被删除的commit和reset的操作)
           ① delete: 删除指定的记录
             例: git reflog delete HEAD@{270}
-          ② 
         · git blame <file>: 以列表形式查看指定文件的修改记录
         · git cat-file [-t|-s|-p] 哈希值:
           ① -t 查看git对象的类型
@@ -81,8 +81,8 @@ Git
               git pull origin master:main  // 将远程主机 origin 的 master 分支拉取过来，与本地的 main 分支合并
         · git push <远程主机名> <本地分支名>:<远程分支名>: 用于从将本地的分支版本上传到远程并合并
           例: git push origin master 相当于 git push origin master:master
-          ① --force: 本地版本与远程版本有差异时，可以使用这个参数强制推送
-          ② --d: 删除远程主机的分支
+          ① -f: 本地版本与远程版本有差异时，可以使用这个参数强制推送，多人合作禁用
+          ② -d: 删除远程主机的分支
           ③ --all: 推送全部分支
           ④ 使用ssh协议推送到gitHub: git push  git@github.com:1758231591/Learning-notes-and-materials.git
             注意: 需要配置公私钥(见第二章第一节第一讲 配置公私钥)

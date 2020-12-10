@@ -22,6 +22,7 @@
     "nocheck",
     "nunjucks",
     "oneline",
+    "pandoc",
     "proto",
     "typeof",
     "vorbis"
