@@ -22,6 +22,14 @@ tags:
       - [应用面板(Application)](#应用面板application)
       - [安全面板(Security)](#安全面板security)
     - [2.通用篇](#2通用篇)
+      - [2.1 copy(...)](#21-copy)
+      - [2.2 Store Object as global variable(**存储为全局变量**)](#22-store-object-as-global-variable存储为全局变量)
+      - [2.3. 保存堆栈信息(Save as…)](#23-保存堆栈信息save-as)
+      - [2.4 快捷键](#24-快捷键)
+        - [2.4.1 切换 `DevTools` 窗口的展示布局](#241-切换-devtools-窗口的展示布局)
+        - [2.4.2 切换 `DevTools` 的面板](#242-切换-devtools-的面板)
+        - [2.4.3 递增/递减](#243-递增递减)
+        - [2.4.4 elements， logs， sources & network 中的查找](#244-elements-logs-sources-network-中的查找)
 
 <!-- /code_chunk_output -->
 
@@ -106,7 +114,7 @@ tags:
 ```
 
 #### 安全面板(Security)
-  
+
 ```txt
 功能:
   ① 证书问题
@@ -115,7 +123,37 @@ tags:
 
 ### 2.通用篇
 
-1. copy(...)
-  可以通过全局的方法 `copy()` 在 `console` 里 `copy` 任何能拿到的资源。
+#### 2.1 copy(...)
 
-2. 
+可以通过全局的方法 `copy()` 在 `console` 里 `copy` 任何能拿到的资源。
+
+#### 2.2 Store Object as global variable(**存储为全局变量**)
+
+在 `console` 中打印了一组数据，然后想对这些数据做一些额外的操作。那就可以将它转换成一个全局变量，只需要 **右击** 它，并选择 “`Store as global variable`” (保存为全局变量) 选项。
+第一次使用的话，它会创建一个名为 temp1 的变量，第二次创建 temp2，以此类推。通过使用这些变量来操作对应的数据，不用再担心影响到他们原来的值。
+
+#### 2.3. 保存堆栈信息(Save as…)
+
+对于 `Console` 面板上的信息，可以使用 **右击**，选择 `Save as…`，把堆栈跟踪的信息保存为一个 `.log` 文件。
+
+#### 2.4 快捷键
+
+##### 2.4.1 切换 `DevTools` 窗口的展示布局
+
+快捷键 `Ctrl + Shift + D` 切换 DevTools 的位置
+
+##### 2.4.2 切换 `DevTools` 的面板
+
+快捷键 `Ctrl + [ | ]`，可以从当前面板分别向左向右切换
+
+##### 2.4.3 递增/递减
+
+使用带修饰符或不带修饰键的 `上/下` 箭头，可以实现递增/递减`数值`类型的值。
+
+##### 2.4.4 elements， logs， sources & network 中的查找
+
+`DevTools` 中的前4个主要的面板，都支持 `ctrl + f` 快捷方式，你可以使用对应的查询方式来查找信息:
+
+- 在 `Element` 面板中 - 通过 `string` 和 `XPath` 来查找。
+
+- 在 `Console`， `Network` 以及 `Source` 面板 - 通过 `区分大小写` 或 `正则表达式`， 来查找。

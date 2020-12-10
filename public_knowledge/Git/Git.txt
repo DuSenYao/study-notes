@@ -195,6 +195,8 @@ Git
         带来的问题
           ① 无法帮助开发人员寻找开源项目
           ② 开发出的优秀开源项目，很难让他人知道
+      (10)将Git的默认编辑器设置为VSCode
+        git config --global core.editor "code -w"
     4.Git集成使用禁忌
       (1)git push -f: 强制推送，即使不是同一个 fast-forward
         危害: 会使 commit 消失

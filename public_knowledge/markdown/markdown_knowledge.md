@@ -8,11 +8,6 @@ mathjax: false
 tags:
   - markdown-preview-enhanced
   - Markdown
-markdown:
-  image_dir: /assets
-  path: C:\Users\user\Documents\GitHub\Learning-notes-and-materials\public_knowledge\markdown\html\markdown_knowledge.html
-export_on_save:
-  markdown: true
 ---
 <!-- 文件最上方以 --- 分隔的区域是Front-matter，用于指定个别文件的变量 -->
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
@@ -69,7 +64,7 @@ export_on_save:
 ###### 这是 <h6> 六级标题
 ```
   
-**MPE扩展特性**: 如果你想要给你的标题添加 id 或者 class，请在标题最后添加 {#id .class1 .class2}。例如：
+**MPE扩展特性**: 如果想要给标题添加 id 或者 class，请在标题最后添加 {#id .class1 .class2}。例如：
   
 ```markdown
 # 这个标题拥有 1 个 id {#my_id}
@@ -157,7 +152,7 @@ ____
 >可以在代码的上方和下方添加 ```
 
 - 语法高亮
-你可以给你的代码块添加任何一种语言的语法高亮，如下
+可以给代码块添加任何一种语言的语法高亮，如下:
 
 ```JavaScript
 let a = 1, b = 2;
@@ -206,11 +201,11 @@ Content in the first column | Content in the second column
 #### 目录列表(TOC)
 
 ```txt
-Markdown Preview Enhanced 支持你在 markdown 文件中创建 TOC。
-你可以通过 cmd-shift-p 然后选择 Markdown Preview Enhanced: Create Toc 命令来创建 TOC。
+Markdown Preview Enhanced 支持在 markdown 文件中创建 TOC。
+可以通过 cmd-shift-p 然后选择 Markdown Preview Enhanced: Create Toc 命令来创建 TOC。
 可以创建多个TOC。 如果想要在 TOC 中排除一个标题，可以在标题后面添加 {ignore=true} 。
   
-注意: TOC 将会在你的 markdown 文件保存时更新。 你需要保持预览打开才能更新 TOC。
+注意: TOC 只会在 预览打开 并且 markdown 文件保存时更新。
 ```
 
 - 设置项
@@ -288,7 +283,7 @@ Content [^1]
 ```
   
 - 引用 PDF 文件
-如果你要引用 PDF 文件，你需要事先安装好 [pdf2svg](https://shd101wyy.github.io/markdown-preview-enhanced/#/zh-cn/extra)。 Markdown Preview Enhanced 支持引用本地或者在线的 PDF 文件。 但是，引用大的 PDF 文件是不推荐的。
+如果要引用 PDF 文件，需要事先安装好 [pdf2svg](https://shd101wyy.github.io/markdown-preview-enhanced/#/zh-cn/extra)。 Markdown Preview Enhanced 支持引用本地或者在线的 PDF 文件。 但是，引用大的 PDF 文件是不推荐的。
   
 - 强制渲染为代码块
   
@@ -315,17 +310,22 @@ Content [^1]
     path: output.md
     ignore_from_front_matter: true
     absolute_image_path: false
+  export_on_save:
+    markdown: false
   ---
 ```
 
 image_dir `可选`
-定义了哪里将保存你的图片。例如，`/assets` 意味着所有的图片将会被保存到项目目录下的 `assets` 文件夹内。如果 `image_dir`。如果 `image_dir` 没有被定义，那么插件设置中的 `Image save folder path` 将会被使用。默认为 /assets。
+定义了哪里将保存图片。例如，`/assets` 意味着所有的图片将会被保存到项目目录下的 `assets` 文件夹内。如果 `image_dir`。如果 `image_dir` 没有被定义，那么插件设置中的 `Image save folder path` 将会被使用。默认为 /assets。
 
 path `可选`
-定义了哪里输出你的 markdown 文件。如果 path 没有被定义，`filename_.md` 将会被使用。
+定义了哪里输出 markdown 文件。如果 path 没有被定义，`filename_.md` 将会被使用。
 
 ignore_from_front_matter `可选`
 如果设置为 `false`，那么 markdown 将会被包含于导出的文件中的 front-matter 中。
 
 absolute_image_path `可选`
 是否使用绝对（相对于项目文件夹）图片路径。
+
+export_on_save `可选`
+设置是否自动保存
