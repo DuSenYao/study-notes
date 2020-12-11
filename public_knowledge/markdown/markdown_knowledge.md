@@ -23,7 +23,8 @@ tags:
       - [列表](#列表)
         - [无序列表](#无序列表)
         - [有序列表](#有序列表)
-      - [添加图片](#添加图片)
+        - [定义型列表](#定义型列表)
+      - [插入图片](#插入图片)
       - [链接](#链接)
       - [引用](#引用)
       - [分割线](#分割线)
@@ -32,6 +33,9 @@ tags:
         - [代码块class(**MPA扩展特性**)](#代码块classmpa扩展特性)
       - [表格](#表格)
       - [目录列表(TOC)](#目录列表toc)
+      - [todo list](#todo-list)
+      - [序列图](#序列图)
+      - [流程图](#流程图)
     - [1.3 markdown-preview-enhanced 插件 扩展语法](#13-markdown-preview-enhanced-插件-扩展语法)
       - [表格合并](#表格合并)
       - [Emoji & Font-Awesome](#emoji-font-awesome)
@@ -105,14 +109,32 @@ _也 **组合** 这些符号_
   1. item2 a
   2. item2 b
 ```
-  
-#### 添加图片
+
+##### 定义型列表
+
+定义型列表由名词和解释组成。一行写定义，紧跟一行写解释。解释的写法 **:** 后紧跟一个空格
+
+```txt
+Markdown
+: 轻量级文本标记语言，可以转换成html，pdf等格式（左侧有一个可见的冒号和一个空格）
+
+代码块 2
+: 这是代码块的定义（左侧有一个可见的冒号和一个空格）
+      代码块（左侧有六个不可见的空格）
+```
+
+#### 插入图片
   
 ```markdown
+行内式
 ![GitHub logo](public_knowledge\image\logo.png)
 Format: ![Alt Text](url)
+
+参考式
+![快乐学习][study]
+[study]:image\DevTools-Sources-Snippets.png
 ```
-  
+
 #### 链接
   
 ```markdown
@@ -122,13 +144,16 @@ https://github.com - 自动生成
 
 #### 引用
 
+引用可以多层嵌套，引用的区块内也可以使用其他的Markdown语法，包括标题、列表、代码区块等
+
 ```markdown
 正如 DSY 所说：
   
-> Hell is where God is not.
 > The world is like hell.
+> 1. There is no God in the world
+>>> Hell is where God is not.
 ```
-  
+
 #### 分割线
 
 ```markdown
@@ -215,7 +240,62 @@ orderedList 是否使用有序列表。
 depthFrom, depthTo [1~6] 包含的。
 ignoreLink 如果设置为 true，那么 TOC 将不会被超链接。
 ```
-  
+
+#### todo list
+
+```txt
+待办列表:
+- [x] 整理Markdown手册
+- [ ] 改善项目
+   - [x] 优化首页显示方式
+   - [x] 修复闪退问题
+   - [ ] 修复视频卡顿
+- [ ] A3项目修复
+   - [x] 修复数值错误
+```
+
+#### 序列图
+
+这一特性基于 [flowchart.js](https://bramp.github.io/js-sequence-diagrams/)
+
+```sequence
+# 注释样例
+title: 验证密码
+participant 客户端 as A
+participant 服务端 as B
+participant 通行证中心 as C
+Note over A:用户输入通行证账号、密码
+A->C: 发送账号、密码
+Note over C:验证账号、密码
+C-->>A:返回token
+A->B:发送token
+B->>C:验证token
+C-->B:验证成功
+B-->>A:登陆成功
+Note over A,C: 三方通信
+Note left of A:左边注释
+B->B:自交互
+Note right of C:右边注释
+```
+
+#### 流程图
+
+[流程图语法](https://github.com/adrai/flowchart.js
+)
+
+```flow
+st=>start: 开始
+io=>inputoutput: 验证
+op=>operation: 选项
+cond=>condition: 是 或 否？
+sub=>subroutine: 子程序
+e=>end: 结束
+
+st->io->op->cond
+cond(yes)->e
+cond(no)->sub->io
+```
+
 ### 1.3 markdown-preview-enhanced 插件 扩展语法
 
 #### 表格合并
