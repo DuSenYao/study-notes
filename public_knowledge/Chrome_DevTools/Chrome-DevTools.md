@@ -30,6 +30,12 @@ tags:
         - [2.4.2 切换 `DevTools` 的面板](#242-切换-devtools-的面板)
         - [2.4.3 递增/递减](#243-递增递减)
         - [2.4.4 elements， logs， sources & network 中的查找](#244-elements-logs-sources-network-中的查找)
+        - [2.4.5 使用 Command](#245-使用-command)
+          - [2.4.5.1 快捷键](#2451-快捷键)
+          - [2.4.5.2 截屏](#2452-截屏)
+          - [2.4.5.3 切换面板布局](#2453-切换面板布局)
+          - [2.4.5.4 代码块](#2454-代码块)
+          - [2.4.5.5 Console中的 `$`](#2455-console中的)
 
 <!-- /code_chunk_output -->
 
@@ -157,3 +163,45 @@ tags:
 - 在 `Element` 面板中 - 通过 `string` 和 `XPath` 来查找。
 
 - 在 `Console`， `Network` 以及 `Source` 面板 - 通过 `区分大小写` 或 `正则表达式`， 来查找。
+
+##### 2.4.5 使用 Command
+
+这个功能可以快速查找所有命令
+
+###### 2.4.5.1 快捷键
+
+> 在 `Chrome` 调试打开的情况下，使用 `Ctrl + Shift + P`
+
+下图是可供选择的命令列表，分为几个部分:
+
+![Command命令列表分类](image\Command命令列表分类.png)
+
+###### 2.4.5.2 截屏
+
+当只想对某个 `DOM节点` 截屏时，可以在 `Elements` 界面，选中节点并在右键菜单中选择 `Capture node screenshot`，也可以选中节点后，使用 `Command` 查找命令。
+
+还可以通过 `Capture full size screenshot` 命令，进行 **全页面截屏**
+
+###### 2.4.5.3 切换面板布局
+
+`DevTools` 使用双面板模式，一般是: `元素面板` + `资源面板`，它根据屏幕可用的部分，经常将不同面板横向或者纵向的排列，以适合阅读的方式展示出来。
+
+打开 `Commands` 菜单并且输入 `layout` ，会看到 2 到 3 个可供选择的项(这里不再显示已经激活的选项)：
+
+- Use horizontal panel layout (使用横向面板布局)
+- Use vertical panel layout (使用纵向面板布局)
+- Use automatic panel layout (使用自动面板布局)
+
+###### 2.4.5.4 代码块
+  
+`Sources` 中的 `Snippets`，可以存放 `代码片段`，方便复用。
+
+![Sources-Snippets](image\DevTools-Sources-Snippets.png)
+
+> 快速执行代码块: 在 `Command Menu` 里，使用 `!`，就可以根据名字来筛选预设代码块。
+
+###### 2.4.5.5 Console中的 `$`
+
+- `$0` 在 Chrome 的 Elements 面板中， $0 是对当前选中的 html 节点的引用。`$1` 是对上一次选择的节点的引用，`$2` 是对在那之前选择的节点的引用，等等。一直到 `$4`。
+
+- 如果没有在 `页面` 中定义过 `$` 变量 (例如 jQuery )的话，它在 `Console` 中就是函数 `document.querySelector` 的别名。
