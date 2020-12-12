@@ -368,7 +368,7 @@ Content [^1]
 - 强制渲染为代码块
   
 ```txt
-@import "test.puml" {code_block=true class="line-numbers"}
+@import "test.js" {code_block=true class="line-numbers"}
 @import "test.py" {class="line-numbers"}
 ```
   

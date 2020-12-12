@@ -17,6 +17,7 @@
     "christian-kohler.path-intellisense",
     "wix.vscode-import-cost",
     "kisstkondoros.vscode-codemetrics",
-    "sburg.vscode-javascript-booster"
+    "sburg.vscode-javascript-booster",
+    "intellsmi.comment-translate"
   ]
 }

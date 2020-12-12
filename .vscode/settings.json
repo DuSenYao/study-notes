@@ -30,7 +30,6 @@
     "vorbis"
   ],
   "todo-tree.tree.scanMode": "workspace",
-  "eslint.enable": true,
   "html.customData": [".vscode/html.html-data.json"],
   "css.customData": [
     ".vscode/css.css-data.json"
