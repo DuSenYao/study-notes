@@ -419,6 +419,8 @@ VSCode编辑器 常用使用方法备忘录
           Independent：不同类型的括号使用自己的颜色集合
         · bracket-pair-colorizer-2.highlightActiveScope: 是否对当前范围的括号进行高亮显示。
         · bracket-pair-colorizer-2.activeScopeCSS: 设置颜色高亮显示的括号的CSS
+      转到另一个括号的快捷键
+        Ctrl + Shift + \
     (4)indent-rainbow
       缩进颜色支持
     (5)Peacock

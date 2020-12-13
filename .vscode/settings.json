@@ -34,5 +34,6 @@
   "css.customData": [
     ".vscode/css.css-data.json"
   ],
-  "commentTranslate.targetLanguage": "zh-CN"
+  "commentTranslate.targetLanguage": "zh-CN",
+  "todo-tree.tree.showCountsInTree": true
 }

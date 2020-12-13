@@ -18,6 +18,13 @@
     "wix.vscode-import-cost",
     "kisstkondoros.vscode-codemetrics",
     "sburg.vscode-javascript-booster",
-    "intellsmi.comment-translate"
+    "intellsmi.comment-translate",
+    "formulahendry.auto-close-tag",
+    "aaron-bond.better-comments",
+    "streetsidesoftware.code-spell-checker",
+    "kisstkondoros.vscode-gutter-preview",
+    "ibm.output-colorizer",
+    "vscode-icons-team.vscode-icons",
+    "eamodio.gitlens"
   ]
 }

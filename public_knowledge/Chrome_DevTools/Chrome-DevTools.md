@@ -43,8 +43,22 @@ tags:
       - [2.4.1 自定义格式化转换器的应用实践](#241-自定义格式化转换器的应用实践)
     - [2.5 对象&方法](#25-对象方法)
       - [2.5.1 queryObjects(对象查询)方法](#251-queryobjects对象查询方法)
-      - [2.5.2 monitor (监听)方法](#252-monitor-监听方法)
+      - [2.5.2 monitor (监听函数)方法](#252-monitor-监听函数方法)
       - [2.5.3 monitorEvents (监听事件)方法](#253-monitorevents-监听事件方法)
+    - [2.6 Console类中的各种方法](#26-console类中的各种方法)
+      - [2.6.1 console.assert](#261-consoleassert)
+      - [2.6.2 增强 `log`的阅读体验](#262-增强-log的阅读体验)
+      - [2.6.3 `console.table`](#263-consoletable)
+      - [2.6.4 console.dir](#264-consoledir)
+      - [2.6.5 给 `logs` 加上时间戳](#265-给-logs-加上时间戳)
+      - [2.6.6 检测执行时间](#266-检测执行时间)
+      - [2.6.7 让 `console.log` 基于调用堆栈自动缩进](#267-让-consolelog-基于调用堆栈自动缩进)
+      - [2.6.8 直接在回调中使用 `console.log`](#268-直接在回调中使用-consolelog)
+      - [2.6.9 给 `console.log` 加上 `CSS` 样式](#269-给-consolelog-加上-css-样式)
+      - [2.6.10 实时表达式](#2610-实时表达式)
+  - [三. NetWork 篇](#三-network-篇)
+    - [3.1 隐藏 network Overview](#31-隐藏-network-overview)
+    - [3.2 Request initiator 显示调用堆栈信息](#32-request-initiator-显示调用堆栈信息)
 
 <!-- /code_chunk_output -->
 
@@ -324,11 +338,11 @@ console.clown({message: 'hello!'}); // a silly log
 
 > new String("example"); queryObjects(String);
 
-#### 2.5.2 monitor (监听)方法
+#### 2.5.2 monitor (监听函数)方法
 
 `monitor` 是 `DevTools` 的一个方法， 它能够 "监听" 到任何 `_function calls(方法的调用)` 中：每当一个 `被监听` 的方法运行的时候，`console 控制台` 会把它的实例打印出来，包含 `函数名` 以及 `调用它的参数` 。取消监听函数的方法是 `unmonitor`。
 
-创建一个类:
+在 `Source` 的 `Snippets` 中创建一个类，然后运行:
 
 ```js
 class Person {
@@ -348,9 +362,141 @@ class Person {
 }
 ```
 
-控制台试验结果
+控制台试验结果:
 ![monitor](image/Chrome_DevTools_monitor监听函数.png)
 
 #### 2.5.3 monitorEvents (监听事件)方法
 
 在上面是监听函数的方法，还可以使用 `monitorEvents` 的方法，对 `events` 做同样的事，取消监听事件的方法是 `unmonitorEvents`。
+
+### 2.6 Console类中的各种方法
+
+#### 2.6.1 console.assert
+
+如果断言为 `false`，则将一个错误消息写入控制台。如果断言是 true，没有任何反应。
+通过它，可以摆脱累赘的 `if` 表达式，还可以获得堆栈信息。
+
+```js
+console.assert(assertion, obj1 [, obj2, ..., objN]);
+console.assert(assertion, msg [, subst1, ..., substN]);
+
+参数
+  `assertion`: 一个布尔表达式。如果 assertion 为假，消息就会被输出到控制台之中
+  `obj1 ... objN`: 被用来输出的Javascript对象列表，最后输出的字符串是各个对象依次拼接的结果。
+  `msg`: 一个包含零个或多个子串的Javascript字符串。
+  `subst1 ... substN`: 各个消息作为字串的Javascript对象。这个参数可以让你能够控制输出的格式。
+```
+
+#### 2.6.2 增强 `log`的阅读体验
+
+`console.log` 可以通过 `{}` 将参数包装，可以将一组数据打印成一个对象，这是 `ECMAScript 2015` 引入的 `enhanced object literal(增强对象文字面量)`。
+
+示例
+
+```js
+const name = "tom";
+let date = new Date();
+var age  = 18;
+let isHealthy = true;
+
+console.log({name, date, age, isHealthy});
+```
+
+#### 2.6.3 `console.table`
+
+ 如果有一个 **数组** (或者是 **类数组** 的对象，或者就是一个 **对象** )需要打印，可以使用 `console.table` 方法将它以一个漂亮的表格的形式打印出来。它不仅会根据数组中包含的对象的所有属性，去计算出表中的列名，而且这些列都可以 **缩放** 和 **排序**。
+
+如果觉得展示的列太多了，还可以使用第二个参数，传入想要展示的列的名字。
+
+`console.table` 还可以和 `{}` 的配合
+
+#### 2.6.4 console.dir
+
+使用 `console.log` 打印元素，回将元素渲染成像是从 `Elements` 中剪切出来的一样。使用 `console.dir` 会将元素打印为这个节点所关联到的 `js对象`。
+
+#### 2.6.5 给 `logs` 加上时间戳
+
+给打印出来的信息加上时间戳，有两种方法
+
+1. Settings -> Preferences -> Console 中开启 `Show timestamps`
+
+2. Ctrl + Shift + P 打开 Command，搜索 `timestamps`
+
+#### 2.6.6 检测执行时间
+
+可以使用以下两个 `console` 方法，来检测某段代码的执行时间
+
+> console.time([timerName]) — 开启一个计时器
+> console.timeEnd([timerName]) — 结束计时并且将结果在 console 中打印出来
+
+#### 2.6.7 让 `console.log` 基于调用堆栈自动缩进
+
+配合 `Error` 对象的 `stack` 属性，可以让 `log` 可以根据堆栈的调用自动缩进
+
+```js
+function log(message) {
+  console.log(
+    // 这句话是重点。使用 new 出来的 Error 对象的 stack 信息中的换行符，换行符出现的次数 等同于 它在堆栈调用时的深度。
+    '  '.repeat(new Error().stack.match(/\n/g).length - 2) + message
+  );
+}
+
+function foo() {
+  log('foo');
+  return bar() + bar();
+}
+
+function bar() {
+  log('bar');
+  return baz() + baz();
+}
+
+function baz() {
+  log('baz');
+  return 17;
+}
+
+foo();
+```
+
+#### 2.6.8 直接在回调中使用 `console.log`
+
+在确定要将什么传递给回调函数的情况下，可以在回调函数里面添加一个 `console.log` 来检查。
+
+有两种方式来实现:
+
+- 在回调方法的内部使用 console.log
+- 直接使用 console.log 来作为回调方法。
+推荐使用第二种，因为这不仅减少了输入，还可能在回调中接收多个参数。(这在第一个解决方案中是没有的)
+
+```js
+function getInput(options, callback) {
+  if(typeof callback == "function") {
+    callback(options, "add");
+  }
+}
+// console.log 是一个函数，可以作为回调函数
+getInput([1, 2], console.log);
+```
+
+#### 2.6.9 给 `console.log` 加上 `CSS` 样式
+
+如果给打印文本加上 `%c` ，那么 `console.log` 的第二个参数就变成了 `CSS` 规则
+> console.log("%c999", 'color:#f40;font-size:40px');
+
+#### 2.6.10 实时表达式
+
+在 `Console` 区域的上方，有一个"眼睛"的符号，点击眼睛符号，就可以在那里定义任何 `JS` 表达式。它会不断更新，所以表达的结果将永远是最新的。支持同时定义多个。
+
+## 三. NetWork 篇
+
+### 3.1 隐藏 network Overview
+
+如果用不到 请求的时间轴信息，可以隐藏掉它
+
+![overview](image/NetWork-Show_Overview位置.png)
+
+### 3.2 Request initiator 显示调用堆栈信息
+
+`Network` 面板中的 `initiator` 这一列显示了是哪个脚本的哪一行触发了请求。它显示了在调用堆栈中触发请求的最后一步。
+将鼠标悬停在显示的 `initiator`上，可以将看到完整的调用堆栈，包括文件。
