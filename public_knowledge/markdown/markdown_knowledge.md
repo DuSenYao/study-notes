@@ -39,6 +39,10 @@ tags:
     - [1.3 markdown-preview-enhanced 插件 扩展语法](#13-markdown-preview-enhanced-插件-扩展语法)
       - [表格合并](#表格合并)
       - [Emoji & Font-Awesome](#emoji-font-awesome)
+      - [上标](#上标)
+      - [下标](#下标)
+      - [注脚](#注脚)
+      - [标记](#标记)
       - [导入外部文件](#导入外部文件)
 
 <!-- /code_chunk_output -->
@@ -324,26 +328,26 @@ rowspan "^"
 :fa-car:
 ```
   
-- 上标
+#### 上标
   
 ```txt
 30^th^
 ```
   
-- 下标
+#### 下标
   
 ```下标
 H~2~O
 ```
   
-- 注脚
+#### 注脚
   
 ```txt
 Content [^1]
 [^1]: Hi! This is a footnote
 ```
   
-- 标记
+#### 标记
   
 ```txt
 ==marked==

@@ -12,7 +12,7 @@ tags:
 <!-- code_chunk_output -->
 
 - [Chrome DevTools Chrome浏览器调试工具](#chrome-devtools-chrome浏览器调试工具)
-  - [一.基础](#一基础)
+  - [一. 基础](#一-基础)
     - [1.1.面板简介](#11面板简介)
       - [元素面板(Elements)](#元素面板elements)
       - [源代码面板(Sources)](#源代码面板sources)
@@ -59,6 +59,20 @@ tags:
   - [三. NetWork 篇](#三-network-篇)
     - [3.1 隐藏 network Overview](#31-隐藏-network-overview)
     - [3.2 Request initiator 显示调用堆栈信息](#32-request-initiator-显示调用堆栈信息)
+    - [3.3 过滤请求表列](#33-过滤请求表列)
+    - [3.4 自定义请求表](#34-自定义请求表)
+    - [3.5 重新发送 `XHR` 的请求](#35-重新发送-xhr-的请求)
+    - [XHR/fetch 断点](#xhrfetch-断点)
+  - [四. Elements 篇](#四-elements-篇)
+    - [4.1 技巧集合](#41-技巧集合)
+      - [4.1.1  通过 `'h'` 来隐藏元素](#411-通过-h-来隐藏元素)
+      - [4.1.2  拖动 & 放置 元素](#412-拖动-放置-元素)
+      - [4.1.3  使用 控制按钮 来移动元素](#413-使用-控制按钮-来移动元素)
+      - [4.1.4 元素面板中类似于基础编辑器的操作](#414-元素面板中类似于基础编辑器的操作)
+      - [4.1.5 Shadow editor 阴影编辑器](#415-shadow-editor-阴影编辑器)
+      - [4.1.6 Timing function editor 定时函数编辑器](#416-timing-function-editor-定时函数编辑器)
+      - [4.1.7 在元素面板中展开所有的子节点](#417-在元素面板中展开所有的子节点)
+      - [添加 `force state` (强制状态)](#添加-force-state-强制状态)
 
 <!-- /code_chunk_output -->
 
@@ -66,7 +80,7 @@ tags:
 
 ---
 
-## 一.基础
+## 一. 基础
 
 ### 1.1.面板简介
 
@@ -203,7 +217,7 @@ tags:
 
 当只想对某个 `DOM节点` 截屏时，可以在 `Elements` 界面，选中节点并在右键菜单中选择 `Capture node screenshot`，也可以选中节点后，使用 `Command` 查找命令。
 
-还可以通过 `Capture full size screenshot` 命令，进行 **全页面截屏**
+还可以在 `Command` 查找 `Capture full size screenshot` 命令，进行 **全页面截屏**。
 
 ###### 1.2.4.5.3 切换面板布局
 
@@ -500,3 +514,67 @@ getInput([1, 2], console.log);
 
 `Network` 面板中的 `initiator` 这一列显示了是哪个脚本的哪一行触发了请求。它显示了在调用堆栈中触发请求的最后一步。
 将鼠标悬停在显示的 `initiator`上，可以将看到完整的调用堆栈，包括文件。
+
+### 3.3 过滤请求表列
+
+`Network` 面板中的过滤器输入框接受字符串或正则表达式，默认过滤 `name` 列。也可以使用它来过滤其他列。
+例如输入 `method:GET`，只保留 `method`列 中的 `GET`，输入最前面加 `-` 表示反过滤。
+
+### 3.4 自定义请求表
+
+在请求表中，可以看到有关每个请求的几条信息，例如：Status， Type， Initiator， Size 和 Time。同时也可以添加更多，有以下两种方式设置显示列:
+
+1. 右键单击请求表标题上的任意位置
+2. 请求表右键菜单中的 `Header Options`
+
+### 3.5 重新发送 `XHR` 的请求
+
+使用请求表右键菜单中的 `Replay XHR`，可以重新发送请求
+
+### XHR/fetch 断点
+
+如果，想要对已发送的 `ajax` 请求进行捕获可以使用 `XHR/fetch breakpoint` 。
+> 这个只能在 `Source` 面板中设置
+
+![XHR/fetch断点](image/XHR-fetch请求断点.png)
+
+## 四. Elements 篇
+
+### 4.1 技巧集合
+
+#### 4.1.1  通过 `'h'` 来隐藏元素
+
+在元素面板中选择元素后，按一下 `'h'` 就可以隐藏，再次按下 'h' 可以使它出现。
+
+#### 4.1.2  拖动 & 放置 元素
+
+当想看页面的某一部分在 `DOM` 树的不同位置的显示效果时，只需要拖动放置它(到指定的位置)。
+
+
+#### 4.1.3  使用 控制按钮 来移动元素
+
+如果只是想移动当前选中的元素，在 `DOM` 结构中往上挪一点或者往下挪一点，而不是拖动和放置，可以使用`[Ctrl]` + `[⬆]` / `[Ctrl]` + `[⬇]`。
+
+#### 4.1.4 元素面板中类似于基础编辑器的操作
+
+可以在元素面板中拖动，放置，编辑，复制、粘贴，使用 `[Ctrl]` + `[Z]` / `[Ctrl]` + `[Y]` 来撤销或恢复上一步操作。
+
+#### 4.1.5 Shadow editor 阴影编辑器
+
+可以在 `Styles` 面板中点击在 `box-shadow` 属性或者 `text-shadow` 属性左边的 `阴影方形符号` 来打开它。
+
+#### 4.1.6 Timing function editor 定时函数编辑器
+
+也称为 `Cubic bezier(贝塞尔)` 编辑器。贝塞尔曲线是一串用来定义 `CSS` 的动画速度在整个动画过程中如何变化的 `数值` 。将其定义为 `transition-timing-function` 或者 `animation-timing-function` CSS 属性。
+
+可以直接点击这两个属性(或者他们的简写形式: `transition`，`animation`)边上的曲线符号。
+> 注意: 如果 `timing` 函数的值没有设置在这个简写的形式中，这个符号不会显示出来，可以点击左边的小箭头来找到 `Cubic bezier(贝塞尔)` 编辑器。
+
+#### 4.1.7 在元素面板中展开所有的子节点
+
+可以使用右击节点后的 `expand recursively` 命令来展开所有的子节点。
+
+#### 添加 `force state` (强制状态)
+
+使用右击节点后使用 `force state`，可以对相应的节点强制添加状态:
+> :hover :active :focus :visited :focus-within :focus-visible
