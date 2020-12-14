@@ -59,7 +59,7 @@ tags:
   - [三. NetWork 篇](#三-network-篇)
     - [3.1 隐藏 network Overview](#31-隐藏-network-overview)
     - [3.2 Request initiator 显示调用堆栈信息](#32-request-initiator-显示调用堆栈信息)
-    - [3.3 过滤请求表列](#33-过滤请求表列)
+    - [3.3 请求表过滤](#33-请求表过滤)
     - [3.4 自定义请求表](#34-自定义请求表)
     - [3.5 重新发送 `XHR` 的请求](#35-重新发送-xhr-的请求)
     - [XHR/fetch 断点](#xhrfetch-断点)
@@ -72,7 +72,26 @@ tags:
       - [4.1.5 Shadow editor 阴影编辑器](#415-shadow-editor-阴影编辑器)
       - [4.1.6 Timing function editor 定时函数编辑器](#416-timing-function-editor-定时函数编辑器)
       - [4.1.7 在元素面板中展开所有的子节点](#417-在元素面板中展开所有的子节点)
-      - [添加 `force state` (强制状态)](#添加-force-state-强制状态)
+      - [4.1.8 添加 `force state` (强制状态)](#418-添加-force-state-强制状态)
+      - [4.1.9 DOM 断点](#419-dom-断点)
+    - [4.2 颜色选择器](#42-颜色选择器)
+      - [4.2.1 只选择正在用的颜色](#421-只选择正在用的颜色)
+      - [4.2.2 直观的选择字体颜色](#422-直观的选择字体颜色)
+  - [五. Drawer 篇](#五-drawer-篇)
+    - [5.1 常识](#51-常识)
+      - [5.1.1 如何打开 Drawer](#511-如何打开-drawer)
+      - [5.1.2 Drawer 设置选项列表](#512-drawer-设置选项列表)
+    - [5.2 Drawer 列表项](#52-drawer-列表项)
+      - [5.2.1 Sensors(控制传感器)](#521-sensors控制传感器)
+      - [5.2.2 模拟网络状态](#522-模拟网络状态)
+      - [5.2.3 快速 Source](#523-快速-source)
+      - [5.2.4 检查代码 coverage](#524-检查代码-coverage)
+      - [5.2.5 检查修改的CSS文件](#525-检查修改的css文件)
+  - [六. WorkSpaces 篇](#六-workspaces-篇)
+    - [6.1 workspace技巧](#61-workspace技巧)
+      - [6.1.1 在 `Chrome` 中修改文件](#611-在-chrome-中修改文件)
+      - [6.1.2 WorkSpace 支持即时样式同步](#612-workspace-支持即时样式同步)
+      - [6.1.3 为新选择器选择目标位置](#613-为新选择器选择目标位置)
 
 <!-- /code_chunk_output -->
 
@@ -515,10 +534,11 @@ getInput([1, 2], console.log);
 `Network` 面板中的 `initiator` 这一列显示了是哪个脚本的哪一行触发了请求。它显示了在调用堆栈中触发请求的最后一步。
 将鼠标悬停在显示的 `initiator`上，可以将看到完整的调用堆栈，包括文件。
 
-### 3.3 过滤请求表列
+### 3.3 请求表过滤
 
-`Network` 面板中的过滤器输入框接受字符串或正则表达式，默认过滤 `name` 列。也可以使用它来过滤其他列。
-例如输入 `method:GET`，只保留 `method`列 中的 `GET`，输入最前面加 `-` 表示反过滤。
+`Network` 面板中的过滤器输入框接受字符串或正则表达式，默认过滤 `name` 列。也可以使用它来过滤其他属性。
+例如: 输入 `method:GET`，只保留 `method` 中的 `GET`，最前面加 `-` 表示反过滤。
+如果想要显示所有可能的关键字，在空白的输入框按下 `[ctrl]` + `[space]`
 
 ### 3.4 自定义请求表
 
@@ -574,7 +594,104 @@ getInput([1, 2], console.log);
 
 可以使用右击节点后的 `expand recursively` 命令来展开所有的子节点。
 
-#### 添加 `force state` (强制状态)
+#### 4.1.8 添加 `force state` (强制状态)
 
 使用右击节点后使用 `force state`，可以对相应的节点强制添加状态:
 > :hover :active :focus :visited :focus-within :focus-visible
+
+#### 4.1.9 DOM 断点
+
+有时脚本修改了 `DOM`，想知道修改的是哪部分，什么时候修改的？
+可以添加一个 `DOM` 断点: 监听节点被添加或移除/属性被改变。
+
+- 点击"..." 符号或者右击想添加监听的元素
+
+- 在 `Break on` 中选择 `subtree modifications` : 监听任何它内部的节点被 移除 或者 添加的事件。
+
+- 选择 `attribute modifications` : 监听任何当前选中的节点被 添加，移除 或者 被修改值的事件。
+
+- 选择 `node removal` : 监听被选中的元素被 移除 的事件。
+
+页面重新加载时会记住断点。断点在 `Elements` 视图中有视觉提示，也在 `Sources` 右边的 `DOM Breakpoints` 有列表形式的显示。
+
+### 4.2 颜色选择器
+
+#### 4.2.1 只选择正在用的颜色
+
+点击颜色选择器中的颜色列表的右上角，可以切换以下四种调色盘:
+
+1. 一个有色调变化的 `Material` 调色板
+2. 自定义，可以添加和删除颜色
+3. 从 `CSS Variables` 中选择一个当前页面使用的样式表中存在的颜色。
+4. 页面 `CSS` 中使用的所有颜色
+
+#### 4.2.2 直观的选择字体颜色
+
+打开一个文本的调色选择器(是 `color` 属性， 而不是 `background-color`) 会看到 `“Contrast ratio(对比度)”` 部分。它显示了 **文本的颜色** 与 **开发者工具认为这段文本应该有的背景颜色** 之间的对比度。如果这个数值很高，那么文本相对于背景来说，更显而易见，但如果这个值接近 `1` ，那么文本的颜色几乎不能从背景色中区分。
+
+- 在数字边上的 “🚫” 意味着对比度太低了。
+- 一个 “✅” 意味着这个颜色遵从 [Web Content Accessibility Guidelines (WCAG) 2.0](https://www.w3.org/TR/UNDERSTANDING-WCAG20/conformance.html) 的 **AA** 声明，这意味着对比值至少为 `3`。
+- “✅ ✅” 意味着满足了 **AAA** 声明。
+
+还可以在 `对比度` 部分用 `吸管` 选择一个不同的颜色作为背景颜色进行对比，对应的 `color spectrum(色谱)` 部分会显示一个对比的边界线: 如果背景颜色比这条线上面的颜色更深，代表兼容 AA ，如果背景颜色比这条线上面的更亮，需要在这条线的下面选择一个颜色。
+
+## 五. Drawer 篇
+
+### 5.1 常识
+
+#### 5.1.1 如何打开 Drawer
+
+在 `DevTools`（任何选项卡）中时，可以按 `[esc]` 来显隐它。默认情况下，会看到一个 `Console` 选项卡。与主面板的 `Console` 完全相同。
+
+#### 5.1.2 Drawer 设置选项列表
+
+`Drawer` 里隐藏着许多其他功能，大多数时候不需要用到它们，这也是它们为什么被隐藏起来的原因。
+点击主页面在 `Drawer` 的 `console` 面板前面的 `⋮` 图标来打开完整选项列表。还可以打开 `command Menu` ，然后输入 `Drawer` 来打开。
+
+### 5.2 Drawer 列表项
+
+#### 5.2.1 Sensors(控制传感器)
+
+如果在应用中使用一些获取位置信息的 `API` 而且想要测试一下它。
+`Drawer` 里的 `Sensors(传感器)` 面板可以模拟特定的位置: 支持从预定义的位置中进行选择，添加位置，或者手动键入纬度/经度。选定的值将被 `navigator.geolocation.watchPosition`（或 .`getCurrentPosition` ）报告。
+
+> navigator.geolocation.watchPosition(console.log)
+
+如果 `App` 有使用加速计，传感器面板也可以模拟设备在3D空间中的位置。
+![Drawer_Sensors](image/Drawer_Sensors.png)
+
+#### 5.2.2 模拟网络状态
+
+就像伪造位置一样，可以使用 `Drawer` 里的 `Network conditions` 面板模拟特定的网络行为: 模拟互联网为典型的3G网络甚至离线！这通常用来了解页面资源的大小。或者测试应用的离线功能。除此之外，`Network conditions` 面板还可以模拟特定的用户代理。
+
+#### 5.2.3 快速 Source
+
+`Quick Source` 可以 `快速查看代码` 和 `设置断点`，如果断点被触发，它不会显示在 `drawer` 的 `Quick sources` 中，而是显示在主 `Source` 中。是一个快速工具。
+
+#### 5.2.4 检查代码 coverage
+
+使用 `coverage` 面板可以跟踪当前加载的 `JS` 和 `CSS` 文件的 `哪些行正在被执行` ，并显示 `已使用与未使用字节的百分比`。
+它用 `灰蓝` 的线条标记 `运行` 和用 `红色` 的线条标记 `未运行`。
+
+#### 5.2.5 检查修改的CSS文件
+
+使用 `Drawer` 中的 `Changes`可以将 `通过浏览器更改的CSS文件内容` 与 `最初加载的样式表` 进行比较。
+> 注: 只能比较CSS文件的内容，不能比较直接添加在节点上的CSS属性。
+
+## 六. WorkSpaces 篇
+
+### 6.1 workspace技巧
+
+#### 6.1.1 在 `Chrome` 中修改文件
+
+可以将项目的文件夹直接拖到 `Source` 面板，`DevTools` 会将做出的修改同步到系统的文件中。
+
+#### 6.1.2 WorkSpace 支持即时样式同步
+
+在设置好了 `DevTools workspace`，就可以在 `Sources` 面板中编辑 `HTML` 和 `JavaScript`（或 `TypeScript`，需要有 `sourcemaps`）文件，按 `ctrl` + `s` 后它将被保存 在文件系统中。
+
+在样式方面它提供了更好的支持。 因为即使只是在 `元素` 面板的 `样式` 部分中编辑样式规则，它也会**立即同步**。在文件系统更改保存后也会直接显示到浏览器上。
+
+#### 6.1.3 为新选择器选择目标位置
+
+当使用工作区时，在 `Elements` 的 `Styles` 面板添加新样式规则的默认定位为 - `"inspector-stylesheet：1"` ，如果不想规则在这个文件添加，只需按住 `New Style Rule` 按钮，就可以看到一个列出所有 `CSS` 文件的选项。选择目的地，新规则就会保存在那里。
