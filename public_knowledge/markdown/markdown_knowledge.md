@@ -27,6 +27,7 @@ tags:
       - [插入图片](#插入图片)
       - [链接](#链接)
       - [引用](#引用)
+      - [注释](#注释)
       - [分割线](#分割线)
       - [行内代码](#行内代码)
       - [代码块](#代码块)
@@ -156,6 +157,13 @@ https://github.com - 自动生成
 > The world is like hell.
 > 1. There is no God in the world
 >>> Hell is where God is not.
+```
+
+#### 注释
+
+```txt
+[^_^]: 注释内容
+HTML风格的注释: <!-- notes -->
 ```
 
 #### 分割线
