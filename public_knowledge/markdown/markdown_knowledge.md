@@ -132,12 +132,12 @@ Markdown
   
 ```markdown
 行内式
-![GitHub logo](public_knowledge\image\logo.png)
+![GitHub logo](public_knowledge/image/logo.png)
 Format: ![Alt Text](url)
 
 参考式
 ![快乐学习][study]
-[study]:image\DevTools-Sources-Snippets.png
+[study]:image/DevTools-Sources-Snippets.png
 ```
 
 #### 链接

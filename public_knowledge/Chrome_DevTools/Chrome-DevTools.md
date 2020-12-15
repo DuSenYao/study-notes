@@ -230,7 +230,7 @@ tags:
 
 下图是可供选择的命令列表，分为几个部分:
 
-![Command命令列表分类](image\Command命令列表分类.png)
+![Command命令列表分类](image/Command命令列表分类.png)
 
 ###### 1.2.4.5.2 截屏
 
@@ -252,7 +252,7 @@ tags:
   
 `Sources` 中的 `Snippets`，可以存放 `代码片段`，方便复用。
 
-![Sources-Snippets](image\DevTools-Sources-Snippets.png)
+![Sources-Snippets](image/DevTools-Sources-Snippets.png)
 
 > 快速执行代码片段: 在 `Command Menu` 里，使用 `!`，就可以根据名字来筛选预设代码片段。
 

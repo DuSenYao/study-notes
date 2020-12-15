@@ -23,6 +23,7 @@
     "streetsidesoftware.code-spell-checker",
     "kisstkondoros.vscode-gutter-preview",
     "ibm.output-colorizer",
-    "eamodio.gitlens"
+    "eamodio.gitlens",
+    "pflannery.vscode-versionlens"
   ]
 }
