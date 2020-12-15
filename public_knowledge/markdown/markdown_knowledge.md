@@ -353,6 +353,10 @@ H~2~O
 ```txt
 Content [^1]
 [^1]: Hi! This is a footnote
+
+GitHub 注脚形式
+[footnote](#jump)
+ <span id="jump>footnote</span>
 ```
   
 #### 标记
