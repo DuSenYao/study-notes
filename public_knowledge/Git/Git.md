@@ -47,7 +47,7 @@ tags:
         - [1.2.7.1 gitk](#1271-gitk)
         - [1.2.7.1 `git stash`](#1271-git-stash)
     - [1.3 基础知识](#13-基础知识)
-      - [1.3.1 添加文件流程](#131-添加文件流程)
+      - [1.3.1 本地Git工作流程](#131-本地git工作流程)
       - [1.3.2 `.git`文件夹下的文件](#132-git文件夹下的文件)
       - [1.3.3 git中 commit、tree和blob三个对象的关系](#133-git中-commit-tree和blob三个对象的关系)
       - [1.3.4 git的底层运行流程](#134-git的底层运行流程)
@@ -66,6 +66,10 @@ tags:
       - [2.1.2 GitHub优点](#212-github优点)
       - [2.1.3 GitHub核心功能](#213-github核心功能)
       - [2.1.4 快速搜索到感兴趣的开源项目](#214-快速搜索到感兴趣的开源项目)
+      - [2.1.5 组织类型的仓库](#215-组织类型的仓库)
+    - [2.2 使用 GitHub 进行团队协作](#22-使用-github-进行团队协作)
+      - [2.2.1 选择适合团队的工作流](#221-选择适合团队的工作流)
+      - [2.2.2 挑选合适的分支集成策略](#222-挑选合适的分支集成策略)
   - [三. 常见场景](#三-常见场景)
     - [3.1 不同人修改了不同文件](#31-不同人修改了不同文件)
     - [3.2 不同人修改了相同文件的不同区域](#32-不同人修改了相同文件的不同区域)
@@ -167,7 +171,7 @@ tags:
 
 ##### 1.2.2.7 `git config`
 
-查看或设置配置
+查看、设置或清除配置
 
 - `[--local|--global|--system] [config 'message']`: 设置配置
 
@@ -175,11 +179,18 @@ tags:
 > git config [--local|--global|--system] user.name 'You name'
 > git config [--local|--global|--system] user.email 'You email'
   
-- git config --list [--local|--global|--system]: 查看配置
+- `git config --list [--local|--global|--system]` : 查看配置
 
->**例**: `git config --list --local`
+> **例**: `git config --list --local`
 
-==区别: local: 当前仓库  global: 当前用户的所有仓库  system: 本系统的所有用户==
+- `git config --unset [--local|--global|--system]` : 清除配置
+
+> **例**: git config --unset --local user.name
+
+```txt
+区别:   local: 当前仓库  global: 当前用户的所有仓库  system: 本系统的所有用户
+优先级: local > global > system
+```
 
 #### 1.2.3 文件操作
 
@@ -325,7 +336,7 @@ tags:
 例3: git reset  052e            // 回退到指定版本
 ```
 
-- `--soft`: 保留工作区和暂存区的内容，并把重置版本带来的差异放入暂存区
+- `--soft`: 保留工作区的更改内容，并把重置版本带来的差异放入暂存区
 
 > **例**: `git reset --soft HEAD` 回退到当前版本
 
@@ -383,12 +394,16 @@ tags:
 
 ### 1.3 基础知识
 
-#### 1.3.1 添加文件流程
+#### 1.3.1 本地Git工作流程
 
-```txt
-git add files            工作目录 --> 暂存区
-git commit -m "摘要"      暂存区   --> 本地仓库
-git push 
+```sequence
+participant 工作目录 as A
+participant 暂存区 as B
+participant 本地仓库 as C
+A -> B: git add [file|.]
+B -> C: git commit -m "message"
+B -->A: git reset
+C --> B: git reset --soft HEAD~1
 ```
 
 #### 1.3.2 `.git`文件夹下的文件
@@ -405,8 +420,9 @@ git push
 
 #### 1.3.3 git中 commit、tree和blob三个对象的关系
 
-`commit`是一个提交，它里面有一个`tree`对象对应`唯一的tree`，这个tree里面又有包含了多个tree和blob对象，每个tree对象又包含了多个tree和blob，文件的的最终形式是blob。对于blob，git会认为文件内容相同时，就使用同一个blob，这样就极大的避免了频繁提交时，git的存储空间大幅上升。
-图片: public_knowledge\Git\示例文件\image\Git课件.pdf
+`commit`是一个提交，它里面有一个`tree`对象对应`唯一的tree`，这个tree里面又有包含了 **多个tree和blob对象** ，每个tree对象又包含了多个tree和blob，文件的的最终形式是 **blob**。对于blob，git会认为文件内容相同时，就使用同一个blob，这样就极大的避免了频繁提交时，git的存储空间大幅上升。
+
+![git中commit、tree和blob三个对象的关系](image/git中commit、tree和blob三个对象的关系.png)
 
 #### 1.3.4 git的底层运行流程
 
@@ -517,9 +533,48 @@ git push
 组织里可以管理多个仓库，加成员，设置团队，设置团队成员管理权限。
 成员可以看见每个团队管理的仓库和权限，可以发起请求加入团队。
 
-#### 2.1.6 使用 GitHub 进行团队协作
+### 2.2 使用 GitHub 进行团队协作
 
-先在GitHub上，创建团队类型的仓库。
+先在GitHub上，创建团队类型的仓库。需要基于一个组织创建。
+
+#### 2.2.1 选择适合团队的工作流
+
+**需要考虑的因素** :
+
+- 团队人员的组成
+- 研发设计能力
+- 输出产品的特征
+- 项目难易程度
+
+**主干开发适用于** :
+
+1. 开发团队系统设计和开发能力强。有一套有效的特性切换的实施机制，保证上线后无需修改代码就能够修改系统行为。需要快速迭代，想获得 CI/CD 所有好处。
+2. 组件开发的团队，成员能力强，人员少，沟通顺畅。用户升级组件成本低的环境。
+
+**Git Flow 适用于** :
+
+- 不具备主干开发能力，有预定的发布周期。需要执行严格的发布流程。
+
+**GitHub FLow 适用于** :
+
+- 不具备主干开发能力。随时集成随时发布；分支集成时经过代码评审和自动化测试，就可以立即发布的应用。
+
+**GitLab Flow (带生产分支) 适用于**:
+
+- 不具备主干开发能力。无法控制准确的发布时间，但又要求不停的集成。
+
+**GitLab FLow (带环境分支) 适用于**:
+
+- 不具备主干开发能力，需要逐个通过各个测试环境的验证才能发布。
+
+**GitLab Flow (带发布分支) 适用于**:
+
+- 不具备主干开发能力。需要对外发布和维护不同版本。
+
+#### 2.2.2 挑选合适的分支集成策略
+
+位置: 仓库 -> Settings -> options -> Merge button
+![Merge button](image/Merge_button.png)
 
 ## 三. 常见场景
 
@@ -557,3 +612,5 @@ git push
 ### 3.5 同一文件改成不同的文件名
 
 `git pull` 到本地分支，git会保留两个文件，手动来处理冲突，可以用 `git rm` 删除不要的文件，最后提交。
+
+- [ ] 将 [本地git工作流程](#131-本地git工作流程) 加上远程仓库，变成Git工作流程
