@@ -46,6 +46,7 @@ tags:
       - [1.2.7 其他](#127-其他)
         - [1.2.7.1 gitk](#1271-gitk)
         - [1.2.7.1 `git stash`](#1271-git-stash)
+        - [1.2.7.2 `git rerere`](#1272-git-rerere)
     - [1.3 基础知识](#13-基础知识)
       - [1.3.1 Git 基本工作流程](#131-git-基本工作流程)
       - [1.3.2 `.git`文件夹下的文件](#132-git文件夹下的文件)
@@ -70,6 +71,8 @@ tags:
     - [2.2 使用 GitHub 进行团队协作](#22-使用-github-进行团队协作)
       - [2.2.1 选择适合团队的工作流](#221-选择适合团队的工作流)
       - [2.2.2 挑选合适的分支集成策略](#222-挑选合适的分支集成策略)
+      - [2.2.3 GitHub 中的 Projects](#223-github-中的-projects)
+      - [2.2.3 项目内部实施代码检查(code review)](#223-项目内部实施代码检查code-review)
   - [三. 常见场景](#三-常见场景)
     - [3.1 不同人修改了不同文件](#31-不同人修改了不同文件)
     - [3.2 不同人修改了相同文件的不同区域](#32-不同人修改了相同文件的不同区域)
@@ -79,6 +82,9 @@ tags:
     - [3.6 提交commit后，想再忽略一些已经提交的文件](#36-提交commit后想再忽略一些已经提交的文件)
 
 <!-- /code_chunk_output -->
+
+---
+
 # Git(分布式版本控制器)
 
 ## 一. Git
@@ -274,7 +280,7 @@ tags:
 - `-f`: 本地版本与远程版本有差异时，可以使用这个参数强制推送，多人合作禁用，如果要用可以使用 `git push --force-with-lease`，相对安全
 - `-d`: 删除远程主机的分支
 - `--all`: 推送全部分支
-- 使用`ssh`协议推送: `gitHub: git push  git@github.com:1758231591/Learning-notes-and-materials.git`
+- 使用`ssh`协议推送: `gitHub: git push  git@github.com:DuSenYao/Learning-notes-and-materials.git`
 
 > **注**: 需要 [配置公私钥](#211-配置公私钥)
 
@@ -398,6 +404,14 @@ tags:
 - `drop stash@{num}`: 删除指定保存
 - `clear`: 删除所有保存
 
+##### 1.2.7.2 `git rerere`
+
+重用记录的解决方案，它允许Git记住解决一个块冲突的方法，这样在下一次看到 **相同的冲突** 时，Git可以自动地解决它。
+
+> **`rerere` 启用** : `git config --global rerere.enabled true`
+
+实际应用不常用，[查看Git文档](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-Rerere)
+
 ### 1.3 基础知识
 
 #### 1.3.1 Git 基本工作流程
@@ -409,10 +423,10 @@ participant 本地仓库 as C
 participant 远程仓库 as D
 A -> B: git add [file|.]
 B -> C: git commit -m "message"
+C -> D: git push
 B -->A: git reset
 C --> B: git reset --soft HEAD~1
 D --> A: git pull
-C -> D: git push
 D --> C: git fetch
 C --> A: git merge FETCH_HEAD
 ```
@@ -586,8 +600,25 @@ C --> A: git merge FETCH_HEAD
 
 #### 2.2.2 挑选合适的分支集成策略
 
-位置: 仓库 -> Settings -> options -> Merge button
+**位置**: 仓库 -> Settings -> options -> Merge button
+
 ![Merge button](image/Merge_button.png)
+
+1. git merge : **git merge** 带 **squash** 参数则合并后特性分支上的多个commit会合并成一个commit 放到主分支上，不带 **squash** 参数则特性分支上的多个commit在合并后会原样体现出来。
+2. git rebase : 将特性分支上的多个commit放到主分支上，如果有冲突先将特性分支和主分支解决冲突 merge。 可以再使用 merge 将特性分支和主分支合并。
+
+#### 2.2.3 GitHub 中的 Projects
+
+**Projects** 可以有序的管理 **issue** 和 **Pull request**
+在 issue 和 Pull request 中可以选择分到哪个 project 中，项目可以设置自动化管理。
+
+![Projects](image/Projects.png)
+
+#### 2.2.3 项目内部实施代码检查(code review)
+
+**位置**: 仓库 -> Settings -> Branches -> Branch protection rules 中可以添加分支保护规则
+
+![Branch-protection-rule](image/Branch-protection-rule.png)
 
 ## 三. 常见场景
 
