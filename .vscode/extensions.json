@@ -24,6 +24,8 @@
     "kisstkondoros.vscode-gutter-preview",
     "ibm.output-colorizer",
     "eamodio.gitlens",
-    "pflannery.vscode-versionlens"
+    "pflannery.vscode-versionlens",
+    "ecmel.vscode-html-css",
+    "alefragnani.bookmarks"
   ]
 }

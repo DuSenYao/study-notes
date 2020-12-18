@@ -30,6 +30,7 @@ tags:
         - [1.2.3.1 `git add ./文件名/文件夹名`](#1231-git-add-文件名文件夹名)
         - [1.2.3.2 `git rm <file>`](#1232-git-rm-file)
         - [1.2.3.3 `git mv [file] [newFile]`](#1233-git-mv-file-newfile)
+        - [1.2.3.4 `git restore`](#1234-git-restore)
       - [1.2.4 远程操作](#124-远程操作)
         - [1.2.4.1 `git remote`](#1241-git-remote)
         - [1.2.4.2 `git fetch [alias]`](#1242-git-fetch-alias)
@@ -232,6 +233,17 @@ tags:
 - `-f`: 重命名
 
 > **例**: `git mv -f hello.txt hello.css`
+
+##### 1.2.3.4 `git restore`
+
+把未 add 到暂存区的文件修改撤销
+> **例** : git restore public_knowledge\Git\Git.md
+
+- `--staged` : 把文件从暂存区撤回到工作区，保留文件最后一次修改的内容
+
+- `-s SHA file`: 表示将当前工作区或文件切换到指定 commit 版本
+
+> **例** : git restore -s 703025cf public_knowledge\Git\Git.md
 
 #### 1.2.4 远程操作
 
