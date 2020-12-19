@@ -69,6 +69,8 @@ tags:
       - [2.1.3 GitHub核心功能](#213-github核心功能)
       - [2.1.4 快速搜索到感兴趣的开源项目](#214-快速搜索到感兴趣的开源项目)
       - [2.1.5 组织类型的仓库](#215-组织类型的仓库)
+      - [2.1.6 指导文档](#216-指导文档)
+      - [2.1.7 发布产品包](#217-发布产品包)
     - [2.2 使用 GitHub 进行团队协作](#22-使用-github-进行团队协作)
       - [2.2.1 选择适合团队的工作流](#221-选择适合团队的工作流)
       - [2.2.2 挑选合适的分支集成策略](#222-挑选合适的分支集成策略)
@@ -186,7 +188,7 @@ tags:
 > **例**:
 > git config [--local|--global|--system] user.name 'You name'
 > git config [--local|--global|--system] user.email 'You email'
-  
+
 - `git config --list [--local|--global|--system]` : 查看配置
 
 > **例**: `git config --list --local`
@@ -367,8 +369,8 @@ tags:
 - `--hard`: 将指定版本的内容放入暂存区和工作区，也就是所有没有commit的修改都会丢失，**慎用**！
 
 ```txt
-例1: git reset –hard HEAD~3            // 回退上上上一个版本  
-例2: git reset –hard bae128            // 回退到某个版本回退点之前的所有信息。 
+例1: git reset –hard HEAD~3            // 回退上上上一个版本
+例2: git reset –hard bae128            // 回退到某个版本回退点之前的所有信息。
 例3: git reset --hard origin/master    // 将本地的状态回退到和远程的某个分支一样
 ```
 
@@ -571,6 +573,14 @@ C --> A: git merge FETCH_HEAD
 
 组织里可以管理多个仓库，加成员，设置团队，设置团队成员管理权限。
 成员可以看见每个团队管理的仓库和权限，可以发起请求加入团队。
+
+#### 2.1.6 指导文档
+
+可以在 Wiki 中添加指导文档。能够添加 首页、工具栏 和 各种指导文档页面。文档使用markdown格式。
+
+#### 2.1.7 发布产品包
+
+s
 
 ### 2.2 使用 GitHub 进行团队协作
 

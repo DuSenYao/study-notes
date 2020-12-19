@@ -91,7 +91,7 @@
       // 单词的组成一般可以用元字符 \w+ 来表示，\w 包括了大小写字母、下划线和数字（即 [A-Za-z0-9_]）。那单词的边界，也就是出现了 \w 表示的范围以外的字符，比如引号、空格、标点、换行等这些符号，因此，可以在正则中使用 \b 来表示单词的边界。 \b 中的 b 可以理解为是边界（Boundary）这个单词的首字母。
       let str = "tom asked me if I would go fishing with him tomorrow.";
       let s = str.replace(/\btom\b/g, "Jom");
-      console.log(s); 
+      console.log(s);
       // 匹配非单词边界。这是上一个字符和下一个字符属于同一类型的位置
       let str2 = "on noon";
       let t = str2.replace(/\Bon/, "A");
