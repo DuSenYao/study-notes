@@ -123,7 +123,7 @@ tags:
   ① 使用控制台面板
   ② 命令行交互
   ```
-  
+
 #### 源代码面板(Sources)
 
 可以设置断点来调试 JS ，或者通过 Workspaces （工作区）连接本地文件来使用开发者工具的实时编辑器
@@ -145,9 +145,9 @@ tags:
   ② 资源时间轴
   ③ 网络带宽限制
 ```
-  
+
 #### 性能面板(Performance)
-  
+
 记录和查看网站生命周期内发生的各种事件和运行时间，了解并优化性能
 
 ```txt
@@ -157,7 +157,7 @@ tags:
 ```
 
 #### 内存面板(Memory)
-  
+
 ```txt
 功能:
   ① 跟踪内存泄漏。
@@ -249,7 +249,7 @@ tags:
 - Use automatic panel layout (使用自动面板布局)
 
 ###### 1.2.4.5.4 代码片段
-  
+
 `Sources` 中的 `Snippets`，可以存放 `代码片段`，方便复用。
 
 ![Sources-Snippets](image/DevTools-Sources-Snippets.png)
@@ -293,7 +293,7 @@ console.table(await navigator.mediaCapabilities.decodingInfo(query));
 ```
 
 - The Ninja `console`
-  
+
 得益于条件断点，`console` 也有了新玩法：
 
 ```markdown
