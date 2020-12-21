@@ -22,6 +22,11 @@ author: dsy
         - [2.1.1.3 nvm安装Node.js](#2113-nvm安装nodejs)
         - [2.1.1.4 指定远端下载地址](#2114-指定远端下载地址)
       - [2.1.2 npm](#212-npm)
+        - [2.1.2.1 使用npm安装模块](#2121-使用npm安装模块)
+      - [2.1.3 nrm(不在维护)](#213-nrm不在维护)
+    - [2.2 使用Node.js](#22-使用nodejs)
+      - [2.2.1 CommonJS规范](#221-commonjs规范)
+      - [2.2.2 创建一个最简单的HTTP服务](#222-创建一个最简单的http服务)
 
 <!-- /code_chunk_output -->
 
@@ -47,6 +52,8 @@ Node.js 的目标是让并发编程更简单，主要应用在以网络编程为
 
 1. Node.js没有浏览器API,即 **document** 、**window** 等。
 2. 加了许多 Node.js **API**
+
+![JS在NodeJS和浏览器中的异同](./image/JS在NodeJS和浏览器中的异同.jpg)
 
 ### 1.3 Node.js 特点
 
@@ -186,7 +193,40 @@ npm的包安装是最核心的功能，分为本地安装 (local) 、全局安�
 
 - 将包放在 node_modules (运行npm命令时所在的目录)下，如果没有 node_module 目录，则会在当前执行npm命令的目录下生成。
 - 可以通过 require() 来引入本地的包
+  例 : 先安装常用的Node.js调试模块 `npm install debug`，安装好后，debug包存在于工程目录下的node_modules目录中，因此在代码中只执行 `const debug = require('debug')`即可，无需指定第三方包路径。
 
 全局安装，具体缩颈:
 
-- 如果不是使用nvm安装的，安装包将放在 /user/local 下
+- 如果不是使用nvm安装的，安装包将放在 /user/local 下，安装全局模块需要超级用户授权。
+- 不能通过 require() 来引入本地的包
+
+> **注意**: 为避免引用模块缺失保证依赖模块都出现在package.json里，可以使用 `npm i --save`
+
+#### 2.1.3 nrm(不在维护)
+
+Node.js和其他语言一样都提供了模块管理工具，默认将模块托管在npmjs.org下，其他组织和个人可以自建下载源，同步时间一般在10分钟左右，npm官方源是在国外托管的，所以国内用户访问会比较慢。
+
+nrm可以简单、快速地在不同的npm之间进行切换，它默认内置了很多常用的源，包括 npm、cnpm、taobao、nj等，也可以通过 `nrm add` 命令来维护自己的源。nrm是工程复杂到一定程度的必然产物，也是最佳实践。
+
+1. 安装
+  nrm本身是node.js命令行模块，需要使用 -g 参数来进行全局安装 `npm install -g nrm`
+2. 测速
+  可以使用 `nrm test` 测速
+3. 查看源使用 `nrm ls` 命令即可
+4. 使用 `nrm use cnpm` 就可以快速切换源
+5. 增加源
+
+> 例 : `nrm add project https://registry.npm.taobao.org/`
+
+### 2.2 使用Node.js
+
+> `node fileName.js` 可以直接运行js文件，在JS文件里，建议使用严格模式，如: [test.js](./sampleFolder/test.js)
+
+#### 2.2.1 CommonJS规范
+
+Node.js基于CommonJS规范的实现，即每个文件都是一个模块，每个模块内部代码都遵循CommonJS规范，**多文件调用的核心基于模块对外暴露接口和相互引用**。
+
+- 使用 `module.exports` 定义模块 [commonjs_test1.js](./sampleFolder/CommonJS规范/commonjs_test1.js)
+- 通过 `require` 关键字引入模块  [commonjs_test2.js](./sampleFolder/CommonJS规范/commonjs_test2.js)
+
+#### 2.2.2 创建一个最简单的HTTP服务
