@@ -463,7 +463,7 @@ C --> A: git merge FETCH_HEAD
 
 `commit`是一个提交，它里面有一个`tree`对象对应`唯一的tree`，这个tree里面又有包含了 **多个tree和blob对象** ，每个tree对象又包含了多个tree和blob，文件的的最终形式是 **blob**。对于blob，git会认为文件内容相同时，就使用同一个blob，这样就极大的避免了频繁提交时，git的存储空间大幅上升。
 
-![git中commit、tree和blob三个对象的关系](image/git中commit、tree和blob三个对象的关系.png)
+![git中commit、tree和blob三个对象的关系](./image/git中commit、tree和blob三个对象的关系.png)
 
 #### 1.3.4 git的底层运行流程
 
@@ -627,7 +627,7 @@ s
 
 **位置**: 仓库 -> Settings -> options -> Merge button
 
-![Merge button](image/Merge_button.png)
+![Merge button](./image/Merge_button.png)
 
 1. git merge : **git merge** 带 **squash** 参数则合并后特性分支上的多个commit会合并成一个commit 放到主分支上，不带 **squash** 参数则特性分支上的多个commit在合并后会原样体现出来。
 2. git rebase : 将特性分支上的多个commit放到主分支上，如果有冲突先将特性分支和主分支解决冲突 merge。 可以再使用 merge 将特性分支和主分支合并。
@@ -637,13 +637,13 @@ s
 **Projects** 可以有序的管理 **issue** 和 **Pull request**
 在 issue 和 Pull request 中可以选择分到哪个 project 中，项目可以设置自动化管理。
 
-![Projects](image/Projects.png)
+![Projects](./image/Projects.png)
 
 #### 2.2.3 项目内部实施代码检查(code review)
 
 **位置**: 仓库 -> Settings -> Branches -> Branch protection rules 中可以添加分支保护规则
 
-![Branch-protection-rule](image/Branch-protection-rule.png)
+![Branch-protection-rule](./image/Branch-protection-rule.png)
 
 ## 三. 常见场景
 

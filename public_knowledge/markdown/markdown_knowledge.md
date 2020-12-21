@@ -54,58 +54,58 @@ tags:
 ### 1.1 什么是Markdown
 
   Markdown是一种文本格式。可以用它来控制文档的显示。使用markdown，可以创建粗体的文字，斜体的文字，添加图片，并创建列表等等。基本上，Markdown就是普通的文字加上 # 或者 * 等符号。
-  
+
 ### 1.2 语法说明
 
 #### 标题
-  
+
 ```markdown
 # 这是 <h1> 一级标题
-  
+
 ## 这是 <h2> 二级标题
-  
+
 ### 这是 <h3> 三级标题
-  
+
 #### 这是 <h4> 四级标题
-  
+
 ##### 这是 <h5> 五级标题
-  
+
 ###### 这是 <h6> 六级标题
 ```
-  
+
 **MPE扩展特性**: 如果想要给标题添加 id 或者 class，请在标题最后添加 {#id .class1 .class2}。例如：
-  
+
 ```markdown
 # 这个标题拥有 1 个 id {#my_id}
-  
+
 # 这个标题有 2 个 classes {.class1 .class2}
 ```
-  
+
 #### 强调
-  
+
 ```markdown
 *这是斜体的文字*
 _这是斜体的文字_
-  
+
 **这是粗体的文字**
 __这是粗体的文字__
-  
+
 _也 **组合** 这些符号_
-  
+
 ~~这个文字会被删除线删除~~
 ```
 
 #### 列表
 
 ##### 无序列表
-  
+
 ```markdown
 - item1
 - item2
   - item2 a
   - item2 b
 ```
-  
+
 ##### 有序列表
 
 ```markdown
@@ -129,10 +129,10 @@ Markdown
 ```
 
 #### 插入图片
-  
+
 ```markdown
 行内式
-![GitHub logo](public_knowledge/image/logo.png)
+![GitHub logo](./public_knowledge/image/logo.png)
 Format: ![Alt Text](url)
 
 参考式
@@ -141,7 +141,7 @@ Format: ![Alt Text](url)
 ```
 
 #### 链接
-  
+
 ```markdown
 https://github.com - 自动生成
 [GitHub](https://github.com)
@@ -153,7 +153,7 @@ https://github.com - 自动生成
 
 ```markdown
 正如 DSY 所说：
-  
+
 > The world is like hell.
 > 1. There is no God in the world
 >>> Hell is where God is not.
@@ -177,7 +177,7 @@ HTML风格的注释: <!-- notes -->
 下划线
 ____
 ```
-  
+
 #### 行内代码
 
 ```markdown
@@ -195,7 +195,7 @@ ____
 let a = 1, b = 2;
 [a, b] = [b, a];
 ```
-  
+
 ##### 代码块class(**MPA扩展特性**)
 
 可以给代码块设置 class，达到特定的显示效果
@@ -208,21 +208,21 @@ function add(x, y) {
 
 - 代码行数
 想要代码块显示代码行数，只要添加 line-numbers class 就可以了。
-  
+
 ```javascript
 function ride(x, y) {
   return x * y
 }
 ```
-  
+
 - 高亮代码行数
 可以通过添加 highlight 属性的方式来高亮代码行数
-  
+
 ```txt{highlight=[1,3,5]}
   ```javascript
-  
+
   ```javascript
-  
+
   ```javascript
 ```
 
@@ -241,7 +241,7 @@ Content in the first column | Content in the second column
 Markdown Preview Enhanced 支持在 markdown 文件中创建 TOC。
 可以通过 cmd-shift-p 然后选择 Markdown Preview Enhanced: Create Toc 命令来创建 TOC。
 可以创建多个TOC。 如果想要在 TOC 中排除一个标题，可以在标题后面添加 {ignore=true} 。
-  
+
 注意: TOC 只会在 预览打开 并且 markdown 文件保存时更新。
 ```
 
@@ -313,7 +313,7 @@ cond(no)->sub->io
 #### 表格合并
 
 >需要在插件设置中打开 `enableExtendedTableSyntax` 选项来使其工作。
-  
+
 ```txt
 colspan ">" or 空单元格
   |a|b|
@@ -326,30 +326,30 @@ rowspan "^"
   |1|2|
   |^|4|
 ```
-  
+
 #### Emoji & Font-Awesome
 
 >只适用于 markdown-it parser 而不适用于 pandoc parser。 缺省下是启用的。可以在插件设置里禁用此功能。
-  
+
 ```txt
 :smile:
 :fa-car:
 ```
-  
+
 #### 上标
-  
+
 ```txt
 30^th^
 ```
-  
+
 #### 下标
-  
+
 ```下标
 H~2~O
 ```
-  
+
 #### 注脚
-  
+
 ```txt
 Content [^1]
 [^1]: Hi! This is a footnote
@@ -358,9 +358,9 @@ GitHub 注脚形式
 [footnote](#jump)
  <span id="jump>footnote</span>
 ```
-  
+
 #### 标记
-  
+
 ```txt
 ==marked==
 ```
@@ -371,31 +371,31 @@ GitHub 注脚形式
   @import "文件路径"
   <!-- @import "文件路径" -->
 ```
-  
+
 - 设置图片
-  
+
 ```txt
 @import "test.png" {width="300px" height="200px" title="图片的标题" alt="我的 alt"}
 ```
-  
+
 - 引用 PDF 文件
 如果要引用 PDF 文件，需要事先安装好 [pdf2svg](https://shd101wyy.github.io/markdown-preview-enhanced/#/zh-cn/extra)。 Markdown Preview Enhanced 支持引用本地或者在线的 PDF 文件。 但是，引用大的 PDF 文件是不推荐的。
-  
+
 - 强制渲染为代码块
-  
+
 ```txt
 @import "test.js" {code_block=true class="line-numbers"}
 @import "test.py" {class="line-numbers"}
 ```
-  
+
 - 导入特定行数
-  
+
 ```txt
 @import "test.md" {line_begin=2}
 @import "test.md" {line_begin=2 line_end=10}
 @import "test.md" {line_end=-4}
 ```
-  
+
 - 插件中特有的Front-matter
 可以通过 front-matter 来设置图片的保存路径以及输出路径。
 

@@ -230,7 +230,7 @@ tags:
 
 下图是可供选择的命令列表，分为几个部分:
 
-![Command命令列表分类](image/Command命令列表分类.png)
+![Command命令列表分类](./image/Command命令列表分类.png)
 
 ###### 1.2.4.5.2 截屏
 
@@ -252,7 +252,7 @@ tags:
 
 `Sources` 中的 `Snippets`，可以存放 `代码片段`，方便复用。
 
-![Sources-Snippets](image/DevTools-Sources-Snippets.png)
+![Sources-Snippets](./image/DevTools-Sources-Snippets.png)
 
 > 快速执行代码片段: 在 `Command Menu` 里，使用 `!`，就可以根据名字来筛选预设代码片段。
 
@@ -307,7 +307,7 @@ console.table(await navigator.mediaCapabilities.decodingInfo(query));
 
 大多数的情况下，习惯使用 `DevTools` 的 `console` 默认对 `object` 的转换，但还可以自定义输出对象的函数，它通常被称为 `Custom Formatter` 。
 > 注意: 在写之前，需要在 `Settings` (或按下 `F1`) 中把对应的设置打开。
-> ![Enable_Custom_Formatter位置](image/Enable_Custom_Formatter位置.png)
+> ![Enable_Custom_Formatter位置](./image/Enable_Custom_Formatter位置.png)
 
 `formatters` 是一个对象，最多包含三个方法
 
@@ -396,7 +396,7 @@ class Person {
 ```
 
 控制台试验结果:
-![monitor](image/Chrome_DevTools_monitor监听函数.png)
+![monitor](./image/Chrome_DevTools_monitor监听函数.png)
 
 #### 2.5.3 monitorEvents (监听事件)方法
 
@@ -527,7 +527,7 @@ getInput([1, 2], console.log);
 
 如果用不到 请求的时间轴信息，可以隐藏掉它
 
-![overview](image/NetWork-Show_Overview位置.png)
+![overview](./image/NetWork-Show_Overview位置.png)
 
 ### 3.2 Request initiator 显示调用堆栈信息
 
@@ -556,7 +556,7 @@ getInput([1, 2], console.log);
 如果，想要对已发送的 `ajax` 请求进行捕获可以使用 `XHR/fetch breakpoint` 。
 > 这个只能在 `Source` 面板中设置
 
-![XHR/fetch断点](image/XHR-fetch请求断点.png)
+![XHR/fetch断点](./image/XHR-fetch请求断点.png)
 
 ## 四. Elements 篇
 
@@ -657,7 +657,7 @@ getInput([1, 2], console.log);
 > navigator.geolocation.watchPosition(console.log)
 
 如果 `App` 有使用加速计，传感器面板也可以模拟设备在3D空间中的位置。
-![Drawer_Sensors](image/Drawer_Sensors.png)
+![Drawer_Sensors](./image/Drawer_Sensors.png)
 
 #### 5.2.2 模拟网络状态
 

@@ -9,7 +9,8 @@ keyword: Vocabulary
 <!-- code_chunk_output -->
 
 - [Vocabulary Manual](#vocabulary-manual)
-  - [一. Computer Words](#一-computer-words)
+  - [一. Words](#一-words)
+  - [二. Computer professional words](#二-computer-professional-words)
 
 <!-- /code_chunk_output -->
 
@@ -17,7 +18,7 @@ keyword: Vocabulary
 
 ---
 
-## 一. Computer Words
+## 一. Words
 
 - **knowledge**
   - n. **知识**; 学问; 学识; 知晓; 知悉; 了解
@@ -100,3 +101,7 @@ keyword: Vocabulary
 - **line**
   - n. 线; 线条; 界线;
   - v. (在某物的内部)形成一层;沿…形成行(或列、排)
+
+## 二. Computer professional words
+
+- **stack overflow** 堆栈溢出

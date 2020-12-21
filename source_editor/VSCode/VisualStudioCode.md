@@ -723,9 +723,9 @@ REST Client 支持 `cURL` 和 `RFC2616` 这两种业界标准来调用 REST API�
    在调试视图选择 launch.json 文件中的 `Launch chrome Current File` 选项，然后按 F5 快捷键，VSCode 就会启动 Chrome 浏览器。
    例 : launch.json -> "Launch chrome Current File"
    如果想要将 VSCode 附加到 Chrome 浏览器，需要在远程调试模式下启动 Chrome 浏览器，针对不同系统，在命令行输入不同的命令来启动 Chrome 浏览器。
-   在 Windows 下:<path to chrome>/chrome.exe --remote-debugging-port-9222
-   在 macOS 下: /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote--debugging-port=9222
-   在 Linux 下: google-chrome --remote-debugging-port=9222
+   在 Windows 下 : `<path to chrome>/chrome.exe --remote-debugging-port-9222`
+   在 macOS 下 : `/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote--debugging-port=9222`
+   在 Linux 下 : `google-chrome --remote-debugging-port=9222`
    例 : launch -> "Attach to url with files served from ./out"
 3. **Debugger for Firefox**
    Debugger for Firefox 插件除了可以调试运行在 Firefox 浏览器中的 JS 代码，还可以调试 Firefox 浏览器插件。需要设置 Firefox 浏览器启动文件的绝对路径。
@@ -965,7 +965,7 @@ VSCode 的调试配置会被存储在 .vscode 文件夹的 **launch.json** 文�
 
 ###### 6.2.12.1.3 调试配置属性
 
-对于调试 Node.js 应用，VSCode 支持两种调试模式: **launch**(启动) 和 **attach** (附加)。
+对于调试 Node.js 应用，VSCode 支持两种调试模式: **launch** (启动) 和 **attach** (附加)。
 在 **launch.json** 文件中，除了基本的调试属性(如:type、request、name 等)，Node.js 调试器还有一些特殊的属性:
 可以被定义在 **launch** 和 **attach** 的调试配置中:
 
