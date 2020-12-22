@@ -157,9 +157,9 @@ keyword: Vocabulary
 - **option**
   - n. 选项; 选择; 选修课
 
-- 
+-
 
-## 二. Computer professional phrase
+## 二. Computer terminology
 
 - **stack overflow** : 堆栈溢出
 
@@ -170,3 +170,5 @@ keyword: Vocabulary
 - **constructor function** : 构造函数
 
 - **go out of use** : 不再使用
+
+- **utils** : 工具类，实用工具，效用
