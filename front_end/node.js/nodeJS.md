@@ -230,3 +230,5 @@ Node.js基于CommonJS规范的实现，即每个文件都是一个模块，每�
 - 通过 `require` 关键字引入模块  [commonjs_test2.js](./sampleFolder/CommonJS规范/commonjs_test2.js)
 
 #### 2.2.2 创建一个最简单的HTTP服务
+
+> 例: [http_test.js](./sampleFolder/http_test.js)
