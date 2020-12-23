@@ -8,6 +8,7 @@ Page({
     motto: 'My Test WXApp',
     userInfo: {},
     hasUserInfo: false,
+    number: 2,
     canIUse: wx.canIUse('button.open-type.getUserInfo')
   },
   behaviors: [myBehaviors],

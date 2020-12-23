@@ -13,4 +13,7 @@
   <view>
     <text>{{sharedText}}</text>
   </view>
+  <view>
+    <text hidden="{{number == 1 ? true : false}}">{{number}}</text>
+  </view>
 </view>
