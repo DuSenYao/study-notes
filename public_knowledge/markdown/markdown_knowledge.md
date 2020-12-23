@@ -145,6 +145,9 @@ Format: ![Alt Text](url)
 ```markdown
 https://github.com - 自动生成
 [GitHub](https://github.com)
+
+[兼容处理][compatibility]
+[compatibility] : https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html
 ```
 
 #### 引用

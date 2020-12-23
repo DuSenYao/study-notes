@@ -195,3 +195,5 @@ keyword: Vocabulary
 - **go out of use** : 不再使用
 
 - **utils** : 工具类，实用工具，效用
+
+- **sitemap** : 网站地图；网站导航
