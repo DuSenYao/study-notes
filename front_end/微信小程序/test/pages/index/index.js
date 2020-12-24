@@ -18,6 +18,11 @@ Page({
       url: '../logs/logs'
     });
   },
+  bindJumpTest: function() {
+    wx.navigateTo({
+      url: "../tests/test"
+    })
+  },
   onLoad: function () {
     if (app.globalData.userInfo) {
       this.setData({

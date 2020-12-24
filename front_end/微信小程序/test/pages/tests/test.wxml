@@ -1,0 +1,11 @@
+<!-- wx:for -->
+<view>
+  <view wx:for="{{classList}}" wx:for-index="i" wx:for-item="class">
+    {{i}} : {{class}}
+  </view>
+</view>
+<!-- 模板 -->
+<template name="a">
+  <view>a</view>
+</template>
+<template is="a"></template>

@@ -6,14 +6,13 @@
       <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
       <text class="userinfo-nickname">{{userInfo.nickName}}</text>
     </block>
+    <view bindtap="bindJumpTest">test page</view>
   </view>
   <view class="usermotto">
     <text class="user-motto">{{motto}}</text>
   </view>
   <view>
     <text>{{sharedText}}</text>
-  </view>
-  <view>
-    <text hidden="{{number == 1 ? true : false}}">{{number}}</text>
+    <text hidden="{{number == 1 ? true : false}}"> {{number }}</text>
   </view>
 </view>
