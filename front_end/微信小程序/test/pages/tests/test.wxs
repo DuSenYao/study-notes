@@ -1,0 +1,11 @@
+// /pages/tests/test.wxs
+var foo = "hello";
+
+var bar = function (d) {
+  return d;
+}
+
+module.exports = {
+  foo: foo,
+  bar: bar
+}

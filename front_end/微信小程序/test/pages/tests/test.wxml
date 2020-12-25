@@ -1,11 +1,24 @@
 <!-- wx:for -->
 <view>
   <view wx:for="{{classList}}" wx:for-index="i" wx:for-item="class">
-    {{i}} : {{class}}
+    {{i}} : {{class}} 
   </view>
+  <view>{{module.bar(module.foo)}} {{night.time}}</view>
 </view>
+
 <!-- 模板 -->
 <template name="a">
   <view>a</view>
+  <view>{{foo}}</view>
 </template>
-<template is="a"></template>
+<template is="a" data="{{...module}}"></template>
+
+<!-- 声明了一个名称为 night 的模块，将 time 变量暴露出来，供当前页面使用 -->
+<wxs module="night">
+var time = "night";
+
+module.exports = {
+  time: time
+}
+</wxs>
+<wxs src="./test.wxs" module="module" />
