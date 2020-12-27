@@ -3,16 +3,17 @@
   <view class="userinfo">
     <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
     <block wx:else>
-      <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+      <image bind:tap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
       <text class="userinfo-nickname">{{userInfo.nickName}}</text>
     </block>
-    <view bindtap="bindJumpTest">test page</view>
+    <!-- 绑定并阻止事件冒泡: 除 `bind` 外，也可以用 `catch` 来绑定事件。与 `bind` 不同，`catch` 会阻止事件向上冒泡。 -->
+    <view catch:tap="bindJumpTest">test page</view>
   </view>
   <view class="usermotto">
     <text class="user-motto">{{motto}}</text>
   </view>
   <view>
     <text>{{sharedText}}</text>
-    <text hidden="{{number == 1 ? true : false}}"> {{number }}</text>
+    <text hidden="{{number == 1 ? true : false}}"> {{ number }}</text>
   </view>
 </view>

@@ -26,6 +26,7 @@
     "eamodio.gitlens",
     "pflannery.vscode-versionlens",
     "ecmel.vscode-html-css",
-    "alefragnani.bookmarks"
+    "alefragnani.bookmarks",
+    "gruntfuggly.todo-tree"
   ]
 }

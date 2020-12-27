@@ -148,6 +148,10 @@ https://github.com - 自动生成
 
 [兼容处理][compatibility]
 [compatibility] : https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html
+
+// 页面内链接
+[footnote](#jump)
+ <span id="jump>footnote</span>
 ```
 
 #### 引用
@@ -261,11 +265,11 @@ ignoreLink 如果设置为 true，那么 TOC 将不会被超链接。
 ```txt
 待办列表:
 - [x] 整理Markdown手册
-- [ ] 改善项目
+- [x] 改善项目
    - [x] 优化首页显示方式
    - [x] 修复闪退问题
-   - [ ] 修复视频卡顿
-- [ ] A3项目修复
+   - [x] 修复视频卡顿
+- [x] 项目修复
    - [x] 修复数值错误
 ```
 
@@ -356,10 +360,6 @@ H~2~O
 ```txt
 Content [^1]
 [^1]: Hi! This is a footnote
-
-GitHub 注脚形式
-[footnote](#jump)
- <span id="jump>footnote</span>
 ```
 
 #### 标记

@@ -33,7 +33,7 @@
     "useIsolateContext": true,
     "useCompilerModule": true,
     "userConfirmedUseCompilerModuleSwitch": false,
-    "userConfirmedBundleSwitch": false,
+    "userConfirmedBundleSwitch": true,
     "packNpmManually": false,
     "packNpmRelationList": [],
     "minifyWXSS": true

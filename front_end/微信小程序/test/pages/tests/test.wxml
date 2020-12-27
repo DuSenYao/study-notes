@@ -3,16 +3,28 @@
   <view wx:for="{{classList}}" wx:for-index="i" wx:for-item="class">
     {{i}} : {{class}} 
   </view>
-  <view>{{module.bar(module.foo)}} {{night.time}}</view>
+  <!-- 自基础库版本 1.5.0 起，在大多数组件和自定义组件中， bind 后可以紧跟一个冒号，其含义不变，如 `bind:tap` 。基础库版本 2.8.1 起，在所有组件中开始提供这个支持。 -->
+  <view bind:tap="tapTest">{{module.bar(module.foo)}} {{night.time}}</view>
 </view>
 
 <!-- 模板 -->
 <template name="a">
   <view>a</view>
-  <view>{{foo}}</view>
+  <!-- 互斥事件绑定: 自基础库版本 2.8.2 起，除 bind 和 catch 外，还可以使用 `mut-bind` 来绑定事件。一个 mut-bind 触发后，如果事件冒泡到其他节点上，其他节点上的 mut-bind 绑定函数不会被触发，但 bind 绑定函数和 catch 绑定函数依旧会被触发。 -->
+  <view mut-bind:tap="tapTest">{{foo}}</view>
 </template>
 <template is="a" data="{{...module}}"></template>
 
+<!-- 注：绑定的WXS函数必须用 {{}} 括起来 -->
+<view id="tapTest" data-hi="WeiXin" bindtap="{{module.tapName}}"> tap Me </view>
+
+<!-- 双向数据绑定 -->
+<input model:value="{{age}}" bindinput="tapInput" style="border:1px solid #ccc;" />
+
+<button id="the-button" bindtap="selectorQuery"> Selector Query! </button>
+
+<scroll-view style="height:500px;width:100vw;"></scroll-view>
+<scroll-view class="scroll-class"></scroll-view>
 <!-- 声明了一个名称为 night 的模块，将 time 变量暴露出来，供当前页面使用 -->
 <wxs module="night">
 var time = "night";
@@ -21,4 +33,5 @@ module.exports = {
   time: time
 }
 </wxs>
+<!-- 引用其他 .wxs 文件模块，必须使用相对路径 -->
 <wxs src="./test.wxs" module="module" />

@@ -1,11 +1,22 @@
 // /pages/tests/test.wxs
+// 只支持 var ，不支持 let，const 
+// WXS 里的方法具体使用参考 ES5 标准
+
 var foo = "hello";
 
 var bar = function (d) {
   return d;
 }
 
+// 从基础库版本2.4.4开始，支持使用WXS函数绑定事件，WXS函数接受2个参数，第一个是 event，在原有的 event 的基础上加了 event.instance 对象
+// 第二个参数是 ownerInstance ，和 event.instance 一样是一个 ComponentDescriptor 对象。
+function tapName (event, ownerInstance) {
+  console.log("top WeiXin", JSON.stringify(event));
+  console.log(JSON.stringify(ownerInstance));
+}
+
 module.exports = {
   foo: foo,
-  bar: bar
+  bar: bar,
+  tapName : tapName
 }

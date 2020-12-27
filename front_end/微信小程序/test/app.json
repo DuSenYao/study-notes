@@ -8,7 +8,8 @@
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
     "navigationBarTitleText": "Test",
-    "navigationBarTextStyle": "black"
+    "navigationBarTextStyle": "black",
+    "pageOrientation": "auto"
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"
