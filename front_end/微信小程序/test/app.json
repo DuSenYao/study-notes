@@ -2,14 +2,16 @@
   "pages": [
     "pages/index/index",
     "pages/logs/logs",
-    "pages/tests/test"
+    "pages/tests/test",
+    "pages/component-show/component-show"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
     "navigationBarTitleText": "Test",
     "navigationBarTextStyle": "black",
-    "pageOrientation": "auto"
+    "pageOrientation": "auto",
+    "restartStrategy": "homePageAndLatestPage"
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

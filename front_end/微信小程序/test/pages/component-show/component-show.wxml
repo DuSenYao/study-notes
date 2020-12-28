@@ -1,0 +1,7 @@
+<!--pages/component-show/component-show.wxml-->
+<view class='component-view'>
+  <slot name="before"></slot>
+  <view>组件节点的内部</view>
+  <text>{{propA}}的{{propB}}{{propC}}</text>
+  <slot name="after"></slot>
+</view>

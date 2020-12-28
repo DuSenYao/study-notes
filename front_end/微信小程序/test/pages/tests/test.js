@@ -6,7 +6,9 @@ Page({
    */
   data: {
     classList: ["1-1", "1-2","1-3"],
-    age: 18
+    age: 18,
+    componentTextA: "模板",
+    componentTextB: "数据绑定"
   },
 
   tapTest: function (event) {
@@ -37,6 +39,14 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    var prevExitState = this.exitState; // 尝试获得上一次退出前 onSaveExitState 保存的数据
+    if(prevExitState !== undefined) {
+      console.log(prevExitState); // 如果是根据 restartStrategy 配置进行的冷启动，就可以获取到
+      // 将通过 exitState 获得退出时保存的数据，放到页面上
+      this.setData({
+        age : prevExitState.age
+      })
+    }
     wx.createIntersectionObserver().relativeToViewport().observe(".scroll-class", (res) => {
       console.log(res);
       res.id // 目标节点 id
@@ -76,6 +86,21 @@ Page({
    */
   onUnload: function () {
 
+  },
+
+  /**
+   * 小程序可能被销毁之前，页面回调函数
+   */
+  onSaveExitState: function () {
+    var exitState = { 
+      myDataField : "myData",
+      age : this.data.age
+    }; // 需要保存的数据
+    // 退出小程序前，使用退出状态来保持一些数据
+    return {
+      data: exitState,
+      expireTimeStamp: Date.now() + 24 * 60 * 60 * 1000 // 超时时刻
+    }
   },
 
   /**
