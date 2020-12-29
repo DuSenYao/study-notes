@@ -33,6 +33,11 @@
   </component-show>
 </view>
 
+<view>selectable-group with custom-radio</view>
+<selectable-group generic:selectable="custom-radio" />
+<view>selectable-group with custom-checkbox</view>
+<selectable-group generic:selectable="custom-checkbox" />
+
 <scroll-view style="height:500px;width:100vw;"></scroll-view>
 <scroll-view class="scroll-class"></scroll-view>
 

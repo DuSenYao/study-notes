@@ -1,5 +1,8 @@
 {
   "usingComponents": {
-    "component-show": "/pages/component-show/component-show"
+    "component-show": "/pages/component-show/component-show",
+    "selectable-group": "/pages/selectable-group/selectable-group",
+    "custom-checkbox": "/pages/custom-checkbox/custom-checkbox",
+    "custom-radio": "/pages/custom-radio/custom-radio"
   }
 }

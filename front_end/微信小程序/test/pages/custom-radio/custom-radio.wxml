@@ -1,0 +1,2 @@
+<!--pages/custom-radio/custom-radio.wxml-->
+<radio disabled="{{disabled}}" checked="{{checked}}"></radio>

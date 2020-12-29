@@ -10,7 +10,7 @@ keyword: Vocabulary
 
 - [Vocabulary Manual](#vocabulary-manual)
   - [一. Words](#一-words)
-  - [二. Computer professional words](#二-computer-professional-words)
+  - [二. Computer terminology](#二-computer-terminology)
 
 <!-- /code_chunk_output -->
 
@@ -258,7 +258,7 @@ keyword: Vocabulary
 
 - **range**
   - n. (变动或浮动的)范围，界限，区间;一系列;
-  - v. (在一定的范围内)变化，变动;包括(从…到…)之间的各类事物;(按一定位置或顺序)排列，排序
+  - v. (按一定位置或顺序)排列，排序;(在一定的范围内)变化，变动;包括(从…到…)之间的各类事物
 
 - **truth**
   - n. 真相; 实情; 事实; 真实情况; 真实; 真实性; 真理
@@ -280,6 +280,24 @@ keyword: Vocabulary
 
 - **also**
   - adv. 同样; 而且; 此外; 也
+
+- **overall**
+  - adj. 全面的;综合的;总体的
+  - adv. 全部;总计;一般来说;大致上;总体上
+  - n. 外套;罩衣;工装连衣裤;工装服
+
+- **inherent**
+  - adj. 固有的;内在的
+
+- **privacy**
+  - n. 隐私;私密;不受公众干扰的状态
+
+- **belong**
+  - v. 应在(某处); 适应; 合得来
+  - **belong to**: 属于
+
+- **property**
+  - n. 资产; 财产; 房地产; 特性; 性质; 性能
 
 ## 二. Computer terminology
 
