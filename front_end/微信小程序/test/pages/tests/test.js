@@ -1,6 +1,6 @@
 // pages/tests/test.js
 Page({
-
+ 
   /**
    * 页面的初始数据
    */
@@ -8,7 +8,8 @@ Page({
     classList: ["1-1", "1-2","1-3"],
     age: 18,
     componentTextA: "模板",
-    componentTextB: "数据绑定"
+    componentTextB: "数据绑定",
+    now: Date.now()
   },
 
   tapTest: function (event) {
@@ -40,6 +41,7 @@ Page({
    */
   onLoad: function (options) {
     var prevExitState = this.exitState; // 尝试获得上一次退出前 onSaveExitState 保存的数据
+    console.log(this.exitState);
     if(prevExitState !== undefined) {
       console.log(prevExitState); // 如果是根据 restartStrategy 配置进行的冷启动，就可以获取到
       // 将通过 exitState 获得退出时保存的数据，放到页面上

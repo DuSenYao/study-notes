@@ -4,7 +4,8 @@ Component({
 
   options: {
     multipleSlots: true, // 是否启用多slot支持
-    styleIsolation: "isolated" // 组件样式隔离
+    styleIsolation: "isolated", // 组件样式隔离
+    pureDataPattern: /^timestamp$/
   },
   
   /**
@@ -16,7 +17,8 @@ Component({
       value: ''
     },
     propB: String, // 简化的定义方式
-    propC: Number
+    propC: Number,
+    timestamp: Number
   },
 
   /**
@@ -24,6 +26,15 @@ Component({
    */
   data: {
     
+  },
+
+  observers: {
+    timestamp: function() {
+      var timeString = new Date(this.data.timestamp).toLocaleString();
+      this.setData({
+        timeString: timeString
+      })
+    }
   },
   
   /**

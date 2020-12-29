@@ -5,3 +5,4 @@
   <text>{{propA}}的{{propB}}{{propC}}</text>
   <slot name="after"></slot>
 </view>
+<view>{{timeString}}</view>
