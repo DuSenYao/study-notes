@@ -297,7 +297,26 @@ keyword: Vocabulary
   - **belong to**: 属于
 
 - **property**
-  - n. 资产; 财产; 房地产; 特性; 性质; 性能
+  - n. 特性; 性质; 性能; 资产; 财产; 房地产
+
+- **measurement**
+  - n. 测量;度量;(某物的)尺寸，长度，数量
+
+- **kind**
+  - n. 同类的人(或事物);种类
+  - adj. 体贴的;慈祥的;友好的;宽容的;客气请求或命令
+
+- **majority**
+  - n. 大部分;大多数
+
+- **choose**
+  - v. 选择;挑选;选取;宁愿;情愿;决定
+
+- **enumerable**
+  - adj. 可数的，可枚举的
+
+- **boundary**
+  - n. 边界;界限;分界线
 
 ## 二. Computer terminology
 
