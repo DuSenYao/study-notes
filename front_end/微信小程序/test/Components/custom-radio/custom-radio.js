@@ -2,7 +2,7 @@
 Component({
   properties: {
     disabled: Boolean,
-    checked: Boolean
+    selected: Boolean
   },
 
   data: {},

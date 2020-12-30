@@ -4,10 +4,7 @@
     "pages/index/index",
     "pages/logs/logs",
     "pages/tests/test",
-    "pages/component-show/component-show",
-    "pages/custom-checkbox/custom-checkbox",
-    "pages/custom-radio/custom-radio",
-    "pages/selectable-group/selectable-group"
+    "pages/canvas/canvas"
   ],
   "window": {
     "backgroundTextStyle": "light",

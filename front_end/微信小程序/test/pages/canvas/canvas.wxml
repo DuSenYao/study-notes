@@ -1,0 +1,10 @@
+<!--pages/canvas/canvas.wxml-->
+<canvas canvas-id="myCanvas"
+  style="margin: 5px; border:1px solid #d3d3d3;"
+  bindtouchstart="start"
+  bindtouchmove="move"
+  bindtouchend="end"/>
+
+<view hidden="{{hidden}}">
+  Coordinates: {{x}}，{{y}}
+</view>

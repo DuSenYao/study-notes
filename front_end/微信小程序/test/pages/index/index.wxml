@@ -8,6 +8,7 @@
     </block>
     <!-- 绑定并阻止事件冒泡: 除 `bind` 外，也可以用 `catch` 来绑定事件。与 `bind` 不同，`catch` 会阻止事件向上冒泡。 -->
     <view catch:tap="bindJumpTest">test page</view>
+    <view catch:tap="bindJumpCanvas">canvas page</view>
   </view>
   <view class="usermotto">
     <text class="user-motto">{{motto}}</text>

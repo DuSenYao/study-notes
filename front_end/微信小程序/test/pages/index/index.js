@@ -23,6 +23,11 @@ Page({
       url: "../tests/test"
     })
   },
+  bindJumpCanvas: function() {
+    wx.navigateTo({
+      url: '../canvas/canvas',
+    })
+  },
   onLoad: function () {
     if (app.globalData.userInfo) {
       this.setData({

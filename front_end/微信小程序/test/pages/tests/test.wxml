@@ -33,9 +33,11 @@
   </component-show>
 </view>
 
-<view>selectable-group with custom-radio</view>
+<!-- 抽象节点，其对应的自定义组件不是由自定义组件本身确定的，而是自定义组件的调用者确定的 -->
+<!-- 使用 generic:xxx="yyy" 来指定具体组件 -->
+<!-- custom-radio 和 custom-checkbox 需要包含在这个 wxml 对应 json 文件的 `usingComponents` 定义段中。 -->
 <selectable-group generic:selectable="custom-radio" />
-<view>selectable-group with custom-checkbox</view>
+<!-- selectable 是在抽象节点 json 文件的 `componentGenerics` 字段中声明的。 -->
 <selectable-group generic:selectable="custom-checkbox" />
 
 <scroll-view style="height:500px;width:100vw;"></scroll-view>

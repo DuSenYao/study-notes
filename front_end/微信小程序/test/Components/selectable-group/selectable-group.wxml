@@ -1,6 +1,7 @@
 <!--pages/selectable-group/selectable-group.wxml-->
 <view wx:for="{{labels}}" wx:key="*this">
   <label bindtap="itemTap" data-index="{{index}}">
+    <!-- selectable 需要在 json 中 设置 "componentGenerics": { "selectable": true } -->
     <selectable disabled="{{false}}" selected="{{selected[index]}}"></selectable>
     <text>{{item}}</text>
   </label>
