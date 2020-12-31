@@ -34,7 +34,7 @@ App({
       }
     });
 
-    // 提示新版本更
+    // 提示新版本更新
     const updateManager = wx.getUpdateManager(function(res) {
       // 请求完新版本信息的回调
       console.log(res);

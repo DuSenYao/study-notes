@@ -25,6 +25,7 @@
       "text": "日志"
     }]
   },
+  "workers": "workers",
   "style": "v2",
   "sitemapLocation": "sitemap.json"
 }

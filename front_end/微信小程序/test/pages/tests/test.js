@@ -66,7 +66,19 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
+    // 初始化 Worker
+    const worker = wx.createWorker('/workers/request/index.js')
+    // 接收 Worker 数据
+    worker.onMessage((msg) => {
+      console.log(msg)
+      // 结束当前 Worker
+      worker.terminate()
+    })
 
+    // 向 worker 发送数据
+    worker.postMessage({
+      mag: 'test message'
+    })
   },
 
   /**
