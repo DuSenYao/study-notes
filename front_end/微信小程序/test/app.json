@@ -16,7 +16,7 @@
   },
   "tabBar": {
     "selectedColor": "#00ffa8",
-    "position": "top",
+    "position": "bottom",
     "list": [{
       "pagePath": "pages/index/index",
       "text": "首页"
@@ -26,6 +26,7 @@
     }]
   },
   "workers": "workers",
+  "lazyCodeLoading" : "requiredComponents",
   "style": "v2",
   "sitemapLocation": "sitemap.json"
 }

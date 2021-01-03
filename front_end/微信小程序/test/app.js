@@ -1,4 +1,6 @@
 //app.js
+import { compareVersion } from './utils/util';
+
 App({
   // 小程序启动后 触发
   onLaunch: function () {
@@ -59,7 +61,28 @@ App({
     })
   },
   onShow: function(options) {
-    console.log(options);
+    // console.log(options);
+
+    const version = wx.getSystemInfoSync().SDKVersion
+
+    if (compareVersion(version, '2.10.4') >= 0) {
+      wx.setStorage({
+        key: "key",
+        data: "value"
+      })
+    } else {
+      // 如果希望用户在最新版本的客户端上体验您的小程序，可以这样子提示
+      wx.showModal({
+        title: '提示',
+        content: '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。',
+        showCancel: false,
+        success(res) {
+          if(res.confirm) {
+            console.log("确定")
+          }
+        } 
+      })
+    }
   },
   onHide: function() {
   },

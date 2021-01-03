@@ -18,16 +18,6 @@ Page({
       url: '../logs/logs'
     });
   },
-  bindJumpTest: function() {
-    wx.navigateTo({
-      url: "../tests/test"
-    })
-  },
-  bindJumpCanvas: function() {
-    wx.navigateTo({
-      url: '../canvas/canvas',
-    })
-  },
   onLoad: function () {
     if (app.globalData.userInfo) {
       this.setData({

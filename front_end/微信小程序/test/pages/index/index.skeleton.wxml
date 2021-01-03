@@ -1,0 +1,36 @@
+<!--
+此文件为开发者工具生成，生成时间: 2021/1/2 下午7:54:09 
+使用方法：
+在 D:\My GItHub\Learning-notes-and-materials\front_end\微信小程序\test\pages\index\index.wxml 引入模板
+
+```
+<import src="index.skeleton.wxml"/>
+<template is="skeleton" wx-if="{{loading}}" />
+```
+
+在 D:\My GItHub\Learning-notes-and-materials\front_end\微信小程序\test\pages\index\index.wxss 中引入样式
+```
+@import "./index.skeleton.wxss";
+```
+
+更多详细信息可以参考文档：https://developers.weixin.qq.com/miniprogram/dev/devtools/skeleton.html
+-->
+<template name="skeleton">
+  <view class="sk-container">
+    <view class="container">
+      <view class="userinfo">
+        <image class="userinfo-avatar sk-image" mode="cover"></image>
+        <text class="userinfo-nickname sk-transparent sk-text-14-2857-870 sk-text">杜森垚</text>
+        <view class="sk-transparent sk-text-14-2857-856 sk-text">test page</view>
+        <view class="sk-transparent sk-text-14-2857-446 sk-text">canvas page</view>
+      </view>
+      <view class="usermotto">
+        <text class="user-motto sk-transparent sk-text-14-2857-56 sk-text">My Test WXApp</text>
+      </view>
+      <view>
+        <text class="sk-transparent sk-text-14-2857-124 sk-text">Orange cat</text>
+        <text class="sk-transparent sk-text-14-2857-609 sk-text"> 2</text>
+      </view>
+    </view>
+  </view>
+</template>

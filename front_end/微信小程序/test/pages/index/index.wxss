@@ -1,4 +1,6 @@
 /**index.wxss**/
+@import "./index.skeleton.wxss";
+
 .userinfo {
   display: flex;
   flex-direction: column;
