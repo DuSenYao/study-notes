@@ -49,10 +49,75 @@ title: JavaScript
       - [3.8.1 行为](#381-行为)
       - [3.8.2 机制](#382-机制)
       - [3.8.3 操作this的内置函数](#383-操作this的内置函数)
+    - [3.9 语句](#39-语句)
+      - [3.9.1 Completion 类型](#391-completion-类型)
+  - [四. 文法](#四-文法)
+    - [4.1. 词法](#41-词法)
+      - [4.1.1 空白符号 WhiteSpace](#411-空白符号-whitespace)
+      - [4.1.2 换行符 LineTerminator](#412-换行符-lineterminator)
+      - [4.1.3 注释 Comment](#413-注释-comment)
+      - [4.1.4 标识符名称 IdentifierName](#414-标识符名称-identifiername)
+      - [4.1.5 符号 Punctuator](#415-符号-punctuator)
+      - [4.1.6 数字直接量 NumericLiteral](#416-数字直接量-numericliteral)
+      - [4.1.7 字符串直接量 StringLiteral](#417-字符串直接量-stringliteral)
+      - [4.1.8 正则表达式直接量 RegularExpressionLiteral](#418-正则表达式直接量-regularexpressionliteral)
+      - [4.1.10 字符串模板 Template](#4110-字符串模板-template)
+    - [4.2 语法](#42-语法)
+      - [4.2.1 自动插入分号](#421-自动插入分号)
+      - [4.2.2 no LineTerminator here 规则](#422-no-lineterminator-here-规则)
+      - [4.2.3 语法](#423-语法)
+        - [4.2.3.1 import声明](#4231-import声明)
+        - [4.2.3.2 export声明](#4232-export声明)
+        - [4.2.3.3 函数体](#4233-函数体)
+        - [4.2.3.4 预处理](#4234-预处理)
+          - [4.2.3.4.1 var声明](#42341-var声明)
+          - [4.2.3.4.2 function声明](#42342-function声明)
+          - [4.2.3.4.3 class声明](#42343-class声明)
+        - [4.2.3.5 指令序言机制](#4235-指令序言机制)
+      - [4.2.4 语句](#424-语句)
+        - [4.2.4.1 语句块](#4241-语句块)
+        - [4.2.4.2 空语句](#4242-空语句)
+        - [4.2.4.3 if语句](#4243-if语句)
+        - [4.2.4.4 switch语句](#4244-switch语句)
+        - [4.2.4.5 循环语句](#4245-循环语句)
+          - [4.2.4.5.1 while循环 和 do while循环](#42451-while循环-和-do-while循环)
+          - [4.2.4.5.2 普通for循环](#42452-普通for循环)
+          - [4.2.4.5.3 for in 循环](#42453-for-in-循环)
+          - [4.2.4.5.4 for of 循环和 for await of 循环](#42454-for-of-循环和-for-await-of-循环)
+        - [4.2.4.6 return](#4246-return)
+        - [4.2.4.7 break 和 continue](#4247-break-和-continue)
+        - [4.2.4.8 try 语句和 throw语句](#4248-try-语句和-throw语句)
+        - [4.2.4.9 debugger语句](#4249-debugger语句)
+        - [4.2.4.10 var](#42410-var)
+        - [4.2.4.11 let和const](#42411-let和const)
+        - [4.2.4.12 class声明](#42412-class声明)
+        - [4.2.4.13 函数声明](#42413-函数声明)
+      - [4.2.5 表达式语句](#425-表达式语句)
+        - [4.2.5.1 PrimaryExpression 主要表达式](#4251-primaryexpression-主要表达式)
+        - [4.2.5.2 Member Expression 成员表达式](#4252-member-expression-成员表达式)
+        - [4.2.5.3 New Expression New表达式](#4253-new-expression-new表达式)
+        - [4.2.5.4 call Expression 函数调用表达式](#4254-call-expression-函数调用表达式)
+        - [4.2.5.5 LeftHandSideExpression 左值表达式](#4255-lefthandsideexpression-左值表达式)
+        - [4.2.5.6 AssignmentExpression 赋值表达式](#4256-assignmentexpression-赋值表达式)
+        - [4.2.5.7 Expression 表达式](#4257-expression-表达式)
+        - [4.2.5.8 ConditionalExpression 条件表达式](#4258-conditionalexpression-条件表达式)
+        - [4.2.5.9 UpdateExpression 更新表达式](#4259-updateexpression-更新表达式)
+        - [4.2.5.10 UnaryExpression 一元运算表达式](#42510-unaryexpression-一元运算表达式)
+        - [4.2.5.11 ExponentiationExpression 乘方表达式](#42511-exponentiationexpression-乘方表达式)
+        - [4.2.5.12 MultiplicativeExpression 乘法表达式](#42512-multiplicativeexpression-乘法表达式)
+        - [4.2.5.13 AdditiveExpression 加法表达式](#42513-additiveexpression-加法表达式)
+        - [4.2.5.14 ShiftExpression 移位表达式](#42514-shiftexpression-移位表达式)
+        - [4.2.5.15 关系表达式 RelationalException](#42515-关系表达式-relationalexception)
+        - [4.2.5.16 相等表达式 EqualityExpression](#42516-相等表达式-equalityexpression)
+        - [4.2.5.17 位运算表达式](#42517-位运算表达式)
+        - [4.2.5.18 逻辑与表达式和逻辑或表达式](#42518-逻辑与表达式和逻辑或表达式)
+      - [4.2.5.19 TernaryOperatorExpression 三目运算符](#42519-ternaryoperatorexpression-三目运算符)
 
 <!-- /code_chunk_output -->
 
 # JavaScript
+
+----
 
 ![JavaScript知识架构](./image/JavaScript知识架构.png)
 
@@ -1099,10 +1164,36 @@ JS语句执行的完成状态，可以用一个标准类型来表示：Completio
 Completion Record 表示一个语句执行完之后的结果，它有三个字段:
 
 - `[[type]]` : 表示完成的类型，有 break continue return throw 和 normal 几种类型
-- `[[value]]` : 表示语句的返回值，如果语句没有，则是empty
+- `[[value]]` : 表示语句的返回值，如果语句没有，则是 empty
 - `[[target]]` : 表示语句的目标，通常是一个JS标签
 
 JS 正是依靠语句的 Completion Record 类型，方才可以在语句的复杂嵌套结构中，实现各种控制。
+
+```js
+function foo() {
+  try {
+    return 0;
+  } catch (err) {} finally {
+    console.log("a");
+  }
+}
+// return 执行完毕后，但函数并没有立即返回，又执行了finally
+// 因为finally中的语句必须执行，所以，try\catch执行完毕，即使得到的结果是非normal型的完成记录，也必须执行finally
+console.log(foo()); // a 0
+```
+
+```js
+function foo() {
+  try {
+    return 0;
+  } catch (err) {} finally {
+    return 1;
+  }
+}
+// finally中的return“覆盖”了try中的return
+// 当finally执行也得到非normal记录，则会使finally中的记录作为整个try结构的结果
+console.log(foo()); // 1
+```
 
 ![语句的分类](./image/语句的分类.jpg)
 
@@ -1125,496 +1216,1245 @@ JS 正是依靠语句的 Completion Record 类型，方才可以在语句的复�
 
 这些语句中只有表达式语句会产生 `[[value]]` 。
 
-> Chrome 控制台显示的正是语句的 Completion Record 的 `[[value]]`。
+> Chrome 控制台输入语句下方显示的正是语句的 Completion Record 的 `[[value]]`。
 
-语句块
-  语句块就是一组用大括号括起来的语句，它是一种语句的复合结构，可以嵌套。语句块内部语句的Completion Record的[[type]]如果不为normal，会打断语句块后续的语句执行。
-  在语句块中插入一条return语句，产生了一个非normal记录，那么整个语句块会成为非normal。这个结构就保证了非normal的完成类型可以穿透复杂的语句嵌套结构，产生控制效果。
+**语句块**
+语句块就是一组用大括号括起来的语句，它是一种语句的复合结构，可以嵌套。
+语句块内部语句的Completion Record的 `[[type]]` 如果不为 normal，会打断语句块后续的语句执行。
+在语句块中插入一条return语句，产生了一个非normal记录，那么整个语句块会成为非normal。这个结构就保证了非normal的完成类型可以穿透复杂的语句嵌套结构，产生控制效果。
 
-控制型语句
-  控制型语句带if、switch关键字，它们会对不同类型的Completion Record产生反应。
-  控制语句分为两部分：
-    1. 对其内部造成影响，如：if、switch、while/for、try
-    2. 对外部造成影响，如：return、break、continue、throw
-  这两类的配合，会产生控制代码执行顺序和执行逻辑的效果。
+**控制型语句**
+控制型语句带 if、switch 关键字，它们会对不同类型的Completion Record产生反应。
+控制语句分为两部分：
 
-带标签的语句
-  任何JS语句都是可以加标签的，在语句前加冒号即可：
-    firstStatement: var a = 1;
-  大部分时候，这个东西相当于注释，没有任何用处。唯一有作用的时候是：与完成记录类型中的target相配合，用于跳出多层循环。
+1. 对其内部造成影响，如：if、switch、while/for、try
+2. 对外部造成影响，如：return、break、continue、throw
 
-(3) JS文法
-文法是编译原理中对语言的写法的一种规定，一般来说，文法分为 词法 和 语法 两种。
+这两类的配合，会产生控制代码执行顺序和执行逻辑的效果。
+
+![控制语句和控制类型组合产生的效果](./image/控制语句和控制类型组合产生的效果.png)
+
+**带标签的语句**
+任何JS语句都是可以加标签的，在语句前加冒号即可：
+
+```js
+firstStatement: var a = 1;
+```
+
+大部分时候，这个东西相当于注释，没有任何用处。唯一有作用的时候是：与完成记录类型中的target相配合，用于跳出多层循环。
+
+```js
+// 与完成记录类型中的target配合，用于跳出多重循环
+outer: while (true) {
+  inner: while (true) {
+    // break/continue 语句如果后面跟了关键字，会产生带 target 的完成记录。一旦完成记录带了 target，那么只有拥有对应 label 的循环语句会消费它。
+    break outer;
+  }
+}
+console.log("finished");
+```
+
+## 四. 文法
+
+文法是编译原理中对语言的写法的一种规定，一般来说，文法分为 **词法** 和 **语法** 两种。
 词法规定了语言的最小语义单位：token，可以翻译为"标记"或"词"。
 从字符到词是没有结构的，只要符合词的规则，就构成词，一般来说，词法设计不会包含冲突。词法分析技术上可以使用状态机或正则表达式来进行。
 
-1. JS词法
-  JS源代码中的输入分类：
-    · WhiteSpace     空白字符
-    · LineTerminator 换行符
-    · Comment        注释
-    · Token          词
-      IdentifierName  标识符名称，例如：变量名、关键字
-      Punctuator      符号，使用的运算符和大括号等符号
-      NumericLiteral  数字直接量，就是写的数字
-      StringLiteral   字符串直接量，就是用单引号或双引号引起来的直接量
-      Template        字符串模板，用反引号 ` 括起来的直接量
+### 4.1. 词法
 
-  这个设计比较符合通用的编程语言设计方式，但JS有一些特殊的地方：
-    1. 除法与正则表达式冲突问题。JS不但支持除法运算符"/"和"/="，还支持用斜杠括起来的正则表达式"/abc/"。
-        这时候，对于词法分析来说，其实是没有办法处理的，所以，JS的处理方案是定义两组词法，然后靠词法分析传一个标志给词法分析器，让它来决定使用哪一套词法。
+JS源代码中的输入分类：
 
-    2. 字符串模板
-        `hello，${name}`
-        理论上，"${}"内部可以放任何JS表达式代码，而这些代码是以"}"结尾的，也就是说，这部分词法不允许出现"}"运算符。
-        是否允许"}"的两种情况，与除法和正则表达式的两种情况相乘就是四种词法定义，
-          · InputElementDiv;
-          · InputElementRegExp;
-          · InputElementRegExpOrTemplateTail;
-          · InputElementTemplateTail
-    为了解决这两个问题，标准中还不得不把除法、正则表达式直接量和"}"从token中单独抽出来，用词上，也从Token改为CommonToken。
+- WhiteSpace     空白字符
+- LineTerminator 换行符
+- Comment        注释
+- Token          词
+  - IdentifierName  标识符名称，例如：变量名、关键字
+  - Punctuator      符号，使用的运算符和大括号等符号
+  - NumericLiteral  数字直接量，就是写的数字
+  - StringLiteral   字符串直接量，就是用单引号或双引号引起来的直接量
+  - Template        字符串模板，用反引号 ` 括起来的直接量
 
+这个设计比较符合通用的编程语言设计方式，但JS有一些特殊的地方：
+
+1. 除法与正则表达式冲突问题。JS不但支持除法运算符"/"和"/="，还支持用斜杠括起来的正则表达式"/abc/"。
+  这时候，对于词法分析来说，其实是没有办法处理的，所以，JS的处理方案是定义两组词法，然后靠词法分析传一个标志给词法分析器，让它来决定使用哪一套词法。
+
+2. 字符串模板
+
+    ```js
+    `hello，${name}`
+    ```
+
+    理论上，`${}` 内部可以放任何JS表达式代码，而这些代码是以 `}` 结尾的，也就是说，这部分词法不允许出现 `}` 运算符。
+    是否允许 `}` 的两种情况，与除法和正则表达式的两种情况相乘就是四种词法定义
+
+      - InputElementDiv;
+      - InputElementRegExp;
+      - InputElementRegExpOrTemplateTail;
+      - InputElementTemplateTail
+
+    为了解决这两个问题，标准中不得不把除法、正则表达式直接量 和 `}` 从token中单独抽出来，用词上，也从Token改为CommonToken。
     对于一般语言的词法分析过程来说，都会丢弃除了Token之外的输入，但是对于JS来说，不太一样，换行符和注释还会影响词法分析过程，所以要实现JS的解释器，词法分析和语法分析非常麻烦，需要来回传递信息。
 
-  空白符号 WhiteSpace
-    JS可以支持18种空白符号，但在ASCII编码内，只有五种可用：
-      · <HT>（或称<TAB>）是U+0009，是缩进TAB符，也就是字符串中写的\t
-      · <VT>是U+000B，也就是垂直方向的TAB符\v，这个字符很少用
-      · <FF>是U+000C，Form Feed分页符，字符串直接量中写作\f，现在很少有打印源程序的事情发生了，所以这个字符在JS源代码中很少用到
-      · <SP>是U+0020，就是普通的空格
-      · <NBSP>是U+00A0，非断行空格，它是SP的一个变体，在文字排版中，可以避免因为空格，在此处发生断行，其他方面与空格完全一样。HTML中，&nbsp;生成的就是它
-      · <ZWNBSP>（旧称<BOM>）是U+FEFF，这是ES5新加入的空白符，是Unicode中的零宽非断行空格，在以UTF编码格式的文件中，常常在文件首插入一个额外的U+FEFF，解析UTF文件的程序可以根据U+FEFF的表示方式猜测文件采用哪种UTF编码方式。这个字符也叫做"bit order mark"
+#### 4.1.1 空白符号 WhiteSpace
 
-  换行符 LineTerminator
-    JS中提供了4种换行符：
-      · <LF>是U+000A，就是正常的换行符，是字符串中的\n
-      · <CR>是U+000D，就是"回车"，在字符串中是\r，在一部分Windows风格的编辑器中，换行是两个字符\r\n
-      · <LS>是U+2028，是Unicode中的行分隔符
-      · <PS>是U+2029，是Unicode中的段落分隔符
-    大部分的换行符在被词法分析器扫描出之后，会被语法分析器丢弃，但是换行符会影响JS的两个重要语法特征：自动插入分号和"no line terminator"规则
+JS可以支持 18 种空白符号，但在ASCII编码内，只有五种可用：
 
-  注释 Comment
-    JS的注释分为单行注释和多行注释：
-      /* MultiLineCommentChars */
-      // SingleLineCommentChars
-    多行注释中允许出现除了*之外的所有字符，而每一个*之后，不能出现正斜杠符/
-    除了四种LineTerminator之外，任何字符都可以作为单行注释
-    注意：多行注释是否包含换行符，会对 JS 语法产生影响，对于"no line terminator"规则来说，带换行符的多行注释和换行符是等效的
+- `<HT>`（或称`<TAB>`）是U+0009，是缩进TAB符，也就是字符串中写的 `\t`
+- `<VT>` 是U+000B，也就是垂直方向的TAB符 `\v`，这个字符很少用
+- `<FF>` 是U+000C，Form Feed分页符，字符串直接量中写作 `\f`，现在很少有打印源程序的事情发生了，所以这个字符在JS源代码中很少用到
+- `<SP>` 是U+0020，就是普通的空格
+- `<NBSP>` 是U+00A0，非断行空格，它是SP的一个变体，在文字排版中，可以避免因为空格，在此处发生断行，其他方面与空格完全一样。HTML中，&nbsp; 生成的就是它
+- `<ZWNBSP>`（旧称`<BOM>`）是U+FEFF，这是ES5新加入的空白符，是Unicode中的零宽非断行空格，在以UTF编码格式的文件中，常常在文件首插入一个额外的U+FEFF，解析UTF文件的程序可以根据U+FEFF的表示方式猜测文件采用哪种UTF编码方式。这个字符也叫做"bit order mark"
 
-  标识符名称 IdentifierName
-    IdentifierName可以以美元符"$"、下划线"_"、或者Unicode字母开始，除了开始字符以外，IdentifierName中还可以使用Unicode连接标记，字符以及连接符号。
-    IdentifierName的任意字符可以使用JS的Unicode转义写法，在使用Unicode的转义写法时，没有任何字符限制。
-    IdentifierName可以是Identifier、NullLiteral、BooleanLiteral或者keyword，在ObjectLiteral中，IdentifierName还可以被直接当做属性名称使用。
-    仅当不是保留字的时候，IdentifierName会被解析为Identifier
-    注意<ZWNJ>和<ZWJ>是ES5新加的两个格式控制字符，它们都是0宽
-    在JS中，有33个关键字：
-      await break try catch class const continue debugger default delete else export extends finally for function if import instanceof new return super switch case this throw typeof var void do while with yield
-    除了上面的内容外，还有一个为未来使用而保留的关键字：
-      enum
-    在严格模式下，有一些额外的为未来使用而保留的关键字：
-      implements package protected interface private public
-    除了这些，NullLiteral（null）和BooleanLiteral（true false）也是保留字，不能用于Identifier
+![JS支持的所有的Unicode的空格分类](./image/JS支持的所有的Unicode的空格分类.png)
 
-  符号 Punctuator
-    因为除法和正则问题，/和/=两个运算符被拆分为DivPunctuator，因为字符串模板问题，} 也被独立拆分，所有符号为：
-      { ( ) [ ] . ... ; , < > <= >= == != === !== + - * % ** ++ -- << >> >>> & | ^ ! ~ && || ? : = += -= *= %= **= <<= >>= >>>= &= |= ^= => / /= }
+#### 4.1.2 换行符 LineTerminator
 
-  数字直接量 NumericLiteral
-    JS规范中规定的数字直接量可以支持四种写法：十进制数、二进制整数、八进制整数、十六进制整数
-    十进制的Number可以带小数，小数点前后都可以忽略，但不能同时忽略，例：.01  12.  2.1
-    数字直接量还支持科学计数法，e后面的部分只允许使用整数，例：10.24E+2  10.24e-2  10.24e2
-      0x开头为十六进制：oxFB     0o开头为八进制：0o79     0b开头为二进制：0b1000
+JS中提供了4种换行符：
 
-  字符串直接量 StringLiteral
-    JS中的StringLiteral支持单引号和双引号两种写法。
-    单双引号的区别仅仅在于写法，在双引号字符串直接量中，双引号必须转义，在单引号字符串直接量中，单引号必须转义。字符串中其他必须转义的字符是\和所有换行符。
-    JS中支持四种转义形式，还有一种虽然标准没有定义，但是大部分实现都支持的八进制转义。
-      1.单字符转义，即一个反斜杠\后面跟一个字符这种形式。
+- `<LF>` 是U+000A，就是正常的换行符，是字符串中的 `\n`
+- `<CR>` 是U+000D，就是"回车"，在字符串中是 `\r`，在一部分Windows风格的编辑器中，换行是两个字符`\r\n`
+- `<LS>` 是U+2028，是Unicode中的行分隔符
+- `<PS>` 是U+2029，是Unicode中的段落分隔符
 
-  正则表达式直接量 RegularExpressionLiteral
-    正则表达式由Body和Flags两部分组成，例如：
-      /RegularExpressionBody/ig
-    其中Body部分至少有一个字符，第一个字符不能是*（因为/*跟多行注释有词法冲突）。
-    正则表达式有自己的语法规则，在词法阶段，仅会对它做简单解析。
-    正则表达式并非机械的见到/就停止，在正则表达式[ ]中的/就会被认为是普通字符，例如：
-      /[/]/.test("/"); // true
-    除了 \、/ 和 [ 三个字符之外，JS表达式中的字符都是普通字符。
-    用\和一个非换行符可以组成一个转义，[ ]中也支持转义。正则表达式中的flag在词法阶段不会限制字符。
-    虽然只有ig几个是有效的，但是任何IdentifierPart（Identifier中合法的字符）序列在词法阶段都会被认为是合法的。
+> 大部分的换行符在被词法分析器扫描出之后，会被语法分析器丢弃，但是换行符会影响JS的两个重要语法特征：**自动插入分号** 和 **"no line terminator"规则**
 
-  字符串模板 Template
-    在词法结构上，Template是个整体，其中的${}是并列关系。
-    实际上，在JS词法中，包含${}的Template，是被拆开分析的。例如：
-      `a${b}c${d}e`
-      在JS中被认为是
-      `a${   b   }c${   d   }e`
-      它被拆成了五个部分：
-        · `a${  这个被称为模板头
-        · }c${  被称为模板中段
-        · }e`   被称为模板尾
-        · b和d都是普通标识符
-      实际上，这里的词法分析过程已经与语法分析深度耦合了。
-      模板支持添加处理函数的写法，这时模板的各段会被拆开，传递给函数当参数
-        function f(){ console.log(arguments); }
-        var a = "world"
-        f`Hello ${a}!`; // [["Hello", "!"], world]
-      模板字符串不需要关心大多数字符的转义，但是 ${ 和 ` 还是需要处理的。
-      模板中的转义跟字符串几乎完全一样，都是使用 \。
+#### 4.1.3 注释 Comment
 
+JS的注释分为单行注释和多行注释：
 
-2. JS语法
-  自动插入分号
-    自动插入分号规则独立于所有语法产生式定义，规则：
-      · 有换行符，且下一个符号是不符合语法的，那么就尝试插入分号
-      · 有换行符，且语法中规定此处不能有换行符，那么就自动插入分号
-      · 源代码结束处，不能形成完整的脚本或模块结构，那么就自动插入分号
+```js
+/* MultiLineCommentChars */
+// SingleLineCommentChars
+```
 
-  no LineTerminator here 规则
-    no LineTerminator here 规则表示它所在的结构中的这一位置不能插入换行符
-    自动插入分号规则的第二条：有换行符，且语法中规定此处不能有换行符，那么就自动插入分号。跟no LineTerminator here 规则强相关。
-    JS语法中定义了以下 no LIneTerminator here 规则：
-      · 带标签的 continue 语句，不能在 continue 后插入换行
-      · 带标签的 break 语句，不能再break后插入换行
-      · return 后不能插入换行
-      · 后自增、后自减前不能插入换行
-      · throw 和 Exception 之间不能插入换行
-      · 凡是 async 关键字后面，都不能插入换行
-      · 箭头函数的箭头前，都不能插入换行
-      · yield之后，不能插入换行
+多行注释中允许出现除了 `*` 之外的所有字符，而每一个 `*` 之后，不能出现正斜杠符 `/`
+除了四种LineTerminator之外，任何字符都可以作为单行注释
 
-    no LineTerminator here 规则的存在，多数情况下是为了保证自动插入分号行为是符合预期的，但是在JS设计的最初，遗漏了一些重要的情况，所以有一些不符合预期的情况出现，需要格外注意
+> 注意：多行注释是否包含换行符，会对 JS 语法产生影响，对于"no line terminator"规则来说，带换行符的多行注释和换行符是等效的
 
-  不写分号需要注意的情况
-    · 以括号开头的语句
-    · 以数组开头的语句
-    · 以正则表达式开头的语句
-    · 以 Template 开头的语句
-    例子在：HTML演示文件/语法.html
+#### 4.1.4 标识符名称 IdentifierName
 
-(4) JS语法
+IdentifierName可以以美元符"$"、下划线"_"、或者Unicode字母开始，除了开始字符以外，IdentifierName中还可以使用Unicode连接标记，字符以及连接符号。
+
+IdentifierName的任意字符可以使用JS的Unicode转义写法，在使用Unicode的转义写法时，没有任何字符限制。
+
+IdentifierName可以是Identifier、NullLiteral、BooleanLiteral或者keyword，在ObjectLiteral中，IdentifierName还可以被直接当做属性名称使用。
+
+仅当不是保留字的时候，IdentifierName会被解析为Identifier
+
+> 注意 `<ZWNJ>`和 `<ZWJ>` 是ES5新加的两个格式控制字符，它们都是0宽
+
+在JS中，有33个关键字：
+
+```txt
+await break try catch class const continue debugger default delete else export extends finally for function if import instanceof new return super switch case this throw typeof var void do while with yield
+```
+
+除了上面的内容外，还有一个为未来使用而保留的关键字：
+
+```js
+enum
+```
+
+在严格模式下，有一些额外的为未来使用而保留的关键字：
+
+```js
+implements package protected interface private public
+```
+
+> 除了这些，NullLiteral（null）和BooleanLiteral（true false）也是保留字，不能用于Identifier
+
+#### 4.1.5 符号 Punctuator
+
+因为除法和正则问题，`/` 和 `/=` 两个运算符被拆分为DivPunctuator，因为字符串模板问题，`}` 也被独立拆分，所有符号为：
+
+```js
+{ ( ) [ ] . ... ; , < > <= >= == != === !== + - * % ** ++ -- << >> >>> & | ^ ! ~ && || ? : = += -= *= %= **= <<= >>= >>>= &= |= ^= => / /= }
+```
+
+#### 4.1.6 数字直接量 NumericLiteral
+
+JS规范中规定的数字直接量可以支持四种写法：十进制数、二进制整数、八进制整数、十六进制整数
+
+十进制的Number可以带小数，小数点前后都可以忽略，但不能同时忽略
+
+```js
+.01  12.  2.1
+```
+
+数字直接量还支持科学计数法
+
+```js
+10.24E+2  10.24e-2  10.24e2
+```
+
+```js
+// 0x开头为十六进制
+oxFB
+// 0o开头为八进制
+0o79
+// 0b开头为二进制
+0b1000
+// 上面这几种进制都不支持小数，也不支持科学计数法。
+```
+
+#### 4.1.7 字符串直接量 StringLiteral
+
+JS中的 StringLiteral 支持单引号和双引号两种写法。
+
+单双引号的区别仅仅在于写法，在双引号字符串直接量中，双引号必须转义，在单引号字符串直接量中，单引号必须转义。字符串中其他必须转义的字符是 `\` 和 所有换行符。
+
+JS中支持四种转义形式，还有一种虽然标准没有定义，但是大部分实现都支持的八进制转义。
+
+1. 单字符转义，即一个反斜杠\后面跟一个字符这种形式。
+
+有特别意义的字符包括有SingleEscapeCharacter所定义的 9 种，见下表
+
+![有特别意义的转义字符](./image/有特别意义的转义字符.png)
+
+> 除了这 9 种字符、数字、x 和 u 以及所有的换行符之外，其它字符经过 `\` 转义后都是自身
+
+#### 4.1.8 正则表达式直接量 RegularExpressionLiteral
+
+正则表达式由Body和Flags两部分组成，例如：
+
+```js
+/RegularExpressionBody/ig
+```
+
+其中Body部分至少有一个字符，第一个字符不能是 `*`（因为 `/*` 跟多行注释有词法冲突）。
+
+正则表达式有自己的语法规则，在词法阶段，仅会对它做简单解析。
+
+正则表达式并非机械的见到/就停止，在正则表达式 `[ ]` 中的 `/` 就会被认为是普通字符，例如：
+
+```js
+/[/]/.test("/"); // true
+```
+
+除了 `\`、`/` 和 `[` 三个字符之外，JS表达式中的字符都是普通字符。
+
+用 `\` 和 一个非换行符 可以组成一个转义，`[ ]` 中也支持转义。正则表达式中的 **flag** 在词法阶段不会限制字符。
+
+虽然只有 **ig** 几个是有效的，但是任何IdentifierPart（Identifier中合法的字符）序列在词法阶段都会被认为是合法的。
+
+#### 4.1.10 字符串模板 Template
+
+在词法结构上，Template是个整体，其中的 `${}` 是并列关系。
+实际上，在JS词法中，包含${}的Template，是被拆开分析的。例如：
+
+```js
+`a${b}c${d}e`
+```
+
+在JS中被认为是
+
+```js
+`a${
+b
+}c${
+d
+}e`
+```
+
+它被拆成了五个部分：
+
+- **`a${** : 这个被称为模板头
+- **}c${** : 被称为模板中段
+- **}e`**  : 被称为模板尾
+- **b、d** : 普通标识符
+
+实际上，这里的词法分析过程已经与语法分析深度耦合了。
+
+模板支持添加处理函数的写法，这时模板的各段会被拆开，传递给函数当参数
+
+```js
+function f(){
+  console.log(arguments);
+}
+
+var a = "world"
+f`Hello ${a}!`; // [["Hello", "!"], world]
+```
+
+> 模板字符串不需要关心大多数字符的转义，但是 **${** 和 **`** 还是需要处理的。
+> 模板中的转义跟字符串几乎完全一样，都是使用 \。
+
+### 4.2 语法
+
+#### 4.2.1 自动插入分号
+
+> 行尾使用分号的风格来自于 Java，也来自于 C 语言和 C++，这一设计最初是为了降低编译器的工作负担。
+> 但是，从今天的角度来看，行尾使用分号其实是一种语法噪音，恰好 JS 语言又提供了相对可用的分号自动补全规则，所以，很多 JS 的程序员都是倾向于不写分号。
+
+自动插入分号规则独立于所有语法产生式定义，规则：
+
+- 有换行符，且下一个符号是不符合语法的，那么就尝试插入分号
+- 有换行符，且语法中规定此处不能有换行符，那么就自动插入分号
+- 源代码结束处，不能形成完整的脚本或模块结构，那么就自动插入分号
+
+![语法](./HTML演示文件/语法.html)
+
+#### 4.2.2 no LineTerminator here 规则
+
+no LineTerminator here 规则表示它所在的结构中的这一位置不能插入换行符。
+
+自动插入分号规则的第二条：有换行符，且语法中规定此处不能有换行符，那么就自动插入分号。跟no LineTerminator here 规则强相关。
+
+JS语法中定义了以下 no LIneTerminator here 规则：
+
+- 带标签的 continue 语句，不能在 continue 后插入换行
+- 带标签的 break 语句，不能再break后插入换行
+- return 后不能插入换行
+- 后自增、后自减前不能插入换行
+- throw 和 Exception 之间不能插入换行
+- 凡是 async 关键字后面，都不能插入换行
+- 箭头函数的箭头前，都不能插入换行
+- yield之后，不能插入换行
+
+![语法](./HTML演示文件/语法.html)
+
+> no LineTerminator here 规则的存在，多数情况下是为了保证自动插入分号行为是符合预期的，但是在JS设计的最初，遗漏了一些重要的情况，所以有一些不符合预期的情况出现，需要格外注意
+
+**不写分号需要注意的情况**:
+
+- 以括号开头的语句
+
+  ```js
+  (function(a){
+      console.log(a);
+  })()/*这里没有被自动插入分号*/
+  (function(a){ // 看似是两个独立执行的函数表达式，但是第三组括号被理解为传参，导致抛出错误
+      console.log(a);
+  })()
+  ```
+
+- 以数组开头的语句
+
+  ```js
+  var a = [[]] /*这里没有被自动插入分号*/
+  // 这段代码本意是一个变量 a 赋值，然后对一个数组执行 forEach，但是因为没有自动插入分号，被理解为下标运算符和逗号表达式
+  [3, 2, 1, 0].forEach(e => console.log(e)) // 这里不会抛出错误，代码排查非常困难
+  ```
+
+- 以正则表达式开头的语句
+
+  ```js
+  var x = 1, g = {test:()=>0}, b = 1 /*这里没有被自动插入分号*/
+  /(a)/g.test("abc") // 本意是声明三个变量，然后测试一个字符串中是否含有字母 a，但是因为没有自动插入分号，正则的第一个斜杠被理解成了除号，后面的意思就都变了
+  console.log(RegExp.$1) // 这里不会抛出错误，代码排查非常困难
+  ```
+
+- 以 Template 开头的语句
+
+  ```js
+  var f = function(){
+    return "";
+  }
+  // 这段代码本意是声明函数 f，然后赋值给 g，再测试 Template 中是否含有字母 a。但是因为没有自动插入分号，函数 f 被认为跟 Template 一体的，进而被莫名其妙地执行了一次。
+  var g = f/*这里没有被自动插入分号*/
+  `Template`.match(/(a)/);
+  console.log(RegExp.$1)
+  ```
+
+#### 4.2.3 语法
+
 JS有两种源文件：一. 脚本 二. 模块。这个区分是在ES6引入了模块机制开始的，ES6以前只有脚本。
-  脚本可以由浏览器或node引入执行的，而模块只能由JS代码用import引入执行
-  从概念上，可以认为脚本具有主动性的JS代码，是控制宿主完成一定任务的代码；而模块是被动性的代码，是等待被调用的库
-  浏览器支持用<script>引入模块，但必须给<script>标签添加type="module"。如果引入脚本，则不需要type。
-  脚本中可以包含语句，模块中可以包含3种内容：import声明、export声明和语句。
 
-1.import声明
-  import声明有两种用法：
-    ①.直接import一个模块
-      import "mod";
-      这样只能保证这个代码模块被执行，引用它的模块是无法获得它的任何信息的。
-    ②.带from的import
-      带from的import的意思是引入模块中的一部分信息，可以把它们变成本地的变量。
-      带from的import又有三种细分：
-        · import x from "./a.js";  引入模块中导出的默认值
-        · import {a as x, modify} from "./a.js";  引入模块中的变量
-        · import * as x from "./a.js";  把模块中所有的变量以类似对象属性的方式引入
-      第一种方式还可以跟后面两种组合使用：
-        · import d,{a as x, modify} from "./a.js";
-        · import d,* as x from "./a.js";
-      语法要求不带as的默认值永远在最前。注意这里的变量实际上仍然可以受到原来模块的控制。
+脚本可以由浏览器或node引入执行的，而模块只能由JS代码用 `import` 引入执行
 
-2.export声明
-  export承担的是导出的任务
-  导出变量的方式有两种：
-    ①.独立使用export声明
-      export {a,b,c};
-    ②.直接在声明型语句前加 export 关键字，这里的export可以加在任何声明性质的语句前，整理如下：
-      · var
-      · function(含async和generator)
-      · class
-      · let
-      · const
-    export还有一种特殊的用法，就是跟default联合使用。export default 表示导出一个默认变量值，它可以用于function 和 class。这里导出的变量是没有名称的，可以使用 import x from "./a.js" 这样的语法，从模块中引入。
+从概念上，可以认为脚本具有主动性的JS代码，是控制宿主完成一定任务的代码；而模块是被动性的代码，是等待被调用的库。
+
+> 实际上模块和脚本之间的区别仅仅在于是否包含 `import` 和 `export`。
+
+浏览器支持用 `<script>` 引入模块，但必须给 `<script>` 标签添加 `type="module"`。如果引入脚本，则不需要 type。
+
+```js
+<script type="module" src="xxxxx.js"></script>
+```
+
+> `<script>` 标签如果不加 `type=“module”` ，默认加载的文件是脚本而非模块，如果在脚本中写了 `export`，会抛错。
+
+脚本中可以包含语句，模块中可以包含3种内容：
+
+- import声明
+- export声明
+- 语句
+
+##### 4.2.3.1 import声明
+
+import 声明有两种用法
+
+1. 直接import一个模块
+
+    ```js
+    import "mod"; //引入一个模块
+    ```
+
+    这样只能保证这个代码模块被执行，引用它的模块是无法获得它的任何信息的。
+
+2. 带from的import
+  带from的import的意思是引入模块中的一部分信息，可以把它们变成本地的变量。
+  带from的import又有三种细分：
+
+    ```js
+    // 1. 引入模块中导出的默认值
+    import x from "./a.js";
+    // 2. 引入模块中的变量
+    import {a as x, modify} from "./a.js";
+    // 3. 把模块中所有的变量以类似对象属性的方式引入
+    import * as x from "./a.js";
+
+    // 第一种方式还可以跟后面两种组合使用
+    // 语法要求不带 `as` 的默认值永远在最前。
+    // 注意这里的变量实际上仍然可以受到原来模块的控制
+    import d,{a as x, modify} from "./a.js";
+    import d,* as x from "./a.js";
+    ```
+
+##### 4.2.3.2 export声明
+
+export承担的是导出的任务
+
+导出变量的方式有两种：
+
+1. 独立使用export声明
+
+    ```js
+    export {a,b,c};
+    ```
+
+2. 直接在声明型语句前加 `export` 关键字，这里的 `export` 可以加在任何声明性质的语句前，整理如下：
+
+    - var
+    - function(含async和generator)
+    - class
+    - let
+    - const
+
+    export 还有一种特殊的用法，就是跟 default 联合使用。`export default` 表示导出一个默认变量值，它可以用于 `function` 和 `class`。这里导出的变量是没有名称的，可以使用 `import x from "./a.js"` 这样的语法，从模块中引入。
     export default 还支持一种语法，后面跟一个表达式，例如：
-      var a = {}; export default a; // 这里导出的是值，以后a的变化与导出的值无关
-    import语句前无法加入export，但是可以直接使用 export from 语法
-      export x from "a.js";
 
-3.函数体
-  执行函数的行为通常是在JS代码执行时，注册宿主环境的某些事件触发的，而执行过程，就是函数体。
-  宏任务可能执行的代码包括"脚本(script)"，"模块(module)"，"函数体(function body)"。
-  函数体其实也是一个语句的列表。跟脚本和模块相比，函数体的语句列表中多了return语句可用。
-  函数体实际上有以下四种：
-    · 普通函数体
-      function foo(){ //function body }
-    · 异步函数体
-      async function foo(){ //function body }
-    · 生成器函数体
-      function *foo() { //function body }
-    · 异步生成器函数体
-      async function *foo() { //function body }
-  这四种函数体的区别在于：能否使用 await 或 yield 语句
+      ```js
+      var a = {};
+      export default a; // 这里导出的是值，以后a的变化与导出的值无关
+      ```
 
-4.预处理
-  JS执行前会对，脚本、模块和函数体中的语句进行预处理，预处理的过程将会提前处理var、函数声明、class、const、let这些语句，以确定其中变量的含义。
+> import 语句前无法加入 export，但是可以直接使用 `export from` 语法
 
-5.var声明
-  var声明永远作用于脚本、模块、函数体这个级别，在预处理阶段，不关心赋值的部分，只管在当前作用域声明这个变量。
-  var的作用域能够穿透一切语句结构，它只认脚本、模块和函数体这三种语法结构。
+  ```js
+  export x from "a.js";
+  ```
 
-6.function声明
-  function声明的行为原本跟 var 非常相似，但在最新的JS标准中，对它进行了一定的修改。
-  在全局（模块、脚本和函数体），function声明表现跟var相似，不同之处在于，function声明不仅在作用域中加入变量，还会给它赋值。
-  function声明出现在 if 等语句中的情况有点复杂，它仍然作用于脚本、模块和函数体级别的，在预处理阶段，仍然会产生变量，但它不再被提前赋值，出现在 if 等语句的function，在if创建的作用域中仍然会被提前赋值。
+##### 4.2.3.3 函数体
 
-7.class声明
-  class声明在全局的行为跟function和var都不一样。
-  在class声明前使用class名会抛错，class声明也是会被预处理的，它会在作用域中创建变量，并且要求访问它时抛出错误
-  class声明的作用不会穿透if等语句结构，所以只有写在全局环境才会有声明作用
-  这样的class设计比function和var更符合直觉，而且遇到一些比较奇怪的用法时，倾向于抛出错误。
-  按照现代语言设计的评价标准，及早抛错是好事，它能帮助我们尽量在开发阶段就发现代码的可能问题。
+执行函数的行为通常是在 JS代码 执行时，注册宿主环境的某些事件触发的，而执行过程，就是执行函数体（函数的花括号中间的部分）。
 
-8.指令序言机制
-  脚本和模块都支持一种特别的语法，叫做指令序言（Directive Prologs）。
-  这里的指令序言最早是为 use strict 设计的，它规定了一种给JS代码添加元信息的方式。
-  "use strict"是JS标准中规定的唯一一种指令序言，但是指令序言的目的是，留给JS的引擎和实现者一些统一的表达方式，在静态扫描时指定JS代码的一些特性。
-  JS的指令序言是只有一个字符串直接量的表达式语句，它只能出现在脚本、模块和函数体的最前面。
+宏任务可能执行的代码包括 "脚本(script)" 、"模块(module)" 和 "函数体(function body)"。
 
-9.语句
-  JS遵循了一般编程语言的"语句-表达式"结构。
-  在JS标准中，把语句分成了两种：声明和语句，这两种语句最大的区别就是声明型语句响应预处理过程，普通语句只有执行过程。
-  普通语句：
-    ① 语句块：
-      {
-        var x,y;
-        x = 10;
-        y = 20;
-      }
-      语句块的意义和好处在于：可以把多行语句视为同一行语句，这样if、for等语句定义起来就比较简单。
-      需要注意：语句块会产生作用域
+函数体其实也是一个语句的列表。跟脚本和模块相比，函数体的语句列表中多了 return 语句可用。
 
-    ② 空语句
-      空语句就是一个独立的分号，实际上没什么大用。
-      空语句的存在仅仅是从语言设计完备性的角度考虑，容许插入多个分号而不抛出错误。
+函数体实际上有以下四种：
 
-    ③ if语句
-      if语句是条件语句。
-      作用：
-        在满足条件时执行它的语句内容，这个语句可以是一个语句块，这样就可以实现有条件地执行多个语句。
-      if语句还有else结构，用于不满足条件时执行，常见的用法是：利用语句的嵌套能力，把if和else连写成多分支条件判断。
+- 普通函数体
 
-    ④ switch语句
-      switch 语句继承自 Java，Java 中的 switch 语句继承自 C 和 C++，原本 switch 语句是跳转的变形，所以我们如果要用它来实现分支，必须要加上 break。
-      在 C 时代，switch 生成的汇编代码性能是略优于 if else 的，但是对 JS 来说，则无本质区别。
+  ```js
+  function foo(){
+      //Function body
+  }
+  ```
 
-    ⑤ 循环语句
-      ❶ while循环 和 do while循环
-        while(boolean){}
-        do{} while(boolean)
-        while循环与do while循环的区别在于do while循环至少执行一次。
-      ❷ 普通for循环
-        for(var i = 0;i < 100;i++){ console.log(i); }
-      ❸ for in 循环
-        for in 循环枚举对象的属性
-      ❹ for of 循环和 for await of 循环
-        for of循环背后机制是 iterator机制
-        for await of循环，必须放在async函数中。
+- 异步函数体
 
-    ⑥ return
-      return语句用于函数中，它终止函数的运行，并且返回函数的指定值
+  ```js
+  async function foo(){
+      //Function body
+  }
+  ```
 
-    ⑦ break 和 continue
-      break用于跳出循环语句或switch语句，continue语句用于结束本次循环并继续循环。
-      这两个语句都是控制型语句。都有带标签的用法
-        outer:for(let i = 0; i < 100; i++)
-            inner:for(let j = 0; j < 100; j++)
-                if( i == 50 && j == 50)
-                    break outer;
-        outer:for(let i = 0; i < 100; i++)
-            inner:for(let j = 0; j < 100; j++)
-                if( i >= 50 && j == 50)
-                    continue outer;
-        带标签的break和continue可以控制自己被外层的哪个语句结构消费，这可以跳出复杂的语句结构。
+- 生成器函数体
 
-    ⑧ try 语句和 throw语句
-      try语句和throw语句用于处理异常，它们是配合使用的。在大型的应用中，异常机制非常重要。
-        try{
-          throw new Error("error");
-        }catch(e) {
-          console.log(e);
-        }finally {
-          console.log("finally");
-        }
-      一般来说，throw用于抛出异常，但是单纯从语言的角度，它可以抛出任何值，不一定是异常逻辑，但是为了保证语义清晰，不建议用throw表达任何非异常逻辑。
-      try语句用于捕获异常，用 throw 抛出的异常，可以在try语句的结构中被处理掉：try部分用于标识捕获异常的代码段，catch部分用于捕获异常后做一些处理，而finally则是用于执行后做一些必须执行的清理工作。
-      catch 结构会创建一个局部的作用域，并且把抛出的错误当做参数写入其中。
-      在 catch 中重新抛出错误的情况非常常见，在设计比较底层的函数时，常常会这样做，保证抛出的错误能被理解。
-      finally语句一般用于释放资源，它一定会被执行，即使再try中出现return，finally中的语句也一定要被执行。
+  ```js
+  function *foo(){
+      //Function body
+  }
+  ```
 
-    ⑨ debugger语句
-      debugger语句的作用：通知调试器在此断点。在没有调试器挂载时，它不产生任何效果。
+- 异步生成器函数体
 
-  声明型语句
-    ① var
-      var声明语句是古典的JS中声明变量的方式。而现在，在绝大多数情况下，let和const都是更好的选择。
-    ② let和const
-      let和const都是变量的声明，它们的特性都非常相似。let和const的作用范围是if、for等结构型语句。
-      let和const语句在重复声明时会抛错，这能够有效地避免变量名无意中冲突。
-      let和const声明虽然看上去是执行到了才生效，但是实际上，它们还是会被预处理。如果当前作用域内有声明，就无法访问到外部的变量。
-        const a = 1;
-        if(true){
-          console.log(a); // 报错
-          const a = 2;
-        }
-    ③ class声明
-      class最基本的用法只需要 class关键字、名称和一对大括号。它的声明特征跟const和let类似，都是作用于块级作用域，预处理阶段则会屏蔽外部变量。
-      class内部，可以使用constructor关键字定义构造函数，还能定义getter/setter和方法
-      以目前的兼容性，class 中的属性只能写在构造函数中，class默认内部的函数定义都是strict模式的。
-    ④ 函数声明
-      函数声明使用函数关键字。函数的参数，可以只写形参名，现在还可以写默认参数和指定多个参数。
+  ```js
+  async function *foo(){
+      //Function body
+  }
+  ```
 
-  表达式语句
-    表达式语句实际上就是一个表达式，它是由运算符连接变量huo直接量构成。
-    一般来说，表达式语句要么是函数调用、赋值、自增、自减，否则表达式计算的结果没有任何意义。但是，在语法上没有这样的限制，任何合法的表达式都可以当做表达式语句使用。
+> 这四种函数体的区别在于：能否使用 `await` 或 `yield` 语句
 
-    ① PrimaryExpression 主要表达式
-      表达式的原子项：Primary Expression。它是表达式的最小单位，它所涉及的语法结构也是优先级最高的。
-      PrimaryExpression 包含了各种"直接量"，直接量就是用某种语法写出来的具有特定类型的值。在运行时有各种值，比如：数字123，字符串Hello，所以通俗的讲，直接量就是在代码中把它们写出来的语法。
-      JS不仅能以直接量的形式定义基本类型，还能够以直接量的形式定义对象，针对函数、类、数组、正则表达式等特殊对象类型，JS提供了语法层面的支持。
-        "abc"  123  ({})  (function(){})  (class a{})  []  /abc/g
-      注意：在语法层面，function、{ 和 class开头的表达式语句和声明语句有语法冲突，所以，我们要想使用这样的表达式，必须加上括号来回避语法冲突。
-      PrimaryExpression还可以是 this 或 变量，在语法上，把变量称为"标识符引用"。
-        this;  myVar;
-      任何表达式加上圆括号，都会被认为是 PrimaryExpression，这个机制使得圆括号称为改变运算优先级的手段。
-    ② Member Expression 成员表达式
-      Member Expression通常用于访问对象成员，它有几种形式：
-        · 标识符的属性访问: a.b;
-        · 字符串的属性访问: a["b"];
-        · 判断函数是否被new调用：new.target;
-        · 构造函数中，用于访问父类的属性的语法：super b;
-        下面这两种被放入Member Expression，仅仅意味着它们跟属性运算属于同一优先级，没有任何语义上的关联
-        · 带函数的模板，这个表示把模板的各个部分算好后传递给函数：f`a${b}c`;
-        · 带参数列表的new运算: new Cls(a, b, c); 注意：不带参数列表的new运算优先级更低，不属于Member Expression
-    ③ NewExpression New表达式
-      Member Expression加上 new 就是New Expression，当然，不加 new 也可以构成New Expression，JS中默认独立的高优先级表达式都可以构成低优先级表达式。
-    ④ callExpression 函数调用表达式
-      除了New Expression，Member Expression 还能构成 callExpression。
-      它的基本形式是Member Expression后加一个括号里的参数列表，或者我们可以用上super关键字替代Member Expression
-        · a.b(c)
-        · super()
-        还有一些变体
-          · a.b(c)(d)(e)
-          · a.b(c)[3]
-          · a.b(c).d
-          · a.b(c)`xyz`
-          这些变体的形态，跟Member Expression几乎是一一对应的。实际上，可以理解为，Member Expression中的某一个子结构具有函数调用，那么整个表达式就成为了 callExpression。
-          而 callExpression 就失去了比 New Expression优先级高的特性，这是一个主要的区分。
-    ⑤ LeftHandSideExpression 左值表达式
-      New Expression 和 Call Expression 统称 LeftHandSideExpression，左值表达式。
-      左值表达式就是可以放到等号左边的表达式，语法如下：
-        a() = b;
-      原生的JS函数，返回值都不能被赋值。因此，多数时用到的赋值是Call Expression的其他形式，比如：
-        a().b = c;
-      另外，根据JS运行时的设计，不排除某些宿主会提供返回引用类型的函数，这时候，赋值是有效的。
-      左值表达式最经典的用法是用于构建赋值表达式，在JS标准中，它出现在各种场合，凡是需要"可以被修改的变量"的位置，都可以见到它。
-    ⑥ AssignmentExpression 赋值表达式
-      AssignmentExpression赋值表达式也有多种形态，最基本的是使用等号赋值：
-        a = b;
-      上面的等号是可以嵌套的：
-        a = b = c = d;  等价于 a = ( b = (c = d));  先把d的结果赋值给c，再把整个表达式的结果赋值给b，再赋值给a
-        这不是一个好的代码风格，不建议这样写代码;
-      赋值表达式的使用，还可以结合一些运算符。
-        a += b; 相当于 a = a + b;
-      能这样使用的还有下面几种：
-        *=、/=、%=、+=、-=、<<=、>>=、>>>=、&=、^=、|=、**=
-    ⑦ Expression 表达式
-      赋值表达式可以构成Expression表达式的一部分。在JS中，表达式就是用逗号运算符连接的赋值表达式。
-      在JS中，比赋值运算优先级更低的就是逗号运算符。可以把逗号理解为一种小型的分号。
-        a = b,b = 1,null;
-        逗号分隔的表达式会顺次执行，就像不同的表达式语句一样。"整个表达式的结果"就是"最后一个表达式的表达式结果"。上面的例子的表达式结果就是null。
-      在很多场合，都不允许使用带逗号的表达式，比如： export后只能跟赋值表达式，意思就是表达式中不能含逗号。
-    ⑧ ConditionalExpression 条件表达式
-      在一些通用的计算机语言设计理论中，能够出现在赋值表达式的右边，叫做：右值表达式（RightHandSideExpression），而在JS标准中，规定了在等号右边表达式叫做：条件表达式（ConditionalExpression），不过，在JS标准中，从未出现过右值表达式字样。
-      JS标准也规定了左值表达式同时都是条件表达式（也就是右值表达式），此外，左值表达式也可以通过跟一定的运算符组合，逐级构成更复杂的结构，直到成为右值表达式。
-      对于右值表达式来说，可以理解为以左值表达式为最小单位开始构成的。
-    ⑨ UpdateExpression 更新表达式
-      左值表达式搭配 ++ --运算符，可以形成更新表达式。
-        --a; ++a; a--; a++;
-        更新表达式会改变一个左值表达式的值，分为前后自增，前后自减一共四种。
-        在ES2018中，跟早期版本有所不同，前后自增自减运算被放到同一优先级。
-    ⑩ UnaryExpression 一元运算表达式
-      delete a.b;  void a;  typeof a;  - a;  ~ a;  ! a;  await a;
-      特点就是一个更新表达式搭配了一个一元运算符。a本身就是一个更新表达式。
-    ⑪ ExponentiationExpression 乘方表达式
-      乘法表达式也是由更新表达式构成的。它使用 ** 号。
-        2 ** 3  // 正确
-        -2 ** 3 // 错误
-        (-2)**3 // 正确
-        -2 这样的一元运算表达式，是不可以放入乘方表达式的，如果需要表达类似的逻辑，必须加括号（消除运算符优先级的歧义）。
-      **运算是右结合的，这跟其他正常的运算符都不一样。
-        4 ** 3 ** 2  事实上是被这样运算的 4 ** (3 ** 2)
-    ⑫ MultiplicativeExpression 乘法表达式
-      更新表达式也可以构成乘法表达式，用乘号、除号、取余符号连接即可。
-        x * 2;
-    ⑬ AdditiveExpression 加法表达式
-      加法表达式可以由乘法表达式用加号(+)或减号(-)连接构成。
-        例子：a + b * c;
-    ⑭ ShiftExpression 移位表达式
-      移位表达式由加法表达式构成，移位是一种运算，分成3种：
-        · << 向右位移
-        · >> 向左位移
-        · >>> 无符号向右位移
-      移位运算把操作数看做二进制表示的整数，然后移动特定位数。所以左移n位相当于乘以2的n次方，右移n位相当于除以2取整n次。
-        例子：10 << 2; // 40     11 >> 2; // 2
-      普通位移会保持正负数，无符号位移会把减号视为符号位 1，同时参与位移：
-        例子：-1 >>> 1; // 2147483647
-      在JS中，二进制操作整数并不能提高性能，移位运算这里也仅仅是作为一种数学运算存在，这些运算存在的意义仅仅是为了照顾C系语言的用户的习惯。
-    ⑮ 关系表达式 RelationalException
-      关系表达式就是大于、等于、小于、大于等于、小于等于等运算符号连接，统称为关系运算。
-        <=、>=、<、>、instanceof、in
-      注意：这里的 <= 和 >= 关系运算，完全是针对数字的，所以 <= 并不等价于 <或==，例如：
-        null <= undefined // false
-        null == undefined // true
-    ⑯ 相等表达式 EqualityExpression
-      在语法上，相等表达式是由关系表达式用相等表达式用相等比较运算符连接构成，所以，可以像下面这段代码一样使用，而不需要加括号：
-        a instanceof "object" == true
-      相等表达式可以由四种运算符和关系表达式构成：
-        · ==
-        · ===
-        · !=
-        · !==
-      相等表达式又包含一个JS中著名的设计失误，那就是 == 的行为。
-      类型不同的变量比较时 == 运算只有三条规则：
-        · undefined 和 null相等
-        · 字符串和boolean都转为数字再比较
-        · 对象转换成primitive类型再比较
-      这样就可以理解一些不太符合直觉的例子，比如：
-        · false == "0" // false
-        · true == "true" // false
-        · [] == 0 // true
-        · [] == false // true
-        · new Boolean("false") == false // false
-      这里不太符合直觉的有两点：
-        · 即使是字符串与boolean比较，也要转换成数字
-        · 对象如果转换成了 primitive 类型跟等号另一边类型恰好相同，则不需要转换成数字
-      此外，==的行为也经常跟 if 的行为（转换成boolean）混淆。
-      == 最好在Number与String类型之间时使用，比如：
-        document.getElementsByTagName("input")[0].value == 100
-      这个例子中，等号左边必然是 string，右边的直接量必然是 number，这样使用 == 就没问题了。
-    ⑰ 位运算表达式
-      位运算表达式含有3种：
-        · 按位与表达式 BitwiseANDExpression
-        · 按位或表达式 BitwiseXORExpression
-        · 按位或表达式 BitwiseORExpression
-      1.按位与表达式：按位与表达式由按位与运算符（&）连接按位异或表达式构成，按位与表达式把操作数视为二进制整数，然后把两个操作数按位做与运算。
-      2.按位异或表达式：按位异或表达式由按位异或运算符（^）连接按位与表达式构成，按位异或表达式把操作数视为二进制整数，然后把两个操作数按位做异或运算。异或两位相同时得0，两位不同时得1。
-        异或运算有个特征，那就是两次异或运算相当于取消。所以有一个异或运算的小技巧，就是用异或运算来交换两个整数的值。
-          例子：front_end\JavaScript\HTML演示文件\语法.html -> XORExchangesIntegerValues();
-      3.按位或表达式：按位或表达式由按位或运算符（|）连接相等表达式构成，按位或表达式把操作数视为二进制整数，然后把两个操作数按位做或运算。
-        按位或运算常常被用在一种叫 位掩码 (BitMask) 的技术上。BitMask 相当于使用一个整数来当做多个布尔型变量，现在已经不提倡了。不过，一些比较老的API还是会这样设计，比如：DOM中的 iterator API
-    ⑱ 逻辑与表达式和逻辑或表达式
-      逻辑与表达式：由按位或表达式经逻辑与运算符连接构成。
-      逻辑或表达式：由逻辑与表达式经逻辑或运算符连接构成。
-      注意：这两种表达式都不会做类型转换，所以尽管是逻辑运算，但是最终的结果可能是其他类型。
-        false || 1; // 1
-        false || undefined; // undefined
-      逻辑表达式具有短路的特性。
-    ⑲ TernaryOperatorExpression 三目运算符
-      三目运算符由逻辑或表达式和条件运算符构成，条件运算符又称三目运算符，它有三个部分，由两个运算符 ? 和 : 配合使用。
-        condition ? branch1 : branch2
-      注意：条件表达式也像逻辑表达式一样，可能忽略后面表达式的计算。这一点跟C语言的条件表达式是不一样的。
-      三目运算实际上就是JS中的右值表达式 RightHandSideExpression，是可以放到赋值运算后面的表达式。
+![模块、脚本和函数体能使用的语句](./image/模块、脚本和函数体能使用的语句.jpg)
+
+##### 4.2.3.4 预处理
+
+JS执行前会对，脚本、模块和函数体中的语句进行预处理，预处理的过程将会提前处理 **var、函数声明、class、const、let** 这些语句，以确定其中变量的含义。
+
+###### 4.2.3.4.1 var声明
+
+var声明永远作用于脚本、模块、函数体这个级别，在预处理阶段，不关心赋值的部分，只管在当前作用域声明这个变量。
+var的作用域能够穿透一切语句结构，它只认脚本、模块和函数体这三种语法结构。
+
+###### 4.2.3.4.2 function声明
+
+function声明的行为原本跟 var 非常相似，但在最新的JS标准中，对它进行了一定的修改。
+
+在全局（模块、脚本和函数体），function声明表现跟 var 相似，不同之处在于，function声明不仅在作用域中加入变量，还会给它赋值。
+
+function声明出现在 if 等语句中的情况有点复杂，它仍然作用于脚本、模块和函数体级别的，在预处理阶段，仍然会产生变量，但它不再被提前赋值
+
+```js
+// function 在预处理阶段仍然发生了作用，在作用域中产生了变量，没有产生赋值，赋值行为发生在了执行阶段
+console.log(foo); // undefined
+if(true) {
+    function foo(){
+
+    }
+}
+```
+
+出现在 if 等语句的function，在if创建的作用域中仍然会被提前赋值。
+
+###### 4.2.3.4.3 class声明
+
+class声明在全局的行为跟 function 和 var 都不一样。
+
+在class声明前使用class名会抛错
+
+```js
+console.log(c); //  c is not define
+class c{
+
+}
+```
+
+试图在 class 前打印变量 c，得到了个错误，这个行为很像是 class 没有预处理，但是实际上并非如此。
+
+```js
+var c = 1;
+function foo(){
+    console.log(c);
+    class c {}
+}
+foo();
+```
+
+执行后，我们看到，仍然抛出了错误，如果去掉 class 声明，则会正常打印出 1，也就是说，出现在后面的 class 声明影响了前面语句的结果。
+说明了，class声明也是会被预处理的，它会在作用域中创建变量，并且要求访问它时抛出错误。
+
+> class声明的作用不会穿透if等语句结构，所以只有写在全局环境才会有声明作用。
+> 这样的 class设计 比 function 和 var 更符合直觉，而且遇到一些比较奇怪的用法时，倾向于抛出错误。
+> 按照现代语言设计的评价标准，及早抛错是好事，它能帮助在开发阶段就发现代码的可能问题。
+
+##### 4.2.3.5 指令序言机制
+
+脚本和模块都支持一种特别的语法，叫做指令序言（Directive Prologs）。
+
+这里的指令序言最早是为 **use strict** 设计的，它规定了一种给JS代码添加元信息的方式。
+
+"use strict" 是JS标准中规定的唯一一种指令序言，但是指令序言的目的是，留给JS的引擎和实现者一些统一的表达方式，在静态扫描时指定JS代码的一些特性。
+
+```js
+// 假设要设计一种声明本文件不需要进行 lint 检查的指令，可以这样设计
+"no lint";
+"use strict";
+function doSth(){
+    //......
+}
+//......
+```
+
+JS的指令序言是只有一个字符串直接量的表达式语句，它只能出现在脚本、模块和函数体的最前面。
+
+#### 4.2.4 语句
+
+JS遵循了一般编程语言的 "语句-表达式" 结构。
+在JS标准中，把语句分成了两种：**声明** 和 **语句**，这两种语句最大的区别就是声明型语句响应预处理过程，普通语句只有执行过程。
+
+**普通语句**
+![JS普通语句的种类](./image/JS普通语句的种类.png)
+
+**声明型语句**
+![JS声明型语句的种类](./image/JS声明型语句的种类.jpg)
+
+##### 4.2.4.1 语句块
+
+```js
+{
+  var x,y;
+  x = 10;
+  y = 20;
+}
+```
+
+语句块的意义和好处在于：可以把多行语句视为同一行语句，这样if、for等语句定义起来就比较简单。
+
+> 需要注意：语句块会产生作用域
+
+##### 4.2.4.2 空语句
+
+空语句就是一个独立的分号，实际上没什么大用。
+
+```js
+;
+```
+
+> 空语句的存在仅仅是从语言设计完备性的角度考虑，容许插入多个分号而不抛出错误。
+
+##### 4.2.4.3 if语句
+
+if语句是条件语句。
+
+```js
+if(a < b) {
+  console.log(a);
+}
+```
+
+> **作用** : 在满足条件时执行它的语句内容，这个语句可以是一个语句块，这样就可以实现有条件地执行多个语句。
+
+if语句还有else结构，用于不满足条件时执行，常见的用法是：利用语句的嵌套能力，把if和else连写成多分支条件判断。
+
+##### 4.2.4.4 switch语句
+
+switch 语句继承自 Java，Java 中的 switch 语句继承自 C 和 C++，原本 switch 语句是跳转的变形，所以我们如果要用它来实现分支，必须要加上 break。
+
+```js
+switch(num) {
+  case 1:
+    print 1;
+    break;
+  case 2:
+    print 2;
+    break;
+  case 3:
+    print 3;
+    break;
+}
+```
+
+在 C 时代，switch 生成的汇编代码性能是略优于 if else 的，但是对 JS 来说，则无本质区别。
+
+##### 4.2.4.5 循环语句
+
+###### 4.2.4.5.1 while循环 和 do while循环
+
+```js
+let a = 100
+while(a--) {
+  console.log("*");
+}
+```
+
+```js
+let a = 101;
+do {
+    console.log(a);
+} while(a < 100)
+```
+
+> while循环与do while循环的区别在于do while循环至少执行一次。
+
+###### 4.2.4.5.2 普通for循环
+
+```js
+for(i = 0; i < 100; i++)
+    console.log(i);
+
+for(var i = 0; i < 100; i++)
+    console.log(i);
+
+for(let i = 0; i < 100; i++)
+    console.log(i);
+```
+
+###### 4.2.4.5.3 for in 循环
+
+for in 循环枚举对象的属性，这里体现了属性的 enumerable 特征。
+
+```js
+let o = { a: 10, b: 20}
+Object.defineProperty(o, "c", {enumerable:false, value:30})
+
+for(let p in o)
+    console.log(p);
+```
+
+###### 4.2.4.5.4 for of 循环和 for await of 循环
+
+for of 循环是非常棒的语法特性，它背后机制是 **iterator 机制**
+可以给任何一个对象添加 iterator，使它可以用于 for of 语句
+
+  ```js
+  let o = {
+      [Symbol.iterator]:() => ({
+          _value: 0,
+          next(){
+              if(this._value == 10)
+                  return {
+                      done: true
+                  }
+              else return {
+                  value: this._value++,
+                  done: false
+              };
+          }
+      })
+  }
+  for(let e of o)
+      console.log(e);
+  ```
+
+这段代码展示了如何为一个对象添加 iterator。但是，在实际操作中，一般不需要这样定义 iterator，可以使用 generator function。
+
+  ```js
+  function* foo(){
+    yield 0;
+    yield 1;
+    yield 2;
+    yield 3;
+  }
+  for(let e of foo())
+    console.log(e);
+  ```
+
+此外，JavaScript 还为异步生成器函数配备了异步的 for of
+
+```js
+function sleep(duration) {
+  return new Promise(function(resolve, reject) {
+    setTimeout(resolve,duration);
+  })
+}
+// 定义了一个异步生成器函数，异步生成器函数每隔一秒生成一个数字，这是一个无限的生成器。
+async function* foo(){
+  i = 0;
+  while(true) {
+    await sleep(1000);
+    yield i++;
+  }
+}
+// 使用 for await of 来访问这个异步生成器函数的结果，可以看到，这形成了一个每隔一秒打印一个数字的无限循环。
+for await(let e of foo())
+  console.log(e);
+```
+
+##### 4.2.4.6 return
+
+return语句用于函数中，它终止函数的运行，并且返回函数的指定值
+
+##### 4.2.4.7 break 和 continue
+
+break用于 跳出循环语句 或 switch语句，continue 语句用于结束本次循环并继续循环。
+
+这两个语句都是控制型语句。都有带标签的用法
+
+```js
+outer:for(let i = 0; i < 100; i++)
+  inner:for(let j = 0; j < 100; j++)
+    if( i == 50 && j == 50)
+      break outer;
+outer:for(let i = 0; i < 100; i++)
+  inner:for(let j = 0; j < 100; j++)
+    if( i >= 50 && j == 50)
+      continue outer;
+```
+
+> 带标签的break和continue可以控制自己被外层的哪个语句结构消费，这可以跳出复杂的语句结构。
+
+##### 4.2.4.8 try 语句和 throw语句
+
+try语句和throw语句用于处理异常，它们是配合使用的。在大型的应用中，异常机制非常重要。
+
+```js
+try {
+    throw new Error("error");
+} catch(e) {
+    console.log(e);
+} finally {
+    console.log("finally");
+}
+
+```
+
+一般来说，throw用于抛出异常，但是单纯从语言的角度，它可以抛出任何值，不一定是异常逻辑，但是为了保证语义清晰，不建议用throw表达任何非异常逻辑。
+
+try语句用于捕获异常，用 throw 抛出的异常，可以在try语句的结构中被处理掉：try部分用于标识捕获异常的代码段，catch部分用于捕获异常后做一些处理，而finally则是用于执行后做一些必须执行的清理工作。
+
+catch 结构会创建一个局部的作用域，并且把抛出的错误当做参数写入其中。
+
+在 catch 中重新抛出错误的情况非常常见，在设计比较底层的函数时，常常会这样做，保证抛出的错误能被理解。
+
+finally语句一般用于释放资源，它一定会被执行，即使再try中出现return，finally中的语句也一定要被执行。
+
+##### 4.2.4.9 debugger语句
+
+debugger语句的作用：通知调试器在此断点。在没有调试器挂载时，它不产生任何效果。
+
+##### 4.2.4.10 var
+
+var声明语句是古典的JS中声明变量的方式。而现在，在绝大多数情况下，let 和 const 都是更好的选择。
+
+把它当做一种“保障变量是局部”的逻辑，遵循以下三条规则：
+
+- 声明同时必定初始化
+- 尽可能在离使用的位置近处声明
+- 不要在意重复声明
+
+##### 4.2.4.11 let和const
+
+let和const都是变量的声明，它们的特性都非常相似。let和const的作用范围是if、for等结构型语句。
+
+let和const语句在重复声明时会抛错，这能够有效地避免变量名无意中冲突。
+
+let和const声明虽然看上去是执行到了才生效，但是实际上，它们还是会被预处理。如果当前作用域内有声明，就无法访问到外部的变量。
+
+```js
+const a = 1;
+if(true){
+  // 在 if 的作用域中，变量 a 声明执行到之前，访问了变量 a，这时会抛出一个错误，这说明 const 声明仍然是有预处理机制的。
+  console.log(a); // 报错
+  const a = 2;
+}
+```
+
+##### 4.2.4.12 class声明
+
+class最基本的用法只需要 class关键字、名称和一对大括号。它的声明特征跟const和let类似，都是作用于块级作用域，预处理阶段则会屏蔽外部变量。
+
+```js
+const a = 2;
+if(true){
+  console.log(a); //抛错
+  class a {
+
+  }
+}
+```
+
+class内部，可以使用 `constructor` 关键字定义构造函数，还能定义 `getter/setter` 和方法
+
+```js
+
+class Rectangle {
+  constructor(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+  // Getter
+  get area() {
+    return this.calcArea();
+  }
+  // Method
+  calcArea() {
+    return this.height * this.width;
+  }
+}
+```
+
+> 以目前的兼容性，class 中的属性只能写在构造函数中，class默认内部的函数定义都是 **strict模式** 的。
+
+##### 4.2.4.13 函数声明
+
+函数声明使用 `function` 关键字。
+
+```js
+function foo(){
+
+}
+
+// 生成器函数可以理解为返回一个序列的函数，它的底层是 iterator 机制。
+function* foo(){
+    yield 1;
+    yield 2;
+    yield 3;
+}
+
+// async 函数是可以暂停执行，等待异步操作的函数，它的底层是 Promise 机制。
+async function foo(){
+    await sleep(3000);
+
+}
+
+// 异步生成器函数则是二者的结合。
+async function* foo(){
+    await sleep(3000);
+    yield 1;
+}
+
+```
+
+函数的参数，可以只写形参名，现在还可以写默认参数和指定多个参数。
+
+```js
+function foo(a = 1, ...other) {
+    console.log(a, other)
+}
+```
+
+#### 4.2.5 表达式语句
+
+表达式语句实际上就是一个表达式，它是由 运算符连接变量 或 直接量 构成。
+
+一般来说，表达式语句要么是函数调用、赋值、自增、自减，否则表达式计算的结果没有任何意义。但是，在语法上没有这样的限制，任何合法的表达式都可以当做表达式语句使用。
+
+##### 4.2.5.1 PrimaryExpression 主要表达式
+
+表达式的原子项：**Primary Expression**。它是表达式的最小单位，它所涉及的语法结构也是优先级最高的。
+
+PrimaryExpression 包含了各种"直接量"，直接量就是用某种语法写出来的具有特定类型的值。在运行时有各种值，比如：数字123，字符串Hello，所以通俗的讲，直接量就是在代码中把它们写出来的语法。
+
+```js
+"abc";
+123;
+null;
+true;
+false;
+```
+
+JS不仅能以直接量的形式定义基本类型，还能够以直接量的形式定义对象，针对函数、类、数组、正则表达式等特殊对象类型，JS提供了语法层面的支持。
+
+```js
+({});
+(function(){});
+(class{ });
+[];
+/abc/g;
+```
+
+> 注意：在语法层面，`function`、`{` 和 `class` 开头的表达式语句和声明语句有语法冲突，所以，要想使用这样的表达式，必须加上括号来回避语法冲突。
+
+PrimaryExpression还可以是 this 或 变量，在语法上，把变量称为 **"标识符引用"**。
+
+```js
+this;
+myVar;
+```
+
+任何表达式加上圆括号，都会被认为是 Primary Expression，这个机制使得圆括号成为改变运算优先级的手段。
+
+##### 4.2.5.2 Member Expression 成员表达式
+
+Member Expression通常用于访问对象成员，它有几种形式：
+
+```js
+a.b; // 标识符的属性访问
+a["b"]; // 字符串的属性访问
+new.target; // new.target 是个新加入的语法，用于判断函数是否是被 new 调用
+super.b; // super 则是构造函数中，用于访问父类的属性的语法
+```
+
+Member Expression 最初设计是为了属性访问的，不过从语法结构需要，以下两种在 JavaScript 标准中当做 Member Expression
+
+```js
+// 带函数的模板，这个带函数名的模板表示把模板的各个部分算好后传递给一个函数。
+f`a${b}c`;
+// 带参数列表的 new 运算，注意，不带参数列表的 new 运算优先级更低，不属于 Member Expression。
+new Cls();
+```
+
+> 实际上，这两种被放入 Member Expression，仅仅意味着它们跟属性运算属于同一优先级，没有任何语义上的关联
+
+##### 4.2.5.3 New Expression New表达式
+
+Member Expression 加上 new 就是 New Expression，(当然，不加 new 也可以构成New Expression，JS中默认独立的高优先级表达式都可以构成低优先级表达式)。
+
+> 注意 : 这里的 New Expression 特指没有参数列表的表达式。
+
+##### 4.2.5.4 call Expression 函数调用表达式
+
+除了New Expression，Member Expression 还能构成 call Expression。
+
+它的基本形式是Member Expression后加一个括号里的参数列表，或者可以用上 `super` 关键字替代 Member Expression
+
+```js
+a.b(c);
+super();
+
+// 还有一些变体
+a.b(c)(d)(e);
+a.b(c)[3];
+a.b(c).d;
+a.b(c)`xyz`;
+```
+
+> 这些变体的形态，跟Member Expression几乎是一一对应的。实际上，可以理解为，Member Expression中的某一个子结构具有函数调用，那么整个表达式就成为了 call Expression。
+> 而 call Expression 就失去了比 New Expression 优先级高的特性，这是一个主要的区分。
+
+##### 4.2.5.5 LeftHandSideExpression 左值表达式
+
+New Expression 和 Call Expression 统称 LeftHandSideExpression，左值表达式。
+左值表达式就是可以放到等号左边的表达式，语法如下：
+
+```js
+a() = b;
+```
+
+原生的JS函数，返回值都不能被赋值。因此，多数时用到的赋值是Call Expression的其他形式，比如：
+
+```js
+a().c = b;
+```
+
+> 另外，根据JS运行时的设计，不排除某些宿主会提供返回引用类型的函数，这时候，赋值是有效的。
+> 左值表达式最经典的用法是用于构建赋值表达式，在JS标准中，它出现在各种场合，凡是需要"可以被修改的变量"的位置，都可以见到它。
+
+##### 4.2.5.6 AssignmentExpression 赋值表达式
+
+AssignmentExpression赋值表达式也有多种形态，最基本的是使用等号赋值：
+
+```js
+a = b;
+```
+
+上面的等号是可以嵌套的：
+
+```js
+a = b = c = d;
+// 等价于
+// 这不是一个好的代码风格，不建议这样写代码;
+a = ( b = (c = d)); // 先把 d 的结果赋值给 c，再把整个表达式的结果赋值给 b，再赋值给 a
+```
+
+赋值表达式的使用，还可以结合一些运算符。
+
+```js
+a += b;
+// 相当于
+a = a + b;
+```
+
+能这样使用的还有下面几种：
+
+```js
+*=、/=、%=、+=、-=、<<=、>>=、>>>=、&=、^=、|=、**=
+```
+
+##### 4.2.5.7 Expression 表达式
+
+赋值表达式可以构成 Expression 表达式的一部分。在JS中，表达式就是用逗号运算符连接的赋值表达式。
+
+在JS中，比赋值运算优先级更低的就是逗号运算符。可以把逗号理解为一种小型的分号。
+
+```js
+a = b,b = 1, null;
+```
+
+逗号分隔的表达式会顺次执行，就像不同的表达式语句一样。"整个表达式的结果" 就是 "最后一个表达式的表达式结果"。上面的例子的表达式结果就是 null。
+
+> 在很多场合，都不允许使用带逗号的表达式，比如：export后只能跟赋值表达式，意思就是表达式中不能含逗号。
+
+##### 4.2.5.8 ConditionalExpression 条件表达式
+
+在一些通用的计算机语言设计理论中，能够出现在赋值表达式的右边，叫做：右值表达式（RightHandSideExpression），而在JS标准中，规定了在等号右边表达式叫做：条件表达式（ConditionalExpression），不过，在JS标准中，从未出现过右值表达式字样。
+
+JS标准也规定了左值表达式同时都是条件表达式（也就是右值表达式），此外，左值表达式也可以通过跟一定的运算符组合，逐级构成更复杂的结构，直到成为右值表达式。
+
+对于右值表达式来说，可以理解为以左值表达式为最小单位开始构成的。
+
+##### 4.2.5.9 UpdateExpression 更新表达式
+
+左值表达式搭配 ++ --运算符，可以形成更新表达式。
+
+```js
+--a; ++a; a--; a++;
+```
+
+更新表达式会改变一个左值表达式的值，分为前后自增，前后自减一共四种。
+
+> 在ES2018中，跟早期版本有所不同，前后自增自减运算被放到同一优先级。
+
+##### 4.2.5.10 UnaryExpression 一元运算表达式
+
+更新表达式搭配一元运算符，可以形成一元运算表达式
+
+```js
+delete a.b;  void a;  typeof a;  - a;  ~ a;  ! a;  await a;
+```
+
+> 特点就是一个更新表达式搭配了一个一元运算符。a本身就是一个更新表达式。
+
+##### 4.2.5.11 ExponentiationExpression 乘方表达式
+
+乘方表达式也是由更新表达式构成的。它使用 `**` 号。
+
+```js
+2 ** 3  // 正确
+-2 ** 3 // 错误
+(-2)**3 // 正确
+```
+
+> -2 这样的一元运算表达式，是不可以放入乘方表达式的，如果需要表达类似的逻辑，必须加括号（消除运算符优先级的歧义）。
+> `**` 运算是右结合的，这跟其他正常的运算符都不一样。
+
+```js
+4 ** 3 ** 2
+// 事实上被这样运算
+4 ** (3 ** 2)
+```
+
+##### 4.2.5.12 MultiplicativeExpression 乘法表达式
+
+更新表达式也可以构成乘法表达式，用乘号、除号、取余符号连接即可。它们的优先级是一样的。
+
+```js
+x * 2;
+```
+
+##### 4.2.5.13 AdditiveExpression 加法表达式
+
+加法表达式可以由乘法表达式用 加号(+) 或 减号(-) 连接构成。
+
+```js
+a + b - c
+```
+
+##### 4.2.5.14 ShiftExpression 移位表达式
+
+移位表达式由加法表达式构成，移位是一种运算，分成3种：
+
+```js
+<< 向右位移
+>> 向左位移
+>>> 无符号向右位移
+```
+
+移位运算把操作数看做二进制表示的整数，然后移动特定位数。所以左移n位相当于乘以2的n次方，右移n位相当于除以2取整n次。
+
+```js
+10 << 2; // 40
+11 >> 2; // 2
+```
+
+普通位移会保持正负数，无符号位移会把减号视为符号位 1，同时参与位移：
+
+```js
+-1 >>> 1; // 2147483647，也就是 2 的 31 次方，跟负数的二进制表示法相关
+```
+
+> 在JS中，二进制操作整数并不能提高性能，移位运算这里也仅仅是作为一种数学运算存在，这些运算存在的意义仅仅是为了照顾C系语言的用户的习惯。
+
+##### 4.2.5.15 关系表达式 RelationalException
+
+关系表达式就是大于、等于、小于、大于等于、小于等于等运算符号连接，统称为关系运算。
+
+```js
+<=
+>=
+<
+>
+instanceof
+in
+```
+
+> 注意：这里的 <= 和 >= 关系运算，完全是针对数字的，所以 <= 并不等价于 <或==。
+
+##### 4.2.5.16 相等表达式 EqualityExpression
+
+在语法上，相等表达式是由关系表达式用相等表达式用相等比较运算符连接构成，所以，可以像下面这段代码一样使用，而不需要加括号：
+
+```js
+a instanceof "object" == true
+```
+
+相等表达式可以由四种运算符和关系表达式构成：
+
+- ==
+- ===
+- !=
+- !==
+
+相等表达式又包含一个JS中著名的设计失误，那就是 == 的行为。类型不同的变量比较时 == 运算只有三条规则：
+
+- undefined 和 null相等
+- 字符串和boolean都转为数字再比较
+- 对象转换成primitive类型再比较
+
+这样就可以理解一些不太符合直觉的例子，比如：
+
+- false == "0" // false
+- true == "true" // false
+- [] == 0 // true
+- [] == false // true
+- new Boolean("false") == false // false
+
+这里不太符合直觉的有两点：
+
+- 即使是字符串与boolean比较，也要转换成数字
+- 对象如果转换成了 primitive 类型跟等号另一边类型恰好相同，则不需要转换成数字
+
+此外，==的行为也经常跟 if 的行为（转换成boolean）混淆。
+
+== 最好只在 Number 与 String 类型之间时使用，比如：
+
+```js
+// 等号左边必然是 string，右边的直接量必然是 number
+document.getElementsByTagName("input")[0].value == 100
+```
+
+##### 4.2.5.17 位运算表达式
+
+位运算表达式含有3种：
+
+- 按位与表达式 BitwiseANDExpression
+- 按位或表达式 BitwiseXORExpression
+- 按位或表达式 BitwiseORExpression
+
+1. 按位与表达式：按位与表达式由按位与运算符（`&`）连接按位异或表达式构成，按位与表达式把操作数视为二进制整数，然后把两个操作数按位做与运算。
+
+2. 按位异或表达式：按位异或表达式由按位异或运算符（^）连接按位与表达式构成，按位异或表达式把操作数视为二进制整数，然后把两个操作数按位做异或运算。异或两位相同时得0，两位不同时得1。
+  异或运算有个特征，那就是两次异或运算相当于取消。所以有一个异或运算的小技巧，就是用异或运算来交换两个整数的值。
+
+    ```js
+    let a = 102, b = 324;
+
+    a = a ^ b;
+    b = a ^ b;
+    a = a ^ b;
+
+    console.log(a, b);
+    ```
+
+3. 按位或表达式：按位或表达式由按位或运算符（|）连接相等表达式构成，按位或表达式把操作数视为二进制整数，然后把两个操作数按位做或运算。
+  按位或运算常常被用在一种叫 位掩码 (BitMask) 的技术上。BitMask 相当于使用一个整数来当做多个布尔型变量，现在已经不提倡了。不过，一些比较老的API还是会这样设计，比如：DOM中的 iterator API 。
+
+##### 4.2.5.18 逻辑与表达式和逻辑或表达式
+
+逻辑与表达式：由按位或表达式经逻辑与运算符连接构成。
+逻辑或表达式：由逻辑与表达式经逻辑或运算符连接构成。
+
+> 注意：这两种表达式都不会做类型转换，所以尽管是逻辑运算，但是最终的结果可能是其他类型。
+
+```js
+false || 1; // 1
+false || undefined; // undefined
+```
+
+逻辑表达式具有短路的特性。
+
+```js
+// 这里的 foo 将不会被执行，这种中断后面表达式执行的特性就叫做短路。
+true || foo();
+```
+
+#### 4.2.5.19 TernaryOperatorExpression 三目运算符
+
+三目运算符由逻辑或表达式和条件运算符构成，条件运算符又称三目运算符，它有三个部分，由两个运算符 ? 和 : 配合使用。
+
+```js
+condition ? branch1 : branch2
+```
+
+> 注意：条件表达式也像逻辑表达式一样，可能忽略后面表达式的计算。这一点跟C语言的条件表达式是不一样的。
+> 三目运算实际上就是JS中的右值表达式 RightHandSideExpression，是可以放到赋值运算后面的表达式。
 
 ----
 

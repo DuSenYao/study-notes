@@ -384,6 +384,25 @@ keyword: Vocabulary
 - **than**
   - prep./conj. (用以引出比较的第二部分)比;(比较数量、距离等)多于，小于，少于;(表示一事紧跟另一事发生)就
 
+- **downside**
+  - n. 缺点;不利方面
+
+- **example**
+  - n. 实例;例证;例子;典型;范例;样品;榜样;楷模;模范
+
+- **copyright**
+  - n. 版权;著作权
+  - adj. 受版权保护的;未经准许不得复制的
+  - v. 获得…的版权
+
+- **cascade**
+  - n. 级联; 阶梯; 倾泻;流注
+  - v. 串联; 奔流
+
+- **slide**
+  - v. (使)滑行，滑动;(使)快捷而悄声地移动;逐渐降低;贬值
+  - n. 降低;跌落;衰落;(在冰上或光滑表面上)滑行，滑动;滑梯
+
 ## 二. Computer terminology
 
 - **stack overflow** : 堆栈溢出
@@ -427,3 +446,5 @@ keyword: Vocabulary
 - **normalize** : 标准化
 
 - **sidebar** : 侧边栏
+
+- **binary** : 二进制

@@ -115,8 +115,8 @@
   // 3. 以正则表达式开头的语句
   function regularNoBrackets(){
     var x = 1, g = { text:() => 0 }, b = 1/*这里没有插入分号*/
-    /(a)/g.test("abc") // 
-    console.log(RegExp.$1)
+    /(a)/g.test("abc") // 本意是声明三个变量，然后测试一个字符串中是否含有字母 a，但是因为没有自动插入分号，正则的第一个斜杠被理解成了除号，后面的意思就都变了
+    console.log(RegExp.$1) // 这里不会抛出错误，代码排查非常困难
   }
 
   // 4. 以 Template 开头的语句
