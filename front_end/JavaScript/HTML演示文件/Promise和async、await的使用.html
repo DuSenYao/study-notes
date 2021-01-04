@@ -32,7 +32,6 @@
       try
       {
         // resolve的作用：将Promise对象的状态由“未完成”变为“成功”（即从pending变为fulfilled），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去
-        fdsfdsaf
         resolve("b");
       }
       catch(err)
@@ -70,7 +69,7 @@
       resolve();
     });
     r.then(() => {
-      // 强制1秒的执行耗时 
+      // 强制1秒的执行耗时
       var begin = Date.now();
       while (Date.now() - begin < 1000);
       console.log("c1");
@@ -142,7 +141,7 @@
     // await 等待一个 Promise 返回，没有则一直中止
     await wait(duration);
   }
-  
+
   // 所有返回 Promise 的函数都可以认为是异步函数
   function wait(duration)
   {
