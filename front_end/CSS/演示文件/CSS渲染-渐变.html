@@ -5,13 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CSS渲染-渐变</title>
     <style>
-      #gold {
-        height: 100px;
-        width: 100px;
-        background: linear-gradient(45deg, gold 10%, yellow 50%, gold 90%);
-        margin-bottom: 60px;
-      }
-
       .button {
         display: inline-block;
         outline: none;
@@ -36,7 +29,6 @@
     </style>
   </head>
   <body>
-    <div id="gold"></div>
     <div class="button">按钮</div>
     <div class="radial"></div>
   </body>
@@ -44,7 +36,7 @@
     var btn = document.querySelector(".button");
     var h = 25;
     // HSL颜色的应用
-    setTimeout(function () {
+    setInterval(() => {
       h++;
       h = h % 360;
       btn.style.borderColor = `hsl(${h}, 95%, 45%)`;
