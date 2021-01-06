@@ -119,7 +119,9 @@ keyword: Vocabulary
   - v. 仔细看，彻底检查
 
 - **numeric**
-  - n. 分数，不可通约数- **literal**
+  - n. 分数，不可通约数
+
+- **literal**
   - adj. 字面意义的; 完全按原文的; 缺乏想象力的
 
 - **display**
