@@ -2,16 +2,17 @@
 title: Chrome DevTools Chrome浏览器调试工具
 date: 2020-12-10 9:22:34
 author: 杜森垚
-keywords: 'Chrome DevTools'
+keywords: "Chrome DevTools"
 categories: Chrome DevTools
 tags:
   - Chrome DevTools
 ---
+
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
-- [Chrome DevTools Chrome浏览器调试工具](#chrome-devtools-chrome浏览器调试工具)
+- [Chrome DevTools Chrome 浏览器调试工具](#chrome-devtools-chrome浏览器调试工具)
   - [一. 基础](#一-基础)
     - [1.1.面板简介](#11面板简介)
       - [元素面板(Elements)](#元素面板elements)
@@ -35,8 +36,8 @@ tags:
           - [1.2.4.5.2 截屏](#12452-截屏)
           - [1.2.4.5.3 切换面板布局](#12453-切换面板布局)
           - [1.2.4.5.4 代码片段](#12454-代码片段)
-  - [二. Console篇](#二-console篇)
-    - [2.1 Console中的 `$`](#21-console中的)
+  - [二. Console 篇](#二-console篇)
+    - [2.1 Console 中的 `$`](#21-console中的)
     - [2.2 异步的 `Console`](#22-异步的-console)
     - [2.3 Ninja console (忍者打印)](#23-ninja-console-忍者打印)
     - [2.4 自定义格式转换器](#24-自定义格式转换器)
@@ -45,7 +46,7 @@ tags:
       - [2.5.1 queryObjects(对象查询)方法](#251-queryobjects对象查询方法)
       - [2.5.2 monitor (监听函数)方法](#252-monitor-监听函数方法)
       - [2.5.3 monitorEvents (监听事件)方法](#253-monitorevents-监听事件方法)
-    - [2.6 Console类中的各种方法](#26-console类中的各种方法)
+    - [2.6 Console 类中的各种方法](#26-console类中的各种方法)
       - [2.6.1 console.assert](#261-consoleassert)
       - [2.6.2 增强 `log`的阅读体验](#262-增强-log的阅读体验)
       - [2.6.3 `console.table`](#263-consoletable)
@@ -65,9 +66,9 @@ tags:
     - [XHR/fetch 断点](#xhrfetch-断点)
   - [四. Elements 篇](#四-elements-篇)
     - [4.1 技巧集合](#41-技巧集合)
-      - [4.1.1  通过 `'h'` 来隐藏元素](#411-通过-h-来隐藏元素)
-      - [4.1.2  拖动 & 放置 元素](#412-拖动-放置-元素)
-      - [4.1.3  使用 控制按钮 来移动元素](#413-使用-控制按钮-来移动元素)
+      - [4.1.1 通过 `'h'` 来隐藏元素](#411-通过-h-来隐藏元素)
+      - [4.1.2 拖动 & 放置 元素](#412-拖动-放置-元素)
+      - [4.1.3 使用 控制按钮 来移动元素](#413-使用-控制按钮-来移动元素)
       - [4.1.4 元素面板中类似于基础编辑器的操作](#414-元素面板中类似于基础编辑器的操作)
       - [4.1.5 Shadow editor 阴影编辑器](#415-shadow-editor-阴影编辑器)
       - [4.1.6 Timing function editor 定时函数编辑器](#416-timing-function-editor-定时函数编辑器)
@@ -86,16 +87,16 @@ tags:
       - [5.2.2 模拟网络状态](#522-模拟网络状态)
       - [5.2.3 快速 Source](#523-快速-source)
       - [5.2.4 检查代码 coverage](#524-检查代码-coverage)
-      - [5.2.5 检查修改的CSS文件](#525-检查修改的css文件)
+      - [5.2.5 检查修改的 CSS 文件](#525-检查修改的css文件)
   - [六. WorkSpaces 篇](#六-workspaces-篇)
-    - [6.1 workspace技巧](#61-workspace技巧)
+    - [6.1 workspace 技巧](#61-workspace技巧)
       - [6.1.1 在 `Chrome` 中修改文件](#611-在-chrome-中修改文件)
       - [6.1.2 WorkSpace 支持即时样式同步](#612-workspace-支持即时样式同步)
       - [6.1.3 为新选择器选择目标位置](#613-为新选择器选择目标位置)
 
 <!-- /code_chunk_output -->
 
-# Chrome DevTools Chrome浏览器调试工具
+# Chrome DevTools Chrome 浏览器调试工具
 
 ---
 
@@ -112,7 +113,7 @@ tags:
   ① 检查和调整页面
   ② 编辑样式
   ③ 编辑DOM
-  ```
+```
 
 #### 控制台面板(Console)
 
@@ -122,7 +123,7 @@ tags:
 功能:
   ① 使用控制台面板
   ② 命令行交互
-  ```
+```
 
 #### 源代码面板(Sources)
 
@@ -214,7 +215,7 @@ tags:
 
 ##### 1.2.4.4 elements， logs， sources & network 中的查找
 
-`DevTools` 中的前4个主要的面板，都支持 `ctrl + f` 快捷方式，你可以使用对应的查询方式来查找信息:
+`DevTools` 中的前 4 个主要的面板，都支持 `ctrl + f` 快捷方式，你可以使用对应的查询方式来查找信息:
 
 - 在 `Element` 面板中 - 通过 `string` 和 `XPath` 来查找。
 
@@ -256,9 +257,9 @@ tags:
 
 > 快速执行代码片段: 在 `Command Menu` 里，使用 `!`，就可以根据名字来筛选预设代码片段。
 
-## 二. Console篇
+## 二. Console 篇
 
-### 2.1 Console中的 `$`
+### 2.1 Console 中的 `$`
 
 - `$0` 在 Chrome 的 Elements 面板中，是对当前选中的 html 节点的引用。`$1` 是对上一次选择的节点的引用，`$2` 是对在那之前选择的节点的引用，等等。一直到 `$4`。
 
@@ -277,7 +278,7 @@ tags:
 - 媒体能力
 
 ```js
-let query = {type: 'file', audio: {contentType: "audio/ogg"}}
+let query = { type: "file", audio: { contentType: "audio/ogg" } };
 console.table(await navigator.mediaCapabilities.decodingInfo(query));
 ```
 
@@ -286,10 +287,10 @@ console.table(await navigator.mediaCapabilities.decodingInfo(query));
 - `Conditional breakpoints` 条件断点
 
 ```markdown
-  在 `Source` 的JS文件中右击行号，选择 `Add conditional breakpoint...(添加条件断点)` 或 右击一个已经设置的断点并且选择 `Edit breakpoint(编辑断点)`
-  然后输入一个执行结果为 `true` 或者 `false` 的表达式（它的值其实不需要完全为 true 或者 false）。
-  在这个表达式中可以使用任何这段代码可以获取到的值（当前行的作用域）。
-  如果条件成立，这个断点就会暂停代码的执行。
+在 `Source` 的 JS 文件中右击行号，选择 `Add conditional breakpoint...(添加条件断点)` 或 右击一个已经设置的断点并且选择 `Edit breakpoint(编辑断点)`
+然后输入一个执行结果为 `true` 或者 `false` 的表达式（它的值其实不需要完全为 true 或者 false）。
+在这个表达式中可以使用任何这段代码可以获取到的值（当前行的作用域）。
+如果条件成立，这个断点就会暂停代码的执行。
 ```
 
 - The Ninja `console`
@@ -297,15 +298,16 @@ console.table(await navigator.mediaCapabilities.decodingInfo(query));
 得益于条件断点，`console` 也有了新玩法：
 
 ```markdown
-  每一个条件都必须经过判断 - 当应用执行到这一行的时候进行判断
-  并且如果条件返回的是 `falsy` 的值(这里的 `falsy` 并非是笔误， `falsy` 指的是被判定为 `false` 的值，例如 `undefined` )，它并不会暂停。
-  可以直接使用条件判断来将 `console.log/console.table/console.time` 等 "连接"到 `Source` 面板中。
-  它们会一直执行，并且当不再需要它们的时候，在 `断点部分` 会清晰的列出它们，可以轻松移除。
+每一个条件都必须经过判断 - 当应用执行到这一行的时候进行判断
+并且如果条件返回的是 `falsy` 的值(这里的 `falsy` 并非是笔误， `falsy` 指的是被判定为 `false` 的值，例如 `undefined` )，它并不会暂停。
+可以直接使用条件判断来将 `console.log/console.table/console.time` 等 "连接"到 `Source` 面板中。
+它们会一直执行，并且当不再需要它们的时候，在 `断点部分` 会清晰的列出它们，可以轻松移除。
 ```
 
 ### 2.4 自定义格式转换器
 
 大多数的情况下，习惯使用 `DevTools` 的 `console` 默认对 `object` 的转换，但还可以自定义输出对象的函数，它通常被称为 `Custom Formatter` 。
+
 > 注意: 在写之前，需要在 `Settings` (或按下 `F1`) 中把对应的设置打开。
 > ![Enable_Custom_Formatter位置](./image/Enable_Custom_Formatter位置.png)
 
@@ -331,8 +333,9 @@ console.table(await navigator.mediaCapabilities.decodingInfo(query));
 自定义格式化转换器的示例
 
 ```js
-window.devtoolsFormatters = [{
-    header: function(obj){
+window.devtoolsFormatters = [
+  {
+    header: function (obj) {
       if (!obj.__clown) {
         return null;
       }
@@ -342,25 +345,27 @@ window.devtoolsFormatters = [{
         border: 2px dotted #ccc;
         border-radius: 5px;
         padding: 5px;
-      `
+      `;
       const content = `${JSON.stringify(obj, null, 2)}`;
 
       try {
-        return ['div', {style}, content]
-      } catch (err) { // for circular structures
-        return null;  // use the default formatter
+        return ["div", { style }, content];
+      } catch (err) {
+        // for circular structures
+        return null; // use the default formatter
       }
     },
-    hasBody: function(){
-        return false;
-    }
-}]
+    hasBody: function () {
+      return false;
+    },
+  },
+];
 
 console.clown = function (obj) {
-  console.log({...obj, __clown: true});
-}
+  console.log({ ...obj, __clown: true });
+};
 
-console.clown({message: 'hello!'}); // a silly log
+console.clown({ message: "hello!" }); // a silly log
 ```
 
 ### 2.5 对象&方法
@@ -384,11 +389,11 @@ class Person {
   }
 
   greet() {
-    return this.getMessage('greeting', "tom");
+    return this.getMessage("greeting", "tom");
   }
 
   getMessage(type, js) {
-    if (type === 'greeting') {
+    if (type === "greeting") {
       return `Hello, I'm ${this.name}!`;
     }
   }
@@ -402,7 +407,7 @@ class Person {
 
 在上面是监听函数的方法，还可以使用 `monitorEvents` 的方法，对 `events` 做同样的事，取消监听事件的方法是 `unmonitorEvents`。
 
-### 2.6 Console类中的各种方法
+### 2.6 Console 类中的各种方法
 
 #### 2.6.1 console.assert
 
@@ -429,15 +434,15 @@ console.assert(assertion, msg [, subst1, ..., substN]);
 ```js
 const name = "tom";
 let date = new Date();
-var age  = 18;
+var age = 18;
 let isHealthy = true;
 
-console.log({name, date, age, isHealthy});
+console.log({ name, date, age, isHealthy });
 ```
 
 #### 2.6.3 `console.table`
 
- 如果有一个 **数组** (或者是 **类数组** 的对象，或者就是一个 **对象** )需要打印，可以使用 `console.table` 方法将它以一个漂亮的表格的形式打印出来。它不仅会根据数组中包含的对象的所有属性，去计算出表中的列名，而且这些列都可以 **缩放** 和 **排序**。
+如果有一个 **数组** (或者是 **类数组** 的对象，或者就是一个 **对象** )需要打印，可以使用 `console.table` 方法将它以一个漂亮的表格的形式打印出来。它不仅会根据数组中包含的对象的所有属性，去计算出表中的列名，而且这些列都可以 **缩放** 和 **排序**。
 
 如果觉得展示的列太多了，还可以使用第二个参数，传入想要展示的列的名字。
 
@@ -470,22 +475,22 @@ console.log({name, date, age, isHealthy});
 function log(message) {
   console.log(
     // 这句话是重点。使用 new 出来的 Error 对象的 stack 信息中的换行符，换行符出现的次数 等同于 它在堆栈调用时的深度。
-    '  '.repeat(new Error().stack.match(/\n/g).length - 2) + message
+    "  ".repeat(new Error().stack.match(/\n/g).length - 2) + message
   );
 }
 
 function foo() {
-  log('foo');
+  log("foo");
   return bar() + bar();
 }
 
 function bar() {
-  log('bar');
+  log("bar");
   return baz() + baz();
 }
 
 function baz() {
-  log('baz');
+  log("baz");
   return 17;
 }
 
@@ -500,11 +505,11 @@ foo();
 
 - 在回调方法的内部使用 console.log
 - 直接使用 console.log 来作为回调方法。
-推荐使用第二种，因为这不仅减少了输入，还可能在回调中接收多个参数。(这在第一个解决方案中是没有的)
+  推荐使用第二种，因为这不仅减少了输入，还可能在回调中接收多个参数。(这在第一个解决方案中是没有的)
 
 ```js
 function getInput(options, callback) {
-  if(typeof callback == "function") {
+  if (typeof callback == "function") {
     callback(options, "add");
   }
 }
@@ -515,6 +520,7 @@ getInput([1, 2], console.log);
 #### 2.6.9 给 `console.log` 加上 `CSS` 样式
 
 如果给打印文本加上 `%c` ，那么 `console.log` 的第二个参数就变成了 `CSS` 规则
+
 > console.log("%c999", 'color:#f40;font-size:40px');
 
 #### 2.6.10 实时表达式
@@ -554,6 +560,7 @@ getInput([1, 2], console.log);
 ### XHR/fetch 断点
 
 如果，想要对已发送的 `ajax` 请求进行捕获可以使用 `XHR/fetch breakpoint` 。
+
 > 这个只能在 `Source` 面板中设置
 
 ![XHR/fetch断点](./image/XHR-fetch请求断点.png)
@@ -562,15 +569,15 @@ getInput([1, 2], console.log);
 
 ### 4.1 技巧集合
 
-#### 4.1.1  通过 `'h'` 来隐藏元素
+#### 4.1.1 通过 `'h'` 来隐藏元素
 
 在元素面板中选择元素后，按一下 `'h'` 就可以隐藏，再次按下 'h' 可以使它出现。
 
-#### 4.1.2  拖动 & 放置 元素
+#### 4.1.2 拖动 & 放置 元素
 
 当想看页面的某一部分在 `DOM` 树的不同位置的显示效果时，只需要拖动放置它(到指定的位置)。
 
-#### 4.1.3  使用 控制按钮 来移动元素
+#### 4.1.3 使用 控制按钮 来移动元素
 
 如果只是想移动当前选中的元素，在 `DOM` 结构中往上挪一点或者往下挪一点，而不是拖动和放置，可以使用`[Ctrl]` + `[⬆]` / `[Ctrl]` + `[⬇]`。
 
@@ -587,6 +594,7 @@ getInput([1, 2], console.log);
 也称为 `Cubic bezier(贝塞尔)` 编辑器。贝塞尔曲线是一串用来定义 `CSS` 的动画速度在整个动画过程中如何变化的 `数值` 。将其定义为 `transition-timing-function` 或者 `animation-timing-function` CSS 属性。
 
 可以直接点击这两个属性(或者他们的简写形式: `transition`，`animation`)边上的曲线符号。
+
 > 注意: 如果 `timing` 函数的值没有设置在这个简写的形式中，这个符号不会显示出来，可以点击左边的小箭头来找到 `Cubic bezier(贝塞尔)` 编辑器。
 
 #### 4.1.7 在元素面板中展开所有的子节点
@@ -596,6 +604,7 @@ getInput([1, 2], console.log);
 #### 4.1.8 添加 `force state` (强制状态)
 
 使用右击节点后使用 `force state`，可以对相应的节点强制添加状态:
+
 > :hover :active :focus :visited :focus-within :focus-visible
 
 #### 4.1.9 DOM 断点
@@ -656,12 +665,12 @@ getInput([1, 2], console.log);
 
 > navigator.geolocation.watchPosition(console.log)
 
-如果 `App` 有使用加速计，传感器面板也可以模拟设备在3D空间中的位置。
+如果 `App` 有使用加速计，传感器面板也可以模拟设备在 3D 空间中的位置。
 ![Drawer_Sensors](./image/Drawer_Sensors.png)
 
 #### 5.2.2 模拟网络状态
 
-就像伪造位置一样，可以使用 `Drawer` 里的 `Network conditions` 面板模拟特定的网络行为: 模拟互联网为典型的3G网络甚至离线！这通常用来了解页面资源的大小。或者测试应用的离线功能。除此之外，`Network conditions` 面板还可以模拟特定的用户代理。
+就像伪造位置一样，可以使用 `Drawer` 里的 `Network conditions` 面板模拟特定的网络行为: 模拟互联网为典型的 3G 网络甚至离线！这通常用来了解页面资源的大小。或者测试应用的离线功能。除此之外，`Network conditions` 面板还可以模拟特定的用户代理。
 
 #### 5.2.3 快速 Source
 
@@ -672,14 +681,15 @@ getInput([1, 2], console.log);
 使用 `coverage` 面板可以跟踪当前加载的 `JS` 和 `CSS` 文件的 `哪些行正在被执行` ，并显示 `已使用与未使用字节的百分比`。
 它用 `灰蓝` 的线条标记 `运行` 和用 `红色` 的线条标记 `未运行`。
 
-#### 5.2.5 检查修改的CSS文件
+#### 5.2.5 检查修改的 CSS 文件
 
 使用 `Drawer` 中的 `Changes`可以将 `通过浏览器更改的CSS文件内容` 与 `最初加载的样式表` 进行比较。
-> 注: 只能比较CSS文件的内容，不能比较直接添加在节点上的CSS属性。
+
+> 注: 只能比较 CSS 文件的内容，不能比较直接添加在节点上的 CSS 属性。
 
 ## 六. WorkSpaces 篇
 
-### 6.1 workspace技巧
+### 6.1 workspace 技巧
 
 #### 6.1.1 在 `Chrome` 中修改文件
 

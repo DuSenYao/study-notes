@@ -3,7 +3,7 @@
 <div>
   <!--data uri 技巧，通常用于CSS设置背景图-->
   <img src='data:image/svg+xml;charset=utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="100" style="fill:rgb(0,0,255);stroke-width:1;stroke:rgb(0,0,0)"/></svg>'/>
-  
+
   <!--这个图片，当指定了宽度后，图片被等比例缩放了。这个特性非常重要，适用于既要限制图片尺寸，又要保持图片比例的场景。-->
   <img src='data:image/svg+xml;charset=utf8,<svg width="600" height="400" version="1.1"
     xmlns="http://www.w3.org/2000/svg"><ellipse cx="300" cy="150" rx="200" ry="80"
@@ -41,7 +41,7 @@
     <!--
       这里图片的选择就是：viewport 宽度乘以1或0.8或0.5得到的像素来选择不同的 w 。
       比如 viewport 为 800px ，对应 size 80vw ，就是 800*0.8=640 像素，应该加载一个 640w 的源图，但是没有找到 640w ，这时候一般选择第一个大于 640w 的，也就是 1000w。
-      对于没有给出 sizes 的，一般是按照 100vw 来选择加载图片 
+      对于没有给出 sizes 的，一般是按照 100vw 来选择加载图片
     -->
     <img
       srcset="

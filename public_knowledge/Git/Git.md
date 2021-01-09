@@ -2,11 +2,12 @@
 title: Git
 date: 2020-12-14 18:22:34
 author: 杜森垚
-keywords: 'Git'
+keywords: "Git"
 categories: Git
 tags:
   - Git
 ---
+
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
@@ -14,11 +15,11 @@ tags:
 - [Git(分布式版本控制器)](#git分布式版本控制器)
   - [一. Git](#一-git)
     - [1.1 特点](#11-特点)
-    - [1.2 Git命令](#12-git命令)
+    - [1.2 Git 命令](#12-git命令)
       - [1.2.1 创建仓库命令](#121-创建仓库命令)
         - [1.2.1.1 `git clone` 网址 [本地文件夹名]](#1211-git-clone-网址-本地文件夹名)
         - [1.2.1.2 `git init`](#1212-git-init)
-      - [1.2.2 Git查看](#122-git查看)
+      - [1.2.2 Git 查看](#122-git查看)
         - [1.2.2.1 `git status`](#1221-git-status)
         - [1.2.2.2 `git diff [file]`](#1222-git-diff-file)
         - [1.2.2.3 `git log` [-number] [分支名]](#1223-git-log-number-分支名)
@@ -51,22 +52,22 @@ tags:
     - [1.3 基础知识](#13-基础知识)
       - [1.3.1 Git 基本工作流程](#131-git-基本工作流程)
       - [1.3.2 `.git`文件夹下的文件](#132-git文件夹下的文件)
-      - [1.3.3 git中 commit、tree和blob三个对象的关系](#133-git中-commit-tree和blob三个对象的关系)
-      - [1.3.4 git的底层运行流程](#134-git的底层运行流程)
+      - [1.3.3 git 中 commit、tree 和 blob 三个对象的关系](#133-git中-commit-tree和blob三个对象的关系)
+      - [1.3.4 git 的底层运行流程](#134-git的底层运行流程)
       - [1.3.5 分离头指针情况下的注意事项](#135-分离头指针情况下的注意事项)
-      - [1.3. 6 HEAD与branch](#13-6-head与branch)
+      - [1.3. 6 HEAD 与 branch](#13-6-head与branch)
       - [1.3.7 在 `.gitignore` 文件里指定不需要 Git 管理的文件](#137-在-gitignore-文件里指定不需要-git-管理的文件)
       - [1.3.8 常用的传输协议](#138-常用的传输协议)
-      - [1.3.9 Git解决的问题与带来的问题](#139-git解决的问题与带来的问题)
-      - [1.3.10 将Git的默认编辑器设置为VSCode](#1310-将git的默认编辑器设置为vscode)
-    - [1.4 Git集成使用禁忌](#14-git集成使用禁忌)
+      - [1.3.9 Git 解决的问题与带来的问题](#139-git解决的问题与带来的问题)
+      - [1.3.10 将 Git 的默认编辑器设置为 VSCode](#1310-将git的默认编辑器设置为vscode)
+    - [1.4 Git 集成使用禁忌](#14-git集成使用禁忌)
       - [1.4.1 `git push -f`](#141-git-push-f)
       - [1.4.2 禁止向集成分支执行变更历史的操作](#142-禁止向集成分支执行变更历史的操作)
   - [二. GitHub](#二-github)
-    - [2.1 GitHub基础](#21-github基础)
+    - [2.1 GitHub 基础](#21-github基础)
       - [2.1.1 配置公私钥](#211-配置公私钥)
-      - [2.1.2 GitHub优点](#212-github优点)
-      - [2.1.3 GitHub核心功能](#213-github核心功能)
+      - [2.1.2 GitHub 优点](#212-github优点)
+      - [2.1.3 GitHub 核心功能](#213-github核心功能)
       - [2.1.4 快速搜索到感兴趣的开源项目](#214-快速搜索到感兴趣的开源项目)
       - [2.1.5 组织类型的仓库](#215-组织类型的仓库)
       - [2.1.6 指导文档](#216-指导文档)
@@ -82,7 +83,7 @@ tags:
     - [3.3 不同人修改相同文件的相同区域](#33-不同人修改相同文件的相同区域)
     - [3.4 同时变更了文件名和文件内容](#34-同时变更了文件名和文件内容)
     - [3.5 同一文件改成不同的文件名](#35-同一文件改成不同的文件名)
-    - [3.6 提交commit后，想再忽略一些已经提交的文件](#36-提交commit后想再忽略一些已经提交的文件)
+    - [3.6 提交 commit 后，想再忽略一些已经提交的文件](#36-提交commit后想再忽略一些已经提交的文件)
   - [四. GitLab](#四-gitlab)
     - [4.1 核心功能](#41-核心功能)
     - [4.2 项目管理](#42-项目管理)
@@ -112,30 +113,32 @@ tags:
 - 支持离线操作
 - 容易定制工作流程
 
-### 1.2 Git命令
+### 1.2 Git 命令
 
 #### 1.2.1 创建仓库命令
 
 ##### 1.2.1.1 `git clone` 网址 [本地文件夹名]
 
-克隆Git仓库到本地
+克隆 Git 仓库到本地
 
 > `--bare`: 新建一个**裸仓库**，不将代码放到 `<directory>/.git` 中，而是将 `<directory>` 本身设置为仓库，无法签出工作树，此外，远程的分支头直接复制到相应的本地分支头，而不将它们映射到 `refs/remotes/origin/`。使用此选项时，既不会创建远程跟踪分支，也不会创建相关的配置变量。
 
 ##### 1.2.1.2 `git init`
 
-创建Git仓库
+创建 Git 仓库
 
-把已有的项目代码纳入Git管理
+把已有的项目代码纳入 Git 管理
+
 > `cd` 项目代码所在的文件夹
 > `git init`
 
-新建的项目直接用Git管理
+新建的项目直接用 Git 管理
+
 > `cd` 文件夹
 > `git init 项目文件名`'
 > 注: 会在当前路径下创建和项目名称同名的文件夹
 
-#### 1.2.2 Git查看
+#### 1.2.2 Git 查看
 
 ##### 1.2.2.1 `git status`
 
@@ -147,30 +150,28 @@ tags:
 
 显示暂存区与工作区的差异
 
-> **例**: `git diff HEAD` 显示工作区和暂存区与最后一次commit之间的差异
+> **例**: `git diff HEAD` 显示工作区和暂存区与最后一次 commit 之间的差异
 
 1. `[--cached|--staged] [file]` : 显示暂存区和最后一次提交(commit)的差异
 
 2. `[first-branch]...[second-branch] [-- file]` : 显示两次提交或两个分支之间的差异，如果最后有--文件名，就是对比两次提交指定文件的差异
 
-> **例1**: `git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1`
-> **例2**: `git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1...e77f6c3cc85fd535c36df30813ed23e9fb8255d3`
-> **例3**: `git diff temp master --Git.md`
+> **例 1**: `git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1` > **例 2**: `git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1...e77f6c3cc85fd535c36df30813ed23e9fb8255d3` > **例 3**: `git diff temp master --Git.md`
 
 ##### 1.2.2.3 `git log` [-number] [分支名]
 
 查看历史提交记录
 
-> **例**: `git log -2`  // 查看最近的两次提交记录
+> **例**: `git log -2` // 查看最近的两次提交记录
 
 1. `--oneline` 查看简要历史记录
-2. `--graph`   查看图形化的日志
+2. `--graph` 查看图形化的日志
 3. `--reverse` 逆向显示日志
-4. `--author`  查找指定用户的提交日志
+4. `--author` 查找指定用户的提交日志
 
 ##### 1.2.2.4 `git reflog`
 
-查看本地所有分支的所有操作记录，(包括已经被删除的commit和reset的操作)
+查看本地所有分支的所有操作记录，(包括已经被删除的 commit 和 reset 的操作)
 
 1. `delete`: 删除指定的记录
 
@@ -184,9 +185,9 @@ tags:
 
 查看`Git对象`的`属性`
 
-1. `t`: 查看git对象的类型
-2. `s`: 查看git对象的大小
-3. `p` 查看git对象的内容
+1. `t`: 查看 git 对象的类型
+2. `s`: 查看 git 对象的大小
+3. `p` 查看 git 对象的内容
 
 > **例**: git cat-file -p 003e2f133adc5a53f21a72ca5b62eb08566121d1
 
@@ -237,7 +238,7 @@ tags:
 
 - `-r` 递归删除，即如果后面跟的是一个目录做为参数，则会递归删除整个目录中的所有子目录和文件
 
-> **例**: `git rm –r *`   #删除当前目录下的所有文件和子目录
+> **例**: `git rm –r *` #删除当前目录下的所有文件和子目录
 
 ##### 1.2.3.3 `git mv [file] [newFile]`
 
@@ -250,6 +251,7 @@ tags:
 ##### 1.2.3.4 `git restore`
 
 把未 add 到暂存区的文件修改撤销
+
 > **例** : git restore public_knowledge\Git\Git.md
 
 - `--staged` : 把文件从暂存区撤回到工作区，保留文件最后一次修改的内容
@@ -293,10 +295,10 @@ tags:
 
 从远程获取代码并合并本地的版本，其实就是 `git fetch` 和 `git merge FETCH_HEAD` 的简写
 
-> **例1**: `git pull origin master` // 如果远程分支是与当前分支合并，则冒号后面的部分可以省略
-> **例2**: `git pull origin master:main` // 将远程主机 origin 的 master 分支拉取过来，与本地的 main 分支合并
+> **例 1**: `git pull origin master` // 如果远程分支是与当前分支合并，则冒号后面的部分可以省略
+> **例 2**: `git pull origin master:main` // 将远程主机 origin 的 master 分支拉取过来，与本地的 main 分支合并
 
-- `--rebase`: push失败，需要先把服务器上的代码给 pull 下来，为了避免有 merge 动作，可以使用
+- `--rebase`: push 失败，需要先把服务器上的代码给 pull 下来，为了避免有 merge 动作，可以使用
   > 相当于 git fetch + git rebase FETCH_HEAD
 
 ##### 1.2.4.4 `git push <远程主机名> <本地分支名>:<远程分支名>`
@@ -308,8 +310,8 @@ tags:
 - `-f`: 本地版本与远程版本有差异时，可以使用这个参数强制推送，多人合作禁用，如果要用可以使用 `git push --force-with-lease`，相对安全
 - `-d`: 删除远程主机的分支
 - `--all`: 推送全部分支
-- `-u` : 如果当前分支与多个主机存在追踪关系，则可以使用 `-u` 参数指定一个默认主机，这样后面就可以不加任何参数使用 git push，不带任何参数的git push，默认只推送当前分支。如果想更改设置，可以使用git config命令。`git config --global push.default matching` 或 `git config --global push.default simple`
-- 使用`ssh`协议推送: `gitHub: git push  git@github.com:DuSenYao/Learning-notes-and-materials.git`
+- `-u` : 如果当前分支与多个主机存在追踪关系，则可以使用 `-u` 参数指定一个默认主机，这样后面就可以不加任何参数使用 git push，不带任何参数的 git push，默认只推送当前分支。如果想更改设置，可以使用 git config 命令。`git config --global push.default matching` 或 `git config --global push.default simple`
+- 使用`ssh`协议推送: `gitHub: git push git@github.com:DuSenYao/Learning-notes-and-materials.git`
 
 > **注**: 需要 [配置公私钥](#211-配置公私钥)
 
@@ -317,7 +319,7 @@ tags:
 
 ##### 1.2.5.1 `git branch` [branchName]
 
-不加name是列出本地分支，加name是创建分支
+不加 name 是列出本地分支，加 name 是创建分支
 
 - `-r`: 查看远程分支
 
@@ -346,6 +348,7 @@ tags:
 ##### 1.2.5.3 `git merge <branchName>`
 
 合并分支
+
 > **例**: `git merge dev`
 
 - `[alias]/[brach]`: 将远程的分支合并到当前分支
@@ -360,10 +363,10 @@ tags:
 
 ##### 1.2.6.1 `git commit` -m "message"
 
-主要是将暂存区里的改动给提交到本地的版本库，message填写摘要
+主要是将暂存区里的改动给提交到本地的版本库，message 填写摘要
 
 - `-a`: 跳过暂存区，从工作区直接提交到本地版本库
-- `--amend`: 追加提交，在不增加一个新的`commit`的情况下，将新修改的代码追加到`前一次`的commit中
+- `--amend`: 追加提交，在不增加一个新的`commit`的情况下，将新修改的代码追加到`前一次`的 commit 中
 
 ##### 1.2.6.2 `git reset` [--soft | --mixed | --hard] [HEAD] [-- file]
 
@@ -381,7 +384,7 @@ tags:
 
 > **例**: `git reset --soft HEAD` 回退到当前版本
 
-- `--hard`: 将指定版本的内容放入暂存区和工作区，也就是所有没有commit的修改都会丢失，**慎用**！
+- `--hard`: 将指定版本的内容放入暂存区和工作区，也就是所有没有 commit 的修改都会丢失，**慎用**！
 
 ```txt
 例1: git reset –hard HEAD~3            // 回退上上上一个版本
@@ -411,11 +414,11 @@ tags:
   · git push将master分支的提交上传
 ```
 
-- `-i`: 打开vim编辑模式，执行会自动打开vim编辑模式，合并的记录前面都有相同的指令 pick，下面有commands，根据这些指令可以修改，修改后 `ESC -> :wq!` 保存并退出，就会进入注释界面，编辑好后退出即可。使用各种指令可以完成各种commit提交记录的合并
+- `-i`: 打开 vim 编辑模式，执行会自动打开 vim 编辑模式，合并的记录前面都有相同的指令 pick，下面有 commands，根据这些指令可以修改，修改后 `ESC -> :wq!` 保存并退出，就会进入注释界面，编辑好后退出即可。使用各种指令可以完成各种 commit 提交记录的合并
 
 - `--continue` : 合并冲突，结合 "git add 文件" 命令一起用与修复冲突，提示开发者，一步一步地有没有解决冲突。
-- `--abort` : 放弃合并，回到rebase操作之前的状态，之前的提交的不会丢弃
-- `--skip` : 则会将引起冲突的commits丢弃掉(**慎用**)；
+- `--abort` : 放弃合并，回到 rebase 操作之前的状态，之前的提交的不会丢弃
+- `--skip` : 则会将引起冲突的 commits 丢弃掉(**慎用**)；
 
 #### 1.2.7 其他
 
@@ -427,10 +430,10 @@ tags:
 
 临时保存和恢复修改，可跨分支，在 `未add` 之前才能执行
 
-- `[save message]`: 保存修改到临时目录，并把工作区的文件还原到上一次commit
+- `[save message]`: 保存修改到临时目录，并把工作区的文件还原到上一次 commit
 - `list`: 显示所有保存的记录列表
-- `pop stash@{num}`: 恢复，num是可选值，通过 `git stash list` 查看具体值，只能恢复一次
-- `apply stash@{num}`: 恢复，num是可选值，通过 `git stash list` 查看具体值，可恢复多次
+- `pop stash@{num}`: 恢复，num 是可选值，通过 `git stash list` 查看具体值，只能恢复一次
+- `apply stash@{num}`: 恢复，num 是可选值，通过 `git stash list` 查看具体值，可恢复多次
 
 > **例**: `git stash apply stash@{0}`
 
@@ -439,11 +442,11 @@ tags:
 
 ##### 1.2.7.2 `git rerere`
 
-重用记录的解决方案，它允许Git记住解决一个块冲突的方法，这样在下一次看到 **相同的冲突** 时，Git可以自动地解决它。
+重用记录的解决方案，它允许 Git 记住解决一个块冲突的方法，这样在下一次看到 **相同的冲突** 时，Git 可以自动地解决它。
 
 > **`rerere` 启用** : `git config --global rerere.enabled true`
 
-实际应用不常用，[查看Git文档](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-Rerere)
+实际应用不常用，[查看 Git 文档](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-Rerere)
 
 ### 1.3 基础知识
 
@@ -467,49 +470,51 @@ C --> A: git merge FETCH_HEAD
 #### 1.3.2 `.git`文件夹下的文件
 
 - `HEAD`: 指向当前所在的分支
-- `config`: 当前 **git** 的配置文件，这是个引用指向 **refs文件夹** 下的 **heads文件夹** 里的分支
+- `config`: 当前 **git** 的配置文件，这是个引用指向 **refs 文件夹** 下的 **heads 文件夹** 里的分支
 - `refs文件夹`:
-  1. **heads文件夹** : 存放当前项目的所有分支文件，每个分支文件存放的是当前分支对应的是哪个commit(提交)
-  2. **remotes文件夹** : 存放远程分支
-  3. **tags文件夹** : 存放当前项目的所有标签
+
+  1. **heads 文件夹** : 存放当前项目的所有分支文件，每个分支文件存放的是当前分支对应的是哪个 commit(提交)
+  2. **remotes 文件夹** : 存放远程分支
+  3. **tags 文件夹** : 存放当前项目的所有标签
 
 - `objects文件夹`: 存放所有的`git对象`，对象哈希值前 `2` 位作为文件夹名称，后 `38` 位作为对象文件名, 可通过 `git cat-file -p` 命令，拼接文件夹名称+文件名查看
 
-#### 1.3.3 git中 commit、tree和blob三个对象的关系
+#### 1.3.3 git 中 commit、tree 和 blob 三个对象的关系
 
-`commit`是一个提交，它里面有一个`tree`对象对应`唯一的tree`，这个tree里面又有包含了 **多个tree和blob对象** ，每个tree对象又包含了多个tree和blob，文件的的最终形式是 **blob**。对于blob，git会认为文件内容相同时，就使用同一个blob，这样就极大的避免了频繁提交时，git的存储空间大幅上升。
+`commit`是一个提交，它里面有一个`tree`对象对应`唯一的tree`，这个 tree 里面又有包含了 **多个 tree 和 blob 对象** ，每个 tree 对象又包含了多个 tree 和 blob，文件的的最终形式是 **blob**。对于 blob，git 会认为文件内容相同时，就使用同一个 blob，这样就极大的避免了频繁提交时，git 的存储空间大幅上升。
 
 ![git中commit、tree和blob三个对象的关系](./image/git中commit、tree和blob三个对象的关系.png)
 
-#### 1.3.4 git的底层运行流程
+#### 1.3.4 git 的底层运行流程
 
-添加或者修改了文件并且`add`到`Stage Area`之后，首先会根据文件内容创建不同的`blob`，当进行提交之后马上创建一个tree组件把需要的blob组件添加进去，之后再封装到一个commit组件中完成本次提交。
-在将来进行reset的时候可以直接使用 `git reset --hard xxxxx` 可以恢复到某个特定的版本，在reset之后，git会根据这个commit组件的id快速的找到tree组件，然后根据tree找到blob组件，之后对仓库进行还原，整个过程都是以hash和二进制进行操作，所以git执行效率非常之高。
-没有文件也就是没有blob对象的目录是不会被git管理的，因为git是对文件进行版本管理，所以没有必要对空目录生成对象。
+添加或者修改了文件并且`add`到`Stage Area`之后，首先会根据文件内容创建不同的`blob`，当进行提交之后马上创建一个 tree 组件把需要的 blob 组件添加进去，之后再封装到一个 commit 组件中完成本次提交。
+在将来进行 reset 的时候可以直接使用 `git reset --hard xxxxx` 可以恢复到某个特定的版本，在 reset 之后，git 会根据这个 commit 组件的 id 快速的找到 tree 组件，然后根据 tree 找到 blob 组件，之后对仓库进行还原，整个过程都是以 hash 和二进制进行操作，所以 git 执行效率非常之高。
+没有文件也就是没有 blob 对象的目录是不会被 git 管理的，因为 git 是对文件进行版本管理，所以没有必要对空目录生成对象。
 
 #### 1.3.5 分离头指针情况下的注意事项
 
-`分离头指针`是指在没有任何分支的情况下做commit。
-> **优缺点** : 用于实验性的更改与提交，随时可以放弃，而不影响任何分支的状态。缺点也是没有分支，意味着一旦切换分支，这些commit都会被当做垃圾丢弃。
+`分离头指针`是指在没有任何分支的情况下做 commit。
 
-#### 1.3. 6 HEAD与branch
+> **优缺点** : 用于实验性的更改与提交，随时可以放弃，而不影响任何分支的状态。缺点也是没有分支，意味着一旦切换分支，这些 commit 都会被当做垃圾丢弃。
 
-`HEAD`在brach时，指代`最新的commit`，而在分离头状态时指代具体的commit。
+#### 1.3. 6 HEAD 与 branch
+
+`HEAD`在 brach 时，指代`最新的commit`，而在分离头状态时指代具体的 commit。
 
 **含义与用法** :
 
-- 一个节点，可以包含多个子节点(checkout出多个分支)
+- 一个节点，可以包含多个子节点(checkout 出多个分支)
 - 一个节点可以有多个父节点(多个分支合并)
-- ^是~都是父节点，区别是跟随数字时候，^2 是第二个父节点，而~2是父节点的父节点
+- ^是~都是父节点，区别是跟随数字时候，^2 是第二个父节点，而~2 是父节点的父节点
 - ^和~可以组合使用
 
-> **例** : `HEAD~2^2` // 最新commit的父节点的父节点的第二个父节点
+> **例** : `HEAD~2^2` // 最新 commit 的父节点的父节点的第二个父节点
 
 #### 1.3.7 在 `.gitignore` 文件里指定不需要 Git 管理的文件
 
 - **文件夹** : filename/
 - **具体的文件** : filename.后缀名
-- **特定后缀名的文件** : *.后缀名
+- **特定后缀名的文件** : \*.后缀名
 
 > **例** : .gitignore
 
@@ -517,34 +522,34 @@ C --> A: git merge FETCH_HEAD
 
 - 哑协议: `path/to/repo.git`
 - 智能协议: `file://path/to/repo.git`
-- http/https协议: `http://git-server.com/path/to/repo.git`
-- ssh协议: `user@git-server.com:path/to/repo.git` 是工作中最常用的智能协议
+- http/https 协议: `http://git-server.com/path/to/repo.git`
+- ssh 协议: `user@git-server.com:path/to/repo.git` 是工作中最常用的智能协议
 
 ==哑协议与与智能协议的区别:==
-> 1.哑协议传输进度不可见，智能协议传输可见
-> 2.智能协议比哑协议传输速度快
 
-#### 1.3.9 Git解决的问题与带来的问题
+> 1.哑协议传输进度不可见，智能协议传输可见 2.智能协议比哑协议传输速度快
+
+#### 1.3.9 Git 解决的问题与带来的问题
 
 **解决的问题**
 : 1.程序员之间进行协作编程的方式很少
-: 2.即使有SVN，与开源团队合作通常也需要获得项目管理员的许可才能 fork 项目的一个分支，否则便无法编辑代码，批准时间过长
+: 2.即使有 SVN，与开源团队合作通常也需要获得项目管理员的许可才能 fork 项目的一个分支，否则便无法编辑代码，批准时间过长
 : 3.许多开源项目都受到权限问题以及一些低效率事情的困扰
 
 **带来的问题**
 : 1.无法帮助开发人员寻找开源项目
 : 2.开发出的优秀开源项目，很难让他人知道
 
-#### 1.3.10 将Git的默认编辑器设置为VSCode
+#### 1.3.10 将 Git 的默认编辑器设置为 VSCode
 
 > `git config --global core.editor "code -w"`
 
-### 1.4 Git集成使用禁忌
+### 1.4 Git 集成使用禁忌
 
 #### 1.4.1 `git push -f`
 
 强制推送，即使不是 `fast-forward` [^1]
-[^1]: 当前分支合并到另一分支时，如果没有分歧，就会直接移动文件指针。这个过程叫做`fast-forward`。fast-forward能够保证不会强制覆盖别人的代码，确保了多人协同开发。尽量不要使用non fast forward方法提交代码。
+[^1]: 当前分支合并到另一分支时，如果没有分歧，就会直接移动文件指针。这个过程叫做`fast-forward`。fast-forward 能够保证不会强制覆盖别人的代码，确保了多人协同开发。尽量不要使用 non fast forward 方法提交代码。
 
 **危害**
 : 会使 commit 消失
@@ -558,30 +563,30 @@ C --> A: git merge FETCH_HEAD
 
 ## 二. GitHub
 
-### 2.1 GitHub基础
+### 2.1 GitHub 基础
 
 #### 2.1.1 配置公私钥
 
 在本地创建 `SSH` 秘钥
 
 > 在本地使用 `ssh-keygen -t ed25519 -C "1758231591@qq.com"`
-> 在 `C:\Users\用户名\.ssh\id_rsa.pub` 文件里，就有创建出来的`公钥`，把公钥复制出来，粘贴到GitHub上。
-> ssh协议需要这个，使用ssh传输协议，不需要账户密码就可以连接gitHub。
+> 在 `C:\Users\用户名\.ssh\id_rsa.pub` 文件里，就有创建出来的`公钥`，把公钥复制出来，粘贴到 GitHub 上。
+> ssh 协议需要这个，使用 ssh 传输协议，不需要账户密码就可以连接 gitHub。
 
-#### 2.1.2 GitHub优点
+#### 2.1.2 GitHub 优点
 
 - 让 Git 更容易使用，使协作和编写代码更容易
 - 不断解决用户痛点: 不仅致力于解决疑难问题，而且还致力于解决所有开发人员遇到的问题。
 - 更好、更直观的版本控制系统，具有成为 轻松、安全和远程协作项目 的潜力。
 
-#### 2.1.3 GitHub核心功能
+#### 2.1.3 GitHub 核心功能
 
 - code review: 代码评审，人人都可以看见项目，都可以发表自己对代码的看法与改进意见
 - Project management: 项目管理
 - integrations: 集成
 - Team management: 团队管理，对不同的仓库授予不同的权限
 - social coding: 开源代码
-- Documentation: 可以在GIthub上做个人网页、文档
+- Documentation: 可以在 GIthub 上做个人网页、文档
 - code hosting: 代码托管
 
 #### 2.1.4 快速搜索到感兴趣的开源项目
@@ -595,7 +600,7 @@ C --> A: git merge FETCH_HEAD
 
 #### 2.1.6 指导文档
 
-可以在 Wiki 中添加指导文档。能够添加 首页、工具栏 和 各种指导文档页面。文档使用markdown格式。
+可以在 Wiki 中添加指导文档。能够添加 首页、工具栏 和 各种指导文档页面。文档使用 markdown 格式。
 
 #### 2.1.7 发布产品包
 
@@ -603,7 +608,7 @@ s
 
 ### 2.2 使用 GitHub 进行团队协作
 
-先在GitHub上，创建团队类型的仓库。需要基于一个组织创建。
+先在 GitHub 上，创建团队类型的仓库。需要基于一个组织创建。
 
 #### 2.2.1 选择适合团队的工作流
 
@@ -645,8 +650,8 @@ s
 
 ![Merge button](./image/Merge_button.png)
 
-1. git merge : **git merge** 带 **squash** 参数则合并后特性分支上的多个commit会合并成一个commit 放到主分支上，不带 **squash** 参数则特性分支上的多个commit在合并后会原样体现出来。
-2. git rebase : 将特性分支上的多个commit放到主分支上，如果有冲突先将特性分支和主分支解决冲突 merge。 可以再使用 merge 将特性分支和主分支合并。
+1. git merge : **git merge** 带 **squash** 参数则合并后特性分支上的多个 commit 会合并成一个 commit 放到主分支上，不带 **squash** 参数则特性分支上的多个 commit 在合并后会原样体现出来。
+2. git rebase : 将特性分支上的多个 commit 放到主分支上，如果有冲突先将特性分支和主分支解决冲突 merge。 可以再使用 merge 将特性分支和主分支合并。
 
 #### 2.2.3 GitHub 中的 Projects
 
@@ -667,12 +672,11 @@ s
 
 **有两种方法**:
 
-- 如果在进行 `git push` 之前发现远程又有了更新，可以将本地的提交回退掉，避免掉无用的远程merge本地分支的提交记录，使用如下命令:
+- 如果在进行 `git push` 之前发现远程又有了更新，可以将本地的提交回退掉，避免掉无用的远程 merge 本地分支的提交记录，使用如下命令:
 
-> `git reset HEAD~`
-> `git pull`
+> `git reset HEAD~` > `git pull`
 
-然后重新进行新的提交，这样就可以避免远程与本地分支的 `merge` 提交记录，让git的提交历史更加干净。
+然后重新进行新的提交，这样就可以避免远程与本地分支的 `merge` 提交记录，让 git 的提交历史更加干净。
 
 - 把本地的提交基于远端分支做 `rebase` ，在本地解决掉冲突并完成自测。
 
@@ -688,17 +692,17 @@ s
 
 **分两种情况**:
 
-1. 没有修改相同位置，没有修改的冲突，变更文件名和变更文件内容的操作能够自动被git处理。
+1. 没有修改相同位置，没有修改的冲突，变更文件名和变更文件内容的操作能够自动被 git 处理。
 
-2. 如果一个人既变更了文件名又修改了文件，同时另一个人也修改了该文件的同一位置的内容，就会被git识别为冲突，而不能自动进行处理了。
+2. 如果一个人既变更了文件名又修改了文件，同时另一个人也修改了该文件的同一位置的内容，就会被 git 识别为冲突，而不能自动进行处理了。
 
-> **原因**: git存放blob文件时是以`文件内容`来区分的，并不以文件名来区分。
+> **原因**: git 存放 blob 文件时是以`文件内容`来区分的，并不以文件名来区分。
 
 ### 3.5 同一文件改成不同的文件名
 
-`git pull` 到本地分支，git会保留两个文件，手动来处理冲突，可以用 `git rm` 删除不要的文件，最后提交。
+`git pull` 到本地分支，git 会保留两个文件，手动来处理冲突，可以用 `git rm` 删除不要的文件，最后提交。
 
-### 3.6 提交commit后，想再忽略一些已经提交的文件
+### 3.6 提交 commit 后，想再忽略一些已经提交的文件
 
 1. 把想忽略的文件添加到 **.gitignore**
 2. 然后通过 `git rm --cached name_of_file` 的方式删除掉 **git** 仓库里面无需跟踪的文件。
@@ -728,9 +732,9 @@ s
 
 Git 是可以像 SVN 这样的中心工作流一样工作的。
 
-1. 从服务器上做git pull origin master把代码同步下来。
+1. 从服务器上做 git pull origin master 把代码同步下来。
 2. 改完后，git commit 到本地仓库中。
-3. 然后git push origin master到远程仓库中。
+3. 然后 git push origin master 到远程仓库中。
 
 如果在第 3 步发现 push 失败，因为别人已经提交了，那么需要先把服务器上的代码给 pull 下来，为了避免有 merge 动作，可以使用 `git pull --rebase` 。这样就可以把服务器上的提交直接合并到代码中，对此，Git 的操作是这样的。
 
@@ -806,9 +810,9 @@ GitFlow 协同工作流是由 Vincent Driessen 于 2010 年在 A successful Git 
 
 **GitFlow 的问题**:
 
-1. 分支太多，所以会出现 git log 混乱的局面。具体来说，主要是 git-flow 使用git merge --no-ff来合并分支，在 git-flow 这样多个分支的环境下会让分支管理的 log 变得很难看。
-  所谓--no-ff参数的意思是——no fast forward的意思。也就是说，合并的方法不要把这个分支的提交以前置合并的方式，而是留下一个 merge 的提交。
-  对此的建议是：只有 feature 合并到 developer 分支时，使用–no-ff 参数，其他的合并都不使用--no-ff参数来做合并。
+1. 分支太多，所以会出现 git log 混乱的局面。具体来说，主要是 git-flow 使用 `git merge --no-ff` 来合并分支，在 git-flow 这样多个分支的环境下会让分支管理的 log 变得很难看。
+   所谓 --no-ff 参数的意思是——no fast forward 的意思。也就是说，合并的方法不要把这个分支的提交以前置合并的方式，而是留下一个 merge 的提交。
+   对此的建议是：只有 feature 合并到 developer 分支时，使用–no-ff 参数，其他的合并都不使用--no-ff 参数来做合并。
 2. 管理复杂。需要来来回回地切换工作的分支，有时候一不小心没有切换，就提交到了不正确的分支上，还要回滚和重新提交。
 
 ### 5.4 GitHub/GitLab 协同工作流

@@ -94,7 +94,18 @@ keyword: VSCode operation
           - [6.2.12.1.3 调试配置属性](#621213-调试配置属性)
           - [6.2.12.1.4 附加到 Node.js 程序](#621214-附加到-nodejs-程序)
           - [6.2.12.1.5 远程调试](#621215-远程调试)
-        - [6.2.12.1.6 客户端调试](#621216-客户端调试)
+          - [6.2.12.1.6 客户端调试](#621216-客户端调试)
+      - [6.2.13 静态代码检查](#6213-静态代码检查)
+      - [6.2.14 测试](#6214-测试)
+      - [6.2.15 JS 插件推荐](#6215-js-插件推荐)
+    - [6.3 TypeScript](#63-typescript)
+      - [6.3.1 准备工作](#631-准备工作)
+      - [6.3.2 编译](#632-编译)
+      - [6.3.3 调试](#633-调试)
+    - [6.4 代码编辑](#64-代码编辑)
+      - [6.4.1 代码编辑的配置](#641-代码编辑的配置)
+      - [6.4.2 隐藏 JS 文件](#642-隐藏-js-文件)
+      - [6.4.3 使用不同版本的 TS](#643-使用不同版本的-ts)
   - [七. 前端开发](#七-前端开发)
     - [7.1 HTML](#71-html)
       - [7.1.1 IntelliSense](#711-intellisense)
@@ -126,15 +137,15 @@ keyword: VSCode operation
       - [7.4.1 快速开始](#741-快速开始)
       - [7.4.2 Vetur 插件](#742-vetur-插件)
       - [7.4.3 调试 Vue](#743-调试-vue)
-      - [7.4.4 启动调试](#744-启动调试)
-      - [7.4.5 静态代码检查](#745-静态代码检查)
+      - [7.4.4 静态代码检查](#744-静态代码检查)
+      - [7.4.5 Vue 插件推荐](#745-vue-插件推荐)
   - [八. 远程开发](#八-远程开发)
 
 <!-- /code_chunk_output -->
 
 # VSCode 编辑器
 
----------------
+---
 
 ## 一. 常用命令
 
@@ -643,7 +654,7 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。
 测试 **REST API** 的工具。REST API 是前后端分离最佳实践，是开发的一套标准或者说是一套规范。
 REST Client 支持 `cURL` 和 `RFC2616` 这两种业界标准来调用 REST API。
 
-> 例: [test.http](./test.http)
+> 例: [test.http](./演示文件/test.http)
 
 - HTTP 语言
   REST Client 插件添加了 HTTP 语言的定义，支持把以 `.http` 或 `.rest` 结尾的文件中的代码当作 **HTTP** 语言进行处理，提供了语法高亮、代码智能提示、代码注释等功能。通过 ### 分隔符，同一个 http 文件中可以涵盖多个 HTTP 请求。
@@ -1024,7 +1035,7 @@ VSCode 提供了 3 种方式可以使调试器 **附加** 到 Node.js 应用程�
 - 创建"附加"调试配置
   如果一个 Node.js 进程没有在调试模式下启动，那么通过指定进程 **ID(processId)** ，Node.js 调试器依旧可以附加到相应的进程。
   通过把 processId 属性设置为 `${command:PickProcess}`，可以使调试器在启动时动态地显示 Node.js 进程列表，可以方便地选择需要调试的 Node.js 进程。
-  例子: `launch.json -> "Attach to Process"`
+  例子: launch.json -> "Attach to Process"
 
 ###### 6.2.12.1.5 远程调试
 
@@ -1036,87 +1047,147 @@ VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 
 > localRoot 用于定义本地文件夹的根目录，remoteRoot 则用于定义远程文件夹的根目录。
 > **例** : launch.js -> "Attach to remote Edit Source code"
 
-##### 6.2.12.1.6 客户端调试
+###### 6.2.12.1.6 客户端调试
 
 [调试与运行](#45-调试与运行)
 
-(12)静态代码检查
-静态代码检查工具能够在编写代码时，提前发现代码中的问题。
-① ESLint
-通过 npm install eslint 或者 npm install -g eslint 在当前工作区或全局安装 ESLint，然后创建一个.eslintrc 配置文件。通过 eslint.run 设置项，可以设定是保存时(onSave)还是在输入时(onType)运行 ESlint 静态检查。
-(13)测试
-① Mocha Test Explorer
-Mocha 是常用的 JS 测试框架之一。Mocha Test Explorer 支持 Mocha 测试框架，支持的功能包括: - 单元测试的树状图单独显示在专有的测试资源管理器中。 - 运行或调试单元测试 - 测试覆盖率报告 - 并行的运行测试 - 保存文件时自动运行测试
-(14)JS 插件推荐
-① Path IntelliSense
-在 JS 文件中，通过 Path IntelliSense 插件可以对文件路径进行自动补全。此外，该插件也支持在 HTML 和 CSS 文件中对文件路径进行自动补全。
-② Import Cost
-在 JS 和 TS 文件中，通过 Import Cost 插件可以内联地显示导入的 npm 包的大小。通过以下格式的代码可计算出 npm 包的大小。 - import Func from "utils"; - import \* as Utils from "utils"; - import {Func} from "utils"; - import {orig as alias} from "utils"; - import Func from "utils/Func"; - const Func = require('utils').Func;
-③ CodeMetrics
-插件可以计算代码的复杂度，对于复杂度高的代码给出详细的信息。开发者可以根据复杂度的提示来优化代码。插件支持 JS、TS、和 Lua 三种语言的代码复杂度计算。
-④ JavaScript Booster
-提供了数十种代码操作，可以帮助开发者轻松重构并优化 JS 代码。
-⑤ Turbo Console Log
-Turbo Console Log 插件可以根据 JS 代码的上下文自动生成有意义的 console.log(); 代码，以便以后进行运行和调试。
+#### 6.2.13 静态代码检查
 
-3.TypeScript
+静态代码检查工具能够在编写代码时，提前发现代码中的问题。
+
+- ESLint
+  通过 `npm install eslint` 或者 `npm install -g eslint` 在当前工作区或全局安装 ESLint，然后创建一个.eslintrc 配置文件。通过 eslint.run 设置项，可以设定是保存时(onSave)还是在输入时(onType)运行 ESlint 静态检查。
+
+#### 6.2.14 测试
+
+- Mocha Test Explorer
+  Mocha 是常用的 JS 测试框架之一。Mocha Test Explorer 支持 Mocha 测试框架，支持的功能包括: - 单元测试的树状图单独显示在专有的测试资源管理器中。 - 运行或调试单元测试 - 测试覆盖率报告 - 并行的运行测试 - 保存文件时自动运行测试
+
+#### 6.2.15 JS 插件推荐
+
+- Path IntelliSense
+  在 JS 文件中，通过 Path IntelliSense 插件可以对文件路径进行自动补全。此外，该插件也支持在 HTML 和 CSS 文件中对文件路径进行自动补全。
+
+- Import Cost
+  在 JS 和 TS 文件中，通过 Import Cost 插件可以内联地显示导入的 npm 包的大小。通过以下格式的代码可计算出 npm 包的大小。 - import Func from "utils"; - import \* as Utils from "utils"; - import {Func} from "utils"; - import {orig as alias} from "utils"; - import Func from "utils/Func"; - const Func = require('utils').Func;
+
+- CodeMetrics
+  插件可以计算代码的复杂度，对于复杂度高的代码给出详细的信息。开发者可以根据复杂度的提示来优化代码。插件支持 JS、TS、和 Lua 三种语言的代码复杂度计算。
+
+- JavaScript Booster
+  提供了数十种代码操作，可以帮助开发者轻松重构并优化 JS 代码。
+
+- Turbo Console Log
+  Turbo Console Log 插件可以根据 JS 代码的上下文自动生成有意义的 console.log(); 代码，以便以后进行运行和调试。
+
+### 6.3 TypeScript
+
 TypeScript 是 JavaScript 的超集，可以编译成 JavaScript。与 JavaScript 类似，不需要安装额外的插件，VSCode 为 TypeScript 提供了开箱即用的支持，包括但不限于:IntelliSense、调试、代码格式化、代码导航、代码重构、以及其他高级功能。
-(1)安装 TypeScript 编译器
-安装 Node.js，安装完成后，需要确保 Node.js 已经被添加到 PATH 环境变量中。
-通过 npm 包管理工具安装 TypeScript，npm install -g typescript
-在命令行输入 tsc --version，来验证 TypeScript 是否安装成功。
-(2)编译 TypeScript 文件
-TS 文件需要先编译成 JS 文件后才能运行。打开 VSCode 的集成终端，在终端集成中输入 tsc file.ts。TS 的编译器(tsc)会对 file.ts 进行编译，并在同一目录下生成一个 file.js 的 JS 文件。
-(3)一键运行 TypeScript
-在 VSCode 中使用 Code Runner 插件，可以一键运行 TypeScript 代码。但是，需要安装 ts-node，ts-node 是一个基于 Node.js 的 TS 执行器。
-安装 ts-node，需要 Node.js 运行时及 TypeScript 编译器，在命令行输入以下命令，安装 ts-node
-npm install -g ts-node
-在安装了 Code Runner 插件后，可以使用以下几种方式快捷的运行代码: - 输入快捷键 Ctrl+Alt+N - 通过 Ctrl+Shift+P 快捷键打开命令面板，输入并执行 Run Code - 在编辑区域的右侧菜单中选择 Run Code - 在右侧的文件管理器中找到要运行的文件，在其右键菜单中选择 Run Code - 单击右上角的运行小三角按钮
-(4)编译
+
+#### 6.3.1 准备工作
+
+1. 安装 TypeScript 编译器
+   安装 Node.js，安装完成后，需要确保 Node.js 已经被添加到 PATH 环境变量中。
+   通过 npm 包管理工具安装 `npm install -g typescript`
+   在命令行输入 `tsc --version`，来验证 TypeScript 是否安装成功。
+
+2. 编译 TypeScript 文件
+   TS 文件需要先编译成 JS 文件后才能运行。打开 VSCode 的集成终端，在终端集成中输入 tsc file.ts。TS 的编译器(tsc)会对 file.ts 进行编译，并在同一目录下生成一个 file.js 的 JS 文件。
+
+3. 一键运行 TypeScript
+   在 VSCode 中使用 Code Runner 插件，可以一键运行 TypeScript 代码。但是，需要安装 **ts-node**，ts-node 是一个基于 Node.js 的 TS 执行器。
+   安装 ts-node，需要 Node.js 运行时及 TypeScript 编译器，在命令行输入 `npm install -g ts-node` 命令，安装 ts-node
+   在安装了 Code Runner 插件后，可以使用以下几种方式快捷的运行代码:
+   - 输入快捷键 Ctrl+Alt+N
+   - 通过 Ctrl+Shift+P 快捷键打开命令面板，输入并执行 Run Code
+   - 在编辑区域的右侧菜单中选择 Run Code
+   - 在右侧的文件管理器中找到要运行的文件，在其右键菜单中选择 Run Code
+   - 单击右上角的运行小三角按钮
+
+#### 6.3.2 编译
+
 TS 提供了丰富的项目设置和编译设置，以便后续进行项目管理及代码调试。
-① tsconfig.json
-tsconfig.json 文件定义了 TS 的项目设置及编译设置。
-例子:Compiler tools\tsconfig.json
-打开集成终端，只需要输入 tsc(注意:tsconfig.json 文件需要在根目录)，TS 编译器就会根据 tsconfig.json 文件的配置对当前的 TS 项目进行编译。
-② 源代码映射
-如果需要调试 TS 文件，则需要把 TS 文件与生成的 JS 文件进行映射。有两种方式可以生成映射文件。
-❶ 在 tsc 命令中添加--sourcemap 参数，如下:
-tsc hello.ts --sourcemap
-❷ 在 tsconfig.json 文件中添加 sourceMap 属性，并将该属性设置为 true，然后在集成终端中输入 tsc 并执行。
-例子:Compiler tools\tsconfig.json
-通过以上任意一种方式，都会生成一个 file.js.map 的源代码映射文件。
-③ 生成文件的位置
-默认情况下，生成的 JS 文件会和 TS 文件在同一个文件夹中。如果项目很大，则会产生很多 JS 文件，不便于管理。可以在 tsconfig.json 文件中添加 outDir 属性，来指定 JS 文件的目录。
-例子:Compiler tools\tsconfig.json
-(5)调试
-① 快速调试
-VSCode 依赖于 TS 的映射文件将原始的 TS 文件与生成的 JS 文件进行映射。
-❶ 在 tsconfig.json 文件中需要添加 sourceMap 属性，并将其设置为 true。
-❷ 在集成终端中输入并执行 tsc。这条命令执行完毕后会在"outDir"属性定义的目录中生成一个 file.js.map 的源代码映射文件和一个 file.js 文件。
-❸ 在需要的 TS 文件处添加断点，然后切换到调试视图，选择预设的调试任务(launch.json -> TS Launch Node)，就可以进行调试。在左侧的调试视图中可以看到与当前代码相关的变量信息，在调试控制台，可以对 TS 变量和表达式直接进行运算。
-② 调试配置
-TS 文件在调试前，需要编译，所以使用了一下两个属性: - preLaunchTask : 定义了在调试前要运行的任务(在 tasks.json 文件中设置)，在调试 TS 之前，需要先编译 TS 文件 - outFiles : 定义了 JS 文件的输出路径，优先级小于 tsconfig.json 中的定义。
-(6)代码编辑
-在 VSCode 中的代码编辑功能方面，TS 和 JS 非常相似，具体功能使用参考 行:512。
-① 代码编辑的配置
+
+- **tsconfig.json**
+  tsconfig.json 文件定义了 TS 的项目设置及编译设置。
+  例子: [tsconfig.json](./演示文件/tsconfig.json)
+  打开集成终端，只需要输入 `tsc` (注意:tsconfig.json 文件需要在根目录)，TS 编译器就会根据 tsconfig.json 文件的配置对当前的 TS 项目进行编译。
+
+- **源代码映射**
+  如果需要调试 TS 文件，则需要把 TS 文件与生成的 JS 文件进行映射。有两种方式可以生成映射文件。
+
+  - 在 tsc 命令中添加 `--sourcemap` 参数，如下:
+    `tsc hello.ts --sourcemap`
+  - 在 tsconfig.json 文件中添加 `sourceMap` 属性，并将该属性设置为 `true`，然后在集成终端中输入 `tsc` 并执行。
+    例子: [tsconfig.json](./演示文件/tsconfig.json)
+    通过以上任意一种方式，都会生成一个 file.js.map 的源代码映射文件。
+
+- **生成文件的位置**
+  默认情况下，生成的 JS 文件会和 TS 文件在同一个文件夹中。如果项目很大，则会产生很多 JS 文件，不便于管理。可以在 tsconfig.json 文件中添加 `outDir` 属性，来指定 JS 文件的目录。
+  例子: [tsconfig.json](./演示文件/tsconfig.json)
+
+#### 6.3.3 调试
+
+- 快速调试
+  VSCode 依赖于 TS 的映射文件将原始的 TS 文件与生成的 JS 文件进行映射。
+
+  - 在 tsconfig.json 文件中需要添加 `sourceMap` 属性，并将其设置为 true。
+  - 在集成终端中输入并执行 `tsc`。这条命令执行完毕后会在 "outDir" 属性定义的目录中生成一个 file.js.map 的源代码映射文件和一个 file.js 文件。
+  - 在需要的 TS 文件处添加断点，然后切换到调试视图，选择预设的调试任务(launch.json -> TS Launch Node)，就可以进行调试。
+    在左侧的调试视图中可以看到与当前代码相关的变量信息，在调试控制台，可以对 TS 变量和表达式直接进行运算。
+
+- 调试配置
+  TS 文件在调试前，需要编译，所以使用了以下两个属性:
+  - **preLaunchTask** : 定义了在调试前要运行的任务(在 tasks.json 文件中设置)，在调试 TS 之前，需要先编译 TS 文件
+  - **outFiles** : 定义了 JS 文件的输出路径，优先级小于 tsconfig.json 中的定义。
+
+### 6.4 代码编辑
+
+在 VSCode 中的代码编辑功能方面，TS 和 JS 非常相似。
+
+#### 6.4.1 代码编辑的配置
+
 在代码编辑方面，TS 和 JS 主要的不同之处就是设置项的不同。
-功能 TS 的设置项 JS 的设置项
-启用 JSDoc typescript.suggest.completeJSDocs javascript.suggest.completeJSDocs
-启用自动导入 typescript.autoImportSuggestions.enabled javascript.suggest.autoImports
-启用代码格式化 typescript.format.enable javascript.format.enable
-启用闭标签的自动补全 typescript.autoClosingTags javascript.autoClosingTags
-设置文件移动时如何更新导入 typescript.updateImportsOnFileMove.enabled javascript.updateImportsOnFileMove.enabled
-是否显示 CodeLens typescript.referencesCodeLens.enabled javascript.referencesCodeLens.enabled
-② 隐藏 JS 文件
-打开命令面板，输入并执行 Preferences : Oen Settings(JSON)，打开 settings.json 文件，在该文件下添加以下以下配置:
+
+- 启用 JSDoc
+  - `typescript.suggest.completeJSDocs`
+  - `javascript.suggest.completeJSDocs`
+- 启用自动导入
+  - `typescript.autoImportSuggestions.enabled` -
+  - `javascript.suggest.autoImports`
+- 启用代码格式化
+  - `typescript.format.enable`
+  - `javascript.format.enable`
+- 启用闭标签的自动补全
+  - `typescript.autoClosingTags`
+  - `javascript.autoClosingTags`
+- 启用重命名或移动文件时自动更新导入路径
+  - `typescript.updateImportsOnFileMove.enabled`
+  - `javascript.updateImportsOnFileMove.enabled`
+- 是否显示 CodeLens
+  - `CodeLens typescript.referencesCodeLens.enabled`
+  - `javascript.referencesCodeLens.enabled`
+
+#### 6.4.2 隐藏 JS 文件
+
+打开命令面板，输入并执行 `Preferences : Open Settings(JSON)`，打开 settings.json 文件，在该文件下添加以下以下配置:
+
+```json
 "files.exclude": {
-"\*_/_.js":{
-"when": "$(basename).ts"
+  "**/*.js":{
+    "when": "$(basename).ts"
+  }
 }
-}
-通过上面的配置，可以把与 TS 同名同级的 JS 文件隐藏。
-③ 使用不同版本的 TS
-有两种方式: - 点击 TS 文件底部状态栏的 TS 的版本号，单击版本号选择切换 - 在 TS 文件中，打开命令面板，输入并执行 TypeScript : Select TypeScript Version
+```
+
+> 通过上面的配置，可以把与 TS 同名同级的 JS 文件隐藏。
+
+#### 6.4.3 使用不同版本的 TS
+
+有两种方式:
+
+- 点击 TS 文件底部状态栏的 TS 的版本号，单击版本号选择切换
+- 在 TS 文件中，打开命令面板，输入并执行 `TypeScript : Select TypeScript Version`
 
 ## 七. 前端开发
 
@@ -1124,7 +1195,7 @@ VSCode 使用前端技术栈(HTML、CSS 和 TS)开发而成。同时 VSCode 对�
 
 ### 7.1 HTML
 
-VSCode 内置了对 HTML 的支持，包括 **语法高亮**、**代码补全**、**代码格式化**等各类功能。
+VSCode 内置了对 HTML 的支持，包括 **语法高亮**、**代码补全**、**代码格式化** 等各类功能。
 
 #### 7.1.1 IntelliSense
 
@@ -1134,8 +1205,7 @@ VSCode 内置了对 HTML 的支持，包括 **语法高亮**、**代码补全**�
 
 - 在输入 `>` 字符后，VSCode 会自动插入闭合标签。
 - 在输入 `/` 字符后，VSCode 会自动插入闭合标签。
-  可以通过以下设置来禁用自动闭合标签的功能:
-  `"html.autoClosingTags": false`
+  可以通过 `"html.autoClosingTags": false` 设置来禁用自动闭合标签的功能
 
 #### 7.1.3 颜色选择器
 
@@ -1144,16 +1214,18 @@ VSCode 内置了对 HTML 的支持，包括 **语法高亮**、**代码补全**�
 #### 7.1.4 验证嵌入的 JS 和 CSS
 
 VSCode 支持对嵌入 HTML 文件的 JS 脚本和 CSS 样式进行 **语法验证**。
+
 可以通过以下设置来禁用或启用验证功能，默认为启用状态:
-`"html.validate.scripts":true` // 是否对嵌入的脚本进行验证
-`"html.validate.styles":true` // 是否对嵌入的样式进行验证
+
+- `"html.validate.scripts":true` // 是否对嵌入的脚本进行验证
+- `"html.validate.styles":true` // 是否对嵌入的样式进行验证
 
 #### 7.1.5 代码折叠
 
 代码折叠有以下三种方式:
 
 - 通过单击行号与代码之间的折叠图标，可以对 HTML 代码进行代码折叠
-- 通过区域标记(\<!--#region-->)和(\<!--endregion-->)来定义代码折叠的范围
+- 通过区域标记 `<!--#region-->` 和 `<!--endregion-->` 来定义代码折叠的范围
 - 快捷键 `Ctrl + Shift + [\]` 折叠打开代码
 
 可以通过以下设置来切换折叠的策略:
@@ -1178,7 +1250,7 @@ HTML 代码格式化是基于 **js-beautify** npm 库进行的，通过 `"html.f
 VSCode 可以自定义额外的 HTML 数据格式。自定义的 HTML 标签、属性及属性的值可以获得自动补全、显示悬停信息等功能。
 
 1. 创建一个名为 `html.html-data.json` 的 HTML 数据格式文件
-  例 : [html.html-data.json](/.vscode/html.html-data.json)
+   例 : [html.html-data.json](/.vscode/html.html-data.json)
 2. 在 **.vscode/settings.json** 文件中通过 `html.customData` 设置项引入相应的 HTML 数据格式文件，然后，重启 VSCode。
 
 > 注: 仅能设置工作区文件夹
@@ -1186,7 +1258,7 @@ VSCode 可以自定义额外的 HTML 数据格式。自定义的 HTML 标签、�
 #### 7.1.8 HTML 插件推荐
 
 1. lit-html
-  lit-html 基于 lit-html 模板库，为嵌入 JS 和 TS 模板字符串中的 HTML 提供了完善的功能。
+   lit-html 基于 lit-html 模板库，为嵌入 JS 和 TS 模板字符串中的 HTML 提供了完善的功能。
 
 ### 7.2 CSS、SCSS 和 Less
 
@@ -1228,7 +1300,7 @@ VSCode 支持对 CSS、SCSS 和 Less 进行代码检查。
 {
   "css.validate": true,
   "scss.validate": true,
-  "less.validate": true,
+  "less.validate": true
 }
 ```
 
@@ -1245,18 +1317,18 @@ VSCode 支持对 CSS、SCSS 和 Less 进行代码检查。
 VSCode 可以自定义额外的 CSS 数据格式。自定义的 CSS 属性、伪类等信息可以获得自动补全、显示悬停信息等功能。
 
 1. 创建一个名为 css.css-data.json 的 CSS 数据格式文件。
-  例: [css.css-data.json](/.vscode/css.css-data.json)
+   例: [css.css-data.json](/.vscode/css.css-data.json)
 2. 在 settings.json 文件中通过 `"css.customData"` 设置项引用相应的 CSS 数据格式文件。
 
 #### 7.2.9 CSS 插件提示
 
 1. HTML CSS Support
-  这个插件为多种 HTML 相关语言提供了 CSS 的自动补全功能。支持的语言 ID 如下:
-  html、laravel-blade、razor、vue、pug、jade、handlebars、php、twig、md、nunjucks、javascript、javascriptreact、typescript、typescriptreact
+   这个插件为多种 HTML 相关语言提供了 CSS 的自动补全功能。支持的语言 ID 如下:
+   html、laravel-blade、razor、vue、pug、jade、handlebars、php、twig、md、nunjucks、javascript、javascriptreact、typescript、typescriptreact
 2. SCSS IntelliSense
-  这个插件为 SCSS 语言提供了丰富的支持
+   这个插件为 SCSS 语言提供了丰富的支持
 3. Easy LESS
-  每次保存 LESS 文件后，这个插件都会自动编译 Less 文件，然后生成 CSS 文件。还可以通过 `Ctrl + Shift + P` 快捷键打开命令面板，然后输入并执行 `Compile LESS to CSS` 命令。
+   每次保存 LESS 文件后，这个插件都会自动编译 Less 文件，然后生成 CSS 文件。还可以通过 `Ctrl + Shift + P` 快捷键打开命令面板，然后输入并执行 `Compile LESS to CSS` 命令。
 
 ### 7.3 Emmet
 
@@ -1269,7 +1341,8 @@ Emmet 是 Web 开发者必不可少的工具，为 HTML 和 CSS 提供了丰富�
 #### 7.3.2 在 HTML 中使用 Emmet
 
 在 HTML 文件中输入以下 Emmet 缩写:
-> **#page>div.log+ul#navigation>li*5>a{Item $}**
+
+> **#page>div.log+ul#navigation>li\*5>a{Item $}**
 
 在输入 Emmet 缩写的过程中，Emmet 缩写会出现在建议列表中，并且会有相应的 HTML 预览。按下 `Tab` 键或 `Enter` 键，VSCode 会在 HTML 文件中插入代码。
 
@@ -1280,16 +1353,16 @@ Emmet 是 Web 开发者必不可少的工具，为 HTML 和 CSS 提供了丰富�
 #### 7.3.4 设置 Emmet
 
 - 如果想用 Tab 键来展开 Emmet 缩写，可以通过下面的设置项来设置:
-  `"emmet.triggerExpansionOnTab": true`
+  - `"emmet.triggerExpansionOnTab": true`
 - 通过以下设置，可以在建议列表中禁用 Emmet 缩写:
-  `"emmet.showExpandedAbbreviation": "never"`
+  - `"emmet.showExpandedAbbreviation": "never"`
 - 通过以下设置项，可以把 Emmet 缩写始终放在建议列表的顶部:
-  `"emmet.showSuggestionsAsSnippets": true`
-  `"editor.snippetSuggestions": "top"`
+  - `"emmet.showSuggestionsAsSnippets": true`
+  - `"editor.snippetSuggestions": "top"`
 - 在其他文件中启用 Emmet 缩写
   通过对 `"emmet.includeLanguages"` 进行设置，把文件类型绑定到其他支持 Emmet 的文件上，就能启用相应的文件。
   此外，还可以通过以下设置，使 Emmet 缩写只在与 HTML/CSS 相关的文件中启用:
-  `"emmet.showExpandedAbbreviation": "isMarkupAndStyleSheetFilesOnly"`
+  - `"emmet.showExpandedAbbreviation": "isMarkupAndStyleSheetFilesOnly"`
 
 #### 7.3.5 Emmet 设置项
 
@@ -1298,6 +1371,7 @@ Emmet 是 Web 开发者必不可少的工具，为 HTML 和 CSS 提供了丰富�
 #### 7.3.6 自定义 Emmet 片段
 
 创建 `snippets.json` 文件，通过 `"emmet.extensionsPath"` 设置文件位置，到文件夹，不写文件名。
+
 > **例** : [snippets.json](/.vscode/snippets.json)
 
 ### 7.4 .Vue
@@ -1309,46 +1383,71 @@ Vue 是一个用于构建 Web 应用用户界面的 JS 库。VSCode 内置了对
 开始进行 Vue 开发之前，需要安装 Vue CLI，用于生成 Vue 应用。
 
 1. 安装 Vue CLI
-  在命令行中输入以下命令来安装 Vue CLI
-  `npm install -g @vue/cli`
+   在命令行中输入 `npm install -g @vue/cli` 命令来安装 Vue CLI
+
 2. 创建 Vue 项目
-  在命令行中输入以下命令来创建 Vue 应用
-  `vue create my-app`
+   在命令行中输入 `vue create my-app` 命令来创建 Vue 应用
+
 3. 运行 Vue 应用
-  在 VSCode 中打开集成终端，并输入以下命令，可以运行 Vue 应用，本地端口默认为 8080
-  `npm run serve`
+   在 VSCode 中打开集成终端，并输入 `npm run serve` 命令，可以运行 Vue 应用，本地端口默认为 8080
 
 #### 7.4.2 Vetur 插件
 
-  Vetur 插件为 Vue 开发提供了极为丰富的支持，功能包括但不限于: - 语法高亮 - 代码片段提示 - Emmet 缩写 - 静态代码检查 - 代码格式化 - 自动补全 - 调试
+Vetur 插件为 Vue 开发提供了极为丰富的支持，功能包括但不限于:
+
+- 语法高亮
+- 代码片段提示
+- Emmet 缩写
+- 静态代码检查
+- 代码格式化
+- 自动补全
+- 调试
 
 #### 7.4.3 调试 Vue
 
 1. 添加断点
-  打开需要调试的 Vue 文件，在相应的代码处添加断点。
+   打开需要调试的 Vue 文件，在相应的代码处添加断点。
 2. 配置调试文件
-  例 : launch.json -> "Launch Chrome Vue"
-3. 配置 webpack
-  需要为 Webpack 配置源代码映射的设置项。在 Vue 项目的根目录中创建一个 `vue.config.js` 文件，然后在文件中填入以下配置
 
-  ```json
-  module.exports = {
-    configureWebpack : {
-      devtool : 'source-map'
-    }
-  }
-  ```
+   ```json
+   {
+     "type": "chrome",
+     "request": "launch",
+     "name": "Launch Chrome Vue",
+     "url": "http://localhost:8080",
+     "webRoot": "${workspaceFolder}"
+   }
+   ```
 
-#### 7.4.4 启动调试
+3. 配置 Webpack
+   需要为 Webpack 配置源代码映射的设置项。在 Vue 项目的根目录中创建一个 **vue.config.js** 文件，然后在文件中填入以下配置
 
-有三种方式启动调试:
+   ```json
+   (module.exports = {
+     "configureWebpack": {
+       "devtool": "source-map"
+     }
+   })
+   ```
 
-- 在顶部的菜单栏中选择 `Debug-Start Debugging`
-- 使用 `F5` 快捷键
-- 通过左侧的活动栏切换到调试视图，然后单击绿色的调试按钮
+4. 使用 `npm install serve` 运行 Vue 应用
 
-#### 7.4.5 静态代码检查
+   > 如果之前已经运行了 Vue，那么可以先使用 `Ctrl + C` 停止运行，再重新运行
+
+5. 启动调试
+   启动调试之前，要确保 Vue 的程序 `http://localhost:8080` 已经运行
+   有三种方式启动调试:
+
+   - 在顶部的菜单栏中选择 `Debug-Start Debugging`
+   - 使用 `F5` 快捷键
+   - 通过左侧的活动栏切换到调试视图，然后单击绿色的调试按钮
+
+#### 7.4.4 静态代码检查
 
 Vetur 插件总内置了 **Vue ESLint** 插件(eslint-plugin-vue)，为 Vue 提供了强大的静态代码检查功能。对于检查出的错误或警告，会在代码下方显示波浪线，把鼠标悬停在代码上，会显示详细的错误提示信息。
+
+#### 7.4.5 Vue 插件推荐
+
+- Vue VSCode Snippets
 
 ## 八. 远程开发

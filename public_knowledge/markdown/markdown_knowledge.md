@@ -2,21 +2,22 @@
 title: Markdown知识
 date: 2020-12-10 11:22:34
 author: 杜森垚
-keywords: 'Markdown markdown-preview-enhanced'
+keywords: "Markdown markdown-preview-enhanced"
 categories: Markdown
 mathjax: false
 tags:
   - markdown-preview-enhanced
   - Markdown
 ---
+
 <!-- 文件最上方以 --- 分隔的区域是Front-matter，用于指定个别文件的变量 -->
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
 - [Markdown](#markdown)
-  - [一.Markdown基本要素](#一markdown基本要素)
-    - [1.1 什么是Markdown](#11-什么是markdown)
+  - [一.Markdown 基本要素](#一markdown基本要素)
+    - [1.1 什么是 Markdown](#11-什么是markdown)
     - [1.2 语法说明](#12-语法说明)
       - [标题](#标题)
       - [强调](#强调)
@@ -31,7 +32,7 @@ tags:
       - [分割线](#分割线)
       - [行内代码](#行内代码)
       - [代码块](#代码块)
-        - [代码块class(**MPA扩展特性**)](#代码块classmpa扩展特性)
+        - [代码块 class(**MPA 扩展特性**)](#代码块classmpa扩展特性)
       - [表格](#表格)
       - [目录列表(TOC)](#目录列表toc)
       - [todo list](#todo-list)
@@ -47,13 +48,14 @@ tags:
       - [导入外部文件](#导入外部文件)
 
 <!-- /code_chunk_output -->
+
 # Markdown
 
-## 一.Markdown基本要素
+## 一.Markdown 基本要素
 
-### 1.1 什么是Markdown
+### 1.1 什么是 Markdown
 
-  Markdown是一种文本格式。可以用它来控制文档的显示。使用markdown，可以创建粗体的文字，斜体的文字，添加图片，并创建列表等等。基本上，Markdown就是普通的文字加上 # 或者 * 等符号。
+Markdown 是一种文本格式。可以用它来控制文档的显示。使用 markdown，可以创建粗体的文字，斜体的文字，添加图片，并创建列表等等。基本上，Markdown 就是普通的文字加上 # 或者 \* 等符号。
 
 ### 1.2 语法说明
 
@@ -73,7 +75,7 @@ tags:
 ###### 这是 <h6> 六级标题
 ```
 
-**MPE扩展特性**: 如果想要给标题添加 id 或者 class，请在标题最后添加 {#id .class1 .class2}。例如：
+**MPE 扩展特性**: 如果想要给标题添加 id 或者 class，请在标题最后添加 {#id .class1 .class2}。例如：
 
 ```markdown
 # 这个标题拥有 1 个 id {#my_id}
@@ -90,7 +92,7 @@ _这是斜体的文字_
 **这是粗体的文字**
 __这是粗体的文字__
 
-_也 **组合** 这些符号_
+_也可以 **组合** 这些符号_
 
 ~~这个文字会被删除线删除~~
 ```
@@ -111,8 +113,8 @@ _也 **组合** 这些符号_
 ```markdown
 1. item1
 2. item2
-  1. item2 a
-  2. item2 b
+   1. item2 a
+   2. item2 b
 ```
 
 ##### 定义型列表
@@ -151,19 +153,20 @@ https://github.com - 自动生成
 
 // 页面内链接
 [footnote](#jump)
- <span id="jump>footnote</span>
+<span id="jump>footnote</span>
 ```
 
 #### 引用
 
-引用可以多层嵌套，引用的区块内也可以使用其他的Markdown语法，包括标题、列表、代码区块等
+引用可以多层嵌套，引用的区块内也可以使用其他的 Markdown 语法，包括标题、列表、代码区块等
 
 ```markdown
 正如 DSY 所说：
 
 > The world is like hell.
+>
 > 1. There is no God in the world
->>> Hell is where God is not.
+>    > > Hell is where God is not.
 ```
 
 #### 注释
@@ -177,12 +180,11 @@ HTML风格的注释: <!-- notes -->
 
 ```markdown
 如下，三个及以上的
-连字符
----
-星号
-***
-下划线
-____
+连字符 ---
+
+星号 ***
+
+下划线 ___
 ```
 
 #### 行内代码
@@ -193,44 +195,44 @@ ____
 
 #### 代码块
 
->可以在代码的上方和下方添加 ```
+> 可以在代码的上方和下方添加 ```
 
 - 语法高亮
-可以给代码块添加任何一种语言的语法高亮，如下:
+  可以给代码块添加任何一种语言的语法高亮，如下:
 
 ```JavaScript
 let a = 1, b = 2;
 [a, b] = [b, a];
 ```
 
-##### 代码块class(**MPA扩展特性**)
+##### 代码块 class(**MPA 扩展特性**)
 
 可以给代码块设置 class，达到特定的显示效果
 
 ```javascript
 function add(x, y) {
-  return x + y
+  return x + y;
 }
 ```
 
 - 代码行数
-想要代码块显示代码行数，只要添加 line-numbers class 就可以了。
+  想要代码块显示代码行数，只要添加 line-numbers class 就可以了。
 
 ```javascript
 function ride(x, y) {
-  return x * y
+  return x * y;
 }
 ```
 
 - 高亮代码行数
-可以通过添加 highlight 属性的方式来高亮代码行数
+  可以通过添加 highlight 属性的方式来高亮代码行数
 
 ```txt{highlight=[1,3,5]}
-  ```javascript
+  javascript
 
-  ```javascript
+  javascript
 
-  ```javascript
+  javascript
 ```
 
 #### 表格
@@ -299,8 +301,7 @@ Note right of C:右边注释
 
 #### 流程图
 
-[流程图语法](https://github.com/adrai/flowchart.js
-)
+[流程图语法](https://github.com/adrai/flowchart.js)
 
 ```flow
 st=>start: 开始
@@ -319,7 +320,7 @@ cond(no)->sub->io
 
 #### 表格合并
 
->需要在插件设置中打开 `enableExtendedTableSyntax` 选项来使其工作。
+> 需要在插件设置中打开 `enableExtendedTableSyntax` 选项来使其工作。
 
 ```txt
 colspan ">" or 空单元格
@@ -336,7 +337,7 @@ rowspan "^"
 
 #### Emoji & Font-Awesome
 
->只适用于 markdown-it parser 而不适用于 pandoc parser。 缺省下是启用的。可以在插件设置里禁用此功能。
+> 只适用于 markdown-it parser 而不适用于 pandoc parser。 缺省下是启用的。可以在插件设置里禁用此功能。
 
 ```txt
 :smile:
@@ -382,7 +383,7 @@ Content [^1]
 ```
 
 - 引用 PDF 文件
-如果要引用 PDF 文件，需要事先安装好 [pdf2svg](https://shd101wyy.github.io/markdown-preview-enhanced/#/zh-cn/extra)。 Markdown Preview Enhanced 支持引用本地或者在线的 PDF 文件。 但是，引用大的 PDF 文件是不推荐的。
+  如果要引用 PDF 文件，需要事先安装好 [pdf2svg](https://shd101wyy.github.io/markdown-preview-enhanced/#/zh-cn/extra)。 Markdown Preview Enhanced 支持引用本地或者在线的 PDF 文件。 但是，引用大的 PDF 文件是不推荐的。
 
 - 强制渲染为代码块
 
@@ -399,8 +400,8 @@ Content [^1]
 @import "test.md" {line_end=-4}
 ```
 
-- 插件中特有的Front-matter
-可以通过 front-matter 来设置图片的保存路径以及输出路径。
+- 插件中特有的 Front-matter
+  可以通过 front-matter 来设置图片的保存路径以及输出路径。
 
 ```txt
   ---

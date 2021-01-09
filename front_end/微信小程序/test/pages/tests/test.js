@@ -9,7 +9,8 @@ Page({
     age: 18,
     componentTextA: "模板",
     componentTextB: "数据绑定",
-    now: Date.now()
+    now: Date.now(),
+    percentValue: 2
   },
 
   tapTest: function (event) {
@@ -34,6 +35,40 @@ Page({
     query.exec(function(e) {
       console.log(e);
     });
+  },
+
+  // 进度条动画完成事件
+  onProgressActiveEnd(e){
+    console.log(e)
+  },
+  // 点击一次进度条增加5
+  onTapProgressBar(e){
+    console.log(e)
+    let progress = this.data.percentValue
+    if (progress < 100){
+      progress += 5
+      this.setData({percentValue:Math.min(100, progress)})
+    }
+  },
+  // 已经加载完的进度条progress，怎么点击某个按钮让它重新加载呢？
+  onTapReloadBtn(e){
+    /* this.setData({percentValue: 0})
+    if(wx.canIUse('nextTick')) {
+      // 延迟一部分操作到下一个时间片再执行
+      wx.nextTick(()=> {
+        this.setData({percentValue: 100})
+      })
+    } else{
+      // 17ms大约是1/60 s，与下一帧刷新有关，类似rAf。
+      setTimeout(() => {
+        this.setData({percentValue: 100})
+      }, 17);
+    } */
+    
+    // 每次setData在底层都需要调用 evaluateJavascript 这个底层函数，这个函数用于逻辑层和视图层之间的通讯，执行本来就需要时间
+    // 因此直接调用两次 setData ，也可以达到上面的效果
+    this.setData({percentValue:0})
+    this.setData({percentValue:90})
   },
 
   /**

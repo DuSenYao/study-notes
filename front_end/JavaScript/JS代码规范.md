@@ -1,11 +1,12 @@
 ---
 title: JS代码规范
 ---
+
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
-- [JS代码规范](#js代码规范)
+- [JS 代码规范](#js代码规范)
   - [一. 命名规范](#一-命名规范)
     - [不要使用拼音命名](#不要使用拼音命名)
     - [js 中普通变量使用 小写开头驼峰命名法，而非不区分大小写，或使用下划线命名等等](#js-中普通变量使用-小写开头驼峰命名法而非不区分大小写或使用下划线命名等等)
@@ -38,7 +39,7 @@ title: JS代码规范
 
 <!-- /code_chunk_output -->
 
-# JS代码规范
+# JS 代码规范
 
 ## 一. 命名规范
 
@@ -61,10 +62,10 @@ ES6 推出了一种更简洁的函数声明方式，在 **class** 或 **Object**
 ```js
 const use = {
   name: "Tom",
-  hello () {
+  hello() {
     console.log("hello" + this.Tom);
   }
-}
+};
 ```
 
 ### 优先使用 箭头函数 而不是使用传统的函数，尤其是使用 匿名函数 时
@@ -90,10 +91,7 @@ function multiply(a, b = 1) {
 如果需要 键值映射，不要使用一般的对象，而是用 ES6 的 [Map](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Map)。它不仅可以使用 **任意类型的键**，另外 Map 本身也是 **有序** 的。
 
 ```js
-const map = new Map()
-  .set(2, 'Tom')
-  .set(1, 'cat')
-  .set("age", 18);
+const map = new Map().set(2, "Tom").set(1, "cat").set("age", 18);
 // [2, 1, "age"]，因为是按照插入顺序排序的
 console.log(Array.from(map.keys()));
 ```
@@ -123,8 +121,8 @@ ES6 已经有了 [计算属性名](https://developer.mozilla.org/zh-CN/docs/Web/
 ```js
 // es5 写法
 const state = {
-  'user.name' : function() {}
-}
+  "user.name": function () {},
+};
 state[Date.now()] = new Date();
 ```
 
@@ -141,18 +139,15 @@ const state = {
 const item = {
   id: 1,
   role: [1, 2],
-  name: ''
-}
-const options = new Map()
-  .set(1, '黄金糕')
-  .set(2, '双皮奶')
-  .set(3, '蚵仔煎');
+  name: "",
+};
+const options = new Map().set(1, "黄金糕").set(2, "双皮奶").set(3, "蚵仔煎");
 
 function calcName(role) {
   return role
-    .map(k => options.get(k))
-    .filter(s => s)
-    .join(',');
+    .map((k) => options.get(k))
+    .filter((s) => s)
+    .join(",");
 }
 
 item.name = calcName(item.role);
@@ -166,8 +161,8 @@ item.name = calcName(item.role);
 const item = {
   id: 1,
   role: new Set([1, 2]),
-  name: ''
-}
+  name: "",
+};
 ```
 
 ## 三. 逻辑代码
@@ -195,7 +190,7 @@ const item = {
 如果一个函数需要一个对象参数，最好专门定义一个类型，并在注释上说明，便于在使用时 IDE 进行提示，而不需要去查找文档手册。
 
 ```js
-class User{
+class User {
   constructor(userName, password) {
     this.userName = userName;
     this.password = password;
@@ -203,15 +198,15 @@ class User{
 }
 
 /**
-* 格式化用户
-* @param {User} user 格式化的用户对象
-*/
+ * 格式化用户
+ * @param {User} user 格式化的用户对象
+ */
 function formatUser(user) {
   const { username, password } = user || {};
   return `user, username: ${username}, password: ${password}`;
 }
 
-const str = formatUser(new User('rx', '123456'));
+const str = formatUser(new User("rx", "123456"));
 console.log(str);
 ```
 
@@ -225,12 +220,11 @@ console.log(str);
 
 ```js
 function returnItself(o) {
-  return o
+  return o;
 }
 
-returnItself(() => console.log(1))
-
-;(() => {
-  console.log(2)
-})()
+returnItself(() => console.log(1));
+(() => {
+  console.log(2);
+})();
 ```

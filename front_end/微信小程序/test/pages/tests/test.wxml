@@ -40,6 +40,9 @@
 <!-- selectable 是在抽象节点 json 文件的 `componentGenerics` 字段中声明的。 -->
 <selectable-group generic:selectable="custom-checkbox" />
 
+<progress show-info bindtap="onTapProgressBar" stroke-width="2" percent="{{percentValue}}" stroke-width="3" backgroundColor="#f2f2f2" active-mode="forwards" active bindactiveend="onProgressActiveEnd"/>
+<button bindtap="onTapReloadBtn">重新加载进度条</button>
+
 <scroll-view style="height:500px;width:100vw;"></scroll-view>
 <scroll-view class="scroll-class"></scroll-view>
 
