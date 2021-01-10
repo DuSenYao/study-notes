@@ -1,0 +1,42 @@
+.canvasBox{
+  height: 500rpx;
+  position: relative;
+  background-color: white;
+}
+/* 外部灰色的圆 */
+.bigCircle{
+  width: 420rpx;
+  height: 420rpx;
+  border-radius: 50%;
+  position: absolute;
+  top:0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto auto;
+  background-color: #f2f2f2;
+}
+/* 内部白色的圆 */
+.littleCircle{
+  width: 350rpx;
+  height: 350rpx;
+  border-radius: 50%;
+  position: absolute;
+  top:0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto auto;
+  background-color: white;
+}
+.circle-progress{
+  width: 420rpx;
+  height: 420rpx;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto auto;
+  z-index: 99;
+}

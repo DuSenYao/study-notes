@@ -71,6 +71,18 @@ Page({
     this.setData({percentValue:90})
   },
 
+  // 重新绘制环形进度条
+  drawProgress() {
+    if (this.data.percentValue >= 100) {
+      this.setData({
+        percentValue: 0
+      })
+    }
+    this.setData({
+      percentValue: this.data.percentValue+10
+    })
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */

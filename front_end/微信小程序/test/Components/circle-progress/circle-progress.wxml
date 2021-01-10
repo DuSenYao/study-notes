@@ -1,0 +1,8 @@
+<view class="canvasBox">
+  <!-- 外部灰色的圆 -->
+  <view class="bigCircle">
+    <!-- 内部白色的圆 -->
+    <view class="littleCircle"></view>
+    <canvas canvas-id="runCanvas" id="runCanvas" class="circle-progress"></canvas>
+  </view>
+</view>

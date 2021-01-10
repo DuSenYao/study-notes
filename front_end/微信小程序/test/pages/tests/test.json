@@ -3,6 +3,7 @@
     "component-show": "/Components/component-show/component-show",
     "selectable-group": "/Components/selectable-group/selectable-group",
     "custom-checkbox": "/Components/custom-checkbox/custom-checkbox",
-    "custom-radio": "/Components/custom-radio/custom-radio"
+    "custom-radio": "/Components/custom-radio/custom-radio",
+    "circle-progress": "/Components/circle-progress/circle-progress"
   }
 }

@@ -1,0 +1,9 @@
+<!--pages/tests/rich-text/rich-text.wxml-->
+<view class="example-container">
+
+<view class="gap">代码示例</view>
+<rich-text space="emsp" nodes="{{nodes}}" bindtap="tap"></rich-text>
+
+<view class="gap"></view>
+<view class="gap"></view>
+</view>

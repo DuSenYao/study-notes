@@ -1,7 +1,7 @@
 <!-- wx:for -->
 <view>
   <view wx:for="{{classList}}" wx:for-index="i" wx:for-item="class">
-    {{i}} : {{class}} 
+    {{i}} : {{class}}
   </view>
   <!-- 自基础库版本 1.5.0 起，在大多数组件和自定义组件中， bind 后可以紧跟一个冒号，其含义不变，如 `bind:tap` 。基础库版本 2.8.1 起，在所有组件中开始提供这个支持。 -->
   <view bind:tap="tapTest">{{module.bar(module.foo)}} {{night.time}}</view>
@@ -23,6 +23,11 @@
 
 <button id="the-button" bindtap="selectorQuery"> Selector Query! </button>
 
+<view>
+  <navigator url="./rich-text/rich-text">rich-text</navigator>
+  <navigator url="./view-flex/view-flex">view-flex</navigator>
+</view>
+
 <!-- 引入自定义组件 -->
 <view>
   <component-show timestamp="{{now}}" prop-a="{{componentTextA}}" prop-b="{{componentTextB}}" prop-c="{{age}}">
@@ -40,19 +45,26 @@
 <!-- selectable 是在抽象节点 json 文件的 `componentGenerics` 字段中声明的。 -->
 <selectable-group generic:selectable="custom-checkbox" />
 
-<progress show-info bindtap="onTapProgressBar" stroke-width="2" percent="{{percentValue}}" stroke-width="3" backgroundColor="#f2f2f2" active-mode="forwards" active bindactiveend="onProgressActiveEnd"/>
+<!-- 进度条，重新加载进度条 -->
+<progress show-info bindtap="onTapProgressBar" stroke-width="2" percent="{{percentValue}}" style="color:red;"
+  stroke-width="3" backgroundColor="#f2f2f2" active-mode="forwards" active bindactiveend="onProgressActiveEnd" />
 <button bindtap="onTapReloadBtn">重新加载进度条</button>
+
+<!-- 环形进度条 -->
+<view class="gap">环形进度条</view>
+<circle-progress id="progress1" percent="{{percentValue}}"></circle-progress>
+<button bindtap="drawProgress">redraw</button>
 
 <scroll-view style="height:500px;width:100vw;"></scroll-view>
 <scroll-view class="scroll-class"></scroll-view>
 
 <!-- 声明了一个名称为 night 的模块，将 time 变量暴露出来，供当前页面使用 -->
 <wxs module="night">
-var time = "night";
+  var time = "night";
 
-module.exports = {
-  time: time
-}
+  module.exports = {
+    time: time
+  }
 </wxs>
 <!-- 引用其他 .wxs 文件模块，必须使用相对路径 -->
 <wxs src="./test.wxs" module="module" />

@@ -64,7 +64,7 @@ const use = {
   name: "Tom",
   hello() {
     console.log("hello" + this.Tom);
-  }
+  },
 };
 ```
 

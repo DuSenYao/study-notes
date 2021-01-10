@@ -1,0 +1,45 @@
+/* pages/tests/view-flex/view-flex.wxss */
+.bc_red {
+  background: red;
+  width: 100px;
+  height: 120px;
+}
+.bc_green {
+  background: green;
+  width: 100px;
+  height: 140px;
+}
+
+.btn{
+  display: flex;
+  align-items: middle;
+  padding: 8px 50px 8px;
+  border: 1px solid #b2b2b2;
+  background-color: #f2f2f2;
+  width:auto;
+}
+/* 圆角按钮 */
+.circle-btn__hover_btn {
+  opacity: 0.8;
+  /* 按钮单击时 缩小 0.0.5 提高体验效果 */
+  transform: scale(0.95, 0.95);
+}
+/* 方框按钮 */
+/* 按下时的下沉效果 */
+.rect-btn__hover_btn {
+  position: relative;
+  top: 3rpx;
+  left: 3rpx;
+  box-shadow: 0px 0px 8px rgba(175, 175, 175, .2) inset;
+}
+
+
+.flex-wrp {
+  display: flex;
+}
+.bc_blue {
+  background: blue;
+  width: 100px;
+  height: 100px;
+}
+

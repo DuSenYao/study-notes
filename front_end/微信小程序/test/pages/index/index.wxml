@@ -3,17 +3,17 @@
 <template is="skeleton" wx-if="{{loading}}" />
 
 <view class="container">
-  <view class="userinfo">
+  <view class="userinfo-index">
     <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
     <block wx:else>
-      <image bind:tap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
-      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
+      <image bind:tap="bindViewTap" class="userinfo-avatar-index" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+      <text class="userinfo-nickname-index">{{userInfo.nickName}}</text>
     </block>
     <!-- 绑定并阻止事件冒泡: 除 `bind` 外，也可以用 `catch` 来绑定事件。与 `bind` 不同，`catch` 会阻止事件向上冒泡。 -->
     <navigator url="../tests/test"> test page </navigator>
     <navigator url="../canvas/canvas"> canvas page </navigator>
   </view>
-  <view class="usermotto">
+  <view class="usermotto-index">
     <text class="user-motto">{{motto}}</text>
   </view>
   <view>

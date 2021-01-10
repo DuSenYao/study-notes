@@ -4,6 +4,8 @@
     "pages/index/index",
     "pages/logs/logs",
     "pages/tests/test",
+    "pages/tests/rich-text/rich-text",
+    "pages/tests/view-flex/view-flex",
     "pages/canvas/canvas"
   ],
   "window": {

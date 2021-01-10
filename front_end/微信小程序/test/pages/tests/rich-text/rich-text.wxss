@@ -1,0 +1,14 @@
+/* pages/tests/rich-text/rich-text.wxss */
+.div_class{
+  color: red;
+}
+
+/* 通用的类样式 */
+.img{
+  font-size:0;
+  display:block;
+}
+
+rich-text{
+  user-select:text;
+}

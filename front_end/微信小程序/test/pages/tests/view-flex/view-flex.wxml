@@ -1,0 +1,161 @@
+<!--pages/tests/view-flex/view-flex.wxml-->
+<view class="section">
+  <view class="gap">hover-class，指定按下去的样式类</view>
+  <!-- hover-class，指定按下去的样式类 -->
+  <view hover-class="bc_red" class="section__title">content</view>
+</view>
+
+<view class="section">
+  <view class="gap">hover-stop-propagation 阻止父节点出现点击态</view>
+  <view hover-class="bc_red">
+    <text>parent</text>
+    <!-- 
+      hover-stop-propagation 阻止父节点出现点击态，但不阻止冒泡事件
+      如果要阻止冒泡事件，可以使用 catch 绑定事件
+    -->
+    <view hover-stop-propagation="{{true}}" hover-class="bc_green">child view</view>
+  </view>
+</view>
+
+<view class="section">
+  <view class="gap">按钮示例</view>
+  <!-- 普通按钮 -->
+  <view class="section">
+    <button class="bth" type="primary">完成</button>
+  </view>
+  <!-- 圆形按钮 -->
+  <view class="section">
+    <button hover-class="circle-btn__hover_btn">
+      <icon type="success" size="80px"></icon>
+    </button>
+  </view>
+  <!-- 距形按钮 -->
+  <view class="section">
+    <button hover-class="rect-btn__hover_btn" class="btn" type="default" plain>
+      <icon type="success_no_circle" size="26px"></icon>完成
+    </button>
+  </view>
+</view>
+
+<!-- flex 布局 -->
+<view class="section__title">flex布局</view>
+
+<!-- justify-content -->
+<!-- flex-start -->
+<view class="section">
+  <view class="section__title">justify-content:flex-start</view>
+  <view class="flex-wrp" style="flex-direction:row;justify-content:flex-start;">
+    <view class="flex_item bc_green">1</view>
+    <view class="flex_item bc_red">2</view>
+    <view class="flex_item bc_blue">3</view>
+  </view>
+</view>
+
+<!-- flex-end -->
+<view class="section">
+  <view class="section__title">justify-content:flex-end</view>
+  <view class="flex-wrp" style="flex-direction:row;justify-content:flex-end;">
+    <view class="flex_item bc_green">1</view>
+    <view class="flex_item bc_red">2</view>
+    <view class="flex_item bc_blue">3</view>
+  </view>
+</view>
+
+<!-- center -->
+<view class="section">
+	<view class="section__title">justify-content:center</view>
+	<view class="flex-wrp" style="flex-direction:row;justify-content:center">
+		<view class="flex-item bc_green">1</view>
+		<view class="flex-item bc_red">2</view>
+		<view class="flex-item bc_blue">3</view>
+	</view>
+</view>
+
+<!-- space-between -->
+<view class="section">
+	<view class="section__title">justify-content:space-between</view>
+	<view class="flex-wrp" style="flex-direction:row;justify-content:space-between">
+		<view class="flex-item bc_green">1</view>
+		<view class="flex-item bc_red">2</view>
+		<view class="flex-item bc_blue">3</view>
+	</view>
+</view>
+
+<!-- space-around-->
+<view class="section">
+	<view class="section__title">justify-content:space-around</view>
+	<view class="flex-wrp" style="flex-direction:row;justify-content:space-around">
+		<view class="flex-item bc_green">1</view>
+		<view class="flex-item bc_red">2</view>
+		<view class="flex-item bc_blue">3</view>
+	</view>
+</view>
+
+<!-- align-items -->
+<!-- stretch -->
+<view class="section">
+	<view class="section__title">align-items:stretch</view>
+	<view class="flex-wrp" style="flex-direction:row;justify-content:space-around;align-items:stretch;">
+		<view class="flex-item bc_green">1</view>
+		<view class="flex-item bc_red">2</view>
+		<view style="height:auto;" class="flex-item bc_blue">3</view>
+	</view>
+</view>
+
+<!-- flex-start -->
+<view class="section">
+	<view class="section__title">align-items:flex-start</view>
+	<view class="flex-wrp" style="flex-direction:row;justify-content:space-around;align-items:flex-start;">
+		<view class="flex-item bc_green">1</view>
+		<view class="flex-item bc_red">2</view>
+		<view style="height:auto;" class="flex-item bc_blue">3</view>
+	</view>
+</view>
+
+<!-- baseline 以子元素的第一行文字对齐 -->
+<view class="section">
+	<view class="section__title">以子元素的第一行文字对齐</view>
+	<view class="flex-wrp" style="flex-direction:row;justify-content:space-around;align-items:baseline;">
+		<view class="flex-item bc_green">1</view>
+		<view style="padding-top:30px;" class="flex-item bc_red">2</view>
+		<view style="height:auto;line-height:150px;" class="flex-item bc_blue"><text>3</text></view>
+	</view>
+</view>
+
+
+<!-- flex-wrap -->
+<!-- wrap -->
+<view class="section">
+	<view class="section__title">元素多了，换行</view>
+	<view class="flex-wrp" style="flex-direction:row;justify-content:flex-start;align-items:baseline;flex-wrap:wrap;">
+		<view class="flex-item bc_green">1</view>
+		<view class="flex-item bc_red">2</view>
+		<view style="height:auto;" class="flex-item bc_blue">3</view>
+		<view style="height:auto;" class="flex-item bc_blue">3</view>
+		<view style="height:auto;" class="flex-item bc_blue">3</view>
+	</view>
+</view>
+
+<!-- 多行侧轴的对齐方式 -->
+<view class="section">
+	<view class="section__title">多行侧轴的对齐方式</view>
+	<view class="flex-wrp" style="flex-direction:row;justify-content:flex-start;align-items:baseline;flex-wrap:wrap;align-content:space-between;height:300px;">
+		<view class="flex-item bc_green">1</view>
+		<view class="flex-item bc_red">2</view>
+		<view style="height:auto;" class="flex-item bc_blue">3</view>
+		<view style="height:auto;" class="flex-item bc_blue">3</view>
+		<view style="height:auto;" class="flex-item bc_blue">3</view>
+		<view style="height:auto;" class="flex-item bc_blue">3</view>
+		<view style="height:auto;" class="flex-item bc_blue">3</view>
+	</view>
+</view>
+
+<!-- flex-direction: column,align-items:center -->
+<view class="section">
+	<view class="section__title">flex-direction: column,align-items:center</view>
+	<view class="flex-wrp" style="height: 300px;flex-direction:column;align-items:center;">
+		<view class="flex-item bc_green">1</view>
+		<view class="flex-item bc_red">2</view>
+		<view class="flex-item bc_blue">3</view>
+	</view>
+</view>
