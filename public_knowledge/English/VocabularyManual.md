@@ -755,3 +755,5 @@ keyword: Vocabulary
 - **program**
   - n. 程序; 编码指令
   - v. 编写程序
+
+- **renderer** : 渲染器
