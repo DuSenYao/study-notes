@@ -6,6 +6,7 @@
     "pages/tests/test",
     "pages/tests/rich-text/rich-text",
     "pages/tests/view-flex/view-flex",
+    "pages/tests/movable-view/movable-view",
     "pages/canvas/canvas"
   ],
   "window": {
