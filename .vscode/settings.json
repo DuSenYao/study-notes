@@ -11,6 +11,7 @@
     "NBSP",
     "Polacode",
     "RGBO",
+    "SSIM",
     "Skia",
     "ZWNJ",
     "difftool",
@@ -32,11 +33,8 @@
     "typeof",
     "vorbis"
   ],
-  "todo-tree.tree.scanMode": "workspace",
   "html.customData": [".vscode/html.html-data.json"],
   "css.customData": [
     ".vscode/css.css-data.json"
-  ],
-  "commentTranslate.targetLanguage": "zh-CN",
-  "todo-tree.tree.showCountsInTree": true
+  ]
 }
