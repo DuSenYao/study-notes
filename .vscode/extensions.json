@@ -27,6 +27,7 @@
     "pflannery.vscode-versionlens",
     "ecmel.vscode-html-css",
     "alefragnani.bookmarks",
-    "gruntfuggly.todo-tree"
+    "gruntfuggly.todo-tree",
+    "pranaygp.vscode-css-peek"
   ]
 }
