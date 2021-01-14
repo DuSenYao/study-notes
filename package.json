@@ -13,8 +13,7 @@
     "eslint": "^7.17.0"
   },
   "scripts": {
-    "test": "npm run lint && echo \"Write some tests!\"",
-    "lint": "eslint src"
+    "test": "npm run lint && echo \"Write some tests!\""
   },
   "repository": {
     "type": "git",
