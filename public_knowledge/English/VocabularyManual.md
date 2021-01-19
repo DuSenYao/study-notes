@@ -1010,3 +1010,5 @@ keyword: Vocabulary
 - **navigator** : 导航器
 
 - **snippet** : 代码段
+
+- **metadata** : 元数据
