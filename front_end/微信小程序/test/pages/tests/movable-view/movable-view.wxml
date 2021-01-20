@@ -1,2 +1,58 @@
 <!--pages/tests/movable-view/movable-view.wxml-->
-<text>pages/tests/movable-view/movable-view.wxml</text>
+<!-- 三种拖拽情况 -->
+<!-- movable-view == movable-area -->
+<view class="page-section">
+  <view class="page-section-title">movable-view == movable-area</view>
+  <movable-area>
+    <movable-view style="width:400rpx;height:400rpx;" direction="all">text</movable-view>
+  </movable-area>
+</view>
+
+<!-- movable-view < movable-area -->
+<view class="page-section">
+  <view class="page-section-title">movable-view 《 movable-area</view>
+  <movable-area>
+    <movable-view direction="all">text</movable-view>
+  </movable-area>
+</view>
+
+<!-- movable-view > movable-area -->
+<view class="page-section">
+  <view class="page-section-title">movable-view > movable-area</view>
+  <movable-area style="width:500rpx;height:500rpx;">
+    <movable-view class="max" direction="all">text</movable-view>
+  </movable-area>
+</view>
+
+<!-- 实现动画 -->
+<view class="page-section">
+  <view class="page-section-title">实现动画</view>
+  <movable-area>
+    <movable-view inertia damping="80" friction="2" bindchange="onMovableViewChange" animation x="{{x}}" y="{{y}}"
+      direction="all">text</movable-view>
+  </movable-area>
+
+  <movable-area style="width:500rpx;height:500rpx;">
+    <movable-view bindchange="onMovableViewChange" class="max" direction="all">text</movable-view>
+  </movable-area>
+
+  <view class="btn-area">
+    <button data-kind="0" bindtap="tap" class="page-body-button" type="primary">click me to move to (30px,
+      30px)</button>
+    <button data-kind="1" bindtap="tap" class="page-body-button" type="primary">click me to move to (0px, 0px)</button>
+  </view>
+</view>
+
+<!-- 左滑删除 -->
+<view class="page-section-title">左滑删除</view>
+<view class="list_item">
+  <movable-area style="width:750rpx;height:100rpx;">
+    <movable-view inertia damping="80" style="width:1050rpx;height:100rpx;" direction="horizontal">
+      <view class="left">text text text</view>
+      <view class="right">
+        <view class="read">已读</view>
+        <view class="delete">删除</view>
+      </view>
+    </movable-view>
+  </movable-area>
+</view>

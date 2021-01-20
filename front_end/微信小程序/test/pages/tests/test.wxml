@@ -26,6 +26,7 @@
 <view>
   <navigator url="./rich-text/rich-text">rich-text</navigator>
   <navigator url="./view-flex/view-flex">view-flex</navigator>
+  <navigator url="./movable-view/movable-view">movable-view与movable-area</navigator>
 </view>
 
 <!-- 引入自定义组件 -->
