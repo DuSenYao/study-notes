@@ -12,10 +12,11 @@ tags:
 
 <!-- code_chunk_output -->
 
-- [Chrome DevTools Chrome 浏览器调试工具](#chrome-devtools-chrome浏览器调试工具)
+- [Chrome DevTools Chrome 浏览器调试工具](#chrome-devtools-chrome-浏览器调试工具)
   - [一. 基础](#一-基础)
     - [1.1.面板简介](#11面板简介)
       - [元素面板(Elements)](#元素面板elements)
+      - [控制台面板(Console)](#控制台面板console)
       - [源代码面板(Sources)](#源代码面板sources)
       - [网络面板(NetWork)](#网络面板network)
       - [性能面板(Performance)](#性能面板performance)
@@ -36,8 +37,8 @@ tags:
           - [1.2.4.5.2 截屏](#12452-截屏)
           - [1.2.4.5.3 切换面板布局](#12453-切换面板布局)
           - [1.2.4.5.4 代码片段](#12454-代码片段)
-  - [二. Console 篇](#二-console篇)
-    - [2.1 Console 中的 `$`](#21-console中的)
+  - [二. Console 篇](#二-console-篇)
+    - [2.1 Console 中的 `$`](#21-console-中的)
     - [2.2 异步的 `Console`](#22-异步的-console)
     - [2.3 Ninja console (忍者打印)](#23-ninja-console-忍者打印)
     - [2.4 自定义格式转换器](#24-自定义格式转换器)
@@ -46,7 +47,7 @@ tags:
       - [2.5.1 queryObjects(对象查询)方法](#251-queryobjects对象查询方法)
       - [2.5.2 monitor (监听函数)方法](#252-monitor-监听函数方法)
       - [2.5.3 monitorEvents (监听事件)方法](#253-monitorevents-监听事件方法)
-    - [2.6 Console 类中的各种方法](#26-console类中的各种方法)
+    - [2.6 Console 类中的各种方法](#26-console-类中的各种方法)
       - [2.6.1 console.assert](#261-consoleassert)
       - [2.6.2 增强 `log`的阅读体验](#262-增强-log的阅读体验)
       - [2.6.3 `console.table`](#263-consoletable)
@@ -63,7 +64,7 @@ tags:
     - [3.3 请求表过滤](#33-请求表过滤)
     - [3.4 自定义请求表](#34-自定义请求表)
     - [3.5 重新发送 `XHR` 的请求](#35-重新发送-xhr-的请求)
-    - [XHR/fetch 断点](#xhrfetch-断点)
+    - [3.6 XHR/fetch 断点](#36-xhrfetch-断点)
   - [四. Elements 篇](#四-elements-篇)
     - [4.1 技巧集合](#41-技巧集合)
       - [4.1.1 通过 `'h'` 来隐藏元素](#411-通过-h-来隐藏元素)
@@ -87,9 +88,9 @@ tags:
       - [5.2.2 模拟网络状态](#522-模拟网络状态)
       - [5.2.3 快速 Source](#523-快速-source)
       - [5.2.4 检查代码 coverage](#524-检查代码-coverage)
-      - [5.2.5 检查修改的 CSS 文件](#525-检查修改的css文件)
+      - [5.2.5 检查修改的 CSS 文件](#525-检查修改的-css-文件)
   - [六. WorkSpaces 篇](#六-workspaces-篇)
-    - [6.1 workspace 技巧](#61-workspace技巧)
+    - [6.1 workspace 技巧](#61-workspace-技巧)
       - [6.1.1 在 `Chrome` 中修改文件](#611-在-chrome-中修改文件)
       - [6.1.2 WorkSpace 支持即时样式同步](#612-workspace-支持即时样式同步)
       - [6.1.3 为新选择器选择目标位置](#613-为新选择器选择目标位置)
@@ -557,7 +558,7 @@ getInput([1, 2], console.log);
 
 使用请求表右键菜单中的 `Replay XHR`，可以重新发送请求
 
-### XHR/fetch 断点
+### 3.6 XHR/fetch 断点
 
 如果，想要对已发送的 `ajax` 请求进行捕获可以使用 `XHR/fetch breakpoint` 。
 
