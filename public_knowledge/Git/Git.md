@@ -408,7 +408,7 @@ tags:
   · 阶段性开发完成后（包含功能代码和单元测试），可以准备提交代码
   · 首先切换到master分支，git pull拉取最新的分支状态
   · 然后切回local分支
-  · 通过git rebase -i 将本地的多次提交合并为一个，以简化提交历史。本地有多个提交时,如果不进行这一步,在git rebase master时会多次解决冲突(最坏情况下,每一个提交都会相应解决一个冲突)
+  · 通过 git rebase local -i 将本地的多次提交合并为一个，以简化提交历史。本地有多个提交时,如果不进行这一步,在git rebase master时会多次解决冲突(最坏情况下,每一个提交都会相应解决一个冲突)
   · git rebase master 将master最新的分支同步到本地，这个过程可能需要手动解决冲突(如果进行了上一步的话,只用解决一次冲突)
   · 然后切换到master分支，git merge local 将本地的 local 分支内容合并到 master 分支
   · git push将master分支的提交上传
