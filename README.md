@@ -27,3 +27,4 @@
     - [English](/public_knowledge/English/English.md)
     - [VocabularyManual](/public_knowledge/English/VocabularyManual.md)
   - [VSCode](/source_editor/VSCode/VisualStudioCode.md)
+  - [法律常识](/public_knowledge/legal_knowledge/法律常识.md)
