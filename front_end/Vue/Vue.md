@@ -495,7 +495,7 @@ Mustache 语法不能作用在 HTML attribute 上，遇到这种情况应该使�
 
 这些表达式会在所属 Vue 实例的数据作用域下作为 JavaScript 被解析。有个限制就是，**每个绑定都只能包含单个表达式**，所以下面的例子都不会生效。
 
-```html
+```Vue
 <!-- 这是语句，不是表达式 -->
 {{ var a = 1 }}
 
@@ -623,7 +623,7 @@ Mustache 语法不能作用在 HTML attribute 上，遇到这种情况应该使�
 
 模板内的表达式非常便利，但是设计它们的初衷是用于简单运算的。在模板中放入太多的逻辑会让模板过重且难以维护。对于任何复杂逻辑，都应当使用计算属性。
 
-**基础例子**:
+##### 1.5.1.1 基础例子
 
 ```html
 <div id="example">
@@ -659,14 +659,213 @@ Computed reversed message: "olleH"
 这里声明了一个计算属性 `reversedMessage`。提供的函数将用作 property `vm.reversedMessage` 的 getter 函数：
 
 ```js
-console.log(vm.reversedMessage) // => 'olleH'
-vm.message = 'Goodbye'
-console.log(vm.reversedMessage) // => 'eybdooG'
+console.log(vm.reversedMessage); // => 'olleH'
+vm.message = "Goodbye";
+console.log(vm.reversedMessage); // => 'eybdooG'
 ```
 
 `vm.reversedMessage` 的值始终取决于 `vm.message` 的值。
 
 可以像绑定普通 property 一样在模板中绑定计算属性。Vue 知道 `vm.reversedMessage` 依赖于 `vm.message`，因此当 `vm.message` 发生改变时，所有依赖 `vm.reversedMessage` 的绑定也会更新。而且最妙的是已经以声明的方式创建了这种依赖关系：计算属性的 getter 函数是没有副作用 (side effect) 的，这使它更易于测试和理解。
+
+##### 1.5.1.2 计算属性缓存 vs 方法
+
+```html
+<p>Reversed message: "{{ reversedMessage() }}"</p>
+```
+
+```js
+// 在组件中
+methods: {
+  reversedMessage: function () {
+    return this.message.split('').reverse().join('')
+  }
+}
+```
+
+可以将同一函数定义为一个方法而不是一个计算属性。两种方式的最终结果确实是完全相同的。然而，**不同的是计算属性是基于它们的响应式依赖进行缓存的。只在相关响应式依赖发生改变时它们才会重新求值**。这就意味着只要 message 还没有发生改变，多次访问 reversedMessage 计算属性会立即返回之前的计算结果，而不必再次执行函数。
+
+这也同样意味着下面的计算属性将不再更新，因为 `Date.now()` 不是响应式依赖：
+
+```js
+computed: {
+  now: function () {
+    return Date.now()
+  }
+}
+```
+
+相比之下，每当触发重新渲染时，调用方法将总会再次执行函数。
+
+为什么需要缓存？假设有一个性能开销比较大的计算属性 A，它需要遍历一个巨大的数组并做大量的计算。然后可能有其他的计算属性依赖于 A。如果没有缓存，将不可避免的多次执行 A 的 getter！如果不希望有缓存，可以用方法来替代。
+
+##### 1.5.1.3 计算属性 vs 侦听属性
+
+Vue 提供了一种更通用的方式来观察和响应 Vue 实例上的数据变动：**侦听属性**。当有一些数据需要随着其它数据变动而变动时，很容易滥用 `watch`。然而，通常更好的做法是使用计算属性而不是命令式的 `watch` 回调。例子：
+
+```html
+<div id="demo">{{ fullName }}</div>
+```
+
+```js
+var vm = new Vue({
+  el: "#demo",
+  data: {
+    firstName: "Foo",
+    lastName: "Bar",
+    fullName: "Foo Bar"
+  },
+  watch: {
+    firstName: function (val) {
+      this.fullName = val + " " + this.lastName;
+    },
+    lastName: function (val) {
+      this.fullName = this.firstName + " " + val;
+    }
+  }
+});
+```
+
+上面代码是命令式且重复的。将它与计算属性的版本进行比较：
+
+```js
+var vm = new Vue({
+  el: "#demo",
+  data: {
+    firstName: "Foo",
+    lastName: "Bar"
+  },
+  computed: {
+    fullName: function () {
+      return this.firstName + " " + this.lastName;
+    }
+  }
+});
+```
+
+##### 1.5.1.4 计算属性的 setter
+
+计算属性默认只有 getter，不过在需要时也可以提供一个 setter：
+
+```js
+// ...
+computed: {
+  fullName: {
+    // getter
+    get: function () {
+      return this.firstName + ' ' + this.lastName
+    },
+    // setter
+    set: function (newValue) {
+      var names = newValue.split(' ')
+      this.firstName = names[0]
+      this.lastName = names[names.length - 1]
+    }
+  }
+}
+// ...
+```
+
+现在再运行 `vm.fullName = 'John Doe'` 时，`setter` 会被调用，`vm.firstName` 和 `vm.lastName` 也会相应地被更新
+
+#### 1.5.2 侦听器
+
+虽然计算属性在大多数情况下更合适，但有时也需要一个自定义的侦听器。这就是为什么 Vue 通过 `watch` 选项提供了一个更通用的方法，来响应数据的变化。当需要在数据变化时**执行异步**或**开销较大**的操作时，这个方式是最有用的。
+
+```html
+<div id="watch-example">
+  <p>
+    Ask a yes/no question:
+    <input v-model="question" />
+  </p>
+  <p>{{ answer }}</p>
+</div>
+```
+
+```js
+<!-- 因为 AJAX 库和通用工具的生态已经相当丰富，Vue 核心代码没有重复 -->
+<!-- 提供这些功能以保持精简。这也可以让你自由选择自己更熟悉的工具。 -->
+<script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+<script>
+var watchExampleVM = new Vue({
+  el: '#watch-example',
+  data: {
+    question: '',
+    answer: 'I cannot give you an answer until you ask a question!'
+  },
+  watch: {
+    // 如果 `question` 发生改变，这个函数就会运行
+    question: function (newQuestion, oldQuestion) {
+      this.answer = 'Waiting for you to stop typing...'
+      this.debouncedGetAnswer()
+    }
+  },
+  created: function () {
+    // `_.debounce` 是一个通过 Lodash 限制操作频率的函数。
+    // 在这个例子中，希望限制访问 yesno.wtf/api 的频率
+    // AJAX 请求直到用户输入完毕才会发出。想要了解更多关于
+    // `_.debounce` 函数 (及其近亲 `_.throttle`) 的知识，
+    // 请参考：https://lodash.com/docs#debounce
+    this.debouncedGetAnswer = _.debounce(this.getAnswer, 500)
+  },
+  methods: {
+    getAnswer: function () {
+      if (this.question.indexOf('?') === -1) {
+        this.answer = 'Questions usually contain a question mark. ;-)'
+        return
+      }
+      this.answer = 'Thinking...'
+      var vm = this
+      axios.get('https://yesno.wtf/api')
+        .then(function (response) {
+          vm.answer = _.capitalize(response.data.answer)
+        })
+        .catch(function (error) {
+          vm.answer = 'Error! Could not reach the API. ' + error
+        })
+    }
+  }
+})
+</script>
+```
+
+在这个示例中，使用 `watch` 选项允许执行异步操作 (访问一个 API)，限制执行该操作的频率，并在得到最终结果前，设置中间状态。这些都是计算属性无法做到的。
+
+除了 `watch` 选项之外，还可以使用命令式的 `vm.$watch` API。
+
+### 1.6 Class 与 Style 绑定
+
+操作元素的 class 列表和内联样式是数据绑定的一个常见需求。因为它们都是 attribute，所以可以用 `v-bind` 处理它们：只需要通过表达式计算出字符串结果即可。不过，字符串拼接麻烦且易错。因此，在将 `v-bind` 用于 `class` 和 `style` 时，Vue.js 做了专门的增强。表达式结果的类型除了字符串之外，还可以是对象或数组。
+
+#### 1.6.1 对象语法
+
+可以传给 `v-bind:class` 一个对象，以动态地切换 class：
+
+```html
+<div v-bind:class="{ active: isActive }"></div>
+```
+
+上面的语法表示 `active` 这个 class 存在与否将取决于数据 property `isActive` 的 truthiness。
+
+可以在对象中传入更多字段来动态切换多个 class。此外，v-bind:class 指令也可以与普通的 class attribute 共存。当有如下模板：
+
+```html
+<div class="static" v-bind:class="{ active: isActive, 'text-danger': hasError }"></div>
+```
+
+```js
+data: {
+  isActive: true,
+  hasError: false
+}
+```
+
+结果渲染为：
+
+```html
+<div class="static active"></div>
+```
 
 ## 二. 深入了解组件
 
