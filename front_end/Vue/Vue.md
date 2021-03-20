@@ -1630,14 +1630,14 @@ methods: {
 
 ```html
 <!-- 只有在 `key` 是 `Enter` 时调用 `vm.submit()` -->
-<input v-on:keyup.enter="submit">
+<input v-on:keyup.enter="submit" />
 ```
 
 可以直接将 `KeyboardEvent.key` 暴露的任意有效按键名转换为 kebab-case 来作为修饰符。
 
 ```html
 <!-- 处理函数只会在 $event.key 等于 PageDown 时被调用。 -->
-<input v-on:keyup.page-down="onPageDown">
+<input v-on:keyup.page-down="onPageDown" />
 ```
 
 #### 1.9.6 系统修饰键
@@ -1653,7 +1653,7 @@ methods: {
 
 ```html
 <!-- Alt + C -->
-<input v-on:keyup.alt.67="clear">
+<input v-on:keyup.alt.67="clear" />
 
 <!-- Ctrl + Click -->
 <div v-on:click.ctrl="doSomething">Do something</div>
@@ -1688,9 +1688,9 @@ methods: {
 
 #### 1.10.1 基础用法
 
-可以用 `v-model` 指令在表单 `<input>`、`<textarea>` 及 `<select>` 元素上创建双向数据绑定。它会根据控件类型自动选取正确的方法来更新元素。尽管有些神奇，但 v-model 本质上不过是语法糖。它负责监听用户的输入事件以更新数据，并对一些极端场景进行一些特殊处理。
+可以用 `v-model` 指令在表单 `<input>`、`<textarea>` 及 `<select>` 元素上创建双向数据绑定。它会根据控件类型自动选取正确的方法来更新元素。尽管有些神奇，但 `v-model` 本质上不过是语法糖。它负责监听用户的输入事件以更新数据，并对一些极端场景进行一些特殊处理。
 
-> `v-model` 会忽略所有表单元素的 `value`、`checked`、`selected` attribute 的初始值而总是将 Vue 实例的数据作为数据来源。应该通过 JavaScript 在组件的 data 选项中声明初始值。
+> `v-model` 会忽略所有表单元素的 `value`、`checked`、`selected` attribute 的初始值而总是将 Vue 实例的数据作为数据来源。应该通过 JavaScript 在组件的 `data` 选项中声明初始值。
 
 `v-model` 在内部为不同的输入元素使用不同的 property 并抛出不同的事件：
 
@@ -1701,6 +1701,288 @@ methods: {
 > 对于需要使用输入法 (如中文、日文、韩文等) 的语言，`v-model` 不会在输入法组合文字过程中得到更新。如果也想处理这个过程，使用 `input` 事件。
 
 ##### 1.10.1.1 文本
+
+```html
+<input v-model="message" placeholder="edit me" />
+<p>Message is: {{ message }}</p>
+```
+
+##### 1.10.1.2 多行文本
+
+```html
+<span>Multiline message is:</span>
+<p style="white-space: pre-line;">{{ message }}</p>
+<br />
+<textarea v-model="message" placeholder="add multiple lines"></textarea>
+```
+
+> 在文本区域插值 (`<textarea>{{text}}</textarea>`) 并不会生效，应用 `v-model` 来代替。
+
+##### 1.10.1.3 复选框
+
+单个复选框，绑定到布尔值：
+
+```html
+<input type="checkbox" id="checkbox" v-model="checked" /> <label for="checkbox">{{ checked }}</label>
+```
+
+多个复选框，绑定到同一个数组：
+
+```html
+<input type="checkbox" id="jack" value="Jack" v-model="checkedNames" />
+<label for="jack">Jack</label>
+<input type="checkbox" id="john" value="John" v-model="checkedNames" />
+<label for="john">John</label>
+<input type="checkbox" id="mike" value="Mike" v-model="checkedNames" />
+<label for="mike">Mike</label>
+<br />
+<span>Checked names: {{ checkedNames }}</span>
+```
+
+```js
+new Vue({
+  el: "...",
+  data: {
+    checkedNames: []
+  }
+});
+```
+
+##### 1.10.1.4 单选按钮
+
+```html
+<div id="example-4">
+  <input type="radio" id="one" value="One" v-model="picked" />
+  <label for="one">One</label>
+  <br />
+  <input type="radio" id="two" value="Two" v-model="picked" />
+  <label for="two">Two</label>
+  <br />
+  <span>Picked: {{ picked }}</span>
+</div>
+```
+
+```js
+new Vue({
+  el: "#example-4",
+  data: {
+    picked: ""
+  }
+});
+```
+
+##### 1.10.1.5 选择框
+
+**单选时**：
+
+```html
+<div id="example-5">
+  <select v-model="selected">
+    <option disabled value="">请选择</option>
+    <option>A</option>
+    <option>B</option>
+    <option>C</option>
+  </select>
+  <span>Selected: {{ selected }}</span>
+</div>
+```
+
+```js
+new Vue({
+  el: '...',
+  data: {
+    selected: ''
+  }
+})
+```
+
+> 如果 `v-model` 表达式的初始值未能匹配任何选项，`<select>` 元素将被渲染为“未选中”状态。在 iOS 中，这会使用户无法选择第一个选项。因为这样的情况下，iOS 不会触发 change 事件。因此，更推荐像上面这样提供一个值为空的禁用选项。
+
+**多选时** (绑定到一个数组)：
+
+```html
+<div id="example-6">
+  <select v-model="selected" multiple style="width: 50px;">
+    <option>A</option>
+    <option>B</option>
+    <option>C</option>
+  </select>
+  <br>
+  <span>Selected: {{ selected }}</span>
+</div>
+```
+
+```js
+new Vue({
+  el: '#example-6',
+  data: {
+    selected: []
+  }
+})
+```
+
+用 `v-for` 渲染的**动态选项**：
+
+```html
+<select v-model="selected">
+  <option v-for="option in options" v-bind:value="option.value">
+    {{ option.text }}
+  </option>
+</select>
+<span>Selected: {{ selected }}</span>
+```
+
+```js
+new Vue({
+  el: '...',
+  data: {
+    selected: 'A',
+    options: [
+      { text: 'One', value: 'A' },
+      { text: 'Two', value: 'B' },
+      { text: 'Three', value: 'C' }
+    ]
+  }
+})
+```
+
+#### 1.10.2 值绑定
+
+对于单选按钮，复选框及选择框的选项，`v-model` 绑定的值通常是静态字符串 (对于复选框也可以是布尔值)：
+
+```html
+<!-- 当选中时，`picked` 为字符串 "a" -->
+<input type="radio" v-model="picked" value="a">
+
+<!-- `toggle` 为 true 或 false -->
+<input type="checkbox" v-model="toggle">
+
+<!-- 当选中第一个选项时，`selected` 为字符串 "abc" -->
+<select v-model="selected">
+  <option value="abc">ABC</option>
+</select>
+```
+
+但是有时可能想把值绑定到 Vue 实例的一个动态 property 上，这时可以用 `v-bind` 实现，并且这个 property 的值可以不是字符串。
+
+##### 1.10.2.1 复选框
+
+```html
+<input
+  type="checkbox"
+  v-model="toggle"
+  true-value="yes"
+  false-value="no"
+>
+```
+
+```js
+// 当选中时
+vm.toggle === 'yes'
+// 当没有选中时
+vm.toggle === 'no'
+```
+
+这里的 `true-value` 和 `false-value` attribute 并不会影响输入控件的 value attribute，因为浏览器在提交表单时并不会包含未被选中的复选框。如果要确保表单中这两个值中的一个能够被提交，(即“yes”或“no”)，换用单选按钮。
+
+##### 1.10.2.2 单选按钮
+
+```html
+<input type="radio" v-model="pick" v-bind:value="a">
+```
+
+```js
+// 当选中时
+vm.pick === vm.a
+```
+
+##### 1.10.2.3 选择框的选项
+
+```html
+<select v-model="selected">
+    <!-- 内联对象字面量 -->
+  <option v-bind:value="{ number: 123 }">123</option>
+</select>
+```
+
+```js
+// 当选中时
+typeof vm.selected // => 'object'
+vm.selected.number // => 123
+```
+
+#### 1.10.3 修饰符
+
+**`.lazy`**
+
+在默认情况下，`v-model` 在每次 input 事件触发后将输入框的值与数据进行同步 (除了上述输入法组合文字时)。可以添加 `lazy` 修饰符，从而转为在 `change` 事件之后进行同步：
+
+```html
+<!-- 在“change”时而非“input”时更新 -->
+<input v-model.lazy="msg">
+```
+
+**`.number`**
+
+如果想自动将用户的输入值转为数值类型，可以给 `v-model` 添加 `number` 修饰符：
+
+```html
+<input v-model.number="age" type="number">
+```
+
+这通常很有用，因为即使在 `type="number"` 时，HTML 输入元素的值也总会返回字符串。如果这个值无法被 `parseFloat()` 解析，则会返回原始的值。
+
+**`.trim`**
+
+如果要自动过滤用户输入的首尾空白字符，可以给 `v-model` 添加 `trim` 修饰符：
+
+```html
+<input v-model.trim="msg">
+```
+
+### 1.11 组件基础
+
+#### 1.11.1 基本示例
+
+```js
+// 定义一个名为 button-counter 的新组件
+Vue.component('button-counter', {
+  data: function () {
+    return {
+      count: 0
+    }
+  },
+  template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
+})
+```
+
+组件是可复用的 Vue 实例，且带有一个名字：在这个例子中是 `<button-counter>`。可以在一个通过 new Vue 创建的 Vue 根实例中，把这个组件作为自定义元素来使用：
+
+```html
+<div id="components-demo">
+  <button-counter></button-counter>
+</div>
+```
+
+```js
+new Vue({ el: '#components-demo' })
+```
+
+因为组件是可复用的 Vue 实例，所以它们与 new Vue 接收相同的选项，例如 `data`、`computed`、`watch`、`methods` 以及生命周期钩子等。仅有的例外是像 `el` 这样根实例特有的选项。
+
+#### 1.11.2 组件的复用
+
+可以将组件进行任意次数的复用：
+
+```html
+<div id="components-demo">
+  <button-counter></button-counter>
+  <button-counter></button-counter>
+  <button-counter></button-counter>
+</div>
+```
+
+> 注意 : 当点击按钮时，每个组件都会各自独立维护它的 `count`。因为每用一次组件，就会有一个它的**新实例**被创建。
 
 ## 二. 深入了解组件
 
