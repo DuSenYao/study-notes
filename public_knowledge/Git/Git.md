@@ -569,8 +569,9 @@ C --> A: git merge FETCH_HEAD
 
 在本地创建 `SSH` 秘钥
 
-> 在本地使用 `ssh-keygen -t ed25519 -C "1758231591@qq.com"`
-> 在 `C:\Users\用户名\.ssh\id_rsa.pub` 文件里，就有创建出来的`公钥`，把公钥复制出来，粘贴到 GitHub 上。
+1. 打开 Git Bash，在本地使用 `ssh-keygen -t ed25519 -C "1758231591@qq.com"` 生成SSH秘钥
+2. 在 `C:\Users\用户名\.ssh\id_ed25519.pub` 文件里，就有创建出来的`公钥`，把公钥复制出来，粘贴到 GitHub 上。
+
 > ssh 协议需要这个，使用 ssh 传输协议，不需要账户密码就可以连接 gitHub。
 
 #### 2.1.2 GitHub 优点
