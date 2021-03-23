@@ -569,8 +569,22 @@ C --> A: git merge FETCH_HEAD
 
 在本地创建 `SSH` 秘钥
 
-1. 打开 Git Bash，在本地使用 `ssh-keygen -t ed25519 -C "1758231591@qq.com"` 生成SSH秘钥
-2. 在 `C:\Users\用户名\.ssh\id_ed25519.pub` 文件里，就有创建出来的`公钥`，把公钥复制出来，粘贴到 GitHub 上。
+1. 打开 Git Bash，在本地使用 `ssh-keygen -t ed25519 -C "1758231591@qq.com"` 生成 SSH 秘钥
+2. 确保 ssh-agent 正在运行。可以手动启动它：
+
+   ```shell
+   # start the ssh-agent in the background
+   $ eval `ssh-agent -s`
+   > Agent pid 59566
+   ```
+
+3. 将 SSH 私钥添加到 ssh-agent。 如果创建了不同名称的密钥，或者要添加不同名称的现有密钥，将命令中的 id_ed25519 替换为私钥文件的名称。
+
+   ```shell
+   ssh-add ~/.ssh/id_ed25519
+   ```
+
+4. 在 `C:\Users\用户名\.ssh\id_ed25519.pub` 文件里，就有创建出来的`公钥`，把公钥复制出来，粘贴到 GitHub 上。
 
 > ssh 协议需要这个，使用 ssh 传输协议，不需要账户密码就可以连接 gitHub。
 
