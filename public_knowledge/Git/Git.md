@@ -415,6 +415,7 @@ tags:
 ```
 
 - `-i`: 打开 vim 编辑模式，执行会自动打开 vim 编辑模式，合并的记录前面都有相同的指令 pick，下面有 commands，根据这些指令可以修改，修改后 `ESC -> :wq!` 保存并退出，就会进入注释界面，编辑好后退出即可。使用各种指令可以完成各种 commit 提交记录的合并
+  可以在后面加 `HEAD~2` 表示合并几个提交
 
 - `--continue` : 合并冲突，结合 "git add 文件" 命令一起用与修复冲突，提示开发者，一步一步地有没有解决冲突。
 - `--abort` : 放弃合并，回到 rebase 操作之前的状态，之前的提交的不会丢弃
@@ -569,8 +570,23 @@ C --> A: git merge FETCH_HEAD
 
 在本地创建 `SSH` 秘钥
 
-> 在本地使用 `ssh-keygen -t ed25519 -C "1758231591@qq.com"`
-> 在 `C:\Users\用户名\.ssh\id_rsa.pub` 文件里，就有创建出来的`公钥`，把公钥复制出来，粘贴到 GitHub 上。
+1. 打开 Git Bash，在本地使用 `ssh-keygen -t ed25519 -C "1758231591@qq.com"` 生成 SSH 秘钥
+2. 确保 ssh-agent 正在运行。可以手动启动它：
+
+   ```shell
+   # 在后台启动 ssh-agent
+   $ eval `ssh-agent -s`
+   > Agent pid 59566
+   ```
+
+3. 将 SSH 私钥添加到 ssh-agent。 如果创建了不同名称的密钥，或者要添加不同名称的现有密钥，将命令中的 id_ed25519 替换为私钥文件的名称。
+
+   ```shell
+   ssh-add ~/.ssh/id_ed25519
+   ```
+
+4. 在 `C:\Users\用户名\.ssh\id_ed25519.pub` 文件里，就有创建出来的`公钥`，把公钥复制出来，粘贴到 GitHub 上。
+
 > ssh 协议需要这个，使用 ssh 传输协议，不需要账户密码就可以连接 gitHub。
 
 #### 2.1.2 GitHub 优点
