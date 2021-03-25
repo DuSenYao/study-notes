@@ -104,7 +104,51 @@ title: Vue
       - [2.1.1 组件名](#211-组件名)
       - [2.1.2 全局注册](#212-全局注册)
       - [2.1.3 局部注册](#213-局部注册)
+      - [2.1.4 模块系统](#214-模块系统)
+        - [2.1.4.1 在模块系统中局部注册](#2141-在模块系统中局部注册)
+        - [2.1.4.2 基础组件的自动化全局注册](#2142-基础组件的自动化全局注册)
+    - [2.2 Prop](#22-prop)
+      - [2.2.1 Prop 的大小写 (camelCase vs kebab-case)](#221-prop-的大小写-camelcase-vs-kebab-case)
+      - [2.2.2 Prop 类型](#222-prop-类型)
+      - [2.2.3 传递静态或动态 Prop](#223-传递静态或动态-prop)
+        - [2.2.3.1 传入一个数字](#2231-传入一个数字)
+        - [2.2.3.2 传入一个布尔值](#2232-传入一个布尔值)
+        - [2.2.3.3 传入一个数组](#2233-传入一个数组)
+        - [2.2.3.4 传入一个对象](#2234-传入一个对象)
+        - [2.2.3.5 传入一个对象的所有 property](#2235-传入一个对象的所有-property)
+      - [2.2.4 单向数据流](#224-单向数据流)
+      - [2.2.5 Prop 验证](#225-prop-验证)
+        - [2.2.5.1 类型检查](#2251-类型检查)
+      - [2.2.6 非 Prop 的 Attribute](#226-非-prop-的-attribute)
+        - [2.2.6.1 替换/合并已有的 Attribute](#2261-替换合并已有的-attribute)
+        - [2.2.6.2 禁用 Attribute 继承](#2262-禁用-attribute-继承)
+    - [2.3 自定义事件](#23-自定义事件)
+      - [2.3.1 事件名](#231-事件名)
+      - [2.3.2 自定义组件的 `v-model`](#232-自定义组件的-v-model)
+      - [2.3.3 将原生事件绑定到组件](#233-将原生事件绑定到组件)
+      - [2.3.4 `.sync` 修饰符](#234-sync-修饰符)
+    - [2.4 插槽](#24-插槽)
+      - [2.4.1 插槽内容](#241-插槽内容)
+      - [2.4.2 编译作用域](#242-编译作用域)
+      - [2.4.3 后备(默认)内容](#243-后备默认内容)
+      - [2.4.4 具名插槽](#244-具名插槽)
+      - [2.4.5 作用域插槽](#245-作用域插槽)
+        - [2.4.5.1 独占默认插槽的缩写语法](#2451-独占默认插槽的缩写语法)
+        - [2.4.5.2 解构插槽 Prop](#2452-解构插槽-prop)
+      - [2.4.6 动态插槽名](#246-动态插槽名)
+      - [2.4.7 具名插槽的缩写](#247-具名插槽的缩写)
+      - [2.4.8 其它示例](#248-其它示例)
+    - [2.5 动态组件 & 异步组件](#25-动态组件-异步组件)
+      - [2.5.1 在动态组件上使用 `keep-alive`](#251-在动态组件上使用-keep-alive)
+      - [2.5.2 异步组件](#252-异步组件)
+        - [2.5.2.1 处理加载状态](#2521-处理加载状态)
+    - [2.6 处理边界情况](#26-处理边界情况)
   - [三. 过渡 & 动画](#三-过渡-动画)
+    - [3.1 进入/离开 & 列表过渡](#31-进入离开-列表过渡)
+      - [3.1.1 概述](#311-概述)
+      - [3.1.2 单元素/组件的过渡](#312-单元素组件的过渡)
+        - [3.1.2.1 过渡的类名](#3121-过渡的类名)
+        - [3.1.2.2 CSS 过渡](#3122-css-过渡)
   - [四. 可复用性 & 组合](#四-可复用性-组合)
   - [五. 工具](#五-工具)
   - [六. 规模化](#六-规模化)
@@ -3415,7 +3459,7 @@ Vue 实现了一套内容分发的 API，这套 API 的设计灵感源自 Web Co
 </div>
 ```
 
-> 注意 : `v-slot` 只能添加在 `<template>` 上 (只有一种例外情况)，这一点和已经废弃的 `slot` attribute 不同。
+> 注意 : `v-slot` 只能添加在 `<template>` 上 (只有一种[例外情况](#246-独占默认插槽的缩写语法))，这一点和已经废弃的 `slot` attribute 不同。
 
 #### 2.4.5 作用域插槽
 
@@ -3430,9 +3474,7 @@ Vue 实现了一套内容分发的 API，这套 API 的设计灵感源自 Web Co
 可能想换掉备用内容，用名而非姓来显示。如下：
 
 ```html
-<current-user>
-  {{ user.firstName }}
-</current-user>
+<current-user> {{ user.firstName }} </current-user>
 ```
 
 然而上述代码不会正常工作，因为只有 `<current-user>` 组件可以访问到 `user` 而插槽内容是在父级渲染的。
@@ -3441,9 +3483,7 @@ Vue 实现了一套内容分发的 API，这套 API 的设计灵感源自 Web Co
 
 ```html
 <span>
-  <slot v-bind:user="user">
-    {{ user.lastName }}
-  </slot>
+  <slot v-bind:user="user"> {{ user.lastName }} </slot>
 </span>
 ```
 
@@ -3459,9 +3499,335 @@ Vue 实现了一套内容分发的 API，这套 API 的设计灵感源自 Web Co
 
 在这个例子中，选择将包含所有插槽 prop 的对象命名为 slotProps，也可以使用任意名字。
 
-##### 2.4.6 独占默认插槽的缩写语法
+##### 2.4.5.1 独占默认插槽的缩写语法
+
+在上述情况下，当被提供的内容只有默认插槽时，组件的标签才可以被当作插槽的模板来使用。这样就可以把 `v-slot` 直接用在组件上：
+
+```html
+<current-user v-slot:default="slotProps">
+  {{ slotProps.user.firstName }}
+</current-user>
+```
+
+这种写法还可以更简单。就像假定未指明的内容对应默认插槽一样，不带参数的 `v-slot` 被假定对应默认插槽：
+
+```html
+<current-user v-slot="slotProps"> {{ slotProps.user.firstName }} </current-user>
+```
+
+注意默认插槽的缩写语法不能和具名插槽混用，因为它会导致作用域不明确：
+
+```html
+<!-- 无效，会导致警告 -->
+<current-user v-slot="slotProps">
+  {{ slotProps.user.firstName }}
+  <template v-slot:other="otherSlotProps">
+    slotProps is NOT available here
+  </template>
+</current-user>
+```
+
+只要出现多个插槽，请始终为所有的插槽使用完整的基于 `<template>` 的语法：
+
+```html
+<current-user>
+  <template v-slot:default="slotProps">
+    {{ slotProps.user.firstName }}
+  </template>
+
+  <template v-slot:other="otherSlotProps"> ... </template>
+</current-user>
+```
+
+##### 2.4.5.2 解构插槽 Prop
+
+作用域插槽的内部工作原理是将插槽内容包裹在一个拥有单个参数的函数里：
+
+```js
+function (slotProps) {
+  // 插槽内容
+}
+```
+
+这意味着 `v-slot` 的值实际上可以是任何能够作为函数定义中的参数的 JavaScript 表达式。所以在支持的环境下 (单文件组件或现代浏览器)，也可以使用 ES2015 解构来传入具体的插槽 prop，如下：
+
+```html
+<current-user v-slot="{ user }"> {{ user.firstName }} </current-user>
+```
+
+这样可以使模板更简洁，尤其是在该插槽提供了多个 prop 的时候。它同样开启了 prop 重命名等其它可能，例如将 `user` 重命名为 `person`：
+
+```html
+<current-user v-slot="{ user: person }"> {{ person.firstName }} </current-user>
+```
+
+甚至可以定义后备内容，用于插槽 prop 是 undefined 的情形：
+
+```html
+<current-user v-slot="{ user = { firstName: 'Guest' } }">
+  {{ user.firstName }}
+</current-user>
+```
+
+#### 2.4.6 动态插槽名
+
+动态指令参数也可以用在 `v-slot` 上，来定义动态的插槽名：
+
+```html
+<base-layout>
+  <template v-slot:[dynamicSlotName]> ... </template>
+</base-layout>
+```
+
+#### 2.4.7 具名插槽的缩写
+
+跟 `v-on` 和 `v-bind` 一样，`v-slot` 也有缩写，即把参数之前的所有内容 (`v-slot:`) 替换为字符 `#`。例如 `v-slot:header` 可以被重写为 `#header`：
+
+```html
+<base-layout>
+  <template #header>
+    <h1>Here might be a page title</h1>
+  </template>
+
+  <p>A paragraph for the main content.</p>
+  <p>And another one.</p>
+
+  <template #footer>
+    <p>Here's some contact info</p>
+  </template>
+</base-layout>
+```
+
+然而，和其它指令一样，该缩写只在其有参数的时候才可用。这意味着以下语法是无效的：
+
+```html
+<!-- 这样会触发一个警告 -->
+<current-user #="{ user }"> {{ user.firstName }} </current-user>
+```
+
+如果希望使用缩写的话，必须始终以明确插槽名取而代之：
+
+```html
+<current-user #default="{ user }"> {{ user.firstName }} </current-user>
+```
+
+#### 2.4.8 其它示例
+
+**插槽 prop 允许将插槽转换为可复用的模板，这些模板可以基于输入的 prop 渲染出不同的内容**。这在设计封装数据逻辑同时允许父级组件自定义部分布局的可复用组件时是最有用的。
+
+例如，要实现一个 `<todo-list>` 组件，它是一个列表且包含布局和过滤逻辑：
+
+```html
+<ul>
+  <li v-for="todo in filteredTodos" v-bind:key="todo.id">{{ todo.text }}</li>
+</ul>
+```
+
+可以将每个 todo 作为父级组件的插槽，以此通过父级组件对其进行控制，然后将 todo 作为一个插槽 prop 进行绑定：
+
+```html
+<ul>
+  <li v-for="todo in filteredTodos" v-bind:key="todo.id">
+    <!--
+    为每个 todo 准备了一个插槽，
+    将 `todo` 对象作为一个插槽的 prop 传入。
+    -->
+    <slot name="todo" v-bind:todo="todo">
+      <!-- 后备内容 -->
+      {{ todo.text }}
+    </slot>
+  </li>
+</ul>
+```
+
+现在当使用 `<todo-list>` 组件的时候，可以选择为 todo 定义一个不一样的 `<template>` 作为替代方案，并且可以从子组件获取数据：
+
+```html
+<todo-list v-bind:todos="todos">
+  <template v-slot:todo="{ todo }">
+    <span v-if="todo.isComplete">✓</span>
+    {{ todo.text }}
+  </template>
+</todo-list>
+```
+
+### 2.5 动态组件 & 异步组件
+
+#### 2.5.1 在动态组件上使用 `keep-alive`
+
+之前曾经在一个多标签的界面中使用 `is` attribute 来切换不同的组件：
+
+```html
+<component v-bind:is="currentTabComponent"></component>
+```
+
+当在这些组件之间切换的时候，有时会想保持这些组件的状态，以避免反复重渲染导致的性能问题。
+
+重新创建动态组件的行为通常是非常有用的，但是，有时候更希望那些标签的组件实例能够被在它们第一次被创建的时候缓存下来。为了解决这个问题，可以用一个 `<keep-alive>` 元素将其动态组件包裹起来。
+
+```html
+<!-- 失活的组件将会被缓存！-->
+<keep-alive>
+  <component v-bind:is="currentTabComponent"></component>
+</keep-alive>
+```
+
+> 注意 : 这个 `<keep-alive>` 要求被切换到的组件都有自己的名字，不论是通过组件的 `name` 选项还是局部/全局注册。
+
+#### 2.5.2 异步组件
+
+在大型应用中，可能需要将应用分割成小一些的代码块，并且只在需要的时候才从服务器加载一个模块。为了简化，Vue 允许以一个工厂函数的方式定义组件，这个工厂函数会异步解析组件定义。Vue 只有在这个组件需要被渲染的时候才会触发该工厂函数，且会把结果缓存起来供未来重渲染。例如：
+
+```js
+Vue.component("async-example", function (resolve, reject) {
+  setTimeout(function () {
+    // 向 `resolve` 回调传递组件定义
+    resolve({
+      template: "<div>I am async!</div>"
+    });
+  }, 1000);
+});
+```
+
+这个工厂函数会收到一个 `resolve` 回调，这个回调函数会在从服务器得到组件定义的时候被调用。也可以调用 `reject(reason)` 来表示加载失败。这里的 setTimeout 是为了演示用的，如何获取组件取决于自己。一个推荐的做法是将异步组件和 [webpack 的 code-splitting](https://webpack.js.org/guides/code-splitting/) 功能一起配合使用：
+
+```js
+Vue.component("async-webpack-example", function (resolve) {
+  // 这个特殊的 `require` 语法将会告诉 webpack
+  // 自动将你的构建代码切割成多个包，这些包
+  // 会通过 Ajax 请求加载
+  require(["./my-async-component"], resolve);
+});
+```
+
+也可以在工厂函数中返回一个 `Promise`，所以把 webpack 2 和 ES2015 语法加在一起，可以这样使用动态导入：
+
+```js
+Vue.component(
+  "async-webpack-example",
+  // 这个动态导入会返回一个 `Promise` 对象。
+  () => import("./my-async-component")
+);
+```
+
+当使用局部注册的时候，也可以直接提供一个返回 `Promise` 的函数：
+
+```html
+new Vue({ // ... components: { 'my-component': () =>
+import('./my-async-component') } })
+```
+
+##### 2.5.2.1 处理加载状态
+
+这里的异步组件工厂函数也可以返回一个如下格式的对象：
+
+```js
+const AsyncComponent = () => ({
+  // 需要加载的组件 (应该是一个 `Promise` 对象)
+  component: import("./MyComponent.vue"),
+  // 异步组件加载时使用的组件
+  loading: LoadingComponent,
+  // 加载失败时使用的组件
+  error: ErrorComponent,
+  // 展示加载时组件的延时时间。默认值是 200 (毫秒)
+  delay: 200,
+  // 如果提供了超时时间且组件加载也超时了，
+  // 则使用加载失败时使用的组件。默认值是：`Infinity`
+  timeout: 3000
+});
+```
+
+> 注意 : 如果希望在 Vue Router 的路由组件中使用上述语法的话，必须使用 Vue Router 2.4.0+ 版本。
+
+### 2.6 处理边界情况
+
+<!-- TODO 待学习 -->
 
 ## 三. 过渡 & 动画
+
+### 3.1 进入/离开 & 列表过渡
+
+#### 3.1.1 概述
+
+Vue 在插入、更新或者移除 DOM 时，提供多种不同方式的应用过渡效果。包括以下工具：
+
+- 在 CSS 过渡和动画中自动应用 class
+- 可以配合使用第三方 CSS 动画库，如 Animate.css
+- 在过渡钩子函数中使用 JavaScript 直接操作 DOM
+- 可以配合使用第三方 JavaScript 动画库，如 Velocity.js
+
+在这里，只会讲到进入、离开和列表的过渡，也可以看下一节的管理过渡状态。
+
+#### 3.1.2 单元素/组件的过渡
+
+Vue 提供了 `transition` 的封装组件，在下列情形中，可以给任何元素和组件添加进入/离开过渡
+
+- 条件渲染 (使用 `v-if`)
+- 条件展示 (使用 `v-show`)
+- 动态组件
+- 组件根节点
+
+这里是一个典型的例子：
+
+```html
+<div id="demo">
+  <button v-on:click="show = !show">Toggle</button>
+  <transition name="fade">
+    <p v-if="show">hello</p>
+  </transition>
+</div>
+```
+
+```js
+new Vue({
+  el: "#demo",
+  data: {
+    show: true
+  }
+});
+```
+
+```css
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+```
+
+当插入或删除包含在 `transition` 组件中的元素时，Vue 将会做以下处理：
+
+1. 自动嗅探目标元素是否应用了 CSS 过渡或动画，如果是，在恰当的时机添加/删除 CSS 类名。
+
+2. 如果过渡组件提供了 JavaScript 钩子函数，这些钩子函数将在恰当的时机被调用。
+
+3. 如果没有找到 JavaScript 钩子并且也没有检测到 CSS 过渡/动画，DOM 操作 (插入/删除) 在下一帧中立即执行。(注意：此指浏览器逐帧动画机制，和 Vue 的 `nextTick` 概念不同)
+
+##### 3.1.2.1 过渡的类名
+
+在进入/离开的过渡中，会有 6 个 class 切换。
+
+1. `v-enter`：定义进入过渡的开始状态。在元素被插入之前生效，在元素被插入之后的下一帧移除。
+
+2. `v-enter-active`：定义进入过渡生效时的状态。在整个进入过渡的阶段中应用，在元素被插入之前生效，在过渡/动画完成之后移除。这个类可以被用来定义进入过渡的过程时间，延迟和曲线函数。
+
+3. v-enter-to：2.1.8 版及以上定义进入过渡的结束状态。在元素被插入之后下一帧生效 (与此同时 v-enter 被移除)，在过渡/动画完成之后移除。
+
+4. v-leave：定义离开过渡的开始状态。在离开过渡被触发时立刻生效，下一帧被移除。
+
+5. v-leave-active：定义离开过渡生效时的状态。在整个离开过渡的阶段中应用，在离开过渡被触发时立刻生效，在过渡/动画完成之后移除。这个类可以被用来定义离开过渡的过程时间，延迟和曲线函数。
+
+6. v-leave-to：2.1.8 版及以上定义离开过渡的结束状态。在离开过渡被触发之后下一帧生效 (与此同时 v-leave 被删除)，在过渡/动画完成之后移除。
+
+![单元素、组件的过渡-过渡的类名](./image/单元素、组件的过渡-过渡的类名.png)
+
+对于这些在过渡中切换的类名来说，如果使用一个没有名字的 `<transition>`，则 `v-` 是这些类名的默认前缀。如果使用了 `<transition name="my-transition">`，那么 `v-enter` 会替换为 `my-transition-enter`。
+
+`v-enter-active` 和 `v-leave-active` 可以控制进入/离开过渡的不同的缓和曲线，在下面章节会有个示例说明。
+
+##### 3.1.2.2 CSS 过渡
 
 ## 四. 可复用性 & 组合
 
