@@ -3141,14 +3141,15 @@ Vue.component("base-checkbox", {
 有了这个 `$listeners` property，就可以配合 `v-on="$listeners"` 将所有的事件监听器指向这个组件的某个特定的子元素。对于类似 `<input>` 的希望它也可以配合 `v-model` 工作的组件来说，为这些监听器创建一个类似下述 `inputListeners` 的计算属性通常是非常有用的：
 
 ```js
-Vue.component('base-input', {
+Vue.component("base-input", {
   inheritAttrs: false,
-  props: ['label', 'value'],
+  props: ["label", "value"],
   computed: {
     inputListeners: function () {
-      var vm = this
+      var vm = this;
       // `Object.assign` 将所有的对象合并为一个新对象
-      return Object.assign({},
+      return Object.assign(
+        {},
         // 从父级添加所有的监听器
         this.$listeners,
         // 然后添加自定义监听器，
@@ -3156,10 +3157,10 @@ Vue.component('base-input', {
         {
           // 这里确保组件配合 `v-model` 的工作
           input: function (event) {
-            vm.$emit('input', event.target.value)
+            vm.$emit("input", event.target.value);
           }
         }
-      )
+      );
     }
   },
   template: `
@@ -3172,7 +3173,7 @@ Vue.component('base-input', {
       >
     </label>
   `
-})
+});
 ```
 
 现在 `<base-input>` 组件是一个完全透明的包裹器了，也就是说它可以完全像一个普通的 `<input>` 元素一样使用了：所有跟它相同的 attribute 和监听器都可以工作，不必再使用 `.native` 监听器。
@@ -3184,7 +3185,7 @@ Vue.component('base-input', {
 这也是为什么推荐以 `update:myPropName` 的模式触发事件取而代之。举个例子，在一个包含 `title` prop 的假设的组件中，可以用以下方法表达对其赋新值的意图：
 
 ```js
-this.$emit('update:title', newTitle)
+this.$emit("update:title", newTitle);
 ```
 
 然后父组件可以监听那个事件并根据需要更新一个本地的数据 property。例如：
@@ -3217,6 +3218,248 @@ this.$emit('update:title', newTitle)
 ### 2.4 插槽
 
 > 在 2.6.0 中，为具名插槽和作用域插槽引入了一个新的统一的语法 (即 `v-slot` 指令)。它取代了 `slot` 和 `slot-scope` 这两个目前已被废弃但未被移除且仍在文档中的 attribute。新语法的由来可查阅这份 ![RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0001-new-slot-syntax.md)。
+
+#### 2.4.1 插槽内容
+
+Vue 实现了一套内容分发的 API，这套 API 的设计灵感源自 Web Components 规范草案，将 `<slot>` 元素作为承载分发内容的出口。
+
+它允许像这样合成组件：
+
+```html
+<navigation-link url="/profile"> Your Profile </navigation-link>
+```
+
+然后在 `<navigation-link>` 的模板中可能会写为：
+
+```html
+<a v-bind:href="url" class="nav-link">
+  <slot></slot>
+</a>
+```
+
+当组件渲染的时候，`<slot></slot>` 将会被替换为“Your Profile”。插槽内可以包含任何模板代码，包括 HTML：
+
+```html
+<navigation-link url="/profile">
+  <!-- 添加一个 Font Awesome 图标 -->
+  <span class="fa fa-user"></span>
+  Your Profile
+</navigation-link>
+```
+
+甚至其它的组件：
+
+```html
+<navigation-link url="/profile">
+  <!-- 添加一个图标的组件 -->
+  <font-awesome-icon name="user"></font-awesome-icon>
+  Your Profile
+</navigation-link>
+```
+
+如果 `<navigation-link>` 的 `template` 中**没有包含**一个 `<slot>` 元素，则该组件起始标签和结束标签之间的任何内容都会被抛弃。
+
+#### 2.4.2 编译作用域
+
+当想在一个插槽中使用数据时，例如：
+
+```html
+<navigation-link url="/profile"> Logged in as {{ user.name }} </navigation-link>
+```
+
+该插槽跟模板的其它地方一样可以访问相同的实例 property (也就是相同的“作用域”)，而不能访问 `<navigation-link>` 的作用域。例如 `url` 是访问不到的：
+
+```html
+<navigation-link url="/profile">
+  Clicking here will send you to: {{ url }}
+  <!--
+  这里的 `url` 会是 undefined，因为其 (指该插槽的) 内容是
+  _传递给_ <navigation-link> 的而不是
+  在 <navigation-link> 组件*内部*定义的。
+  -->
+</navigation-link>
+```
+
+> 作为一条规则，请记住：**父级模板里的所有内容都是在父级作用域中编译的；子模板里的所有内容都是在子作用域中编译的**。
+
+#### 2.4.3 后备(默认)内容
+
+有时为一个插槽设置具体的后备 (也就是默认的) 内容是很有用的，它只会在没有提供内容的时候被渲染。例如在一个 `<submit-button>` 组件中：
+
+```html
+<button type="submit">
+  <slot></slot>
+</button>
+```
+
+可能希望这个 `<button>` 内绝大多数情况下都渲染文本“Submit”。为了将“Submit”作为后备内容，可以将它放在 `<slot>` 标签内：
+
+```html
+<button type="submit">
+  <slot>Submit</slot>
+</button>
+```
+
+现在当在一个父级组件中使用 `<submit-button>` 并且不提供任何插槽内容时：
+
+```html
+<submit-button></submit-button>
+```
+
+后备内容“Submit”将会被渲染：
+
+```html
+<button type="submit">Submit</button>
+```
+
+但是提供内容：
+
+```html
+<submit-button> Save </submit-button>
+```
+
+则这个提供的内容将会被渲染从而取代后备内容：
+
+```html
+<button type="submit">Save</button>
+```
+
+#### 2.4.4 具名插槽
+
+有时需要多个插槽。例如对于一个带有如下模板的 `<base-layout>` 组件：
+
+```html
+<div class="container">
+  <header>
+    <!-- 希望把页头放这里 -->
+  </header>
+  <main>
+    <!-- 希望把主要内容放这里 -->
+  </main>
+  <footer>
+    <!-- 希望把页脚放这里 -->
+  </footer>
+</div>
+```
+
+对于这样的情况，`<slot>` 元素有一个特殊的 attribute：`name`。这个 attribute 可以用来定义额外的插槽：
+
+```html
+<div class="container">
+  <header>
+    <slot name="header"></slot>
+  </header>
+  <main>
+    <slot></slot>
+  </main>
+  <footer>
+    <slot name="footer"></slot>
+  </footer>
+</div>
+```
+
+一个不带 `name` 的 `<slot>` 出口会带有隐含的名字“default”。
+
+在向具名插槽提供内容的时候，可以在一个 `<template>` 元素上使用 `v-slot` 指令，并以 `v-slot` 的参数的形式提供其名称：
+
+```html
+<base-layout>
+  <template v-slot:header>
+    <h1>Here might be a page title</h1>
+  </template>
+
+  <p>A paragraph for the main content.</p>
+  <p>And another one.</p>
+
+  <template v-slot:footer>
+    <p>Here's some contact info</p>
+  </template>
+</base-layout>
+```
+
+现在 `<template>` 元素中的所有内容都将会被传入相应的插槽。任何没有被包裹在带有 `v-slot` 的 `<template>` 中的内容都会被视为默认插槽的内容。
+
+然而，如果希望更明确一些，仍然可以在一个 `<template>` 中包裹默认插槽的内容：
+
+```html
+<base-layout>
+  <template v-slot:header>
+    <h1>Here might be a page title</h1>
+  </template>
+
+  <template v-slot:default>
+    <p>A paragraph for the main content.</p>
+    <p>And another one.</p>
+  </template>
+
+  <template v-slot:footer>
+    <p>Here's some contact info</p>
+  </template>
+</base-layout>
+```
+
+任何一种写法都会渲染出：
+
+```html
+<div class="container">
+  <header>
+    <h1>Here might be a page title</h1>
+  </header>
+  <main>
+    <p>A paragraph for the main content.</p>
+    <p>And another one.</p>
+  </main>
+  <footer>
+    <p>Here's some contact info</p>
+  </footer>
+</div>
+```
+
+> 注意 : `v-slot` 只能添加在 `<template>` 上 (只有一种例外情况)，这一点和已经废弃的 `slot` attribute 不同。
+
+#### 2.4.5 作用域插槽
+
+有时让插槽内容能够访问子组件中才有的数据是很有用的。例如，设想一个带有如下模板的 `<current-user>` 组件：
+
+```html
+<span>
+  <slot>{{ user.lastName }}</slot>
+</span>
+```
+
+可能想换掉备用内容，用名而非姓来显示。如下：
+
+```html
+<current-user>
+  {{ user.firstName }}
+</current-user>
+```
+
+然而上述代码不会正常工作，因为只有 `<current-user>` 组件可以访问到 `user` 而插槽内容是在父级渲染的。
+
+为了让 `user` 在父级的插槽内容中可用，可以将 `user` 作为 `<slot>` 元素的一个 attribute 绑定上去：
+
+```html
+<span>
+  <slot v-bind:user="user">
+    {{ user.lastName }}
+  </slot>
+</span>
+```
+
+绑定在 `<slot>` 元素上的 attribute 被称为**插槽 prop**。现在在父级作用域中，可以使用带值的 `v-slot` 来定义提供的插槽 prop 的名字：
+
+```html
+<current-user>
+  <template v-slot:default="slotProps">
+    {{ slotProps.user.firstName }}
+  </template>
+</current-user>
+```
+
+在这个例子中，选择将包含所有插槽 prop 的对象命名为 slotProps，也可以使用任意名字。
+
+##### 2.4.6 独占默认插槽的缩写语法
 
 ## 三. 过渡 & 动画
 
