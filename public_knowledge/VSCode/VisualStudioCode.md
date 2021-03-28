@@ -605,8 +605,8 @@ VSCode 内置了对 **Node.js 运行时** 的调试支持，无须安装额外�
 - **必要属性**
   - type : 调试器的类型。例如:内置的 Node.js 调试器是 node
   - request : 调试的模式，有以下两种模式:
-    launch : 启动程序(该程序定义在 program 设置项中)并调试
-    attach : 将程序附加到一个正在运行的进程中进行调试。
+    - launch : 启动程序(该程序定义在 program 设置项中)并调试
+    - attach : 将程序附加到一个正在运行的进程中进行调试。
   - name : 调试配置的名字
 - **可选项**
   - presentation : 使用 order、group 和 hidden 属性来定义调试配置的显示

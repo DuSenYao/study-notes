@@ -153,6 +153,11 @@ title: Vue
   - [五. 工具](#五-工具)
   - [六. 规模化](#六-规模化)
   - [七. 内在](#七-内在)
+  - [八.Cookbook](#八cookbook)
+    - [8.1 在 VS Code 中调试](#81-在-vs-code-中调试)
+      - [8.1.1 替代方案](#811-替代方案)
+        - [8.1.1.1 Vue Devtools](#8111-vue-devtools)
+        - [8.1.1.2 简单的 debugger 语句](#8112-简单的-debugger-语句)
 
 <!-- /code_chunk_output -->
 
@@ -206,9 +211,9 @@ Vue.js 的核心是一个允许采用简洁的模板语法来声明式地将数�
 
 ```js
 var app = new Vue({
-  el: "#app",
+  el: '#app',
   data: {
-    message: "Hello Vue!"
+    message: 'Hello Vue!'
   }
 });
 ```
@@ -229,9 +234,9 @@ var app = new Vue({
 
 ```js
 var app2 = new Vue({
-  el: "#app-2",
+  el: '#app-2',
   data: {
-    message: "页面加载于 " + new Date().toLocaleString()
+    message: '页面加载于 ' + new Date().toLocaleString()
   }
 });
 ```
@@ -250,7 +255,7 @@ var app2 = new Vue({
 
 ```js
 var app3 = new Vue({
-  el: "#app-3",
+  el: '#app-3',
   data: {
     seen: true
   }
@@ -271,12 +276,12 @@ var app3 = new Vue({
 
 ```js
 var app4 = new Vue({
-  el: "#app-4",
+  el: '#app-4',
   data: {
     todos: [
-      { text: "学习 JavaScript" },
-      { text: "学习 Vue" },
-      { text: "整个项目" }
+      { text: '学习 JavaScript' },
+      { text: '学习 Vue' },
+      { text: '整个项目' }
     ]
   }
 });
@@ -295,13 +300,13 @@ var app4 = new Vue({
 
 ```js
 var app5 = new Vue({
-  el: "#app-5",
+  el: '#app-5',
   data: {
-    message: "Hello Vue.js!"
+    message: 'Hello Vue.js!'
   },
   methods: {
     reverseMessage: function () {
-      this.message = this.message.split("").reverse().join("");
+      this.message = this.message.split('').reverse().join('');
     }
   }
 });
@@ -320,9 +325,9 @@ Vue 还提供了 `v-model` 指令，它能轻松实现表单输入和应用状�
 
 ```js
 var app6 = new Vue({
-  el: "#app-6",
+  el: '#app-6',
   data: {
-    message: "Hello Vue!"
+    message: 'Hello Vue!'
   }
 });
 ```
@@ -356,12 +361,12 @@ var app = new Vue(...)
 但是这样会为每个待办项渲染同样的文本。可以修改一下组件的定义，使之能够接受一个 prop，让数据能从父作用域将传到子组件：
 
 ```js
-Vue.component("todo-item", {
+Vue.component('todo-item', {
   // todo-item 组件现在接受一个
   // "prop"，类似于一个自定义 attribute。
   // 这个 prop 名为 todo。
-  props: ["todo"],
-  template: "<li>{{ todo.text }}</li>"
+  props: ['todo'],
+  template: '<li>{{ todo.text }}</li>'
 });
 ```
 
@@ -384,18 +389,18 @@ Vue.component("todo-item", {
 ```
 
 ```js
-Vue.component("todo-item", {
-  props: ["todo"],
-  template: "<li>{{ todo.text }}</li>"
+Vue.component('todo-item', {
+  props: ['todo'],
+  template: '<li>{{ todo.text }}</li>'
 });
 
 var app7 = new Vue({
-  el: "#app-7",
+  el: '#app-7',
   data: {
     groceryList: [
-      { id: 0, text: "蔬菜" },
-      { id: 1, text: "奶酪" },
-      { id: 2, text: "随便其它什么人吃的东西" }
+      { id: 0, text: '蔬菜' },
+      { id: 1, text: '奶酪' },
+      { id: 2, text: '随便其它什么人吃的东西' }
     ]
   }
 });
@@ -468,7 +473,7 @@ vm.a; // => 3
 当这些数据改变时，视图会进行重渲染。值得注意的是只有当实例被创建时就已经存在于 data 中的 property 才是响应式的。也就是说如果添加一个新的 property，比如：
 
 ```js
-vm.b = "hi";
+vm.b = 'hi';
 ```
 
 那么对 b 的改动将不会触发任何视图的更新。如果你知道你会在晚些时候需要一个 property，但是一开始它为空或不存在，那么仅需要设置一些初始值。比如：
@@ -487,13 +492,13 @@ data: {
 
 ```js
 var obj = {
-  foo: "bar"
+  foo: 'bar'
 };
 
 Object.freeze(obj);
 
 new Vue({
-  el: "#app",
+  el: '#app',
   data: obj
 });
 ```
@@ -511,15 +516,15 @@ new Vue({
 ```js
 var data = { a: 1 };
 var vm = new Vue({
-  el: "#example",
+  el: '#example',
   data: data
 });
 
 vm.$data === data; // => true
-vm.$el === document.getElementById("example"); // => true
+vm.$el === document.getElementById('example'); // => true
 
 // $watch 是一个实例方法
-vm.$watch("a", function (newValue, oldValue) {
+vm.$watch('a', function (newValue, oldValue) {
   // 这个回调将在 `vm.a` 改变后调用
 });
 ```
@@ -539,7 +544,7 @@ new Vue({
   },
   created: function () {
     // `this` 指向 vm 实例
-    console.log("a is: " + this.a);
+    console.log('a is: ' + this.a);
   }
 });
 // => "a is: 1"
@@ -769,15 +774,15 @@ Mustache 语法不能作用在 HTML attribute 上，遇到这种情况应该使�
 
 ```js
 var vm = new Vue({
-  el: "#example",
+  el: '#example',
   data: {
-    message: "Hello"
+    message: 'Hello'
   },
   computed: {
     // 计算属性的 getter
     reversedMessage: function () {
       // `this` 指向 vm 实例
-      return this.message.split("").reverse().join("");
+      return this.message.split('').reverse().join('');
     }
   }
 });
@@ -795,7 +800,7 @@ Computed reversed message: "olleH"
 
 ```js
 console.log(vm.reversedMessage); // => 'olleH'
-vm.message = "Goodbye";
+vm.message = 'Goodbye';
 console.log(vm.reversedMessage); // => 'eybdooG'
 ```
 
@@ -844,18 +849,18 @@ Vue 提供了一种更通用的方式来观察和响应 Vue 实例上的数据�
 
 ```js
 var vm = new Vue({
-  el: "#demo",
+  el: '#demo',
   data: {
-    firstName: "Foo",
-    lastName: "Bar",
-    fullName: "Foo Bar"
+    firstName: 'Foo',
+    lastName: 'Bar',
+    fullName: 'Foo Bar'
   },
   watch: {
     firstName: function (val) {
-      this.fullName = val + " " + this.lastName;
+      this.fullName = val + ' ' + this.lastName;
     },
     lastName: function (val) {
-      this.fullName = this.firstName + " " + val;
+      this.fullName = this.firstName + ' ' + val;
     }
   }
 });
@@ -865,14 +870,14 @@ var vm = new Vue({
 
 ```js
 var vm = new Vue({
-  el: "#demo",
+  el: '#demo',
   data: {
-    firstName: "Foo",
-    lastName: "Bar"
+    firstName: 'Foo',
+    lastName: 'Bar'
   },
   computed: {
     fullName: function () {
-      return this.firstName + " " + this.lastName;
+      return this.firstName + ' ' + this.lastName;
     }
   }
 });
@@ -1087,7 +1092,7 @@ data: {
 例如，声明了这个组件：
 
 ```js
-Vue.component("my-component", {
+Vue.component('my-component', {
   template: '<p class="foo bar">Hi</p>'
 });
 ```
@@ -1227,7 +1232,7 @@ data: {
 
 ##### 1.7.1. 4 用 `key` 管理可复用的元素
 
-Vue 会尽可能高效地渲染元素，通常会复用已有元素而不是从头开始渲染。这么做除了使 Vue 变得非常快之外，还有其它一些好处。例如，如果允许用户在不同的登录方式之间切换：
+Vue 会尽可能高效地渲染元素，通常会复用已有元素而不是从头开始渲染。这么做除了使 Vue 变得非常快之外，还有其它一些好处。例如，允许用户在不同的登录方式之间切换：
 
 ```html
 <template v-if="loginType === 'username'">
@@ -1301,9 +1306,9 @@ Vue 会尽可能高效地渲染元素，通常会复用已有元素而不是从�
 
 ```js
 var example1 = new Vue({
-  el: "#example-1",
+  el: '#example-1',
   data: {
-    items: [{ message: "Foo" }, { message: "Bar" }]
+    items: [{ message: 'Foo' }, { message: 'Bar' }]
   }
 });
 ```
@@ -1320,10 +1325,10 @@ var example1 = new Vue({
 
 ```js
 var example2 = new Vue({
-  el: "#example-2",
+  el: '#example-2',
   data: {
-    parentMessage: "Parent",
-    items: [{ message: "Foo" }, { message: "Bar" }]
+    parentMessage: 'Parent',
+    items: [{ message: 'Foo' }, { message: 'Bar' }]
   }
 });
 ```
@@ -1346,12 +1351,12 @@ var example2 = new Vue({
 
 ```js
 new Vue({
-  el: "#v-for-object",
+  el: '#v-for-object',
   data: {
     object: {
-      title: "How to do lists in Vue",
-      author: "Jane Doe",
-      publishedAt: "2016-04-10"
+      title: 'How to do lists in Vue',
+      author: 'Jane Doe',
+      publishedAt: '2016-04-10'
     }
   }
 });
@@ -1558,32 +1563,32 @@ methods: {
 > 注意 : 这里的 `is="todo-item"` attribute。这种做法在使用 DOM 模板时是十分必要的，因为在 `<ul>` 元素内只有 `<li>` 元素会被看作有效内容。这样做实现的效果与 `<todo-item>` 相同，但是可以避开一些潜在的浏览器解析错误。
 
 ```js
-Vue.component("todo-item", {
-  template: "\
+Vue.component('todo-item', {
+  template: '\
     <li>\
       {{ title }}\
-      <button v-on:click=\"$emit('remove')\">Remove</button>\
+      <button v-on:click="$emit(\'remove\')">Remove</button>\
     </li>\
-  ",
-  props: ["title"]
+  ',
+  props: ['title']
 });
 
 new Vue({
-  el: "#todo-list-example",
+  el: '#todo-list-example',
   data: {
-    newTodoText: "",
+    newTodoText: '',
     todos: [
       {
         id: 1,
-        title: "Do the dishes"
+        title: 'Do the dishes'
       },
       {
         id: 2,
-        title: "Take out the trash"
+        title: 'Take out the trash'
       },
       {
         id: 3,
-        title: "Mow the lawn"
+        title: 'Mow the lawn'
       }
     ],
     nextTodoId: 4
@@ -1594,7 +1599,7 @@ new Vue({
         id: this.nextTodoId++,
         title: this.newTodoText
       });
-      this.newTodoText = "";
+      this.newTodoText = '';
     }
   }
 });
@@ -1615,7 +1620,7 @@ new Vue({
 
 ```js
 var example1 = new Vue({
-  el: "#example-1",
+  el: '#example-1',
   data: {
     counter: 0
   }
@@ -1635,15 +1640,15 @@ var example1 = new Vue({
 
 ```js
 var example2 = new Vue({
-  el: "#example-2",
+  el: '#example-2',
   data: {
-    name: "Vue.js"
+    name: 'Vue.js'
   },
   // 在 `methods` 对象中定义方法
   methods: {
     greet: function (event) {
       // `this` 在方法里指向当前 Vue 实例
-      alert("Hello " + this.name + "!");
+      alert('Hello ' + this.name + '!');
       // `event` 是原生 DOM 事件
       if (event) {
         alert(event.target.tagName);
@@ -1669,7 +1674,7 @@ example2.greet(); // => 'Hello Vue.js!'
 
 ```js
 new Vue({
-  el: "#example-3",
+  el: '#example-3',
   methods: {
     say: function (message) {
       alert(message);
@@ -1866,7 +1871,7 @@ methods: {
 
 ```js
 new Vue({
-  el: "...",
+  el: '...',
   data: {
     checkedNames: []
   }
@@ -1889,9 +1894,9 @@ new Vue({
 
 ```js
 new Vue({
-  el: "#example-4",
+  el: '#example-4',
   data: {
-    picked: ""
+    picked: ''
   }
 });
 ```
@@ -1914,9 +1919,9 @@ new Vue({
 
 ```js
 new Vue({
-  el: "...",
+  el: '...',
   data: {
-    selected: ""
+    selected: ''
   }
 });
 ```
@@ -1939,7 +1944,7 @@ new Vue({
 
 ```js
 new Vue({
-  el: "#example-6",
+  el: '#example-6',
   data: {
     selected: []
   }
@@ -1959,13 +1964,13 @@ new Vue({
 
 ```js
 new Vue({
-  el: "...",
+  el: '...',
   data: {
-    selected: "A",
+    selected: 'A',
     options: [
-      { text: "One", value: "A" },
-      { text: "Two", value: "B" },
-      { text: "Three", value: "C" }
+      { text: 'One', value: 'A' },
+      { text: 'Two', value: 'B' },
+      { text: 'Three', value: 'C' }
     ]
   }
 });
@@ -1998,9 +2003,9 @@ new Vue({
 
 ```js
 // 当选中时
-vm.toggle === "yes";
+vm.toggle === 'yes';
 // 当没有选中时
-vm.toggle === "no";
+vm.toggle === 'no';
 ```
 
 这里的 `true-value` 和 `false-value` attribute 并不会影响输入控件的 value attribute，因为浏览器在提交表单时并不会包含未被选中的复选框。如果要确保表单中这两个值中的一个能够被提交，(即“yes”或“no”)，换用单选按钮。
@@ -2066,7 +2071,7 @@ vm.selected.number; // => 123
 
 ```js
 // 定义一个名为 button-counter 的新组件
-Vue.component("button-counter", {
+Vue.component('button-counter', {
   data: function () {
     return {
       count: 0
@@ -2086,7 +2091,7 @@ Vue.component("button-counter", {
 ```
 
 ```js
-new Vue({ el: "#components-demo" });
+new Vue({ el: '#components-demo' });
 ```
 
 因为组件是可复用的 Vue 实例，所以它们与 new Vue 接收相同的选项，例如 `data`、`computed`、`watch`、`methods` 以及生命周期钩子等。仅有的例外是像 `el` 这样根实例特有的选项。
@@ -2138,7 +2143,7 @@ data: function () {
 为了能在模板中使用，这些组件必须先注册以便 Vue 能够识别。这里有两种组件的注册类型：**全局注册**和**局部注册**。至此，组件都只是通过 `Vue.component` 全局注册的：
 
 ```js
-Vue.component("my-component-name", {
+Vue.component('my-component-name', {
   // ... options ...
 });
 ```
@@ -2150,9 +2155,9 @@ Vue.component("my-component-name", {
 Prop 是在组件上注册的一些自定义 attribute。当一个值传递给一个 prop attribute 的时候，它就变成了那个组件实例的一个 property。为了给博文组件传递一个标题，可以用一个 `props` 选项将其包含在该组件可接受的 prop 列表中：
 
 ```js
-Vue.component("blog-post", {
-  props: ["title"],
-  template: "<h3>{{ title }}</h3>"
+Vue.component('blog-post', {
+  props: ['title'],
+  template: '<h3>{{ title }}</h3>'
 });
 ```
 
@@ -2170,12 +2175,12 @@ Vue.component("blog-post", {
 
 ```js
 new Vue({
-  el: "#blog-post-demo",
+  el: '#blog-post-demo',
   data: {
     posts: [
-      { id: 1, title: "My journey with Vue" },
-      { id: 2, title: "Blogging with Vue" },
-      { id: 3, title: "Why Vue is so fun" }
+      { id: 1, title: 'My journey with Vue' },
+      { id: 2, title: 'Blogging with Vue' },
+      { id: 3, title: 'Why Vue is so fun' }
     ]
   }
 });
@@ -2241,8 +2246,8 @@ new Vue({
 ```
 
 ```js
-Vue.component("blog-post", {
-  props: ["post"],
+Vue.component('blog-post', {
+  props: ['post'],
   template: `
     <div class="blog-post">
       <h3>{{ post.title }}</h3>
@@ -2264,7 +2269,7 @@ Vue.component("blog-post", {
 
 ```js
 new Vue({
-  el: "#blog-posts-events-demo",
+  el: '#blog-posts-events-demo',
   data: {
     posts: [
       /* ... */
@@ -2291,8 +2296,8 @@ new Vue({
 现在在每篇博文正文之前添加一个按钮来放大字号：
 
 ```js
-Vue.component("blog-post", {
-  props: ["post"],
+Vue.component('blog-post', {
+  props: ['post'],
   template: `
     <div class="blog-post">
       <h3>{{ post.title }}</h3>
@@ -2382,8 +2387,8 @@ methods: {
 写成代码之后是这样的：
 
 ```js
-Vue.component("custom-input", {
-  props: ["value"],
+Vue.component('custom-input', {
+  props: ['value'],
   template: `
     <input
       v-bind:value="value"
@@ -2408,7 +2413,7 @@ Vue.component("custom-input", {
 ```
 
 ```js
-Vue.component("alert-box", {
+Vue.component('alert-box', {
   template: `
     <div class="demo-alert-box">
       <strong>Error!</strong>
@@ -2440,25 +2445,25 @@ Vue.component("alert-box", {
 ```
 
 ```js
-Vue.component("tab-home", {
-  template: "<div>Home component</div>"
+Vue.component('tab-home', {
+  template: '<div>Home component</div>'
 });
-Vue.component("tab-posts", {
-  template: "<div>Posts component</div>"
+Vue.component('tab-posts', {
+  template: '<div>Posts component</div>'
 });
-Vue.component("tab-archive", {
-  template: "<div>Archive component</div>"
+Vue.component('tab-archive', {
+  template: '<div>Archive component</div>'
 });
 
 new Vue({
-  el: "#dynamic-component-demo",
+  el: '#dynamic-component-demo',
   data: {
-    currentTab: "Home",
-    tabs: ["Home", "Posts", "Archive"]
+    currentTab: 'Home',
+    tabs: ['Home', 'Posts', 'Archive']
   },
   computed: {
     currentTabComponent: function () {
-      return "tab-" + this.currentTab.toLowerCase();
+      return 'tab-' + this.currentTab.toLowerCase();
     }
   }
 });
@@ -2482,27 +2487,27 @@ new Vue({
 ```js
 var tabs = [
   {
-    name: "Home",
+    name: 'Home',
     component: {
-      template: "<div>Home component</div>"
+      template: '<div>Home component</div>'
     }
   },
   {
-    name: "Posts",
+    name: 'Posts',
     component: {
-      template: "<div>Posts component</div>"
+      template: '<div>Posts component</div>'
     }
   },
   {
-    name: "Archive",
+    name: 'Archive',
     component: {
-      template: "<div>Archive component</div>"
+      template: '<div>Archive component</div>'
     }
   }
 ];
 
 new Vue({
-  el: "#dynamic-component-demo",
+  el: '#dynamic-component-demo',
   data: {
     tabs: tabs,
     currentTab: tabs[0]
@@ -2552,7 +2557,7 @@ new Vue({
 在注册一个组件的时候，始终需要给它一个名字。比如在全局注册的时候：
 
 ```js
-Vue.component("my-component-name", {
+Vue.component('my-component-name', {
   /* ... */
 });
 ```
@@ -2567,7 +2572,7 @@ Vue.component("my-component-name", {
 使用 kebab-case
 
 ```js
-Vue.component("my-component-name", {
+Vue.component('my-component-name', {
   /* ... */
 });
 ```
@@ -2577,7 +2582,7 @@ Vue.component("my-component-name", {
 使用 PascalCase
 
 ```js
-Vue.component("MyComponentName", {
+Vue.component('MyComponentName', {
   /* ... */
 });
 ```
@@ -2589,7 +2594,7 @@ Vue.component("MyComponentName", {
 使用 `Vue.component` 来创建组件：
 
 ```js
-Vue.component("my-component-name", {
+Vue.component('my-component-name', {
   // ... 选项 ...
 });
 ```
@@ -2597,17 +2602,17 @@ Vue.component("my-component-name", {
 这些组件是**全局注册**的。也就是说它们在注册之后可以用在任何新创建的 Vue 根实例 (`new Vue`) 的模板中。比如：
 
 ```js
-Vue.component("component-a", {
+Vue.component('component-a', {
   /* ... */
 });
-Vue.component("component-b", {
+Vue.component('component-b', {
   /* ... */
 });
-Vue.component("component-c", {
+Vue.component('component-c', {
   /* ... */
 });
 
-new Vue({ el: "#app" });
+new Vue({ el: '#app' });
 ```
 
 ```html
@@ -2656,7 +2661,7 @@ var ComponentA = {
 
 var ComponentB = {
   components: {
-    "component-a": ComponentA
+    'component-a': ComponentA
   }
   // ...
 };
@@ -2665,7 +2670,7 @@ var ComponentB = {
 或者如果通过 Babel 和 webpack 使用 ES2015 模块，那么代码看起来更像：
 
 ```js
-import ComponentA from "./ComponentA.vue";
+import ComponentA from './ComponentA.vue';
 
 export default {
   components: {
@@ -2691,8 +2696,8 @@ export default {
 然后需要在局部注册之前导入每个想使用的组件。例如，在一个假设的 `ComponentB.js` 或 `ComponentB.vue` 文件中：
 
 ```js
-import ComponentA from "./ComponentA";
-import ComponentC from "./ComponentC";
+import ComponentA from './ComponentA';
+import ComponentC from './ComponentC';
 
 export default {
   components: {
@@ -2714,13 +2719,13 @@ export default {
 如果使用了 webpack (或在内部使用了 webpack 的 Vue CLI 3+)，那么就可以使用 `require.context` 只全局注册这些非常通用的基础组件。这里有一份可以在应用入口文件 (比如 src/main.js) 中全局导入基础组件的示例代码：
 
 ```js
-import Vue from "vue";
-import upperFirst from "lodash/upperFirst";
-import camelCase from "lodash/camelCase";
+import Vue from 'vue';
+import upperFirst from 'lodash/upperFirst';
+import camelCase from 'lodash/camelCase';
 
 const requireComponent = require.context(
   // 其组件目录的相对路径
-  "./components",
+  './components',
   // 是否查询其子目录
   false,
   // 匹配基础组件文件名的正则表达式
@@ -2736,9 +2741,9 @@ requireComponent.keys().forEach((fileName) => {
     camelCase(
       // 获取和目录深度无关的文件名
       fileName
-        .split("/")
+        .split('/')
         .pop()
-        .replace(/\.\w+$/, "")
+        .replace(/\.\w+$/, '')
     )
   );
 
@@ -2762,10 +2767,10 @@ requireComponent.keys().forEach((fileName) => {
 HTML 中的 attribute 名是大小写不敏感的，所以浏览器会把所有大写字符解释为小写字符。这意味着当使用 DOM 中的模板时，camelCase (驼峰命名法) 的 prop 名需要使用其等价的 kebab-case (短横线分隔命名) 命名：
 
 ```js
-Vue.component("blog-post", {
+Vue.component('blog-post', {
   // 在 JavaScript 中是 camelCase 的
-  props: ["postTitle"],
-  template: "<h3>{{ postTitle }}</h3>"
+  props: ['postTitle'],
+  template: '<h3>{{ postTitle }}</h3>'
 });
 ```
 
@@ -2781,7 +2786,7 @@ Vue.component("blog-post", {
 到这里，只看到了以字符串数组形式列出的 prop：
 
 ```js
-props: ["title", "likes", "isPublished", "commentIds", "author"];
+props: ['title', 'likes', 'isPublished', 'commentIds', 'author'];
 ```
 
 但是，通常会希望每个 prop 都有指定的值类型。这时，可以以对象形式列出 prop，这些 property 的名称和值分别是 prop 各自的名称和类型：
@@ -2934,7 +2939,7 @@ post: {
 为了定制 prop 的验证方式，可以为 `props` 中的值提供一个带有验证需求的对象，而不是一个字符串数组。例如：
 
 ```js
-Vue.component("my-component", {
+Vue.component('my-component', {
   props: {
     // 基础的类型检查 (`null` 和 `undefined` 会通过任何类型验证)
     propA: Number,
@@ -2955,14 +2960,14 @@ Vue.component("my-component", {
       type: Object,
       // 对象或数组默认值必须从一个工厂函数获取
       default: function () {
-        return { message: "hello" };
+        return { message: 'hello' };
       }
     },
     // 自定义验证函数
     propF: {
       validator: function (value) {
         // 这个值必须匹配下列字符串中的一个
-        return ["success", "warning", "danger"].indexOf(value) !== -1;
+        return ['success', 'warning', 'danger'].indexOf(value) !== -1;
       }
     }
   }
@@ -2998,7 +3003,7 @@ function Person(firstName, lastName) {
 可以使用：
 
 ```js
-Vue.component("blog-post", {
+Vue.component('blog-post', {
   props: {
     author: Person
   }
@@ -3050,7 +3055,7 @@ Vue.component("blog-post", {
 如果不希望组件的根元素继承 attribute，可以在组件的选项中设置 `inheritAttrs: false`。例如：
 
 ```js
-Vue.component("my-component", {
+Vue.component('my-component', {
   inheritAttrs: false
   // ...
 });
@@ -3068,9 +3073,9 @@ Vue.component("my-component", {
 有了 `inheritAttrs: false` 和 `$attrs`，就可以手动决定这些 attribute 会被赋予哪个元素。在撰写基础组件的时候是常会用到的：
 
 ```js
-Vue.component("base-input", {
+Vue.component('base-input', {
   inheritAttrs: false,
-  props: ["label", "value"],
+  props: ['label', 'value'],
   template: `
     <label>
       {{ label }}
@@ -3103,7 +3108,7 @@ Vue.component("base-input", {
 不同于组件和 prop，事件名不存在任何自动化的大小写转换。而是触发的事件名需要完全匹配监听这个事件所用的名称。举个例子，如果触发一个 camelCase 名字的事件：
 
 ```js
-this.$emit("myEvent");
+this.$emit('myEvent');
 ```
 
 则监听这个名字的 kebab-case 版本是不会有任何效果的：
@@ -3122,10 +3127,10 @@ this.$emit("myEvent");
 一个组件上的 `v-model` 默认会利用名为 `value` 的 prop 和名为 `input` 的事件，但是像单选框、复选框等类型的输入控件可能会将 value attribute 用于不同的目的。`model` 选项可以用来避免这样的冲突：
 
 ```js
-Vue.component("base-checkbox", {
+Vue.component('base-checkbox', {
   model: {
-    prop: "checked",
-    event: "change"
+    prop: 'checked',
+    event: 'change'
   },
   props: {
     checked: Boolean
@@ -3185,9 +3190,9 @@ Vue.component("base-checkbox", {
 有了这个 `$listeners` property，就可以配合 `v-on="$listeners"` 将所有的事件监听器指向这个组件的某个特定的子元素。对于类似 `<input>` 的希望它也可以配合 `v-model` 工作的组件来说，为这些监听器创建一个类似下述 `inputListeners` 的计算属性通常是非常有用的：
 
 ```js
-Vue.component("base-input", {
+Vue.component('base-input', {
   inheritAttrs: false,
-  props: ["label", "value"],
+  props: ['label', 'value'],
   computed: {
     inputListeners: function () {
       var vm = this;
@@ -3201,7 +3206,7 @@ Vue.component("base-input", {
         {
           // 这里确保组件配合 `v-model` 的工作
           input: function (event) {
-            vm.$emit("input", event.target.value);
+            vm.$emit('input', event.target.value);
           }
         }
       );
@@ -3229,7 +3234,7 @@ Vue.component("base-input", {
 这也是为什么推荐以 `update:myPropName` 的模式触发事件取而代之。举个例子，在一个包含 `title` prop 的假设的组件中，可以用以下方法表达对其赋新值的意图：
 
 ```js
-this.$emit("update:title", newTitle);
+this.$emit('update:title', newTitle);
 ```
 
 然后父组件可以监听那个事件并根据需要更新一个本地的数据 property。例如：
@@ -3679,11 +3684,11 @@ function (slotProps) {
 在大型应用中，可能需要将应用分割成小一些的代码块，并且只在需要的时候才从服务器加载一个模块。为了简化，Vue 允许以一个工厂函数的方式定义组件，这个工厂函数会异步解析组件定义。Vue 只有在这个组件需要被渲染的时候才会触发该工厂函数，且会把结果缓存起来供未来重渲染。例如：
 
 ```js
-Vue.component("async-example", function (resolve, reject) {
+Vue.component('async-example', function (resolve, reject) {
   setTimeout(function () {
     // 向 `resolve` 回调传递组件定义
     resolve({
-      template: "<div>I am async!</div>"
+      template: '<div>I am async!</div>'
     });
   }, 1000);
 });
@@ -3692,11 +3697,11 @@ Vue.component("async-example", function (resolve, reject) {
 这个工厂函数会收到一个 `resolve` 回调，这个回调函数会在从服务器得到组件定义的时候被调用。也可以调用 `reject(reason)` 来表示加载失败。这里的 setTimeout 是为了演示用的，如何获取组件取决于自己。一个推荐的做法是将异步组件和 [webpack 的 code-splitting](https://webpack.js.org/guides/code-splitting/) 功能一起配合使用：
 
 ```js
-Vue.component("async-webpack-example", function (resolve) {
+Vue.component('async-webpack-example', function (resolve) {
   // 这个特殊的 `require` 语法将会告诉 webpack
   // 自动将你的构建代码切割成多个包，这些包
   // 会通过 Ajax 请求加载
-  require(["./my-async-component"], resolve);
+  require(['./my-async-component'], resolve);
 });
 ```
 
@@ -3704,9 +3709,9 @@ Vue.component("async-webpack-example", function (resolve) {
 
 ```js
 Vue.component(
-  "async-webpack-example",
+  'async-webpack-example',
   // 这个动态导入会返回一个 `Promise` 对象。
-  () => import("./my-async-component")
+  () => import('./my-async-component')
 );
 ```
 
@@ -3724,7 +3729,7 @@ import('./my-async-component') } })
 ```js
 const AsyncComponent = () => ({
   // 需要加载的组件 (应该是一个 `Promise` 对象)
-  component: import("./MyComponent.vue"),
+  component: import('./MyComponent.vue'),
   // 异步组件加载时使用的组件
   loading: LoadingComponent,
   // 加载失败时使用的组件
@@ -3780,7 +3785,7 @@ Vue 提供了 `transition` 的封装组件，在下列情形中，可以给任�
 
 ```js
 new Vue({
-  el: "#demo",
+  el: '#demo',
   data: {
     show: true
   }
@@ -3835,4 +3840,160 @@ new Vue({
 
 ## 六. 规模化
 
+### 6.1 路由
+
+#### 6.1.1 官方路由
+
+对于大多数单页面应用，都推荐使用官方支持的 vue-router 库。
+
+#### 6.1.2 从零开始简单的路由
+
+如果只需要非常简单的路由而不想引入一个功能完整的路由库，可以像这样动态渲染一个页面级的组件：
+
+```JS
+const NotFound = { template: '<p>Page not found</p>' }
+const Home = { template: '<p>home page</p>' }
+const About = { template: '<p>about page</p>' }
+
+const routes = {
+  '/': Home,
+  '/about': About
+}
+
+new Vue({
+  el: '#app',
+  data: {
+    currentRoute: window.location.pathname
+  },
+  computed: {
+    ViewComponent () {
+      return routes[this.currentRoute] || NotFound
+    }
+  },
+  render (h) { return h(this.ViewComponent) }
+})
+```
+
+### 6.2 状态管理
+
+由于状态零散地分布在许多组件和组件之间的交互中，大型应用复杂度也经常逐渐增长。为了解决这个问题，Vue 提供 vuex（有受到 Elm 启发的状态管理库）。vuex 甚至集成到 vue-devtools，无需配置即可进行时光旅行调试 (time travel debugging)。
+
 ## 七. 内在
+
+## 八.Cookbook
+
+### 8.1 在 VS Code 中调试
+
+1. 先安装 VS Code 以及适合的浏览器，并且安装激活了最新版的相应的 Debugger 扩展：
+
+   - Debugger for Chrome
+   - Debugger for Firefox
+
+   通过 Vue CLI 创建一个项目。然后进入这个新创建的应用的目录，打开 VS Code。
+
+2. 在从 VS Code 调试 Vue 组件之前，需要更新 webpack 配置以构建 source map。做了这件事之后，调试器就有机会将一个被压缩的文件中的代码对应回其源文件相应的位置。这会确保可以在一个应用中调试，即便资源已经被 webpack 优化过了也没关系。
+
+   如果使用的是 Vue CLI 3，设置并更新 `vue.config.js` 内的 `devtool` property：
+
+   ```js
+   module.exports = {
+     configureWebpack: {
+       devtool: 'source-map'
+     }
+   };
+   ```
+
+3. 从 VS Code 启动应用
+
+   在 Debug 视图中点击齿轮图标来配置一个 `launch.json` 的文件，选择 **Chrome/Firefox：Launch** 环境。然后将生成的 `launch.json` 的内容替换成为相应的配置：
+
+   ```json
+   {
+     "version": "0.2.0",
+     "configurations": [
+       {
+         "type": "chrome",
+         "request": "launch",
+         "name": "vuejs: chrome",
+         "url": "http://localhost:8080",
+         "webRoot": "${workspaceFolder}/src",
+         "breakOnLoad": true,
+         "sourceMapPathOverrides": {
+           "webpack:///src/*": "${webRoot}/*",
+           "webpack:///./src/*": "${webRoot}/*"
+         }
+       },
+       {
+         "type": "firefox",
+         "request": "launch",
+         "name": "vuejs: firefox",
+         "url": "http://localhost:8080",
+         "webRoot": "${workspaceFolder}/src",
+         "pathMappings": [{ "url": "webpack:///src/", "path": "${webRoot}/" }]
+       }
+     ]
+   }
+   ```
+
+4. 设置断点，并启动 Vue 应用，来到 Debug 视图，选择“vuejs：chrome/firefox”配置，然后按 F5 或点击绿色的 play 按钮。
+
+#### 8.1.1 替代方案
+
+##### 8.1.1.1 Vue Devtools
+
+使用 Chrome 版本和 Firefox 版本的 Vue.js devtools。使用 devtools 有很多好处，比如它可以让能够实时编辑数据 property 并立即看到其反映出来的变化。另一个主要的好处是能够为 Vuex 提供时间旅行式的调试体验。
+
+> 注意 : 如果页面使用了一个生产环境/压缩后的 Vue.js 构建版本 (例如来自一个 CDN 的标准的链接)，devtools 的审查功能是默认被禁用的，所以 Vue 面板不会出现。如果切换到一个非压缩版本，可能需要强制刷新该页面来看到它。
+
+##### 8.1.1.2 简单的 debugger 语句
+
+可以直接在代码中使用[原生的 debugger](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/debugger) 语句。如果选择了这种方式，记得调试完毕之后把这个语句移除。
+
+```js
+<script>
+export default {
+  data() {
+    return {
+      message: ''
+    }
+  },
+  mounted() {
+    const hello = 'Hello World!'
+    debugger
+    this.message = hello
+  }
+};
+</script>
+```
+
+## 九. 杂项
+
+### 9.1 template 和 JSX 的对比以及它们的本质
+
+**template**:
+
+- 模板语法（HTML 的扩展）
+- 数据绑定使用 Mustache 语法（双大括号）
+
+```vue
+<span>Message: {{ msg }}</span>
+```
+
+优缺点：学习成本低、大量内置指令简化开发、组件作用域 CSS，但是灵活性低
+
+**JSX**:
+
+- JavaScript 语法的扩展
+- 数据绑定使用单引号
+
+```jsx
+<span>Message: {this.msg}</span>
+```
+
+优缺点：灵活性高
+
+两者都是语法糖，可以混合使用。最终都是编译成 `createElement`
+
+```js
+createElement('span', `Message: ${this.msg}`);
+```
