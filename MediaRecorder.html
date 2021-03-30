@@ -1,0 +1,46 @@
+<button class="recorderControl">开始录制</button>
+<audio class="audio"></audio>
+
+<script>
+  window.onload = function () {
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then(function (stream) {
+        let recorder = new MediaRecorder(stream, {
+          mimeType: 'audio/webm;codecs=opus'
+        });
+        let recorderButton = document.querySelector('.recorderControl');
+        let audio = document.querySelector('audio');
+        // 兼容新旧版本
+        try {
+          audio.srcObject = stream;
+        } catch (error) {
+          audio.src = URL.createObjectURL(stream);
+        }
+
+        recorderButton.onclick = function () {
+          this.textContent === '开始录制' ? audio.play() : audio.pause();
+          this.textContent === '开始录制' ? recorder.start() : recorder.stop();
+          this.textContent =
+            this.textContent === '开始录制' ? '停止' : '开始录制';
+        };
+
+        // 得到有效数据  收集数据
+        let buffers = null;
+        recorder.ondataavailable = function (event) {
+          // 收集媒体设备获得到的可以使用的数据
+          buffers = event.data;
+        };
+
+        recorder.onstop = function () {
+          //停止录制时触发函数
+          buffers.lastModifiedDate = new Date();
+          buffers.name = new Date().toString() + ".webm";
+          // let url = URL.createObjectURL(buffers);
+        };
+      })
+      .catch(function (error) {
+        alert('请求录音权限失败！');
+      });
+  };
+</script>

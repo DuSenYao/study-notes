@@ -3926,7 +3926,7 @@ new Vue({
          "breakOnLoad": true,
          "sourceMapPathOverrides": {
            "webpack:///src/*": "${webRoot}/*",
-           "webpack:///./src/*": "${webRoot}/*"
+           "webpack:///./src/*.js": "${webRoot}/*.js"
          }
        },
        {
