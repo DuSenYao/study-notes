@@ -1,5 +1,8 @@
-<button class="recorderControl">开始录制</button>
-<audio class="audio"></audio>
+<!DOCTYPE html>
+<div>
+  <button class="recorderControl">开始录制</button>
+  <audio class="audio"></audio>
+</div>
 
 <script>
   window.onload = function () {
@@ -19,10 +22,9 @@
         }
 
         recorderButton.onclick = function () {
-          this.textContent === '开始录制' ? audio.play() : audio.pause();
-          this.textContent === '开始录制' ? recorder.start() : recorder.stop();
-          this.textContent =
-            this.textContent === '开始录制' ? '停止' : '开始录制';
+          this.innerText === '开始录制' ? audio.play() : audio.pause();
+          this.innerText === '开始录制' ? recorder.start() : recorder.stop();
+          this.innerText = this.innerText === '开始录制' ? '停止' : '开始录制';
         };
 
         // 得到有效数据  收集数据
@@ -35,7 +37,7 @@
         recorder.onstop = function () {
           //停止录制时触发函数
           buffers.lastModifiedDate = new Date();
-          buffers.name = new Date().toString() + ".webm";
+          buffers.name = new Date().toString() + '.webm';
           // let url = URL.createObjectURL(buffers);
         };
       })
