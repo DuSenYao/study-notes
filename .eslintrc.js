@@ -10,7 +10,7 @@ module.exports = {
     sourceType: 'module',
     parser: 'babel-eslint'
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'html'],
   rules: {
     indent: ['error', 2]
   }
