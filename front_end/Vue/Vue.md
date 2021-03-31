@@ -2738,7 +2738,7 @@ const requireComponent = require.context(
   /Base[A-Z]\w+\.(vue|js)$/
 );
 
-requireComponent.keys().forEach((fileName) => {
+requireComponent.keys().forEach(fileName => {
   // 获取组件配置
   const componentConfig = requireComponent(fileName);
 
@@ -4002,4 +4002,66 @@ export default {
 
 ```js
 createElement('span', `Message: ${this.msg}`);
+```
+
+### 9.2 为 Vue 文件配置 JSDoc
+
+1. 安装 `jsdoc`、 `jsdoc-vuejs` 和 `minami` JSDoc 模板
+
+   ```sh
+   npm install --save-dev jsdoc jsdoc-vuejs minami
+   ```
+
+2. 新建 `.jsdoc.conf.json` 文件，在文件中配置，详细配置与各种标签看 [jsdoc 在线中文手册](http://www.dba.cn/book/jsdoc/)
+
+   ```json
+   {
+     "tags": {
+       // 是否允许未知标签 默认 false
+       "allowUnknownTags": true,
+       // 词典
+       "dictionaries": ["jsdoc"]
+     },
+     // 递归深度
+     "recurseDepth": 10,
+     "source": {
+       "include": ["./src"],
+       "exclude": [],
+       "includePattern": "\\.(vue|js)$",
+       "excludePattern": "(^|\\/|\\\\)_"
+     },
+     "plugins": ["./node_modules/jsdoc-vuejs"],
+     "templates": {
+       "cleverLinks": false,
+       "monospaceLinks": true,
+       "useLongnameInNav": false,
+       "showInheritedInNav": true
+     },
+     "opts": {
+       // 文档输出路径
+       "destination": "./static/doc",
+       "encoding": "utf8",
+       "private": true,
+       "recurse": true,
+       // 使用模板
+       "template": "./node_modules/minami"
+     }
+   }
+   ```
+
+3. 在 `package.json` 的 `script` 字段中加入 `"doc": "jsdoc -r -c .jsdoc.conf.json"`
+
+**注意事项**：
+
+- JSDoc 只能写在 export default 前，才能被解析到
+- jsdoc-vuejs 只支持以下四种 _@Vue-_ 标签
+
+```js
+/**
+ * @vue-prop {Number} initialCounter-初始计数器的值
+ * @vue-data {Number}计数器-当前计数器的值
+ * @vue-event {Number}递增-递增后发出计数器的值
+ * @vue-computed 更新count
+ */
+export default {};
 ```
