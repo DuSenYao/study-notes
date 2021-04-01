@@ -992,6 +992,9 @@ var watchExampleVM = new Vue({
 
 ```html
 <div v-bind:class="{ active: isActive }"></div>
+
+<!--可以缩写为-->
+<div :class="{ active: isActive }"></div>
 ```
 
 上面的语法表示 `active` 这个 class 存在与否将取决于数据 property `isActive` 的 truthiness。
@@ -1080,7 +1083,7 @@ data: {
 如果也想根据条件切换列表中的 class，可以用三元表达式：
 
 ```html
-<div v-bind:class="[isActive ? activeClass : '', errorClass]"></div>
+<div v-bind:class="[isActive ? 'activeClass' : '', 'errorClass']"></div>
 ```
 
 这样写将始终添加 `errorClass`，但是只有在 `isActive` 是 truthy 时才添加 `activeClass`。
