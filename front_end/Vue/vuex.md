@@ -1333,7 +1333,11 @@ export default new Vuex.Store({
 })
 ```
 
-<!-- TODO 待学习-->
+下面是用 Mocha + Chai 测试一个 mutation 的例子（实际上可以用任何测试框架）：
+
+```js
+
+```
 
 ### 3.6 热重载
 

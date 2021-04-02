@@ -1,41 +1,18 @@
 {
   "cSpell.words": [
-    "Bitmask",
-    "Cordova",
     "EDVAC",
-    "Extname",
     "Gunt",
-    "IIFE",
     "Kubernetes",
     "MISP",
-    "NBSP",
-    "Polacode",
-    "RGBO",
     "SSIM",
     "Skia",
-    "ZWNJ",
     "ation",
-    "difftool",
-    "editorconfig",
     "gitk",
-    "gitlab",
-    "htmlhintrc",
-    "iframe",
-    "instanceof",
-    "keygen",
-    "laravel",
-    "lessc",
-    "mssql",
-    "nocheck",
-    "nunjucks",
-    "oneline",
-    "pandoc",
-    "proto",
-    "typeof",
     "vorbis"
   ],
   "html.customData": [".vscode/html.html-data.json"],
   "css.customData": [
     ".vscode/css.css-data.json"
-  ]
+  ],
+  "todo-tree.tree.scanMode": "workspace only"
 }
