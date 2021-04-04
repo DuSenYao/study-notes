@@ -1,5 +1,5 @@
 ---
-title: vuex
+title: Vuex
 ---
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
@@ -38,7 +38,30 @@ title: vuex
     - [2.5 Module](#25-module)
       - [2.5.1 模块的局部状态](#251-模块的局部状态)
       - [2.5.2 命名空间](#252-命名空间)
+        - [2.5.2.1 在带命名空间的模块注册全局 action](#2521-在带命名空间的模块注册全局-action)
+        - [2.5.2.2 带命名空间的绑定函数](#2522-带命名空间的绑定函数)
+        - [2.5.2.3 给插件开发者的注意事项](#2523-给插件开发者的注意事项)
+      - [2.5.3 模块动态注册](#253-模块动态注册)
+        - [2.5.3.1 保留 state](#2531-保留-state)
+      - [2.5.4 模块重用](#254-模块重用)
   - [三. 进阶](#三-进阶)
+    - [3.1 项目结构](#31-项目结构)
+    - [3.2 插件](#32-插件)
+      - [3.2.1 在插件内提交 Mutation](#321-在插件内提交-mutation)
+      - [3.2.2 生成 State 快照](#322-生成-state-快照)
+    - [3.3 严格模式](#33-严格模式)
+      - [3.3.1 开发环境与发布环境](#331-开发环境与发布环境)
+    - [3.4 使用严格模式时的双向绑定处理](#34-使用严格模式时的双向绑定处理)
+      - [3.4.1 双向绑定的计算属性](#341-双向绑定的计算属性)
+    - [3.5 测试](#35-测试)
+      - [3.5.1 测试 Mutation](#351-测试-mutation)
+      - [3.5.2 测试 Action](#352-测试-action)
+      - [3.5.3 测试 Getter](#353-测试-getter)
+      - [3.5.4 执行测试](#354-执行测试)
+        - [3.5.4.1 在 Node 中执行测试](#3541-在-node-中执行测试)
+        - [3.5.4.2 在浏览器中测试](#3542-在浏览器中测试)
+    - [3.6 热重载](#36-热重载)
+      - [3.6.1 动态模块热重载](#361-动态模块热重载)
 
 <!-- /code_chunk_output -->
 
@@ -1336,8 +1359,234 @@ export default new Vuex.Store({
 下面是用 Mocha + Chai 测试一个 mutation 的例子（实际上可以用任何测试框架）：
 
 ```js
-
+// mutations.js
+export const mutations = {
+  increment: state => state.count++
+};
 ```
+
+```js
+// mutations.spec.js
+import { expect } from 'chai';
+import { mutations } from './store';
+
+// 解构 `mutations`
+const { increment } = mutations;
+
+describe('mutations', () => {
+  it('INCREMENT', () => {
+    // 模拟状态
+    const state = { count: 0 };
+    // 应用 mutation
+    increment(state);
+    // 断言结果
+    expect(state.count).to.equal(1);
+  });
+});
+```
+
+#### 3.5.2 测试 Action
+
+Action 应对起来略微棘手，因为它们可能需要调用外部的 API。当测试 action 的时候，需要增加一个 mocking 服务层——例如，可以把 API 调用抽象成服务，然后在测试文件中用 mock 服务回应 API 调用。为了便于解决 mock 依赖，可以用 webpack 和 [inject-loader](https://github.com/plasticine/inject-loader)打包测试文件。
+
+下面是一个测试异步 action 的例子：
+
+```js
+// actions.js
+import shop from '../api/shop';
+
+export const getAllProducts = ({ commit }) => {
+  commit('REQUEST_PRODUCTS');
+  shop.getProducts(products => {
+    commit('RECEIVE_PRODUCTS', products);
+  });
+};
+```
+
+```js
+// actions.spec.js
+
+// 使用 require 语法处理内联 loaders。
+// inject-loader 返回一个允许注入 mock 依赖的模块工厂
+import { expect } from 'chai';
+const actionsInjector = require('inject-loader!./actions');
+
+// 使用 mocks 创建模块
+const actions = actionsInjector({
+  '../api/shop': {
+    getProducts(cb) {
+      setTimeout(() => {
+        cb([
+          /* mocked response */
+        ]);
+      }, 100);
+    }
+  }
+});
+
+// 用指定的 mutations 测试 action 的辅助函数
+const testAction = (action, args, state, expectedMutations, done) => {
+  let count = 0;
+
+  // 模拟提交
+  const commit = (type, payload) => {
+    const mutation = expectedMutations[count];
+
+    try {
+      expect(mutation.type).to.equal(type);
+      expect(mutation.payload).to.deep.equal(payload);
+    } catch (error) {
+      done(error);
+    }
+
+    count++;
+    if (count >= expectedMutations.length) {
+      done();
+    }
+  };
+
+  // 用模拟的 store 和参数调用 action
+  action({ commit, state }, ...args);
+
+  // 检查是否没有 mutation 被 dispatch
+  if (expectedMutations.length === 0) {
+    expect(count).to.equal(0);
+    done();
+  }
+};
+
+describe('actions', () => {
+  it('getAllProducts', done => {
+    testAction(
+      actions.getAllProducts,
+      [],
+      {},
+      [
+        { type: 'REQUEST_PRODUCTS' },
+        {
+          type: 'RECEIVE_PRODUCTS',
+          payload: {
+            /* mocked response */
+          }
+        }
+      ],
+      done
+    );
+  });
+});
+```
+
+如果在测试环境下有可用的 spy (比如通过 [Sinon.JS](https://sinonjs.org/#get-started))，可以使用它们替换辅助函数 testAction：
+
+```js
+describe('actions', () => {
+  it('getAllProducts', () => {
+    const commit = sinon.spy();
+    const state = {};
+
+    actions.getAllProducts({ commit, state });
+
+    expect(commit.args).to.deep.equal([
+      ['REQUEST_PRODUCTS'],
+      [
+        'RECEIVE_PRODUCTS',
+        {
+          /* mocked response */
+        }
+      ]
+    ]);
+  });
+});
+```
+
+#### 3.5.3 测试 Getter
+
+如果 getter 包含很复杂的计算过程，很有必要测试它们。Getter 的测试与 mutation 一样直截了当。
+
+测试一个 getter 的示例：
+
+```js
+// getters.js
+export const getters = {
+  filteredProducts(state, { filterCategory }) {
+    return state.products.filter(product => {
+      return product.category === filterCategory;
+    });
+  }
+};
+```
+
+```js
+// getters.spec.js
+import { expect } from 'chai';
+import { getters } from './getters';
+
+describe('getters', () => {
+  it('filteredProducts', () => {
+    // 模拟状态
+    const state = {
+      products: [
+        { id: 1, title: 'Apple', category: 'fruit' },
+        { id: 2, title: 'Orange', category: 'fruit' },
+        { id: 3, title: 'Carrot', category: 'vegetable' }
+      ]
+    };
+    // 模拟 getter
+    const filterCategory = 'fruit';
+
+    // 获取 getter 的结果
+    const result = getters.filteredProducts(state, { filterCategory });
+
+    // 断言结果
+    expect(result).to.deep.equal([
+      { id: 1, title: 'Apple', category: 'fruit' },
+      { id: 2, title: 'Orange', category: 'fruit' }
+    ]);
+  });
+});
+```
+
+#### 3.5.4 执行测试
+
+如果 mutation 和 action 编写正确，经过合理地 mocking 处理之后这些测试应该不依赖任何浏览器 API，因此可以直接用 webpack 打包这些测试文件然后在 Node 中执行。换种方式，也可以用 `mocha-loader` 或 Karma + karma-webpack 在真实浏览器环境中进行测试。
+
+##### 3.5.4.1 在 Node 中执行测试
+
+创建以下 webpack 配置（配置好.babelrc）
+
+```js
+// webpack.config.js
+module.exports = {
+  entry: './test.js',
+  output: {
+    path: __dirname,
+    filename: 'test-bundle.js'
+  },
+  module: {
+    loaders: [
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/
+      }
+    ]
+  }
+};
+```
+
+然后：
+
+```js
+webpack
+mocha test-bundle.js
+```
+
+##### 3.5.4.2 在浏览器中测试
+
+1. 安装 `mocha-loader`。
+2. 把上述 webpack 配置中的 `entry` 改成 `'mocha-loader!babel-loader!./test.js'`。
+3. 用以上配置启动 `webpack-dev-server`。
+4. 访问 `localhost:8080/webpack-dev-server/test-bundle`
 
 ### 3.6 热重载
 

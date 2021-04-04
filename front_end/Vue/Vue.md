@@ -164,6 +164,7 @@ title: Vue
         - [8.1.1.2 简单的 debugger 语句](#8112-简单的-debugger-语句)
   - [九. 杂项](#九-杂项)
     - [9.1 template 和 JSX 的对比以及它们的本质](#91-template-和-jsx-的对比以及它们的本质)
+    - [9.2 为 Vue 文件配置 JSDoc](#92-为-vue-文件配置-jsdoc)
 
 <!-- /code_chunk_output -->
 
