@@ -780,7 +780,7 @@ module: {
 
 要声明一个应该编译为函数式组件的模板，请将 functional 特性添加到模板块中。这样做以后就可以省略 `<script>` 块中的 `functional` 选项。
 
-模板中的表达式会在[函数式渲染上下文]<!--TODO-->中求值。这意味着在模板中，prop 需要以 `props.xxx` 的形式访问：
+模板中的表达式会在[函数式渲染上下文](./Vue.md#43-渲染函数-jsx)中求值。这意味着在模板中，prop 需要以 `props.xxx` 的形式访问：
 
 ```vue
 <template functional>

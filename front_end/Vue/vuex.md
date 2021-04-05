@@ -27,7 +27,7 @@ title: Vuex
       - [2.3.1 提交载荷（Payload）](#231-提交载荷payload)
       - [2.3.2 对象风格的提交方式](#232-对象风格的提交方式)
       - [2.3.3 Mutation 需遵守 Vue 的响应规则](#233-mutation-需遵守-vue-的响应规则)
-      - [2.3.4 使用常量替代 Mutation 事件类型](#234-使用常量替代-mutation-事件类型)
+      - [2.3.4 最佳实践：使用常量替代 Mutation 事件类型](#234-最佳实践使用常量替代-mutation-事件类型)
       - [2.3.5 Mutation 必须是同步函数](#235-mutation-必须是同步函数)
       - [2.3.6 在组件中提交 Mutation](#236-在组件中提交-mutation)
       - [2.3.7 下一步：Action](#237-下一步action)
@@ -591,7 +591,7 @@ mutations: {
      state.obj = { ...state.obj, newProp: 123 };
      ```
 
-#### 2.3.4 使用常量替代 Mutation 事件类型
+#### 2.3.4 最佳实践：使用常量替代 Mutation 事件类型
 
 使用常量替代 mutation 事件类型在各种 Flux 实现中是很常见的模式。这样可以使 linter 之类的工具发挥作用，同时把这些常量放在单独的文件中可以让代码合作者对整个 app 包含的 mutation 一目了然：
 
@@ -874,6 +874,12 @@ const store = new Vuex.Store({
 store.state.a // -> moduleA 的状态
 store.state.b // -> moduleB 的状态
 ```
+
+**最佳实践**：
+
+- 开启命名空间
+- 嵌套模块不要过深，尽量扁平化
+- 灵活应用 `createNamespacedHelpers`
 
 #### 2.5.1 模块的局部状态
 
