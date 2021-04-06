@@ -7266,6 +7266,6 @@ export default {};
      email: false
    ```
 
-6. 在 GitHub 对应项目的 settings 下，将分支设为 **gh-pages**。
+6. 在 GitHub 对应项目的 settings -> GitHub Pages -> Source 中将分支设为 **gh-pages**。
 
-7. 将 `.travis.yml` 文件推送到仓库来触发第一次构建。
+7. 将 `.travis.yml` 文件推送到 GitHub 来触发第一次构建。
