@@ -27,6 +27,7 @@
     "ecmel.vscode-html-css",
     "alefragnani.bookmarks",
     "gruntfuggly.todo-tree",
-    "pranaygp.vscode-css-peek"
+    "pranaygp.vscode-css-peek",
+    "formulahendry.auto-rename-tag"
   ]
 }
