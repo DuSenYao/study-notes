@@ -22,197 +22,439 @@
 
     // 大部分的 API 属于 Window 对象（或者说全局对象），我们可以用反射来看一看现行浏览器中已经实现的 API
     function log_getOwnPropertyNames() {
-        let objects = ["BigInt", "BigInt64Array", "BigUint64Array", "Infinity", "NaN", "undefined", "eval", "isFinite", "isNaN", "parseFloat", "parseInt", "decodeURI", "decodeURIComponent", "encodeURI", "encodeURIComponent", "Array", "Date", "RegExp", "Promise", "Proxy", "Map", "WeakMap", "Set", "WeakSet", "Function", "Boolean", "String", "Number", "Symbol", "Object", "Error", "EvalError", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError", "ArrayBuffer", "SharedArrayBuffer", "DataView", "Float32Array", "Float64Array", "Int8Array", "Int16Array", "Int32Array", "Uint8Array", "Uint16Array", "Uint32Array", "Uint8ClampedArray", "Atomics", "JSON", "Math", "Reflect", "escape", "unescape"];
-        let names = Object.getOwnPropertyNames(window);
-        // 过滤掉JS中规定的API
-        // filter()方法，创建一个数组，其包含通过所提供函数实现的测试的所有元素
-        names = filterOut(names, objects);
-        // console.log(names);
+      let objects = [
+        'BigInt',
+        'BigInt64Array',
+        'BigUint64Array',
+        'Infinity',
+        'NaN',
+        'undefined',
+        'eval',
+        'isFinite',
+        'isNaN',
+        'parseFloat',
+        'parseInt',
+        'decodeURI',
+        'decodeURIComponent',
+        'encodeURI',
+        'encodeURIComponent',
+        'Array',
+        'Date',
+        'RegExp',
+        'Promise',
+        'Proxy',
+        'Map',
+        'WeakMap',
+        'Set',
+        'WeakSet',
+        'Function',
+        'Boolean',
+        'String',
+        'Number',
+        'Symbol',
+        'Object',
+        'Error',
+        'EvalError',
+        'RangeError',
+        'ReferenceError',
+        'SyntaxError',
+        'TypeError',
+        'URIError',
+        'ArrayBuffer',
+        'SharedArrayBuffer',
+        'DataView',
+        'Float32Array',
+        'Float64Array',
+        'Int8Array',
+        'Int16Array',
+        'Int32Array',
+        'Uint8Array',
+        'Uint16Array',
+        'Uint32Array',
+        'Uint8ClampedArray',
+        'Atomics',
+        'JSON',
+        'Math',
+        'Reflect',
+        'escape',
+        'unescape'
+      ];
+      let names = Object.getOwnPropertyNames(window);
+      // 过滤掉JS中规定的API
+      // filter()方法，创建一个数组，其包含通过所提供函数实现的测试的所有元素
+      names = filterOut(names, objects);
+      // console.log(names);
 
-        // DOM 部分包含了document属性和一系列的构造器，可以用JS的prototype来过滤构造器
-        names = names.filter(e => {
+      // DOM 部分包含了document属性和一系列的构造器，可以用JS的prototype来过滤构造器
+      names = names
+        .filter(e => {
           try {
-            return !(window[e].prototype instanceof Node)
-          }
-          catch(err) {
+            return !(window[e].prototype instanceof Node);
+          } catch (err) {
             return true;
           }
-        }).filter(e => e != "Node");
-        // console.log(names);
+        })
+        .filter(e => e != 'Node');
+      // console.log(names);
 
-        // 过滤掉Window对象上的属性
-        objects = ["window", "self", "document", "name", "location", "history", "customElements", "locationbar", "menubar", " personalbar", "scrollbars", "statusbar", "toolbar", "status", "close", "closed", "stop", "focus", " blur", "frames", "length", "top", "opener", "parent", "frameElement", "open", "navigator", "applicationCache", "alert", "confirm", "prompt", "print", "postMessage", "console"];
-        names = filterOut(names, objects);
-        // console.log(names);
+      // 过滤掉Window对象上的属性
+      objects = [
+        'window',
+        'self',
+        'document',
+        'name',
+        'location',
+        'history',
+        'customElements',
+        'locationbar',
+        'menubar',
+        ' personalbar',
+        'scrollbars',
+        'statusbar',
+        'toolbar',
+        'status',
+        'close',
+        'closed',
+        'stop',
+        'focus',
+        ' blur',
+        'frames',
+        'length',
+        'top',
+        'opener',
+        'parent',
+        'frameElement',
+        'open',
+        'navigator',
+        'applicationCache',
+        'alert',
+        'confirm',
+        'prompt',
+        'print',
+        'postMessage',
+        'console'
+      ];
+      names = filterOut(names, objects);
+      // console.log(names);
 
-        // 过滤掉所有的事件，也就是on开头的属性
-        // match()方法检索返回一个字符串匹配正则表达式的结果
-        names = names.filter(e => !e.match(/^on/));
-        // console.log(names);
+      // 过滤掉所有的事件，也就是on开头的属性
+      // match()方法检索返回一个字符串匹配正则表达式的结果
+      names = names.filter(e => !e.match(/^on/));
+      // console.log(names);
 
-        // 过滤掉 webkit 前缀的私有属性
-        names = names.filter(e => !e.match(/^webkit/i));
-        // console.log(names);
+      // 过滤掉 webkit 前缀的私有属性
+      names = names.filter(e => !e.match(/^webkit/i));
+      // console.log(names);
 
-        // 过滤掉HTML标准中所有的接口
-        objects = ["ApplicationCache", "AudioTrack", "AudioTrackList", "BarProp", "BeforeUnloadEvent", "BroadcastChannel", "CanvasGradient", "CanvasPattern", "CanvasRenderingContext2D", "CloseEvent", "CustomElementRegistry", "DOMStringList", "DOMStringMap", "DataTransfer", "DataTransferItem", "DataTransferItemList", "DedicatedWorkerGlobalScope", "Document", "DragEvent", "ErrorEvent", "EventSource", "External", "FormDataEvent", "HTMLAllCollection", "HashChangeEvent", "History", "ImageBitmap", "ImageBitmapRenderingContext", "ImageData", "Location", "MediaError", "MessageChannel", "MessageEvent", "MessagePort", "MimeType", "MimeTypeArray", "Navigator", "OffscreenCanvas", "OffscreenCanvasRenderingContext2D", "PageTransitionEvent", "Path2D", "Plugin", "PluginArray", "PopStateEvent", "PromiseRejectionEvent", "RadioNodeList", "SharedWorker", "SharedWorkerGlobalScope", "Storage", "StorageEvent", "TextMetrics", "TextTrack", "TextTrackCue", "TextTrackCueList", "TextTrackList", "TimeRanges", "TrackEvent", "ValidityState", "VideoTrack", "VideoTrackList", "WebSocket", "Window", "Worker", "WorkerGlobalScope", "WorkerLocation", "WorkerNavigator"];
-        names = filterOut(names, objects);
-        // console.log(names);
+      // 过滤掉HTML标准中所有的接口
+      objects = [
+        'ApplicationCache',
+        'AudioTrack',
+        'AudioTrackList',
+        'BarProp',
+        'BeforeUnloadEvent',
+        'BroadcastChannel',
+        'CanvasGradient',
+        'CanvasPattern',
+        'CanvasRenderingContext2D',
+        'CloseEvent',
+        'CustomElementRegistry',
+        'DOMStringList',
+        'DOMStringMap',
+        'DataTransfer',
+        'DataTransferItem',
+        'DataTransferItemList',
+        'DedicatedWorkerGlobalScope',
+        'Document',
+        'DragEvent',
+        'ErrorEvent',
+        'EventSource',
+        'External',
+        'FormDataEvent',
+        'HTMLAllCollection',
+        'HashChangeEvent',
+        'History',
+        'ImageBitmap',
+        'ImageBitmapRenderingContext',
+        'ImageData',
+        'Location',
+        'MediaError',
+        'MessageChannel',
+        'MessageEvent',
+        'MessagePort',
+        'MimeType',
+        'MimeTypeArray',
+        'Navigator',
+        'OffscreenCanvas',
+        'OffscreenCanvasRenderingContext2D',
+        'PageTransitionEvent',
+        'Path2D',
+        'Plugin',
+        'PluginArray',
+        'PopStateEvent',
+        'PromiseRejectionEvent',
+        'RadioNodeList',
+        'SharedWorker',
+        'SharedWorkerGlobalScope',
+        'Storage',
+        'StorageEvent',
+        'TextMetrics',
+        'TextTrack',
+        'TextTrackCue',
+        'TextTrackCueList',
+        'TextTrackList',
+        'TimeRanges',
+        'TrackEvent',
+        'ValidityState',
+        'VideoTrack',
+        'VideoTrackList',
+        'WebSocket',
+        'Window',
+        'Worker',
+        'WorkerGlobalScope',
+        'WorkerLocation',
+        'WorkerNavigator'
+      ];
+      names = filterOut(names, objects);
+      // console.log(names);
 
-        // 过滤掉 WebGL (Web图形库) 是一个用于绘制交互式2D/3D图形的 JavaScript API ，基于 OpenGL ES 2.0。可以在 HTML <canvas> 元素中调用WebGL
-        names = names.filter(e => !e.match(/^WebGL/));
-        // console.log(names);
+      // 过滤掉 WebGL (Web图形库) 是一个用于绘制交互式2D/3D图形的 JavaScript API ，基于 OpenGL ES 2.0。可以在 HTML <canvas> 元素中调用WebGL
+      names = names.filter(e => !e.match(/^WebGL/));
+      // console.log(names);
 
-        // 过滤掉SVG，可缩放矢量图形 (SVG) 是一个基于 XML 语法的 2D 矢量图形格式。CSS、JS、HTML都支持。
-        names = names.filter(e => !e.match(/^SVG/));
-        // console.log(names);
+      // 过滤掉SVG，可缩放矢量图形 (SVG) 是一个基于 XML 语法的 2D 矢量图形格式。CSS、JS、HTML都支持。
+      names = names.filter(e => !e.match(/^SVG/));
+      // console.log(names);
 
-        // 过滤 WebRTC (Web Real-Time Communication) 是一个可以用在视频聊天，音频聊天或P2P文件分享等Web App中的 API
-        names = names.filter(e => !e.match(/^RTC/));
-        // console.log(names);
+      // 过滤 WebRTC (Web Real-Time Communication) 是一个可以用在视频聊天，音频聊天或P2P文件分享等Web App中的 API
+      names = names.filter(e => !e.match(/^RTC/));
+      // console.log(names);
 
-        // 过滤掉性能分析 API
-        names = names.filter(e => !e.match(/^Performance/));
-        // console.log(names);
+      // 过滤掉性能分析 API
+      names = names.filter(e => !e.match(/^Performance/));
+      // console.log(names);
 
-        // 过滤 Intl 它属于 ECMA402 标准，这份标准是 JS 的一个扩展，它包含了国际化相关的内容，ECMA402 中，只有一个全局属性 Intl
-        names = names.filter(e => e != "Intl")
+      // 过滤 Intl 它属于 ECMA402 标准，这份标准是 JS 的一个扩展，它包含了国际化相关的内容，ECMA402 中，只有一个全局属性 Intl
+      names = names.filter(e => e != 'Intl');
 
-        // 过滤掉 WHATWG 的 Streams 标准
-        names = filterOut(names, ["ReadableStream", "ReadableStreamDefaultReader", "ReadableStreamBYOBReader", "ReadableStreamDefaultController", "ReadableByteStreamController", "ReadableStreamBYOBRequest", "WritableStream", "WritableStreamDefaultWriter", "WritableStreamDefaultController", "TransformStream", "TransformStreamDefaultController", "ByteLengthQueuingStrategy", "CountQueuingStrategy"]);
-        // console.log(names);
+      // 过滤掉 WHATWG 的 Streams 标准
+      names = filterOut(names, [
+        'ReadableStream',
+        'ReadableStreamDefaultReader',
+        'ReadableStreamBYOBReader',
+        'ReadableStreamDefaultController',
+        'ReadableByteStreamController',
+        'ReadableStreamBYOBRequest',
+        'WritableStream',
+        'WritableStreamDefaultWriter',
+        'WritableStreamDefaultController',
+        'TransformStream',
+        'TransformStreamDefaultController',
+        'ByteLengthQueuingStrategy',
+        'CountQueuingStrategy'
+      ]);
+      // console.log(names);
 
-        // 过滤掉 Web Audio API
-        names = filterOut(names, ["AudioContext", "AudioNode", "AnalyserNode", "AudioBuffer", "AudioBufferSourceNode", "AudioDestinationNode", "AudioParam", "AudioListener", "AudioWorklet", "AudioWorkletGlobalScope", "AudioWorkletNode", "AudioWorkletProcessor", "BiquadFilterNode", "ChannelMergerNode", "ChannelSplitterNode", "ConstantSourceNode", "ConvolverNode", "DelayNode", "DynamicsCompressorNode", "GainNode", "IIRFilterNode", "MediaElementAudioSourceNode", "MediaStreamAudioSourceNode", "MediaStreamTrackAudioSourceNode", "MediaStreamAudioDestinationNode", "PannerNode", "PeriodicWave", "OscillatorNode", "StereoPannerNode", "WaveShaperNode", "ScriptProcessorNode", "AudioProcessingEvent"]);
-        // console.log(names);
+      // 过滤掉 Web Audio API
+      names = filterOut(names, [
+        'AudioContext',
+        'AudioNode',
+        'AnalyserNode',
+        'AudioBuffer',
+        'AudioBufferSourceNode',
+        'AudioDestinationNode',
+        'AudioParam',
+        'AudioListener',
+        'AudioWorklet',
+        'AudioWorkletGlobalScope',
+        'AudioWorkletNode',
+        'AudioWorkletProcessor',
+        'BiquadFilterNode',
+        'ChannelMergerNode',
+        'ChannelSplitterNode',
+        'ConstantSourceNode',
+        'ConvolverNode',
+        'DelayNode',
+        'DynamicsCompressorNode',
+        'GainNode',
+        'IIRFilterNode',
+        'MediaElementAudioSourceNode',
+        'MediaStreamAudioSourceNode',
+        'MediaStreamTrackAudioSourceNode',
+        'MediaStreamAudioDestinationNode',
+        'PannerNode',
+        'PeriodicWave',
+        'OscillatorNode',
+        'StereoPannerNode',
+        'WaveShaperNode',
+        'ScriptProcessorNode',
+        'AudioProcessingEvent'
+      ]);
+      // console.log(names);
 
-        // 过滤掉 Encoding 标准
-        names = filterOut(names, ["TextDecoder", "TextEncoder", "TextDecoderStream", "TextEncoderStream"]);
-        // console.log(names);
+      // 过滤掉 Encoding 标准
+      names = filterOut(names, [
+        'TextDecoder',
+        'TextEncoder',
+        'TextDecoderStream',
+        'TextEncoderStream'
+      ]);
+      // console.log(names);
 
-        // 过滤 Web Background Synchronization
-        names = names.filter(e => e != "SyncManager");
-        // console.log(names);
+      // 过滤 Web Background Synchronization
+      names = names.filter(e => e != 'SyncManager');
+      // console.log(names);
 
-        // 过滤 Web Cryptography API
-        names = filterOut(names, ["CryptoKey", "SubtleCrypto", "Crypto", "crypto"]);
-        // console.log(names);
+      // 过滤 Web Cryptography API
+      names = filterOut(names, [
+        'CryptoKey',
+        'SubtleCrypto',
+        'Crypto',
+        'crypto'
+      ]);
+      // console.log(names);
 
-        // 过滤 Media Source Extensions
-        names = filterOut(names, ["MediaSource", "SourceBuffer", "SourceBufferList"]);
-        // console.log(names);
+      // 过滤 Media Source Extensions
+      names = filterOut(names, [
+        'MediaSource',
+        'SourceBuffer',
+        'SourceBufferList'
+      ]);
+      // console.log(names);
 
-        // 过滤 The Screen Orientation API
-        names = names.filter(e => e != "ScreenOrientation");
-        // console.log(names);
+      // 过滤 The Screen Orientation API
+      names = names.filter(e => e != 'ScreenOrientation');
+      // console.log(names);
 
-        // 过滤 全局属性 globalThis 包含全局的 this 值，类似于全局对象（global object） 来自 ECMAScript (ECMA-262)
-        names = names.filter(e => e != "globalThis");
-        // console.log(names);
+      // 过滤 全局属性 globalThis 包含全局的 this 值，类似于全局对象（global object） 来自 ECMAScript (ECMA-262)
+      names = names.filter(e => e != 'globalThis');
+      // console.log(names);
 
-        // 过滤 XPath
-        names = names.filter(e => !e.match(/^XPath/));
-        // console.log(names);
+      // 过滤 XPath
+      names = names.filter(e => !e.match(/^XPath/));
+      // console.log(names);
 
-        // 过滤 XML
-        names = names.filter(e => !e.match(/^XML/));
-        // console.log(names);
+      // 过滤 XML
+      names = names.filter(e => !e.match(/^XML/));
+      // console.log(names);
 
-        // 过滤 MediaStream API
-        names = names.filter(e => !e.match(/^Media/));
-        // console.log(names);
+      // 过滤 MediaStream API
+      names = names.filter(e => !e.match(/^Media/));
+      // console.log(names);
 
-        // 过滤 DOMRect 草案
-        names = names.filter(e => !e.match(/^DOM/));
-        // console.log(names);
+      // 过滤 DOMRect 草案
+      names = names.filter(e => !e.match(/^DOM/));
+      // console.log(names);
 
-        // 过滤 CSSVariableReferenceValue 草案
-        names = names.filter(e => !e.match(/^CSS/));
-        // console.log(names);
+      // 过滤 CSSVariableReferenceValue 草案
+      names = names.filter(e => !e.match(/^CSS/));
+      // console.log(names);
 
-        // 过滤 CanvasCaptureMediaStream
-        names = names.filter(e => !e.match(/^Canvas/));
-        // console.log(names);
+      // 过滤 CanvasCaptureMediaStream
+      names = names.filter(e => !e.match(/^Canvas/));
+      // console.log(names);
 
-        // 过滤 HTML
-        names = names.filter(e => !e.match(/^HTML/));
-        // console.log(names);
+      // 过滤 HTML
+      names = names.filter(e => !e.match(/^HTML/));
+      // console.log(names);
 
-        // 过滤 Audio
-        names = names.filter(e => !e.match(/^Audio/));
-        // console.log(names);
+      // 过滤 Audio
+      names = names.filter(e => !e.match(/^Audio/));
+      // console.log(names);
 
-        // 过滤 Animation
-        names = names.filter(e => !e.match(/^Animation/));
-        // console.log(names);
+      // 过滤 Animation
+      names = names.filter(e => !e.match(/^Animation/));
+      // console.log(names);
 
-        // 过滤 FontFace 表示一个可用的字体。它允许控制字体的源文件，作为外部资源的URL或缓冲区; 它还允许控制字体的加载时间和字体当前的状态
-        names = names.filter(e => !e.match(/^Font/));
-        // console.log(names);
+      // 过滤 FontFace 表示一个可用的字体。它允许控制字体的源文件，作为外部资源的URL或缓冲区; 它还允许控制字体的加载时间和字体当前的状态
+      names = names.filter(e => !e.match(/^Font/));
+      // console.log(names);
 
-        // 过滤 IndexedDB 是一种底层 API，用于在客户端存储大量的结构化数据（也包括文件/二进制大型对象（blobs））。该 API 使用索引实现对数据的高性能搜索
-        names = names.filter(e => !e.match(/^IDB/));
-        // console.log(names);
+      // 过滤 IndexedDB 是一种底层 API，用于在客户端存储大量的结构化数据（也包括文件/二进制大型对象（blobs））。该 API 使用索引实现对数据的高性能搜索
+      names = names.filter(e => !e.match(/^IDB/));
+      // console.log(names);
 
-        // 过滤 宽高、滚动宽高、滚动方法、元素内部滚动、窗口
-        names = filterOut(names, ["innerWidth", "innerHeight", "scrollX", "scrollY", "pageXOffset", "pageYOffset", "screenX", "screenY", "outerWidth", "outerHeight", "screen", "screenLeft", "screenTop", "scrollBy", "scrollTo", "scroll"])
-        // console.log(names);
+      // 过滤 宽高、滚动宽高、滚动方法、元素内部滚动、窗口
+      names = filterOut(names, [
+        'innerWidth',
+        'innerHeight',
+        'scrollX',
+        'scrollY',
+        'pageXOffset',
+        'pageYOffset',
+        'screenX',
+        'screenY',
+        'outerWidth',
+        'outerHeight',
+        'screen',
+        'screenLeft',
+        'screenTop',
+        'scrollBy',
+        'scrollTo',
+        'scroll'
+      ]);
+      // console.log(names);
 
-        // 过滤 窗口API
-        names = filterOut(names, ["resizeBy", "resizeTo", "moveBy", "moveTo"]);
-        // console.log(names);
+      // 过滤 窗口API
+      names = filterOut(names, ['resizeBy', 'resizeTo', 'moveBy', 'moveTo']);
+      // console.log(names);
 
-        // 过滤 WebUSB API 接口提供了从网页查找和连接USB设备的属性和方法
-        names = names.filter(e => !e.match(/^USB/));
-        // console.log(names);
+      // 过滤 WebUSB API 接口提供了从网页查找和连接USB设备的属性和方法
+      names = names.filter(e => !e.match(/^USB/));
+      // console.log(names);
 
-        // 过滤 Style
-        names = names.filter(e => !e.match(/^Style/));
-        // console.log(names);
+      // 过滤 Style
+      names = names.filter(e => !e.match(/^Style/));
+      // console.log(names);
 
-        // 过滤焦点
-        names = filterOut(names, ["focus", "blur"]);
-        // console.log(names);
+      // 过滤焦点
+      names = filterOut(names, ['focus', 'blur']);
+      // console.log(names);
 
-        // 过滤 Gamepad API 的 GamepadEvent 接口包含对连接到系统的控制器的引用
-        names = names.filter(e => !e.match(/^Game/));
-        // console.log(names);
+      // 过滤 Gamepad API 的 GamepadEvent 接口包含对连接到系统的控制器的引用
+      names = names.filter(e => !e.match(/^Game/));
+      // console.log(names);
 
-        // 过滤 文件（File）接口提供有关文件的信息，并允许网页中的 JavaScript 访问其内容
-        names = names.filter(e => !e.match(/^File/));
-        // console.log(names);
+      // 过滤 文件（File）接口提供有关文件的信息，并允许网页中的 JavaScript 访问其内容
+      names = names.filter(e => !e.match(/^File/));
+      // console.log(names);
 
-        // 过滤 XRSession，可以用它与增强现实（AR）或虚拟现实（VR）设备进行交互
-        names = names.filter(e => !e.match(/^XR/));
-        // console.log(names);
+      // 过滤 XRSession，可以用它与增强现实（AR）或虚拟现实（VR）设备进行交互
+      names = names.filter(e => !e.match(/^XR/));
+      // console.log(names);
 
-        // 过滤 定时器
-        names = filterOut(names, ["clearInterval", "clearTimeout", "setTimeout", "setInterval"]);
-        // console.log(names);
+      // 过滤 定时器
+      names = filterOut(names, [
+        'clearInterval',
+        'clearTimeout',
+        'setTimeout',
+        'setInterval'
+      ]);
+      // console.log(names);
 
-        // 过滤  Web MIDI API 
-        names = names.filter(e => !e.match(/^MIDI/));
-        // console.log(names);
+      // 过滤  Web MIDI API
+      names = names.filter(e => !e.match(/^MIDI/));
+      // console.log(names);
 
-        // 过滤 cookie
-        names = names.filter(e => !e.match(/^Cookie/));
-        // console.log(names);
-        
-        // 过滤 Presentation 在控制浏览上下文时，表示界面提供了一种机制来覆盖浏览器启动外部屏幕显示的默认行为。在接收浏览上下文时，表示接口提供对可用表示连接的访问
-        names = names.filter(e => !e.match(/^Presentation/));
-        // console.log(names);
-        
-        // 过滤 Touch 对象表示在触控设备上的触摸点。通常是指手指或者触控笔在触屏设备或者触摸板上的操作
-        names = names.filter(e => !e.match(/^Touch/));
-        // console.log(names);
+      // 过滤 cookie
+      names = names.filter(e => !e.match(/^Cookie/));
+      // console.log(names);
 
-        // 过滤 Range
-        names = names.filter(e => !e.match(/^Range/));
-        // console.log(names);
+      // 过滤 Presentation 在控制浏览上下文时，表示界面提供了一种机制来覆盖浏览器启动外部屏幕显示的默认行为。在接收浏览上下文时，表示接口提供对可用表示连接的访问
+      names = names.filter(e => !e.match(/^Presentation/));
+      // console.log(names);
 
-        // 过滤 URL
-        names = names.filter(e => !e.match(/^URL/));
-        console.log(names);
+      // 过滤 Touch 对象表示在触控设备上的触摸点。通常是指手指或者触控笔在触屏设备或者触摸板上的操作
+      names = names.filter(e => !e.match(/^Touch/));
+      // console.log(names);
+
+      // 过滤 Range
+      names = names.filter(e => !e.match(/^Range/));
+      // console.log(names);
+
+      // 过滤 URL
+      names = names.filter(e => !e.match(/^URL/));
+      console.log(names);
     }
 
     function filterOut(names, props) {
