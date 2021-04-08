@@ -296,7 +296,7 @@ const instance = axios.create({
    // `xsrfCookieName` 是用作 xsrf token 的值的cookie的名称
   xsrfCookieName: 'XSRF-TOKEN', // default
 
-  // `xsrfHeaderName` is the name of the http header that carries the xsrf token value
+  // `xsrfHeaderName` 是带有xsrf令牌值的http标头的名称
   xsrfHeaderName: 'X-XSRF-TOKEN', // default
 
    // `onUploadProgress` 允许为上传处理进度事件
