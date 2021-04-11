@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "学习笔记与资料",
   "dependencies": {
-    "typescript": "^4.2.3",
+    "typescript": "^4.2.4",
     "vue": "^3.0.5"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.21.0",
     "@typescript-eslint/parser": "^4.21.0",
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.23.0",
+    "eslint": "^7.24.0",
     "eslint-plugin-html": "^6.1.2"
   },
   "scripts": {},
