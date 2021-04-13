@@ -342,9 +342,7 @@ var app = new Vue({
 
 ```html
 <div id="app-2">
-  <span v-bind:title="message">
-    鼠标悬停几秒钟查看此处动态绑定的提示信息！
-  </span>
+  <span v-bind:title="message"> 鼠标悬停几秒钟查看此处动态绑定的提示信息！ </span>
 </div>
 ```
 
@@ -394,11 +392,7 @@ var app3 = new Vue({
 var app4 = new Vue({
   el: '#app-4',
   data: {
-    todos: [
-      { text: '学习 JavaScript' },
-      { text: '学习 Vue' },
-      { text: '整个项目' }
-    ]
+    todos: [{ text: '学习 JavaScript' }, { text: '学习 Vue' }, { text: '整个项目' }]
   }
 });
 ```
@@ -495,11 +489,7 @@ Vue.component('todo-item', {
       现在为每个 todo-item 提供 todo 对象，todo 对象是变量，即其内容可以是动态的。
       也需要为每个组件提供一个“key”。
     -->
-    <todo-item
-      v-for="item in groceryList"
-      v-bind:todo="item"
-      v-bind:key="item.id"
-    ></todo-item>
+    <todo-item v-for="item in groceryList" v-bind:todo="item" v-bind:key="item.id"></todo-item>
   </ol>
 </div>
 ```
@@ -1112,10 +1102,7 @@ var watchExampleVM = new Vue({
 可以在对象中传入更多字段来动态切换多个 class。此外，v-bind:class 指令也可以与普通的 class attribute 共存。当有如下模板：
 
 ```html
-<div
-  class="static"
-  v-bind:class="{ active: isActive, 'text-danger': hasError }"
-></div>
+<div class="static" v-bind:class="{ active: isActive, 'text-danger': hasError }"></div>
 ```
 
 ```js
@@ -1436,9 +1423,7 @@ var example1 = new Vue({
 
 ```html
 <ul id="example-2">
-  <li v-for="(item, index) in items">
-    {{ parentMessage }} - {{ index }} - {{ item.message }}
-  </li>
+  <li v-for="(item, index) in items">{{ parentMessage }} - {{ index }} - {{ item.message }}</li>
 </ul>
 ```
 
@@ -1490,9 +1475,7 @@ new Vue({
 还可以用第三个参数作为索引：
 
 ```html
-<div v-for="(value, name, index) in object">
-  {{ index }}. {{ name }}: {{ value }}
-</div>
+<div v-for="(value, name, index) in object">{{ index }}. {{ name }}: {{ value }}</div>
 ```
 
 > 注意 : 在遍历对象时，会按 `Object.keys()` 的结果遍历，但是不能保证它的结果在不同的 JavaScript 引擎下都一致。
@@ -1660,11 +1643,7 @@ methods: {
 <div id="todo-list-example">
   <form v-on:submit.prevent="addNewTodo">
     <label for="new-todo">Add a todo</label>
-    <input
-      v-model="newTodoText"
-      id="new-todo"
-      placeholder="E.g. Feed the cat"
-    />
+    <input v-model="newTodoText" id="new-todo" placeholder="E.g. Feed the cat" />
     <button>Add</button>
   </form>
   <ul>
@@ -1805,9 +1784,7 @@ new Vue({
 有时也需要在内联语句处理器中访问原始的 DOM 事件。可以用特殊变量 `$event` 把它传入方法：
 
 ```html
-<button v-on:click="warn('Form cannot be submitted yet.', $event)">
-  Submit
-</button>
+<button v-on:click="warn('Form cannot be submitted yet.', $event)">Submit</button>
 ```
 
 ```js
@@ -2074,9 +2051,7 @@ new Vue({
 
 ```html
 <select v-model="selected">
-  <option v-for="option in options" v-bind:value="option.value">
-    {{ option.text }}
-  </option>
+  <option v-for="option in options" v-bind:value="option.value">{{ option.text }}</option>
 </select>
 <span>Selected: {{ selected }}</span>
 ```
@@ -2196,8 +2171,7 @@ Vue.component('button-counter', {
       count: 0
     };
   },
-  template:
-    '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
+  template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
 });
 ```
 
@@ -2308,11 +2282,7 @@ new Vue({
 并想要为每篇博文渲染一个组件：
 
 ```html
-<blog-post
-  v-for="post in posts"
-  v-bind:key="post.id"
-  v-bind:title="post.title"
-></blog-post>
+<blog-post v-for="post in posts" v-bind:key="post.id" v-bind:title="post.title"></blog-post>
 ```
 
 如上所示，可以使用 `v-bind` 来动态传递 prop。这在一开始不清楚要渲染的具体内容，比如从一个 API 获取博文列表的时候，是非常有用的。
@@ -2357,11 +2327,7 @@ new Vue({
 所以是时候重构一下这个 `<blog-post>` 组件了，让它变成接受一个单独的 `post` prop：
 
 ```html
-<blog-post
-  v-for="post in posts"
-  v-bind:key="post.id"
-  v-bind:post="post"
-></blog-post>
+<blog-post v-for="post in posts" v-bind:key="post.id" v-bind:post="post"></blog-post>
 ```
 
 ```js
@@ -2403,11 +2369,7 @@ new Vue({
 ```html
 <div id="blog-posts-events-demo">
   <div :style="{ fontSize: postFontSize + 'em' }">
-    <blog-post
-      v-for="post in posts"
-      v-bind:key="post.id"
-      v-bind:post="post"
-    ></blog-post>
+    <blog-post v-for="post in posts" v-bind:key="post.id" v-bind:post="post"></blog-post>
   </div>
 </div>
 ```
@@ -2484,19 +2446,13 @@ methods: {
 等价于：
 
 ```html
-<input
-  v-bind:value="searchText"
-  v-on:input="searchText = $event.target.value"
-/>
+<input v-bind:value="searchText" v-on:input="searchText = $event.target.value" />
 ```
 
 当用在组件上时，`v-model` 则会这样：
 
 ```html
-<custom-input
-  v-bind:value="searchText"
-  v-on:input="searchText = $event"
-></custom-input>
+<custom-input v-bind:value="searchText" v-on:input="searchText = $event"></custom-input>
 ```
 
 为了让它正常工作，这个组件内的 `<input>` 必须：
@@ -2765,8 +2721,7 @@ var ComponentC = {
 然后在 `components` 选项中定义想要使用的组件：
 
 ```html
-new Vue({ el: '#app', components: { 'component-a': ComponentA, 'component-b':
-ComponentB } })
+new Vue({ el: '#app', components: { 'component-a': ComponentA, 'component-b': ComponentB } })
 ```
 
 对于 `components` 对象中的每个 property 来说，其 property 名就是自定义元素的名字，其 property 值就是这个组件的选项对象。
@@ -3213,11 +3168,7 @@ Vue.component('base-input', {
 这个模式允许在使用基础组件的时候更像是使用原始的 HTML 元素，而不会担心哪个元素是真正的根元素：
 
 ```html
-<base-input
-  v-model="username"
-  required
-  placeholder="Enter your username"
-></base-input>
+<base-input v-model="username" required placeholder="Enter your username"></base-input>
 ```
 
 ### 2.3 自定义事件
@@ -3287,11 +3238,7 @@ Vue.component('base-checkbox', {
 ```html
 <label>
   {{ label }}
-  <input
-    v-bind="$attrs"
-    v-bind:value="value"
-    v-on:input="$emit('input', $event.target.value)"
-  />
+  <input v-bind="$attrs" v-bind:value="value" v-on:input="$emit('input', $event.target.value)" />
 </label>
 ```
 
@@ -3359,10 +3306,7 @@ this.$emit('update:title', newTitle);
 然后父组件可以监听那个事件并根据需要更新一个本地的数据 property。例如：
 
 ```html
-<text-document
-  v-bind:title="doc.title"
-  v-on:update:title="doc.title = $event"
-></text-document>
+<text-document v-bind:title="doc.title" v-on:update:title="doc.title = $event"></text-document>
 ```
 
 为了方便起见，为这种模式提供一个缩写，即 `.sync` 修饰符：
@@ -3615,9 +3559,7 @@ Vue 实现了一套内容分发的 API，这套 API 的设计灵感源自 Web Co
 
 ```html
 <current-user>
-  <template v-slot:default="slotProps">
-    {{ slotProps.user.firstName }}
-  </template>
+  <template v-slot:default="slotProps"> {{ slotProps.user.firstName }} </template>
 </current-user>
 ```
 
@@ -3628,9 +3570,7 @@ Vue 实现了一套内容分发的 API，这套 API 的设计灵感源自 Web Co
 在上述情况下，当被提供的内容只有默认插槽时，组件的标签才可以被当作插槽的模板来使用。这样就可以把 `v-slot` 直接用在组件上：
 
 ```html
-<current-user v-slot:default="slotProps">
-  {{ slotProps.user.firstName }}
-</current-user>
+<current-user v-slot:default="slotProps"> {{ slotProps.user.firstName }} </current-user>
 ```
 
 这种写法还可以更简单。就像假定未指明的内容对应默认插槽一样，不带参数的 `v-slot` 被假定对应默认插槽：
@@ -3645,9 +3585,7 @@ Vue 实现了一套内容分发的 API，这套 API 的设计灵感源自 Web Co
 <!-- 无效，会导致警告 -->
 <current-user v-slot="slotProps">
   {{ slotProps.user.firstName }}
-  <template v-slot:other="otherSlotProps">
-    slotProps is NOT available here
-  </template>
+  <template v-slot:other="otherSlotProps"> slotProps is NOT available here </template>
 </current-user>
 ```
 
@@ -3655,9 +3593,7 @@ Vue 实现了一套内容分发的 API，这套 API 的设计灵感源自 Web Co
 
 ```html
 <current-user>
-  <template v-slot:default="slotProps">
-    {{ slotProps.user.firstName }}
-  </template>
+  <template v-slot:default="slotProps"> {{ slotProps.user.firstName }} </template>
 
   <template v-slot:other="otherSlotProps"> ... </template>
 </current-user>
@@ -3688,9 +3624,7 @@ function (slotProps) {
 甚至可以定义后备内容，用于插槽 prop 是 undefined 的情形：
 
 ```html
-<current-user v-slot="{ user = { firstName: 'Guest' } }">
-  {{ user.firstName }}
-</current-user>
+<current-user v-slot="{ user = { firstName: 'Guest' } }"> {{ user.firstName }} </current-user>
 ```
 
 #### 2.4.6 动态插槽名
@@ -3837,8 +3771,7 @@ Vue.component(
 当使用局部注册的时候，也可以直接提供一个返回 `Promise` 的函数：
 
 ```html
-new Vue({ // ... components: { 'my-component': () =>
-import('./my-async-component') } })
+new Vue({ // ... components: { 'my-component': () => import('./my-async-component') } })
 ```
 
 ##### 2.5.2.1 处理加载状态
@@ -3997,8 +3930,8 @@ CSS 动画用法同 CSS 过渡，区别是在动画中 `v-enter` 类名在节点
   <button @click="show = !show">Toggle show</button>
   <transition name="bounce">
     <p v-if="show">
-      As a child, my parents give me all their love and I think it is a
-      necessary thing, so I am very naughty.
+      As a child, my parents give me all their love and I think it is a necessary thing, so I am
+      very naughty.
     </p>
   </transition>
 </div>
@@ -4049,11 +3982,7 @@ new Vue({
 示例：
 
 ```html
-<link
-  href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1"
-  rel="stylesheet"
-  type="text/css"
-/>
+<link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css" />
 
 <div id="example-3">
   <button @click="show = !show">Toggle render</button>
@@ -4414,9 +4343,7 @@ new Vue({
   <button v-on:click="add">Add</button>
   <button v-on:click="remove">Remove</button>
   <transition-group name="list" tag="p">
-    <span v-for="item in items" v-bind:key="item" class="list-item">
-      {{ item }}
-    </span>
+    <span v-for="item in items" v-bind:key="item" class="list-item"> {{ item }} </span>
   </transition-group>
 </div>
 ```
@@ -4511,9 +4438,7 @@ new Vue({
   <button v-on:click="add">Add</button>
   <button v-on:click="remove">Remove</button>
   <transition-group name="list-complete" tag="p">
-    <span v-for="item in items" v-bind:key="item" class="list-complete-item">
-      {{ item }}
-    </span>
+    <span v-for="item in items" v-bind:key="item" class="list-complete-item"> {{ item }} </span>
   </transition-group>
 </div>
 ```
@@ -4579,11 +4504,7 @@ FLIP 动画不仅可以实现单列过渡，[多维网格也同样可以过渡](
     v-on:enter="enter"
     v-on:leave="leave"
   >
-    <li
-      v-for="(item, index) in computedList"
-      v-bind:key="item.msg"
-      v-bind:data-index="index"
-    >
+    <li v-for="(item, index) in computedList" v-bind:key="item.msg" v-bind:data-index="index">
       {{ item.msg }}
     </li>
   </transition-group>
@@ -4705,19 +4626,9 @@ Vue.component('my-special-transition', {
 
 <div id="dynamic-fade-demo" class="demo">
   Fade In:
-  <input
-    type="range"
-    v-model="fadeInDuration"
-    min="0"
-    v-bind:max="maxFadeDuration"
-  />
+  <input type="range" v-model="fadeInDuration" min="0" v-bind:max="maxFadeDuration" />
   Fade Out:
-  <input
-    type="range"
-    v-model="fadeOutDuration"
-    min="0"
-    v-bind:max="maxFadeDuration"
-  />
+  <input type="range" v-model="fadeOutDuration" min="0" v-bind:max="maxFadeDuration" />
   <transition
     v-bind:css="false"
     v-on:before-enter="beforeEnter"
@@ -4726,9 +4637,7 @@ Vue.component('my-special-transition', {
   >
     <p v-if="show">hello</p>
   </transition>
-  <button v-if="stop" v-on:click="stop = false; show = false">
-    Start animating
-  </button>
+  <button v-if="stop" v-on:click="stop = false; show = false">Start animating</button>
   <button v-else v-on:click="stop = true">Stop it!</button>
 </div>
 ```
@@ -4835,17 +4744,10 @@ new Vue({
 <script src="https://cdn.jsdelivr.net/npm/color-js@1.0.3"></script>
 
 <div id="example-7">
-  <input
-    v-model="colorQuery"
-    v-on:keyup.enter="updateColor"
-    placeholder="Enter a color"
-  />
+  <input v-model="colorQuery" v-on:keyup.enter="updateColor" placeholder="Enter a color" />
   <button v-on:click="updateColor">Update</button>
   <p>Preview:</p>
-  <span
-    v-bind:style="{ backgroundColor: tweenedCSSColor }"
-    class="example-7-color-preview"
-  ></span>
+  <span v-bind:style="{ backgroundColor: tweenedCSSColor }" class="example-7-color-preview"></span>
   <p>{{ tweenedCSSColor }}</p>
 </div>
 ```
@@ -5929,11 +5831,7 @@ Vue.component('smart-list', {
       return UnorderedList;
     }
 
-    return createElement(
-      appropriateListComponent(),
-      context.data,
-      context.children
-    );
+    return createElement(appropriateListComponent(), context.data, context.children);
   }
 });
 ```
@@ -7269,3 +7167,13 @@ export default {};
 6. 在 GitHub 对应项目的 settings -> GitHub Pages -> Source 中将分支设为 **gh-pages**。
 
 7. 将 `.travis.yml` 文件推送到 GitHub 来触发第一次构建。
+
+### 9.4 vue-cli-service
+
+1. 使用以下命令可以在打包后的目录下，得到一个 `report.html` 分析报告文件，用来进行性能优化
+
+   ```sh
+   vue-cli-service build --report
+   # 或在 package.json 文件中直接配置好，或
+   npm run build -- --report
+   ```

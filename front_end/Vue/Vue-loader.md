@@ -913,9 +913,7 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          process.env.NODE_ENV !== 'production'
-            ? 'vue-style-loader'
-            : MiniCssExtractPlugin.loader,
+          process.env.NODE_ENV !== 'production' ? 'vue-style-loader' : MiniCssExtractPlugin.loader,
           'css-loader'
         ]
       }
@@ -1047,10 +1045,7 @@ module.exports = {
    module.exports = {
      defaultSeverity: 'error',
      extends: 'stylelint-config-standard',
-     plugins: [
-       'stylelint-declaration-block-no-ignored-properties',
-       'stylelint-order'
-     ],
+     plugins: ['stylelint-declaration-block-no-ignored-properties', 'stylelint-order'],
      rules: {
        'plugin/declaration-block-no-ignored-properties': true,
        // 各分类属性顺序
