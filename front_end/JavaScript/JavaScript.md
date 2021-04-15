@@ -183,7 +183,7 @@ Symbol 可以具有字符串类型的描述，但是即使描述相同，Symbol 
 创建 Symbol 的方式是使用全局的 Symbol 函数。
 
 ```js
-var symbol = Symbol("my symbol");
+var symbol = Symbol('my symbol');
 ```
 
 可以使用 `Symbol.iterator` 来自定义 `for…of` 在对象上的行为。当需要对一个对象进行迭代时（比如开始用于一个 for..of 循环中），它的 `Symbol.iterator` 方法都会在不传参情况下被调用，返回的迭代器用于获取要迭代的值。
@@ -212,7 +212,7 @@ Symbol 比较特殊，直接用 `Symbol` 调用它会抛出错误，但它依然
 JS 在语言设计上试图模糊基本类型与对象之间的关系，在日常代码中可以把对象的方法放在基本类型上使用
 
 ```js
-console.log("ab".charAt(0));
+console.log('ab'.charAt(0));
 ```
 
 甚至在原型上添加方法都可以应用于基本类型， `.` 运算符提供了装箱操作，它会根据基础类型构造一个临时对象，使能在基础类型上调用对应对象的方法。
@@ -227,7 +227,7 @@ JS 是弱类型语言，所以类型转换发生的非常频繁，大部分常�
 : 字符串到数字的类型转换，存在一个语法结构，类型转换支持二进制，八进制，十进制，十六进制，此外，JS 支持的字符串语法还包括，正负号科学计数法，可以使用大写或小写的 `e` 来表示
 
 ```js
-Number("1e3") = (1 * 10) ^ 3 = 1000;
+Number('1e3') = (1 * 10) ^ 3 = 1000;
 Number(-1e-2) = (-1 * 10) ^ -2 = -0.01;
 ```
 
@@ -247,7 +247,7 @@ Number(-1e-2) = (-1 * 10) ^ -2 = -0.01;
 ```js
 var symbolObject = function () {
   return this;
-}.call(Symbol("a"));
+}.call(Symbol('a'));
 console.log(typeof symbolObject); //object
 console.log(symbolObject instanceof Symbol); //true
 console.log(symbolObject.constructor == Symbol); //true
@@ -258,7 +258,7 @@ console.log(symbolObject.constructor == Symbol); //true
 使用内置的 Object 函数，可以 JS 代码中显式的调用装箱能力
 
 ```js
-var symbolObject = Object(Symbol("a"));
+var symbolObject = Object(Symbol('a'));
 console.log(typeof symbolObject); //object
 console.log(symbolObject instanceof Symbol); //true
 // 原型链 symbolObject.__proto__  =>  Symbol.__proto__ => Object
@@ -268,8 +268,8 @@ console.log(symbolObject.constructor == Symbol); //true
 每一类装箱对象都有私有的 Class 属性，这些属性可以用 `Object.prototype.toString` 获取
 
 ```js
-var symbolObject = Object(Symbol("0"));
-var symbolT = Symbol("b");
+var symbolObject = Object(Symbol('0'));
+var symbolT = Symbol('b');
 console.log(Object.prototype.toString.call(symbolObject)); // [Object Symbol]
 console.log(Object.prototype.toString.call(symbolT)); // [Object Symbol]
 console.log(typeof symbolObject); // Object
@@ -289,13 +289,13 @@ console.log(typeof symbolT); // Symbol
 var o = {
   // 箭头函数表达式适用于需要匿名函数的地方,并且它不能用作构造函数。
   valueOf: () => {
-    console.log("valueOf");
+    console.log('valueOf');
     return {};
   },
   toString: () => {
-    console.log("toString");
+    console.log('toString');
     return {};
-  },
+  }
 };
 
 o * 2;
@@ -308,13 +308,13 @@ o * 2;
 // 到String的拆箱转换会优先调用toString，调用顺序变化
 var o = {
   valueOf: () => {
-    console.log("valueOf");
+    console.log('valueOf');
     return {};
   },
   toString: () => {
-    console.log("toString");
+    console.log('toString');
     return {};
-  },
+  }
 };
 
 String(o);
@@ -327,20 +327,20 @@ String(o);
 // 在ES6之后，还允许对象通过显式指定 @@toPrimitive Symbol 来覆盖原有的行为
 var o = {
   valueOf: () => {
-    console.log("valueOf");
+    console.log('valueOf');
     return {};
   },
   toString: () => {
-    console.log("toString");
+    console.log('toString');
     return {};
-  },
+  }
 };
 o[Symbol.toPrimitive] = () => {
-  console.log("toPrimitive");
-  return "hello";
+  console.log('toPrimitive');
+  return 'hello';
 };
 
-console.log(o + " World");
+console.log(o + ' World');
 // toPrimitive
 // hello World
 ```
@@ -398,8 +398,8 @@ JS 对象独有的特色：对象具有高度的动态性，因为 JS 赋予了�
 var o = { a: 1 };
 o.b = 2;
 // 可以使用内置函数 Object.getOwnPropertyDescriptor 来查看
-console.log(Object.getOwnPropertyDescriptor(o, "a")); // {value: 1, writable: true, enumerable: true, configurable: true}
-console.log(Object.getOwnPropertyDescriptor(o, "b")); // {value: 2, writable: true, enumerable: true, configurable: true}
+console.log(Object.getOwnPropertyDescriptor(o, 'a')); // {value: 1, writable: true, enumerable: true, configurable: true}
+console.log(Object.getOwnPropertyDescriptor(o, 'b')); // {value: 2, writable: true, enumerable: true, configurable: true}
 ```
 
 #### 2.2.2 访问器属性（getter/setter）
@@ -418,10 +418,10 @@ console.log(Object.getOwnPropertyDescriptor(o, "b")); // {value: 2, writable: tr
 ```js
 var o = { a: 1 };
 // Object.defineProperty 可以改变特征值
-Object.defineProperty(o, "a", { writable: false });
-Object.defineProperty(o, "b", { value: 2, writable: false, enumerable: false, configurable: true });
-console.log(Object.getOwnPropertyDescriptor(o, "a")); // {value: 1, writable: false, enumerable: true, configurable: true}
-console.log(Object.getOwnPropertyDescriptor(o, "b")); // {value: 2, writable: false, enumerable: false, configurable: true}
+Object.defineProperty(o, 'a', { writable: false });
+Object.defineProperty(o, 'b', { value: 2, writable: false, enumerable: false, configurable: true });
+console.log(Object.getOwnPropertyDescriptor(o, 'a')); // {value: 1, writable: false, enumerable: true, configurable: true}
+console.log(Object.getOwnPropertyDescriptor(o, 'b')); // {value: 2, writable: false, enumerable: false, configurable: true}
 o.b = 3;
 console.log(o.b); // 2  writable: false o对象的b属性不能被赋值
 ```
@@ -432,14 +432,14 @@ console.log(o.b); // 2  writable: false o对象的b属性不能被赋值
 // object.defineProperty 使用 get 和 set 关键字来创建访问器属性
 var o = { a: 1 };
 // 不能同时指定访问器属性和 值或可写属性writable
-Object.defineProperty(o, "b", {
+Object.defineProperty(o, 'b', {
   enumerable: false,
   get: () => {
-    return o.a + "get";
+    return o.a + 'get';
   },
-  set: (value) => {
+  set: value => {
     o.a = value;
-  },
+  }
 });
 console.log(o.b); // 1get
 o.b = 3;
@@ -488,11 +488,11 @@ ES6 以来，JS 提供了一系列的内置函数，以便更为直接的访问�
 // 创建一个对象cat
 var cat = {
   say() {
-    console.log("meow~");
+    console.log('meow~');
   },
   jump() {
-    console.log("jump");
-  },
+    console.log('jump');
+  }
 };
 
 /*
@@ -504,9 +504,9 @@ var tiger = Object.create(cat, {
     configurable: true,
     enumerable: true,
     value: () => {
-      console.log("roar!");
-    },
-  },
+      console.log('roar!');
+    }
+  }
 });
 
 // 使用Object.create 创建其他cat对象，可以通过控制原始cat对象来控制所有cat对象的行为
@@ -523,9 +523,9 @@ anotherTiger.jump(); // jump
 console.log(Object.getPrototypeOf(anotherTiger)); // {say: ƒ}
 
 var blueTiger = new Object();
-blueTiger.name = "小明";
+blueTiger.name = '小明';
 blueTiger.eat = () => {
-  console.log("eat meat");
+  console.log('eat meat');
 };
 console.log(blueTiger.name); // 小明
 blueTiger.eat(); // eat meat
@@ -543,8 +543,8 @@ blueTiger.jump(); // jump
 
 ```js
 // 使用 Symbol.toStringTag 来自定义 Object.prototype.toString
-var o = { [Symbol.toStringTag]: "MY" }; // 创建一个对象，给它唯一的属性 Symbol.toStringTag
-console.log(o + ""); // [object MY]     使用 + 来触发 Object.prototype.toString 的调用，发现这个属性最终对 Object.prototype.toSting 的结果产生了影响
+var o = { [Symbol.toStringTag]: 'MY' }; // 创建一个对象，给它唯一的属性 Symbol.toStringTag
+console.log(o + ''); // [object MY]     使用 + 来触发 Object.prototype.toString 的调用，发现这个属性最终对 Object.prototype.toSting 的结果产生了影响
 ```
 
 new 运算接受一个构造器和一组调用参数，实际上做了 3 件事
@@ -622,28 +622,28 @@ class Animal {
   }
 
   get h() {
-    console.log(this.name + " is " + this.sex);
+    console.log(this.name + ' is ' + this.sex);
   }
 
   set sex(sex) {
     // 创建一个新的数据型成员_sex 和 sex 不是同一个值
     // 不可以写 this.sex = sex，因为定义了sex的读写器，给 this.sex 赋值的时候会调用 set sex ，这样会导致无限递归直到栈溢出
     this._sex = sex;
-    console.log(this.name + " is " + this._sex);
+    console.log(this.name + ' is ' + this._sex);
   }
 
   set setName(name) {
     this.name = name;
-    console.log("My name is " + this.name);
+    console.log('My name is ' + this.name);
   }
 
   speak() {
-    console.log(this.name + " makes a noise!");
+    console.log(this.name + ' makes a noise!');
   }
 
   setNameAndSex(name) {
     this.name = name;
-    console.log("Set name " + this.name);
+    console.log('Set name ' + this.name);
   }
 }
 
@@ -655,7 +655,7 @@ class Dog extends Animal {
   }
 
   speak() {
-    console.log(this.name + " barks!");
+    console.log(this.name + ' barks!');
   }
 
   // 使用 static 关键字定义静态方法
@@ -664,13 +664,13 @@ class Dog extends Animal {
   }
 }
 
-let d = new Dog("HanHan");
+let d = new Dog('HanHan');
 d.speak(); // HanHan barks!
 d.h; // HanHan is undefined
-d.sex = "男"; // HanHan is 男
-d.setName = "Tom"; // My name is Tom
-console.log(Dog.formatName("HanKe")); // N
-d.setNameAndSex("刘禅"); // Set name 刘禅
+d.sex = '男'; // HanHan is 男
+d.setName = 'Tom'; // My name is Tom
+console.log(Dog.formatName('HanKe')); // N
+d.setNameAndSex('刘禅'); // Set name 刘禅
 ```
 
 ### 2.4 JS 的对象
@@ -773,7 +773,7 @@ var o = new f(); //把f作为构造器调用
 function cls() {
   this.a = 100;
   return {
-    getValue: () => this.a,
+    getValue: () => this.a
   };
 }
 var o = new cls();
@@ -833,7 +833,7 @@ function sleep(duration) {
     setTimeout(resolve, duration);
   });
 }
-sleep(1000).then(() => console.log("finished"));
+sleep(1000).then(() => console.log('finished'));
 ```
 
 Promise 有三个状态：
@@ -846,12 +846,12 @@ Promise 有三个状态：
 
 ```js
 new Promise(function (resolve, reject) {
-  resolve("成功");
+  resolve('成功');
 }).then(
-  (res) => {
+  res => {
     console.log(res);
   },
-  (err) => {
+  err => {
     console.log(err);
   }
 );
@@ -867,11 +867,11 @@ Promise 的 then 回调是一个异步的执行过程。
 
 ```js
 var r = new Promise(function (resolve, reject) {
-  console.log("a");
+  console.log('a');
   resolve();
 });
-r.then(() => console.log("c"));
-console.log("b"); // a b c
+r.then(() => console.log('c'));
+console.log('b'); // a b c
 ```
 
 [Promise 和 async/await 的使用](./HTML演示文件/Promise和async、await的使用.html)
@@ -898,9 +898,9 @@ function sleep(duration) {
 }
 
 async function foo() {
-  console.log("a");
+  console.log('a');
   await sleep(2000);
-  console.log("b");
+  console.log('b');
 }
 ```
 
@@ -917,8 +917,8 @@ async function foo(name) {
   console.log(name);
 }
 async function foo2() {
-  await foo("a");
-  await foo("b");
+  await foo('a');
+  await foo('b');
 }
 ```
 
@@ -1027,9 +1027,9 @@ Realm 中包含一组完整的内置对象，而且是复制关系。
 
 ```js
 // 展示了在浏览器环境中获取来自两个 Realm 的对象，它们跟本土的 Object 做 instanceOf 时会产生差异
-var iframe = document.createElement("iframe");
+var iframe = document.createElement('iframe');
 document.documentElement.appendChild(iframe);
-iframe.src = "javascript:var b = {};";
+iframe.src = 'javascript:var b = {};';
 
 var b1 = iframe.contentWindow.b;
 var b2 = {};
@@ -1205,7 +1205,7 @@ function foo() {
     return 0;
   } catch (err) {
   } finally {
-    console.log("a");
+    console.log('a');
   }
 }
 // return 执行完毕后，但函数并没有立即返回，又执行了finally
@@ -1283,7 +1283,7 @@ outer: while (true) {
     break outer;
   }
 }
-console.log("finished");
+console.log('finished');
 ```
 
 ## 四. 文法
@@ -1463,7 +1463,7 @@ JS 中支持四种转义形式，还有一种虽然标准没有定义，但是�
 正则表达式并非机械的见到/就停止，在正则表达式 `[ ]` 中的 `/` 就会被认为是普通字符，例如：
 
 ```js
-/[/]/.test("/"); // true
+/[/]/.test('/'); // true
 ```
 
 除了 `\`、`/` 和 `[` 三个字符之外，JS 表达式中的字符都是普通字符。
@@ -1503,7 +1503,7 @@ function f() {
   console.log(arguments);
 }
 
-var a = "world";
+var a = 'world';
 f`Hello ${a}!`; // [["Hello", "!"], world]
 ```
 
@@ -1569,7 +1569,7 @@ JS 语法中定义了以下 no LIneTerminator here 规则：
     // 这段代码本意是一个变量 a 赋值，然后对一个数组执行 forEach，但是因为没有自动插入分号，被理解为下标运算符和逗号表达式
     (3, 2, 1, 0)
   ]
-    .forEach((e) => console.log(e)); // 这里不会抛出错误，代码排查非常困难
+    .forEach(e => console.log(e)); // 这里不会抛出错误，代码排查非常困难
   ```
 
 - 以正则表达式开头的语句
@@ -1577,7 +1577,7 @@ JS 语法中定义了以下 no LIneTerminator here 规则：
   ```js
   var x = 1,
     g = { test: () => 0 },
-    b = 1 /*这里没有被自动插入分号*/ / a / g.test("abc"); // 本意是声明三个变量，然后测试一个字符串中是否含有字母 a，但是因为没有自动插入分号，正则的第一个斜杠被理解成了除号，后面的意思就都变了
+    b = 1 /*这里没有被自动插入分号*/ / a / g.test('abc'); // 本意是声明三个变量，然后测试一个字符串中是否含有字母 a，但是因为没有自动插入分号，正则的第一个斜杠被理解成了除号，后面的意思就都变了
   console.log(RegExp.$1); // 这里不会抛出错误，代码排查非常困难
   ```
 
@@ -1585,7 +1585,7 @@ JS 语法中定义了以下 no LIneTerminator here 规则：
 
   ```js
   var f = function () {
-    return "";
+    return '';
   };
   // 这段代码本意是声明函数 f，然后赋值给 g，再测试 Template 中是否含有字母 a。但是因为没有自动插入分号，函数 f 被认为跟 Template 一体的，进而被莫名其妙地执行了一次。
   var g = f/*这里没有被自动插入分号*/ `Template`.match(/(a)/);
@@ -1623,7 +1623,7 @@ import 声明有两种用法
 1. 直接 import 一个模块
 
    ```js
-   import "mod"; //引入一个模块
+   import 'mod'; //引入一个模块
    ```
 
    这样只能保证这个代码模块被执行，引用它的模块是无法获得它的任何信息的。
@@ -1634,17 +1634,17 @@ import 声明有两种用法
 
    ```js
    // 1. 引入模块中导出的默认值
-   import x from "./a.js";
+   import x from './a.js';
    // 2. 引入模块中的变量
-   import { a as x, modify } from "./a.js";
+   import { a as x, modify } from './a.js';
    // 3. 把模块中所有的变量以类似对象属性的方式引入
-   import * as x from "./a.js";
+   import * as x from './a.js';
 
    // 第一种方式还可以跟后面两种组合使用
    // 语法要求不带 `as` 的默认值永远在最前。
    // 注意这里的变量实际上仍然可以受到原来模块的控制
-   import d, { a as x, modify } from "./a.js";
-   import d, * as x from "./a.js";
+   import d, { a as x, modify } from './a.js';
+   import d, * as x from './a.js';
    ```
 
 ##### 4.2.3.2 export 声明
@@ -1678,7 +1678,7 @@ export 承担的是导出的任务
 > import 语句前无法加入 export，但是可以直接使用 `export from` 语法
 
 ```js
-export x from "a.js";
+export x from 'a.js';
 ```
 
 ##### 4.2.3.3 函数体
@@ -1793,8 +1793,8 @@ foo();
 
 ```js
 // 假设要设计一种声明本文件不需要进行 lint 检查的指令，可以这样设计
-"no lint";
-"use strict";
+'no lint';
+'use strict';
 function doSth() {
   //......
 }
@@ -1879,7 +1879,7 @@ switch(num) {
 ```js
 let a = 100;
 while (a--) {
-  console.log("*");
+  console.log('*');
 }
 ```
 
@@ -1908,7 +1908,7 @@ for in 循环枚举对象的属性，这里体现了属性的 enumerable 特征�
 
 ```js
 let o = { a: 10, b: 20 };
-Object.defineProperty(o, "c", { enumerable: false, value: 30 });
+Object.defineProperty(o, 'c', { enumerable: false, value: 30 });
 
 for (let p in o) console.log(p);
 ```
@@ -1925,15 +1925,15 @@ let o = {
     next() {
       if (this._value == 10)
         return {
-          done: true,
+          done: true
         };
       else
         return {
           value: this._value++,
-          done: false,
+          done: false
         };
-    },
-  }),
+    }
+  })
 };
 for (let e of o) console.log(e);
 ```
@@ -1981,8 +1981,10 @@ break 用于 跳出循环语句 或 switch 语句，continue 语句用于结束�
 这两个语句都是控制型语句。都有带标签的用法
 
 ```js
-outer: for (let i = 0; i < 100; i++) inner: for (let j = 0; j < 100; j++) if (i == 50 && j == 50) break outer;
-outer: for (let i = 0; i < 100; i++) inner: for (let j = 0; j < 100; j++) if (i >= 50 && j == 50) continue outer;
+outer: for (let i = 0; i < 100; i++)
+  inner: for (let j = 0; j < 100; j++) if (i == 50 && j == 50) break outer;
+outer: for (let i = 0; i < 100; i++)
+  inner: for (let j = 0; j < 100; j++) if (i >= 50 && j == 50) continue outer;
 ```
 
 > 带标签的 break 和 continue 可以控制自己被外层的哪个语句结构消费，这可以跳出复杂的语句结构。
@@ -1993,11 +1995,11 @@ try 语句和 throw 语句用于处理异常，它们是配合使用的。在大
 
 ```js
 try {
-  throw new Error("error");
+  throw new Error('error');
 } catch (e) {
   console.log(e);
 } finally {
-  console.log("finally");
+  console.log('finally');
 }
 ```
 
@@ -2122,7 +2124,7 @@ function foo(a = 1, ...other) {
 PrimaryExpression 包含了各种"直接量"，直接量就是用某种语法写出来的具有特定类型的值。在运行时有各种值，比如：数字 123，字符串 Hello，所以通俗的讲，直接量就是在代码中把它们写出来的语法。
 
 ```js
-"abc";
+'abc';
 123;
 null;
 true;
@@ -2156,7 +2158,7 @@ Member Expression 通常用于访问对象成员，它有几种形式：
 
 ```js
 a.b; // 标识符的属性访问
-a["b"]; // 字符串的属性访问
+a['b']; // 字符串的属性访问
 new.target; // new.target 是个新加入的语法，用于判断函数是否是被 new 调用
 super.b; // super 则是构造函数中，用于访问父类的属性的语法
 ```
@@ -2384,7 +2386,7 @@ in
 在语法上，相等表达式是由关系表达式用相等表达式用相等比较运算符连接构成，所以，可以像下面这段代码一样使用，而不需要加括号：
 
 ```js
-a instanceof "object" == true;
+a instanceof 'object' == true;
 ```
 
 相等表达式可以由四种运算符和关系表达式构成：
@@ -2419,7 +2421,7 @@ a instanceof "object" == true;
 
 ```js
 // 等号左边必然是 string，右边的直接量必然是 number
-document.getElementsByTagName("input")[0].value == 100;
+document.getElementsByTagName('input')[0].value == 100;
 ```
 
 ##### 4.2.5.17 位运算表达式
