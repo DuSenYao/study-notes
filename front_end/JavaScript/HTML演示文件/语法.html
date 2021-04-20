@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/base.css" />
 
 <div class="main">
   <button onclick="autoInsertSemicolon2()">自动插入分号规则</button>
@@ -10,134 +10,135 @@
 </div>
 
 <script>
-// 自动插入分号规则
-  function autoInsertSemicolon(){
+  // 自动插入分号规则
+  function autoInsertSemicolon() {
     // void 关键字接在1之后是不合法的，因此会在 void 前插入分号
-    let a = 1
-    void function(a){
+    let a = 1;
+    void (function (a) {
       console.log(a);
-    }(a);
+    })(a);
   }
 
-  function autoInsertSemicolon2(){
-    var a = 1, b = 1, c = 1;
+  function autoInsertSemicolon2() {
+    var a = 1,
+      b = 1,
+      c = 1;
     // a之后有换行符，后面遇到了++，a后面跟++是合法的语法，但是在JS标准定义中，有[no LineTerminator here]规则，定义了后自增、后自减前面不能插入换行符，所以a后面要插入一个分号
-    a
-    ++
-    b
-    ++
-    c
+    a;
+    ++b;
+    ++c;
     console.log(a, b, c); // 1 2 2
   }
 
-  function autoInsertSemicolon3(){
-    (function(a){
+  function autoInsertSemicolon3() {
+    (function (a) {
       console.log(a);
-    // 这里会报错，JS引擎会认为函数返回的可能是个函数，那么，在后面再跟括号形成函数调用是合理的，因此，这里不会自动插入分号。
-    })()
-    (function(a){
+      // 这里会报错，JS引擎会认为函数返回的可能是个函数，那么，在后面再跟括号形成函数调用是合理的，因此，这里不会自动插入分号。
+    })()(function (a) {
       console.log(a);
-    })()
+    })();
   }
 
-  function autoInsertSemicolon4(){
+  function autoInsertSemicolon4() {
     // 根据JS自动插入分号规则，带换行符的注释也被认为是有换行符，而 return 也有[no LineTerminator here]规则的要求。所以这里会自动插入分号，这里的返回值是undefined
-    return /*
+    return;
+    /*
       This is a return value.
-    */1;
+    */ 1;
   }
 
-/********************************* no LineTerminator here 规则 ******************************************/
+  /********************************* no LineTerminator here 规则 ******************************************/
 
   // 1. 带标签的 continue 语句，不能在 continue 后插入换行
-  function continueNoLineTerminatorHere(){
-    outer:for(var i = 0;i < 10;i++)
-      for(var j = 0;j < i;j++)
-        continue /*no LineTerminator here*/ outer
+  function continueNoLineTerminatorHere() {
+    outer: for (var i = 0; i < 10; i++)
+      for (var j = 0; j < i; j++) continue /*no LineTerminator here*/ outer;
   }
 
   // 2. break 后不能插入换行
-  function breakNoLineTerminatorHere(){
-    outer:for(var i = 0;i < 10;i++)
-      for(var j = 0;j < i;j++)
-        break /*no LineTerminator here*/ outer
+  function breakNoLineTerminatorHere() {
+    outer: for (var i = 0; i < 10; i++)
+      for (var j = 0; j < i; j++) break /*no LineTerminator here*/ outer;
   }
 
   // 3. return 和 自增、自减 后不能插入换行
-  function f(){
+  function f() {
     var i = 1;
-    i/*no LineTerminator here*/++
-    i/*no LineTerminator here*/--
+    i /*no LineTerminator here*/++;
+    i /*no LineTerminator here*/--;
     return /*no LineTerminator here*/ 1;
   }
 
   // 4. throw 和 Exception 之间不能插入换行符
-  function throwExceptionNoLineTerminatorHere(){
-    throw /*no LineTerminator here*/ new Exception("error");
+  function throwExceptionNoLineTerminatorHere() {
+    throw /*no LineTerminator here*/ new Exception('error');
   }
 
   // 5. 凡是async关键字，后面都不能插入换行符
-  async /*no LineTerminator here*/ function asyncNoLineTerminatorHere(x){
-    const f = async /*no LineTerminator here*/ x => x*x
+  async function /*no LineTerminator here*/ asyncNoLineTerminatorHere(x) {
+    const f = async (/*no LineTerminator here*/ x) => x * x;
   }
 
   // 6. 箭头函数的箭头前，也不能插入换行符
-  function arrowNoInsertLineFeed(x){
-    const f = x /*no LineTerminator here*/=> x*x
+  function arrowNoInsertLineFeed(x) {
+    const f = (x) /*no LineTerminator here*/ => x * x;
   }
 
   // 7. yield之后，不能插入换行符
-  function *g(){
+  function* g() {
     var i = 0;
-    while(true)
-      yield /*no LineTerminator here*/ i++;
+    while (true) yield /*no LineTerminator here*/ i++;
   }
 
-//*******************************不写分号需要注意的情况********************
+  //*******************************不写分号需要注意的情况********************
   // 1.以括号开头的语句
-  function NoBrackets(){
-    (function(a){
+  function NoBrackets() {
+    (function (a) {
       console.log(a);
-    })() /*这里没有被自动插入分号*/
-    // 看似是两个独立执行的函数表达式，但是第三组括号被理解为传参，导致抛出错误
-    (function(a){
-      console.log(a);
-    })()
+    })()(
+      /*这里没有被自动插入分号*/
+      // 看似是两个独立执行的函数表达式，但是第三组括号被理解为传参，导致抛出错误
+      function (a) {
+        console.log(a);
+      }
+    )();
   }
 
   // 2. 以数组开头的语句
-  function arrayNoBranch(){
-    var a = [[]] /*这里没有被自动插入分号*/
-    //这段代码本意是一个变量 a 赋值，然后对一个数组执行 forEach，但是因为没有自动插入分号，被理解为下标运算符和逗号表达式
-    [3, 2, 1, 0].forEach(e => console.log(e)); // 这里不会抛出错误，代码排查非常困难
+  function arrayNoBranch() {
+    var a = [[]] /*这里没有被自动插入分号*/[
+      //这段代码本意是一个变量 a 赋值，然后对一个数组执行 forEach，但是因为没有自动插入分号，被理解为下标运算符和逗号表达式
+      (3, 2, 1, 0)
+    ]
+      .forEach(e => console.log(e)); // 这里不会抛出错误，代码排查非常困难
   }
 
   // 3. 以正则表达式开头的语句
-  function regularNoBrackets(){
-    var x = 1, g = { text:() => 0 }, b = 1/*这里没有插入分号*/
-    /(a)/g.test("abc") // 本意是声明三个变量，然后测试一个字符串中是否含有字母 a，但是因为没有自动插入分号，正则的第一个斜杠被理解成了除号，后面的意思就都变了
-    console.log(RegExp.$1) // 这里不会抛出错误，代码排查非常困难
+  function regularNoBrackets() {
+    var x = 1,
+      g = { text: () => 0 },
+      b = 1 /*这里没有插入分号*/ / a / g.test('abc'); // 本意是声明三个变量，然后测试一个字符串中是否含有字母 a，但是因为没有自动插入分号，正则的第一个斜杠被理解成了除号，后面的意思就都变了
+    console.log(RegExp.$1); // 这里不会抛出错误，代码排查非常困难
   }
 
   // 4. 以 Template 开头的语句
-  function templateNoBrackets(){
+  function templateNoBrackets() {
     // 这段代码本意是声明函数 f，然后赋值给 g，再测试 Template 中是否含有字母 a。但是因为没有自动插入分号，函数 f 被认为跟 Template 一体的，进而被莫名其妙地执行了一次。
-    var f = function(){
-      if(arguments.length > 0){
+    var f = function () {
+      if (arguments.length > 0) {
         console.log(arguments);
       }
-      return " ";
-    }
-    var g = f/*这里没有插入分号*/
-    `Template`.match(/(a)/)
-    console.log(RegExp.$1)
+      return ' ';
+    };
+    var g = f/*这里没有插入分号*/ `Template`.match(/(a)/);
+    console.log(RegExp.$1);
   }
 
   // 异或运算小技巧：用异或运算交换两个整数的值
   // 异或运算有个特征，两次异或运算相当于取消
-  function XORExchangesIntegerValues()
-  {
-    let a = 102; let b = 304;
+  function XORExchangesIntegerValues() {
+    let a = 102;
+    let b = 304;
     a = a ^ b; // 342  102 ^ 304 = 342
     b = a ^ b; // 102  342 ^ 304 = 102
     a = a ^ b; // 304  342 ^ 102 = 304
