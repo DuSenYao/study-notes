@@ -121,21 +121,20 @@ tags:
 
 克隆 Git 仓库到本地
 
-> `--bare`: 新建一个**裸仓库**，不将代码放到 `<directory>/.git` 中，而是将 `<directory>` 本身设置为仓库，无法签出工作树，此外，远程的分支头直接复制到相应的本地分支头，而不将它们映射到 `refs/remotes/origin/`。使用此选项时，既不会创建远程跟踪分支，也不会创建相关的配置变量。
+- `--bare`: 新建一个**裸仓库**，不是将代码放到 `<directory>/.git` 中，而是将 `<directory>` 本身设置为仓库，无法签出工作树，此外，远程的分支头直接复制到相应的本地分支头，而不将它们映射到 `refs/remotes/origin/`。使用此选项时，既不会创建远程跟踪分支，也不会创建相关的配置变量。
 
 ##### 1.2.1.2 `git init`
 
-创建 Git 仓库
+初始化 Git 仓库，把已有的项目代码纳入 Git 管理：
 
-把已有的项目代码纳入 Git 管理
+1. `cd` 项目代码所在的文件夹
+2. `git init`
 
-> `cd` 项目代码所在的文件夹
-> `git init`
+新建的项目直接用 Git 管理。
 
-新建的项目直接用 Git 管理
+1. `cd` 文件夹
+2. `git init 项目名称`'
 
-> `cd` 文件夹
-> `git init 项目文件名`'
 > 注: 会在当前路径下创建和项目名称同名的文件夹
 
 #### 1.2.2 Git 查看
@@ -144,52 +143,69 @@ tags:
 
 查看仓库当前的状态，显示有变更的文件。
 
-1. `-s` : 简短的输出
+- `-s` : 简短的输出
 
 ##### 1.2.2.2 `git diff [file]`
 
 显示暂存区与工作区的差异
 
-> **例**: `git diff HEAD` 显示工作区和暂存区与最后一次 commit 之间的差异
+```git
+# 显示工作区和暂存区与最后一次 commit 之间的差异
+git diff HEAD
+```
 
-1. `[--cached|--staged] [file]` : 显示暂存区和最后一次提交(commit)的差异
+- `[--cached|--staged] [file]` : 显示暂存区和最后一次提交(commit)的差异
 
-2. `[first-branch]...[second-branch] [-- file]` : 显示两次提交或两个分支之间的差异，如果最后有--文件名，就是对比两次提交指定文件的差异
+- `[first-branch]...[second-branch] [-- file]` : 显示两次提交或两个分支之间的差异，如果最后有 `-- 文件名`，就是对比两次提交指定文件的差异
 
-> **例 1**: `git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1` > **例 2**: `git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1...e77f6c3cc85fd535c36df30813ed23e9fb8255d3` > **例 3**: `git diff temp master --Git.md`
+```git
+git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1
+
+git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1...e77f6c3cc85fd535c36df30813ed23e9fb8255d3
+
+git diff temp master --Git.md
+```
 
 ##### 1.2.2.3 `git log` [-number] [分支名]
 
 查看历史提交记录
 
-> **例**: `git log -2` // 查看最近的两次提交记录
+```git
+# 查看最近的两次提交记录
+git log -2
+```
 
-1. `--oneline` 查看简要历史记录
-2. `--graph` 查看图形化的日志
-3. `--reverse` 逆向显示日志
-4. `--author` 查找指定用户的提交日志
+- `-p SHA [filename]` : 按补丁格式显示每个更新之间的差异
+- `--oneline` : 查看简要历史记录
+- `--graph` : 显示 ASCII 图形表示的分支合并历史
+- `--reverse` : 逆向显示日志
+- `--author` : 查找指定用户的提交日志
 
 ##### 1.2.2.4 `git reflog`
 
-查看本地所有分支的所有操作记录，(包括已经被删除的 commit 和 reset 的操作)
+查看本地所有分支的所有操作记录 (包括已经被删除的 commit 和 reset 的操作)
 
-1. `delete`: 删除指定的记录
+- `delete` : 删除指定的记录
 
-> **例**: `git reflog delete HEAD@{270}`
+  ```git
+  git reflog delete HEAD@{270}
+  ```
 
 ##### 1.2.2.5 `git blame <file>`
 
-以`列表形式`查看指定文件的修改记录
+以**列表形式**查看指定文件的修改记录
 
 ##### 1.2.2.6 `git cat-file -[t|s|p] 哈希值`
 
-查看`Git对象`的`属性`
+查看 Git 对象的属性
 
-1. `t`: 查看 git 对象的类型
-2. `s`: 查看 git 对象的大小
-3. `p` 查看 git 对象的内容
+- `t`: 查看 git 对象的类型
+- `s`: 查看 git 对象的大小
+- `p` 查看 git 对象的内容
 
-> **例**: git cat-file -p 003e2f133adc5a53f21a72ca5b62eb08566121d1
+```git
+git cat-file -p 003e2f133adc5a53f21a72ca5b62eb08566121d1
+```
 
 ##### 1.2.2.7 `git config`
 
@@ -197,48 +213,68 @@ tags:
 
 - `[--local|--global|--system] [config 'message']`: 设置配置
 
-> **例**:
-> git config [--local|--global|--system] user.name 'You name'
-> git config [--local|--global|--system] user.email 'You email'
+  ```git
+  git config [--local|--global|--system] user.name 'You name'
+
+  git config [--local|--global|--system] user.email 'You email'
+  ```
 
 - `git config --list [--local|--global|--system]` : 查看配置
 
-> **例**: `git config --list --local`
+  ```git
+  git config --list --local
+  ```
 
 - `git config --unset [--local|--global|--system]` : 清除配置
 
-> **例**: git config --unset --local user.name
+  ```git
+   git config --unset --local user.name
+  ```
 
-```txt
-区别:   local: 当前仓库  global: 当前用户的所有仓库  system: 本系统的所有用户
-优先级: local > global > system
-```
+**区别**:
+
+- local: 当前仓库
+- global: 当前用户的所有仓库
+- system: 本系统的所有用户
+
+**优先级**:
+
+local > global > system
 
 #### 1.2.3 文件操作
 
 ##### 1.2.3.1 `git add ./文件名/文件夹名`
 
-将文件添加到暂存区，. 表示所有文件
+将文件添加到暂存区，`.` 表示所有文件
 
-1. `-u`: 仅添加已被跟踪的文件
+- `-u`: 仅添加已被跟踪的文件
 
 ##### 1.2.3.2 `git rm <file>`
 
 将文件从暂存区和工作区中删除
 
-> **例**: `git rm hello.txt`
+```git
+git rm hello.txt
+```
 
-- `-f`: 强制删除选项，用于删除之前修改过并且已经放到暂存区域(**必须**)
+- `-f`: 强制删除选项，用于删除之前修改过并且**已经放到暂存区域**的文件
 
-> **例**: `git rm -f hello.txt`
+  ```git
+  git rm -f hello.txt
+  ```
 
-- `--cached` 把文件从暂存区域移除，但仍然保留在当前工作目录中，换句话说，仅是从跟踪清单中删除
+- `--cached` : 把文件从暂存区域移除，但仍然保留在当前工作目录中，换句话说，仅是从跟踪清单中删除
 
-> **例**: `git rm --cached hello.txt`
+  ```git
+  git rm --cached hello.txt
+  ```
 
-- `-r` 递归删除，即如果后面跟的是一个目录做为参数，则会递归删除整个目录中的所有子目录和文件
+- `-r` : 递归删除，即如果后面跟的是一个目录做为参数，则会递归删除整个目录中的所有子目录和文件
 
-> **例**: `git rm –r *` #删除当前目录下的所有文件和子目录
+  ```git
+  # 删除当前目录下的所有文件和子目录
+  git rm –r *
+  ```
 
 ##### 1.2.3.3 `git mv [file] [newFile]`
 
@@ -246,19 +282,25 @@ tags:
 
 - `-f`: 重命名
 
-> **例**: `git mv -f hello.txt hello.css`
+  ```git
+  git mv -f hello.txt hello.css
+  ```
 
 ##### 1.2.3.4 `git restore`
 
 把未 add 到暂存区的文件修改撤销
 
-> **例** : git restore public_knowledge\Git\Git.md
+```git
+git restore public_knowledge\Git\Git.md
+```
 
 - `--staged` : 把文件从暂存区撤回到工作区，保留文件最后一次修改的内容
 
 - `-s SHA file`: 表示将当前工作区或文件切换到指定 commit 版本
 
-> **例** : git restore -s 703025cf public_knowledge\Git\Git.md
+  ```git
+  git restore -s 703025cf public_knowledge\Git\Git.md
+  ```
 
 #### 1.2.4 远程操作
 
@@ -268,11 +310,15 @@ tags:
 
 - `-v`: 显示所有远程仓库
 
-> **例**: `git remote -v`
+  ```git
+  git remote -v
+  ```
 
 - `show [remote]`: 显示某个远程仓库的信息
 
-> **例**: `git remote show https://github.com/1758231591/Learning-notes-and-materials.git`
+  ```git
+  git remote show https://github.com/1758231591/Learning-notes-and-materials.git
+  ```
 
 - `remove name`: 删除远程仓库
 
@@ -284,12 +330,13 @@ tags:
 
 用于从远程获取代码库
 
-> **例**: `git fetch origin`
+```git
+git fetch origin
+```
 
-取回更新后，会返回一个 `FETCH_HEAD` ，指的是某个 **branch** 在远程仓库上的最新状态，可以在本地通过它查看刚取回的更新信息，可以看到返回的信息包括更新的文件名，更新的作者和时间，以及更新的代码。
+取回更新后，会返回一个 `FETCH_HEAD` ，指的是某个 **branch** 在远程仓库上的最新状态，可以在本地使用 `git log -p FETCH_HEAD` 来查看这个分支的更新信息，可以看到返回的信息包括更新的文件名，更新的作者和时间，以及更新的代码。
+
 通过这些信息来判断是否产生冲突，以确定是否将更新 **merge** 到当前分支。
-
-> `git log -p FETCH_HEAD`
 
 ##### 1.2.4.3 `git pull` [<远程主机名> <远程分支名>:<本地分支名>]
 
@@ -305,7 +352,11 @@ tags:
 
 用于从将本地的分支版本上传到远程并合并
 
-> **例**: `git push origin master` 相当于 `git push origin master:master`
+```git
+git push origin master
+# 相当于
+git push origin master:master
+```
 
 - `-f`: 本地版本与远程版本有差异时，可以使用这个参数强制推送，多人合作禁用，如果要用可以使用 `git push --force-with-lease`，相对安全
 - `-d`: 删除远程主机的分支
@@ -313,7 +364,7 @@ tags:
 - `-u` : 如果当前分支与多个主机存在追踪关系，则可以使用 `-u` 参数指定一个默认主机，这样后面就可以不加任何参数使用 git push，不带任何参数的 git push，默认只推送当前分支。如果想更改设置，可以使用 git config 命令。`git config --global push.default matching` 或 `git config --global push.default simple`
 - 使用`ssh`协议推送: `gitHub: git push git@github.com:DuSenYao/Learning-notes-and-materials.git`
 
-> **注**: 需要 [配置公私钥](#211-配置公私钥)
+> **注意**: 需要 [配置公私钥](#211-配置公私钥)
 
 #### 1.2.5 分支操作
 
@@ -323,10 +374,12 @@ tags:
 
 - `-r`: 查看远程分支
 
-> **例**: `git branch -r`
+  ```git
+  git branch -r
+  ```
 
 - `-a`: 查看所有分支
-- `-d/D <branchName>`: 删除分支，-D 是强制删除
+- `-d/D <branchName>`: 删除分支，`-D` 是强制删除
 - `-v`: 查看分支版本
 
 ##### 1.2.5.2 `git checkout` [分支名]
@@ -335,25 +388,35 @@ tags:
 
 - `-b`: 创建并直接切换到新分支
 
-> **例**: `git checkout -b test`
+  ```git
+  git checkout -b test
+  ```
 
 - `-- [file]`: 将工作区文件恢复为和暂存区一样
 
-> **例**: `git checkout -- index.html`
+  ```git
+  git checkout -- index.html
+  ```
 
 - `-b name origin/branchName`: 基于远程的分支创建一个本地的分支，并切换到新分支
 
-> **例**: `git checkout -b dev origin/dev`
+  ```git
+  git checkout -b dev origin/dev
+  ```
 
 ##### 1.2.5.3 `git merge <branchName>`
 
 合并分支
 
-> **例**: `git merge dev`
+```git
+git merge dev
+```
 
 - `[alias]/[brach]`: 将远程的分支合并到当前分支
 
-> **例**: `git merge origin/master`
+  ```git
+  git merge origin/master
+  ```
 
 - `--allow-unrelated-histories`: 用于合并后两个没有共同祖先的历史记录
 
@@ -366,7 +429,7 @@ tags:
 主要是将暂存区里的改动给提交到本地的版本库，message 填写摘要
 
 - `-a`: 跳过暂存区，从工作区直接提交到本地版本库
-- `--amend`: 追加提交，在不增加一个新的`commit`的情况下，将新修改的代码追加到`前一次`的 commit 中
+- `--amend`: 追加提交，在**不增加**一个新的 commit 的情况下，将新修改的代码追加到**前一次**的 commit 中
 
 ##### 1.2.6.2 `git reset` [--soft | --mixed | --hard] [HEAD] [-- file]
 
@@ -374,50 +437,69 @@ tags:
 
 - `--mixed`: 默认参数，可以不用带该参数，清空暂存区，工作区文件内容保持不变。
 
-```txt
-例1: git reset HEAD^            // 回退所有内容到上一个版本
-例2: git reset HEAD^ hello.css  // 回退 hello.css 文件的版本到上一个版本
-例3: git reset  052e            // 回退到指定版本
-```
+  ```git
+  # 回退所有内容到上一个版本
+  git reset HEAD^
+
+  # 回退 hello.css 文件的版本到上一个版本
+  git reset HEAD^ hello.css
+
+  # 回退到指定版本
+  git reset 052e
+  ```
 
 - `--soft`: 保留工作区的更改内容，并把重置版本带来的差异放入暂存区
 
-> **例**: `git reset --soft HEAD` 回退到当前版本
+  ```git
+  # 回退到当前版本
+  git reset --soft HEAD
+  ```
 
 - `--hard`: 将指定版本的内容放入暂存区和工作区，也就是所有没有 commit 的修改都会丢失，**慎用**！
 
-```txt
-例1: git reset –hard HEAD~3            // 回退上上上一个版本
-例2: git reset –hard bae128            // 回退到某个版本回退点之前的所有信息。
-例3: git reset --hard origin/master    // 将本地的状态回退到和远程的某个分支一样
-```
+  ```git
+  # 回退上上上一个版本
+  git reset –hard HEAD~3
+
+  # 回退到某个版本回退点之前的所有信息
+  git reset –hard bae128
+
+  # 将本地的状态回退到和远程的某个分支一样
+  git reset --hard origin/master
+  ```
 
 - `edition -- file`: 取消部分文件的更改
 
-> **例**: `git reset HEAD -- index.html`
+  ```git
+  git reset HEAD -- index.html
+  ```
 
 ##### 1.2.6.3 `git rebase`
 
 合并提交记录
 
-```txt
-使用场景:
-  本地开发分支灵活管理
-  · 在自己本地 git checkout -b local 创建一个本地开发分支
-  · 在本地的开发分支上开发和测试
-  · 阶段性开发完成后（包含功能代码和单元测试），可以准备提交代码
-  · 首先切换到master分支，git pull拉取最新的分支状态
-  · 然后切回local分支
-  · 通过 git rebase local -i 将本地的多次提交合并为一个，以简化提交历史。本地有多个提交时,如果不进行这一步,在git rebase master时会多次解决冲突(最坏情况下,每一个提交都会相应解决一个冲突)
-  · git rebase master 将master最新的分支同步到本地，这个过程可能需要手动解决冲突(如果进行了上一步的话,只用解决一次冲突)
-  · 然后切换到master分支，git merge local 将本地的 local 分支内容合并到 master 分支
-  · git push将master分支的提交上传
-```
+**使用场景**:
 
-- `-i`: 打开 vim 编辑模式，执行会自动打开 vim 编辑模式，合并的记录前面都有相同的指令 pick，下面有 commands，根据这些指令可以修改，修改后 `ESC -> :wq!` 保存并退出，就会进入注释界面，编辑好后退出即可。使用各种指令可以完成各种 commit 提交记录的合并
-  可以在后面加 `HEAD~2` 表示合并几个提交
+本地开发分支灵活管理
 
-- `--continue` : 合并冲突，结合 "git add 文件" 命令一起用与修复冲突，提示开发者，一步一步地有没有解决冲突。
+1. 在本地 `git checkout -b local` 创建一个本地开发分支
+2. 在本地的开发分支上开发和测试，阶段性开发完成后（包含功能代码和单元测试），准备提交代码
+3. 首先切换到 master 分支，`git pull` 拉取最新的分支状态
+4. 然后切回 local 分支
+5. 通过 `git rebase local -i` 将本地 local 分支的多次提交合并为一个，以简化提交历史。本地有多个提交时,如果不进行这一步,在 `git rebase master` 时会多次解决冲突
+6. `git rebase master` 将 master 最新的分支同步到 local 分支，这个过程可能需要手动解决冲突(如果进行了上一步的话,只用解决一次冲突)
+7. 然后切换到 master 分支，`git merge local` 将本地的 local 分支内容合并到 master 分支
+8. `git push` 将 master 分支的提交上传
+
+- `-i`: 打开 vim 编辑模式，执行会自动打开 vim 编辑模式，合并的记录前面都有默认指令 pick，下面有 commands tips，根据指令提示可以选择需要的指令进行灵活修改，修改后 `ESC -> :wq!` 保存并退出，就会进入概括界面，编辑好后退出即可。
+
+  > 在后面加 `HEAD~2` 表示合并几个提交
+
+  ```git
+  git rebase master HEAD~2 -i
+  ```
+
+- `--continue` : 合并冲突，结合 `git add 文件` 命令一起用与修复冲突，提示开发者，有没有解决冲突。
 - `--abort` : 放弃合并，回到 rebase 操作之前的状态，之前的提交的不会丢弃
 - `--skip` : 则会将引起冲突的 commits 丢弃掉(**慎用**)；
 
@@ -429,14 +511,16 @@ tags:
 
 ##### 1.2.7.1 `git stash`
 
-临时保存和恢复修改，可跨分支，在 `未add` 之前才能执行
+临时保存和恢复修改，可跨分支，在**未 add**之前才能执行
 
 - `[save message]`: 保存修改到临时目录，并把工作区的文件还原到上一次 commit
 - `list`: 显示所有保存的记录列表
 - `pop stash@{num}`: 恢复，num 是可选值，通过 `git stash list` 查看具体值，只能恢复一次
 - `apply stash@{num}`: 恢复，num 是可选值，通过 `git stash list` 查看具体值，可恢复多次
 
-> **例**: `git stash apply stash@{0}`
+  ```git
+  git stash apply stash@{0}
+  ```
 
 - `drop stash@{num}`: 删除指定保存
 - `clear`: 删除所有保存
@@ -445,9 +529,12 @@ tags:
 
 重用记录的解决方案，它允许 Git 记住解决一个块冲突的方法，这样在下一次看到 **相同的冲突** 时，Git 可以自动地解决它。
 
-> **`rerere` 启用** : `git config --global rerere.enabled true`
+```git
+# 启用 rerere
+git config --global rerere.enabled true
+```
 
-实际应用不常用，[查看 Git 文档](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-Rerere)
+> 实际应用不常用，[查看 Git 文档](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-Rerere)
 
 ### 1.3 基础知识
 
@@ -468,56 +555,60 @@ D --> C: git fetch
 C --> A: git merge FETCH_HEAD
 ```
 
-#### 1.3.2 `.git`文件夹下的文件
+#### 1.3.2 .git 文件夹下的文件
 
 - `HEAD`: 指向当前所在的分支
 - `config`: 当前 **git** 的配置文件，这是个引用指向 **refs 文件夹** 下的 **heads 文件夹** 里的分支
 - `refs文件夹`:
 
-  1. **heads 文件夹** : 存放当前项目的所有分支文件，每个分支文件存放的是当前分支对应的是哪个 commit(提交)
-  2. **remotes 文件夹** : 存放远程分支
-  3. **tags 文件夹** : 存放当前项目的所有标签
+  - **heads 文件夹** : 存放当前项目的所有分支文件，每个分支文件存放的是当前分支对应的是哪个 commit(提交)
+  - **remotes 文件夹** : 存放远程分支
+  - **tags 文件夹** : 存放当前项目的所有标签
 
-- `objects文件夹`: 存放所有的`git对象`，对象哈希值前 `2` 位作为文件夹名称，后 `38` 位作为对象文件名, 可通过 `git cat-file -p` 命令，拼接文件夹名称+文件名查看
+- `objects文件夹`: 存放所有的**git 对象**，**对象哈希值前 `2` 位作为文件夹名称，后 `38` 位作为对象文件名**, 可通过 `git cat-file -p` 命令，拼接文件夹名称 + 文件名查看
 
 #### 1.3.3 git 中 commit、tree 和 blob 三个对象的关系
 
-`commit`是一个提交，它里面有一个`tree`对象对应`唯一的tree`，这个 tree 里面又有包含了 **多个 tree 和 blob 对象** ，每个 tree 对象又包含了多个 tree 和 blob，文件的的最终形式是 **blob**。对于 blob，git 会认为文件内容相同时，就使用同一个 blob，这样就极大的避免了频繁提交时，git 的存储空间大幅上升。
+`commit`是一个提交，它里面有一个`tree`对象**对应唯一的 tree**，这个 tree 里面又有包含了 **多个 tree 和 blob 对象** ，每个 tree 对象又包含了多个 tree 和 blob，文件的的最终形式是 **blob**。对于 blob，git 会认为文件内容相同时，就使用同一个 blob，这样就极大的避免了频繁提交时，git 的存储空间大幅上升。
 
 ![git中commit、tree和blob三个对象的关系](./image/git中commit、tree和blob三个对象的关系.png)
 
 #### 1.3.4 git 的底层运行流程
 
-添加或者修改了文件并且`add`到`Stage Area`之后，首先会根据文件内容创建不同的`blob`，当进行提交之后马上创建一个 tree 组件把需要的 blob 组件添加进去，之后再封装到一个 commit 组件中完成本次提交。
+添加或者修改了文件并且 add 到 Stage Area 之后，首先会根据文件内容创建不同的 blob，当进行提交之后马上创建一个 tree 组件把需要的 blob 组件添加进去，之后再封装到一个 commit 组件中完成本次提交。
+
 在将来进行 reset 的时候可以直接使用 `git reset --hard xxxxx` 可以恢复到某个特定的版本，在 reset 之后，git 会根据这个 commit 组件的 id 快速的找到 tree 组件，然后根据 tree 找到 blob 组件，之后对仓库进行还原，整个过程都是以 hash 和二进制进行操作，所以 git 执行效率非常之高。
-没有文件也就是没有 blob 对象的目录是不会被 git 管理的，因为 git 是对文件进行版本管理，所以没有必要对空目录生成对象。
+
+> 注意 : 没有文件也就是没有 blob 对象的目录是不会被 git 管理的，因为 git 是对文件进行版本管理，所以没有必要对空目录生成对象。
 
 #### 1.3.5 分离头指针情况下的注意事项
 
-`分离头指针`是指在没有任何分支的情况下做 commit。
+**分离头指针**是指在没有任何分支的情况下做 commit。
 
 > **优缺点** : 用于实验性的更改与提交，随时可以放弃，而不影响任何分支的状态。缺点也是没有分支，意味着一旦切换分支，这些 commit 都会被当做垃圾丢弃。
 
 #### 1.3. 6 HEAD 与 branch
 
-`HEAD`在 brach 时，指代`最新的commit`，而在分离头状态时指代具体的 commit。
+`HEAD` 在 brach 时，指代**最新的 commit**，而在分离头状态时指代具体的 commit。
 
 **含义与用法** :
 
 - 一个节点，可以包含多个子节点(checkout 出多个分支)
 - 一个节点可以有多个父节点(多个分支合并)
-- ^是~都是父节点，区别是跟随数字时候，^2 是第二个父节点，而~2 是父节点的父节点
-- ^和~可以组合使用
+- `^` 是 `~` 都是父节点
+  区别是跟随数字时候，^2 是第二个父节点，而~2 是父节点的父节点
+- `^` 和 `~` 可以组合使用
 
-> **例** : `HEAD~2^2` // 最新 commit 的父节点的父节点的第二个父节点
+```git
+# 最新 commit 的父节点的父节点的第二个父节点
+HEAD~2^2
+```
 
-#### 1.3.7 在 `.gitignore` 文件里指定不需要 Git 管理的文件
+#### 1.3.7 在 .gitignore 文件里指定不需要 Git 管理的文件
 
 - **文件夹** : filename/
 - **具体的文件** : filename.后缀名
 - **特定后缀名的文件** : \*.后缀名
-
-> **例** : .gitignore
 
 #### 1.3.8 常用的传输协议
 
@@ -526,24 +617,26 @@ C --> A: git merge FETCH_HEAD
 - http/https 协议: `http://git-server.com/path/to/repo.git`
 - ssh 协议: `user@git-server.com:path/to/repo.git` 是工作中最常用的智能协议
 
-==哑协议与与智能协议的区别:==
+**哑协议与与智能协议的区别**:
 
-> 1.哑协议传输进度不可见，智能协议传输可见 2.智能协议比哑协议传输速度快
+- 哑协议传输进度不可见，智能协议传输可见
+- 智能协议比哑协议传输速度快
 
-#### 1.3.9 Git 解决的问题与带来的问题
+#### 1.3.9 Git 解决的问题
 
-**解决的问题**
-: 1.程序员之间进行协作编程的方式很少
-: 2.即使有 SVN，与开源团队合作通常也需要获得项目管理员的许可才能 fork 项目的一个分支，否则便无法编辑代码，批准时间过长
-: 3.许多开源项目都受到权限问题以及一些低效率事情的困扰
+**解决的问题**：
 
-**带来的问题**
-: 1.无法帮助开发人员寻找开源项目
-: 2.开发出的优秀开源项目，很难让他人知道
+1. 程序员之间进行协作编程的方式很少
+2. 即使有 SVN，与开源团队合作通常也需要获得项目管理员的许可才能 fork 项目的一个分支，否则便无法编辑代码，批准时间过长
+3. 许多开源项目都受到权限问题以及一些低效率事情的困扰
+4. 无法帮助开发人员寻找开源项目
+5. 开发出的优秀开源项目，很难让他人知道
 
 #### 1.3.10 将 Git 的默认编辑器设置为 VSCode
 
-> `git config --global core.editor "code -w"`
+```sh
+git config --global core.editor "code -w"
+```
 
 ### 1.4 Git 集成使用禁忌
 
@@ -556,11 +649,11 @@ C --> A: git merge FETCH_HEAD
 : 会使 commit 消失
 
 **恢复**
-: 使用 git reflog 查找历史，然后使用 git reset --hard HEAD@{n} 恢复。
+: 使用 `git reflog` 查找历史，然后使用 `git reset --hard HEAD@{n}` 恢复。
 
 #### 1.4.2 禁止向集成分支执行变更历史的操作
 
-> 比如: 公共分支`pull`到本地做`变基`操作，会导致历史消失。
+比如，公共分支 pull 到本地做**变基**操作，会**导致历史消失**。
 
 ## 二. GitHub
 
@@ -573,15 +666,16 @@ C --> A: git merge FETCH_HEAD
 1. 打开 Git Bash，在本地使用 `ssh-keygen -t ed25519 -C "1758231591@qq.com"` 生成 SSH 秘钥
 2. 确保 ssh-agent 正在运行。可以手动启动它：
 
-   ```shell
+   ```sh
    # 在后台启动 ssh-agent
    $ eval `ssh-agent -s`
+
    > Agent pid 59566
    ```
 
 3. 将 SSH 私钥添加到 ssh-agent。 如果创建了不同名称的密钥，或者要添加不同名称的现有密钥，将命令中的 id_ed25519 替换为私钥文件的名称。
 
-   ```shell
+   ```sh
    ssh-add ~/.ssh/id_ed25519
    ```
 
@@ -607,12 +701,11 @@ C --> A: git merge FETCH_HEAD
 
 #### 2.1.4 快速搜索到感兴趣的开源项目
 
-> 在搜索页，语言栏左下方有高级搜索(Advanced search)
+在搜索页，语言栏左下方有高级搜索(Advanced search)
 
 #### 2.1.5 组织类型的仓库
 
-组织里可以管理多个仓库，加成员，设置团队，设置团队成员管理权限。
-成员可以看见每个团队管理的仓库和权限，可以发起请求加入团队。
+组织里可以管理多个仓库，加成员，设置团队，设置团队成员管理权限。成员可以看见每个团队管理的仓库和权限，可以发起请求加入团队。
 
 #### 2.1.6 指导文档
 
@@ -620,7 +713,7 @@ C --> A: git merge FETCH_HEAD
 
 #### 2.1.7 发布产品包
 
-s
+<!--TODO-->
 
 ### 2.2 使用 GitHub 进行团队协作
 
@@ -637,8 +730,8 @@ s
 
 **主干开发适用于** :
 
-1. 开发团队系统设计和开发能力强。有一套有效的特性切换的实施机制，保证上线后无需修改代码就能够修改系统行为。需要快速迭代，想获得 CI/CD 所有好处。
-2. 组件开发的团队，成员能力强，人员少，沟通顺畅。用户升级组件成本低的环境。
+- 开发团队系统设计和开发能力强。有一套有效的特性切换的实施机制，保证上线后无需修改代码就能够修改系统行为。需要快速迭代，想获得 CI/CD 所有好处。
+- 组件开发的团队，成员能力强，人员少，沟通顺畅。用户升级组件成本低的环境。
 
 **Git Flow 适用于** :
 
@@ -662,23 +755,25 @@ s
 
 #### 2.2.2 挑选合适的分支集成策略
 
-**位置**: 仓库 -> Settings -> options -> Merge button
+仓库 -> Settings -> options -> Merge button
 
 ![Merge button](./image/Merge_button.png)
 
-1. git merge : **git merge** 带 **squash** 参数则合并后特性分支上的多个 commit 会合并成一个 commit 放到主分支上，不带 **squash** 参数则特性分支上的多个 commit 在合并后会原样体现出来。
-2. git rebase : 将特性分支上的多个 commit 放到主分支上，如果有冲突先将特性分支和主分支解决冲突 merge。 可以再使用 merge 将特性分支和主分支合并。
+1. `git merge` : `git merge` 带 `squash` 参数则合并后特性分支上的多个 commit 会合并成一个 commit 放到主分支上，不带 `squash` 参数则特性分支上的多个 commit 在合并后会原样体现出来。
+
+2. `git rebase` : 将特性分支上的多个 commit 放到主分支上，如果有冲突先将特性分支和主分支解决冲突 merge。 可以再使用 merge 将特性分支和主分支合并。
 
 #### 2.2.3 GitHub 中的 Projects
 
-**Projects** 可以有序的管理 **issue** 和 **Pull request**
+Projects 可以有序的管理 **issue** 和 **Pull request**
+
 在 issue 和 Pull request 中可以选择分到哪个 project 中，项目可以设置自动化管理。
 
 ![Projects](./image/Projects.png)
 
 #### 2.2.3 项目内部实施代码检查(code review)
 
-**位置**: 仓库 -> Settings -> Branches -> Branch protection rules 中可以添加分支保护规则
+在 仓库 -> Settings -> Branches -> Branch protection rules 中可以添加分支保护规则
 
 ![Branch-protection-rule](./image/Branch-protection-rule.png)
 
@@ -690,15 +785,19 @@ s
 
 - 如果在进行 `git push` 之前发现远程又有了更新，可以将本地的提交回退掉，避免掉无用的远程 merge 本地分支的提交记录，使用如下命令:
 
-> `git reset HEAD~` > `git pull`
+  > `git reset HEAD~` > `git pull`
 
-然后重新进行新的提交，这样就可以避免远程与本地分支的 `merge` 提交记录，让 git 的提交历史更加干净。
+  然后重新进行新的提交，这样就可以避免远程与本地分支的 `merge` 提交记录，让 git 的提交历史更加干净。
 
 - 把本地的提交基于远端分支做 `rebase` ，在本地解决掉冲突并完成自测。
 
+  ```git
+  git pull --rebase
+  ```
+
 ### 3.2 不同人修改了相同文件的不同区域
 
-使用 `git merge` 远程分支名 合并分支，然后 `git push`。
+使用 `git merge 远程分支名` 合并分支，然后 `git push`。
 
 ### 3.3 不同人修改相同文件的相同区域
 
@@ -708,11 +807,11 @@ s
 
 **分两种情况**:
 
-1. 没有修改相同位置，没有修改的冲突，变更文件名和变更文件内容的操作能够自动被 git 处理。
+- 没有修改相同位置，没有修改的冲突，变更文件名和变更文件内容的操作能够自动被 git 处理。
 
-2. 如果一个人既变更了文件名又修改了文件，同时另一个人也修改了该文件的同一位置的内容，就会被 git 识别为冲突，而不能自动进行处理了。
+- 如果一个人既变更了文件名又修改了文件，同时另一个人也修改了该文件的同一位置的内容，就会被 git 识别为冲突，而不能自动进行处理了。
 
-> **原因**: git 存放 blob 文件时是以`文件内容`来区分的，并不以文件名来区分。
+  > **原因**: git 存放 blob 文件时是以`文件内容`来区分的，并不以文件名来区分。
 
 ### 3.5 同一文件改成不同的文件名
 
@@ -721,7 +820,7 @@ s
 ### 3.6 提交 commit 后，想再忽略一些已经提交的文件
 
 1. 把想忽略的文件添加到 **.gitignore**
-2. 然后通过 `git rm --cached name_of_file` 的方式删除掉 **git** 仓库里面无需跟踪的文件。
+2. 然后通过 `git rm --cached name_of_file` 的方式删除掉 git 仓库里面无需跟踪的文件。
 
 ## 四. GitLab
 
@@ -748,9 +847,9 @@ s
 
 Git 是可以像 SVN 这样的中心工作流一样工作的。
 
-1. 从服务器上做 git pull origin master 把代码同步下来。
-2. 改完后，git commit 到本地仓库中。
-3. 然后 git push origin master 到远程仓库中。
+1. 从服务器上做 `git pull origin master` 把代码同步下来。
+2. 改完后，`git commit` 到本地仓库中。
+3. 然后 `git push origin master` 到远程仓库中。
 
 如果在第 3 步发现 push 失败，因为别人已经提交了，那么需要先把服务器上的代码给 pull 下来，为了避免有 merge 动作，可以使用 `git pull --rebase` 。这样就可以把服务器上的提交直接合并到代码中，对此，Git 的操作是这样的。
 
@@ -762,7 +861,7 @@ Git 是可以像 SVN 这样的中心工作流一样工作的。
 
 ![git-pull--rebase工作流程](./image/git-pull--rebase工作流程.png)
 
-如果有冲突，那么要先解决冲突，然后做 `git rebase --continue` 。如下图所示，git 在做 pull --rebase 时，会一个一个地应用（apply）本地提交的代码，如果有冲突就会停下来，等待解决冲突。
+如果有冲突，那么要先解决冲突，然后做 `git rebase --continue` 。如下图所示，git 在做 `pull --rebase` 时，会一个一个地应用（apply）本地提交的代码，如果有冲突就会停下来，等待解决冲突。
 
 ![git-pull--rebase应用代码](./image/git-pull--rebase应用代码.png)
 
@@ -785,9 +884,11 @@ Git 是可以像 SVN 这样的中心工作流一样工作的。
 
 就像上面这个图显示的一样，紫色的分支就是功能分支，合并后就会像上面这个样子。
 
-> 这种开发是以服务器为中心的开发，还不是 Git 分布式开发，它只不过是用分支来完成代码改动的隔离。
-> 为什么会叫"功能分支"，而不是"项目分支"？因为 Git 的最佳实践希望在开发的过程中，快速提交，快速合并，快速完成。这样可以少很多冲突的事，所以叫功能分支。
-> 传统的项目分支开得太久，时间越长就越合不回去。这种玩法其实就是把一个大项目切分成若干个小项目来执行（最好是一个小功能一个项目）。这样才是互联网式的快速迭代式的开发流程。
+这种开发是以服务器为中心的开发，还不是 Git 分布式开发，它只不过是用分支来完成代码改动的隔离。
+
+为什么会叫"功能分支"，而不是"项目分支"？因为 Git 的最佳实践希望在开发的过程中，快速提交，快速合并，快速完成。这样可以少很多冲突的事，所以叫功能分支。
+
+传统的项目分支开得太久，时间越长就越合不回去。这种玩法其实就是把一个大项目切分成若干个小项目来执行（最好是一个小功能一个项目）。这样才是互联网式的快速迭代式的开发流程。
 
 ### 5.3 GitFlow 协同工作流
 
@@ -807,29 +908,32 @@ GitFlow 协同工作流是由 Vincent Driessen 于 2010 年在 A successful Git 
 
 整个代码库中一共有五种分支:
 
-- Master 分支 : 也就是主干分支，用作发布环境，上面的每一次提交都是可以发布的。
+- **Master 分支** : 也就是主干分支，用作发布环境，上面的每一次提交都是可以发布的。
 
-- Feature 分支 : 也就是功能分支，用于开发功能，其对应的是开发环境。
+- **Feature 分支** : 也就是功能分支，用于开发功能，其对应的是开发环境。
 
-- Developer 分支 : 是开发分支，一旦功能开发完成，就向 Developer 分支合并，合并完成后，删除功能分支。这个分支对应的是集成测试环境。
+- **Developer 分支** : 是开发分支，一旦功能开发完成，就向 Developer 分支合并，合并完成后，删除功能分支。这个分支对应的是集成测试环境。
 
-- Release 分支 : 当 Developer 分支测试达到可以发布状态时，开出一个 Release 分支来，然后做发布前的准备工作。这个分支对应的是预发环境。之所以需要这个 Release 分支，是因为开发需要继续向前，不会因为要发布而被 block 住而不能提交。
+- **Release 分支** : 当 Developer 分支测试达到可以发布状态时，开出一个 Release 分支来，然后做发布前的准备工作。这个分支对应的是预发环境。之所以需要这个 Release 分支，是因为开发需要继续向前，不会因为要发布而被 block 住而不能提交。
   一旦 Release 分支上的代码达到可以上线的状态，那么需要把 Release 分支向 Master 分支和 Developer 分支同时合并，以保证代码的一致性。然后再把 Release 分支删除掉。
 
-- Hotfix 分支。是用于处理生产线上代码的 Bug-fix，每个线上代码的 Bug-fix 都需要开一个 Hotfix 分支，完成后，向 Developer 分支和 Master 分支上合并。合并完成后，删除 Hotfix 分支。
+- **Hotfix 分支** : 是用于处理生产线上代码的 Bug-fix，每个线上代码的 Bug-fix 都需要开一个 Hotfix 分支，完成后，向 Developer 分支和 Master 分支上合并。合并完成后，删除 Hotfix 分支。
 
 这就是整个 GitFlow 协同工作流的工作过程。可以看到：
 
-1. 需要长期维护 Master 和 Developer 两个分支。
-2. 这其中的方式还是有一定复杂度的，尤其是 Release 和 Hotfix 分支需要同时向两个分支作合并。所以，如果没有一个好的工具来支撑的话，可能会忘了做一些操作而导致代码不一致。
-3. GitFlow 协同虽然工作流比较重。但是它几乎可以应对所有公司的各种开发流程，包括瀑布模型，或是快速迭代模型。
+- 需要长期维护 Master 和 Developer 两个分支。
+
+- 这其中的方式还是有一定复杂度的，尤其是 Release 和 Hotfix 分支需要同时向两个分支作合并。所以，如果没有一个好的工具来支撑的话，可能会忘了做一些操作而导致代码不一致。
+
+- GitFlow 协同虽然工作流比较重。但是它几乎可以应对所有公司的各种开发流程，包括瀑布模型，或是快速迭代模型。
 
 **GitFlow 的问题**:
 
-1. 分支太多，所以会出现 git log 混乱的局面。具体来说，主要是 git-flow 使用 `git merge --no-ff` 来合并分支，在 git-flow 这样多个分支的环境下会让分支管理的 log 变得很难看。
-   所谓 --no-ff 参数的意思是——no fast forward 的意思。也就是说，合并的方法不要把这个分支的提交以前置合并的方式，而是留下一个 merge 的提交。
-   对此的建议是：只有 feature 合并到 developer 分支时，使用–no-ff 参数，其他的合并都不使用--no-ff 参数来做合并。
-2. 管理复杂。需要来来回回地切换工作的分支，有时候一不小心没有切换，就提交到了不正确的分支上，还要回滚和重新提交。
+- 分支太多，所以会出现 git log 混乱的局面。具体来说，主要是 git-flow 使用 `git merge --no-ff` 来合并分支，在 git-flow 这样多个分支的环境下会让分支管理的 log 变得很难看。
+   所谓 --no-ff 参数的意思是 no fast forward 的意思。也就是说，合并的方法不要把这个分支的提交以前置合并的方式，而是留下一个 merge 的提交。
+   对此的建议是：只有 feature 合并到 developer 分支时，使用 --no-ff 参数，其他的合并都不使用 --no-ff 参数来做合并。
+
+- 管理复杂。需要来来回回地切换工作的分支，有时候一不小心没有切换，就提交到了不正确的分支上，还要回滚和重新提交。
 
 ### 5.4 GitHub/GitLab 协同工作流
 
@@ -846,11 +950,13 @@ GitHub 的工作流程：
 7. 一旦通过，就向官方库进行合并。
 
 如果有"官方库"的权限，那么就可以直接在"官方库"中建功能分支开发，然后提交 pull request。通过 Code Review 后，合并进 Master 分支，而 Master 一旦有代码被合并就可以马上 release。
-这需要一个自动化的 CI/CD 工具做辅助。是的，CI/CD 应该是开发中的标配了。
+
+这需要一个自动化的 CI/CD 工具做辅助。CI/CD 应该是开发中的标配了。
 
 #### 5.4.2 GitLab Flow
 
 GitHub Flow 这种玩法依然会有好多问题，因为其虽然变得很简单，但是没有把代码和运行环境给联系在一起。
+
 所以，GitLab 提出了几个优化点。其中一个是引入环境分支，如下图所示，其包含了预发布（Pre-Production）和生产（Production）分支。
 
 ![GitLab](./image/GitLab.png)
@@ -881,5 +987,6 @@ GitHub Flow 这种玩法依然会有好多问题，因为其虽然变得很简�
 - **以 DevOps 为主的开发流程**
   DevOps 关注于 CI/CD，需要有自动化的集成测试和持续部署的工具。这样一来，代码发布速度就会大大加快，每一次提交都能很快地被完整地集成测试，并很快地发布到生产线上。
 
-> 协同工作流的本质，并不是怎么玩好代码仓库的分支策略，而是玩好软件架构和软件开发流程。
-> 与其花时间在 Git 协同工作流上，还不如把时间花在调整软件架构和自动化软件生产和运维流程上来，这才是真正简化协同工作流程的根本。
+协同工作流的本质，并不是怎么玩好代码仓库的分支策略，而是**玩好软件架构和软件开发流程**。
+
+与其花时间在 Git 协同工作流上，还不如把时间花在调整软件架构和自动化软件生产和运维流程上来，这才是真正简化协同工作流程的根本。
