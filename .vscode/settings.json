@@ -8,6 +8,7 @@
     "Skia",
     "ation",
     "gitk",
+    "lval",
     "vorbis"
   ],
   "html.customData": [".vscode/html.html-data.json"],

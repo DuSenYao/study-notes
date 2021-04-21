@@ -93,10 +93,12 @@ title: JavaScript
         - [4.2.4.12 class 声明](#42412-class-声明)
         - [4.2.4.13 函数声明](#42413-函数声明)
       - [4.2.5 表达式语句](#425-表达式语句)
-        - [4.2.5.1 PrimaryExpression 主要表达式](#4251-primaryexpression-主要表达式)
+        - [4.2.5.1 Primary Expression 主要表达式](#4251-primary-expression-主要表达式)
         - [4.2.5.2 Member Expression 成员表达式](#4252-member-expression-成员表达式)
-        - [4.2.5.3 New Expression New 表达式](#4253-new-expression-new-表达式)
+          - [4.2.5.2.1 条件式属性访问](#42521-条件式属性访问)
+        - [4.2.5.3 Object Create Expression 对象创建表达式](#4253-object-create-expression-对象创建表达式)
         - [4.2.5.4 call Expression 函数调用表达式](#4254-call-expression-函数调用表达式)
+          - [4.2.5.4.1 条件式调用](#42541-条件式调用)
         - [4.2.5.5 LeftHandSideExpression 左值表达式](#4255-lefthandsideexpression-左值表达式)
         - [4.2.5.6 AssignmentExpression 赋值表达式](#4256-assignmentexpression-赋值表达式)
         - [4.2.5.7 Expression 表达式](#4257-expression-表达式)
@@ -2121,21 +2123,31 @@ function foo(a = 1, ...other) {
 
 一般来说，表达式语句要么是函数调用、赋值、自增、自减，否则表达式计算的结果没有任何意义。但是，在语法上没有这样的限制，任何合法的表达式都可以当做表达式语句使用。
 
-##### 4.2.5.1 PrimaryExpression 主要表达式
+##### 4.2.5.1 Primary Expression 主要表达式
 
 表达式的原子项：**Primary Expression**。它是表达式的最小单位，它所涉及的语法结构也是优先级最高的。
 
-PrimaryExpression 包含了各种"直接量"，直接量就是用某种语法写出来的具有特定类型的值。在运行时有各种值，比如：数字 123，字符串 Hello，所以通俗的讲，直接量就是在代码中把它们写出来的语法。
+JS 中的主表达式包括**常量**或**字面量值**、某些语言关键字。还可以是 this 或 变量，在语法上，把变量称为 **"标识符引用"**。
 
 ```js
-'abc';
-123;
+// 字面量
+'abc'; // 字符串字面量
+123; // 数值字面量
+/\d/; // 正则表达式字面量·
+// 关键字
 null;
 true;
 false;
+this;
+// 变量
+i; // 求值为变量 i 的值
+undefined; // 全局对象 undefined 属性的值
 ```
 
+**对象初始化程序**
 JS 不仅能以直接量的形式定义基本类型，还能够以直接量的形式定义对象，针对函数、类、数组、正则表达式等特殊对象类型，JS 提供了语法层面的支持。
+
+> 但与真正的字面量不同，它们不是主表达式，因为它们包含用于指定属性或元素值的子表达式。
 
 ```js
 ({});
@@ -2145,16 +2157,18 @@ JS 不仅能以直接量的形式定义基本类型，还能够以直接量的�
 /abc/g;
 ```
 
-> 注意：在语法层面，`function`、`{` 和 `class` 开头的表达式语句和声明语句有语法冲突，所以，要想使用这样的表达式，必须加上括号来回避语法冲突。
-
-PrimaryExpression 还可以是 this 或 变量，在语法上，把变量称为 **"标识符引用"**。
+在数组字面量中省略逗号间的值可以包含未定义元素。
 
 ```js
-this;
-myVar;
+let sparseArray = [1, , , , 5];
 ```
 
-任何表达式加上圆括号，都会被认为是 Primary Expression，这个机制使得圆括号成为改变运算优先级的手段。
+数组初始化程序的最后一个表达式后面可以再跟一个逗号，而且这个逗号不会创建未定义元素。不过，通过数组访问最后一个表达式后面的索引一定会求值为 undefined。
+
+> 注意：
+>
+> 1. 在语法层面，`function`、`{` 和 `class` 开头的表达式语句和声明语句有语法冲突，所以，要想使用这样的表达式，必须加上括号来回避语法冲突。
+> 2. 任何表达式加上圆括号，都会被认为是 Primary Expression，这个机制使得圆括号成为改变运算优先级的手段。
 
 ##### 4.2.5.2 Member Expression 成员表达式
 
@@ -2163,24 +2177,93 @@ Member Expression 通常用于访问对象成员，它有几种形式：
 ```js
 a.b; // 标识符的属性访问
 a['b']; // 字符串的属性访问
-new.target; // new.target 是个新加入的语法，用于判断函数是否是被 new 调用
+a[2]; // 数组 a 中索引为 2 的元素
+new.target; // new.target 是个新加入的语法，用于判断函数或构造方法是否是通过 new 调用
 super.b; // super 则是构造函数中，用于访问父类的属性的语法
 ```
+
+**标识符访问 和 方括号访问的异同**：
+
+- **相同**
+  无论哪种属性访问表达式，位于 `.` 或 `[` 前面的表达式都会先求值。如果求值结果为 `null` 或 `undefined`，则表达式会抛出 TypeError，因为它们是 JavaScript 中不能有属性的两个值。
+
+- **差异**
+
+  - 如果对象表达式后跟一个点和一个标识符，则**会对以该标识符为名字的属性求值，且该值会成为整个表达式的值**。
+    如果对象表达式后跟位于方括号中的另一个表达式，则第二个表达式**会被求值并转换为字符串**。整个表达式的值就是名字为该字符串的属性的值。
+
+  - 加标识符的语法更简单，但通过它访问的属性的名字必须是合法的标识符，而且在写代码时已经知道了这个名字。
+    如果属性名中包含空格或标点字符，或者是一个数值(对于数组而言)，则必须使用方括号语法。方括号也可以用来访问非静态属性名，即属性本身是计算结果(参见 6.3.1 节的例子)<!--TODO-->。
+
+> 任何一种情况下，如果指定名字的属性不存在，则属性访问表达式的值是 undefined。
 
 Member Expression 最初设计是为了属性访问的，不过从语法结构需要，以下两种在 JavaScript 标准中当做 Member Expression
 
 ```js
 // 带函数的模板，这个带函数名的模板表示把模板的各个部分算好后传递给一个函数。
 f`a${b}c`;
-// 带参数列表的 new 运算，注意，不带参数列表的 new 运算优先级更低，不属于 Member Expression。
-new Cls();
+// 带参数列表的 new 运算
+new Cls('1');
+// 注意，不带参数列表的 new 运算优先级更低，不属于 Member Expression。
 ```
 
 > 实际上，这两种被放入 Member Expression，仅仅意味着它们跟属性运算属于同一优先级，没有任何语义上的关联
 
-##### 4.2.5.3 New Expression New 表达式
+###### 4.2.5.2.1 条件式属性访问
 
-Member Expression 加上 new 就是 New Expression，(当然，不加 new 也可以构成 New Expression，JS 中默认独立的高优先级表达式都可以构成低优先级表达式)。
+ES2020 增加了两个新的属性访问表达式
+
+```sh
+expression ?. identifier
+expresion ?.[ expression ]
+```
+
+**作用**
+在 JavaScript 中，null 和 undefined 是唯一两个没有属性的值。在使用普通的属性访问表达式时，如果 `.` 或 `[]` 左侧的表达式求值为 nul 或 undefined，会报 TypeError。可以使用 `?.` 或 `?.[]` 语法防止这种错误发生。
+
+比如表达式 `a?.b`，如果 a 是 null 或 undefined，那么整个表达式求值结果为 undefined。不会尝试访问属性 b 如果 a 是其他值，则 `a?.b` 求值为 a.b 的值(如果 a 没有名为 b 的属性，则整个表达式的值还是 undefined)。
+
+这种形式的属性访问表达式有时候也被称为“**可选链接**”，因为它也适用于下面这样更长的属性访问表达式链条:
+
+```js
+let a = { b: null };
+a.b?.c.d; // undefined
+```
+
+a 是个对象，因此 `a.b` 是有效的属性访问表达式。但 `a.b` 的值是 null，因此 `a.b.c` 会抛出 TypeError。但通过使用 `?.` 而非 `.` 就可以避免这个 TypeError，最终 `a.b?.c` 求值为 undefined。
+
+这意味着 `(a.b?.c).d` 也会抛出 TypeError，因为这个表达式尝试访问 undefined 值的属性。但如果没有括号，即 a.b?.c.d(这种形式是“可选链接”的重要特征)就会直接求值为 undefined 而不会抛出错误。这是因为**通过 `?.` 访问属性是“短路操作”**: 如果 `?.` 左侧的子表达式求值为 null 或 undefined，那么整个表达式立即求值为 undefined，不会再进一步尝试访问属性。
+
+当然，如果 `a.b` 是对象，且这个对象没有名为 c 的属性，则 `a.b?.c.d` 仍然会抛出 TypeError。此时应该再加一个条件式属性访问
+
+```js
+let a = { b: {} };
+a.b?.c?.d; // undefined
+```
+
+条件式属性访问也可以使用 `?.[]` 而非 `[]`。在表达式 `a?.[b][c]` 中，如果 a 的值是 nu1l 或 undefined，则整个表达式立即求值为 undefined，子表达式 b 和 c 不会被求值。换句话说，如果 a 没有定义，那么 b 和 c 无论谁有副效应(side effect)，这个副效应都不会发生
+
+```js
+let a; // 忘记初始化这个变量了!
+let index = 0;
+try {
+  a[index++]; //抛出 TypeError
+} catch (e) {
+  index; //抛出 TypeError 之前发生了递增
+}
+a?.[index++]; // undefined: 因为 a 是 undefined
+index; // 1: 因为 ?.[] 短路所以没有发生递增
+index++; // !TypeError: 不能索引 undefined
+```
+
+##### 4.2.5.3 Object Create Expression 对象创建表达式
+
+对象创建表达式创建一个新对象并调用一个函数（称为构造函数）来初始化这个新对象。对象创建表达式类似于调用表达式，区别在于前面多了一个关键字 `new`
+
+```js
+new Object();
+new Point(2, 3);
+```
 
 > 注意 : 这里的 New Expression 特指没有参数列表的表达式。
 
@@ -2191,6 +2274,7 @@ Member Expression 加上 new 就是 New Expression，(当然，不加 new 也可
 它的基本形式是 Member Expression 后加一个括号里的参数列表，或者可以用上 `super` 关键字替代 Member Expression
 
 ```js
+f(0);
 a.b(c);
 super();
 
@@ -2203,6 +2287,49 @@ a.b(c)`xyz`;
 
 > 这些变体的形态，跟 Member Expression 几乎是一一对应的。实际上，可以理解为，Member Expression 中的某一个子结构具有函数调用，那么整个表达式就成为了 call Expression。
 > 而 call Expression 就失去了比 New Expression 优先级高的特性，这是一个主要的区分。
+
+###### 4.2.5.4.1 条件式调用
+
+ES2020 中可以用使用 `?.()` 来调用函数。正常情况下，调用函数时，如果圆括号左侧的表达式是 null 或 undefined 或任何其他非函数值，都会抛出 TypeError。而使用 `?.()` 调用语法，如果 `?` 左侧的表达式求值为 null 或 undefined，则整个调用表达式求值为 undefined，不会抛出异常。
+
+**例**
+数组对象有一个 `sort()` 方法，接收一个可选的函数参数，用来定义对数组元素排序的规则。在 ES2020 之前，如果想写一个类似 `sort()` 的这种接收可选函数参数的方法，通常需要在函数内使用 if 语句检查该函数参数是否有定义，然后再调用:
+
+```js
+function square(x，log){ // 第二个参数是一个可选的函数
+  if (log) { // 如果传入了可选的函数
+    log(x); // 调用这个函数
+  }
+  return x * x; // 返回第一个参数的平方
+}
+```
+
+但有了 ES2020 的条件式调用语法，可以简单地使用 `?.()` 来调用这个可选的函数，只有在函数有定义时才会真正调用:
+
+```js
+function square(x，log) { // 第二个参数是一个可选的函数
+  log?.(x); // 如果有定义则调用
+  return x * x; //返回第一个参数的平方
+}
+```
+
+> 注意 : `?.()` 只会检查左侧的值是不是 null 或 undefined，不会验证该值是不是函数。因此，这个例子中的 `square()` 函数在接收到两个数值时仍然会抛出异常。
+
+与[条件式属性访问表达式](#42521-条件式属性访问)类似，使用 `?.()` 进行函数调用也是短路操作: 如果 `?.` 左侧的值是 null 或 undefined，则圆括号中的任何参数表达式都不会被求值:
+
+```js
+let f = null,
+  x = 0;
+
+try {
+  f(x++); // 因为 f 是 null 所以抛出 TypeError
+} catch (e) {
+  x; // 1: 抛出异常前 x 发生了递增
+}
+
+f?.(x++); // undefined: f 是 null，但不会抛出异常
+x; // 1: 因为短路，递增不会发生
+```
 
 ##### 4.2.5.5 LeftHandSideExpression 左值表达式
 
