@@ -74,46 +74,49 @@ title: JavaScript
           - [4.2.3.4.2 function 声明](#42342-function-声明)
           - [4.2.3.4.3 class 声明](#42343-class-声明)
         - [4.2.3.5 指令序言机制](#4235-指令序言机制)
-      - [4.2.4 语句](#424-语句)
-        - [4.2.4.1 语句块](#4241-语句块)
-        - [4.2.4.2 空语句](#4242-空语句)
-        - [4.2.4.3 if 语句](#4243-if-语句)
-        - [4.2.4.4 switch 语句](#4244-switch-语句)
-        - [4.2.4.5 循环语句](#4245-循环语句)
-          - [4.2.4.5.1 while 循环 和 do while 循环](#42451-while-循环-和-do-while-循环)
-          - [4.2.4.5.2 普通 for 循环](#42452-普通-for-循环)
-          - [4.2.4.5.3 for in 循环](#42453-for-in-循环)
-          - [4.2.4.5.4 for of 循环和 for await of 循环](#42454-for-of-循环和-for-await-of-循环)
-        - [4.2.4.6 return](#4246-return)
-        - [4.2.4.7 break 和 continue](#4247-break-和-continue)
-        - [4.2.4.8 try 语句和 throw 语句](#4248-try-语句和-throw-语句)
-        - [4.2.4.9 debugger 语句](#4249-debugger-语句)
-        - [4.2.4.10 var](#42410-var)
-        - [4.2.4.11 let 和 const](#42411-let-和-const)
-        - [4.2.4.12 class 声明](#42412-class-声明)
-        - [4.2.4.13 函数声明](#42413-函数声明)
-      - [4.2.5 表达式语句](#425-表达式语句)
-        - [4.2.5.1 Primary Expression 主要表达式](#4251-primary-expression-主要表达式)
-        - [4.2.5.2 Member Expression 成员表达式](#4252-member-expression-成员表达式)
-          - [4.2.5.2.1 条件式属性访问](#42521-条件式属性访问)
-        - [4.2.5.3 Object Create Expression 对象创建表达式](#4253-object-create-expression-对象创建表达式)
-        - [4.2.5.4 call Expression 函数调用表达式](#4254-call-expression-函数调用表达式)
-          - [4.2.5.4.1 条件式调用](#42541-条件式调用)
-        - [4.2.5.5 LeftHandSideExpression 左值表达式](#4255-lefthandsideexpression-左值表达式)
-        - [4.2.5.6 AssignmentExpression 赋值表达式](#4256-assignmentexpression-赋值表达式)
-        - [4.2.5.7 Expression 表达式](#4257-expression-表达式)
-        - [4.2.5.8 ConditionalExpression 条件表达式](#4258-conditionalexpression-条件表达式)
-        - [4.2.5.9 UpdateExpression 更新表达式](#4259-updateexpression-更新表达式)
-        - [4.2.5.10 UnaryExpression 一元运算表达式](#42510-unaryexpression-一元运算表达式)
-        - [4.2.5.11 ExponentiationExpression 乘方表达式](#42511-exponentiationexpression-乘方表达式)
-        - [4.2.5.12 MultiplicativeExpression 乘法表达式](#42512-multiplicativeexpression-乘法表达式)
-        - [4.2.5.13 AdditiveExpression 加法表达式](#42513-additiveexpression-加法表达式)
-        - [4.2.5.14 ShiftExpression 移位表达式](#42514-shiftexpression-移位表达式)
-        - [4.2.5.15 关系表达式 RelationalException](#42515-关系表达式-relationalexception)
-        - [4.2.5.16 相等表达式 EqualityExpression](#42516-相等表达式-equalityexpression)
-        - [4.2.5.17 位运算表达式](#42517-位运算表达式)
-        - [4.2.5.18 逻辑与表达式和逻辑或表达式](#42518-逻辑与表达式和逻辑或表达式)
-      - [4.2.5.19 TernaryOperatorExpression 三目运算符](#42519-ternaryoperatorexpression-三目运算符)
+    - [4.3 语句](#43-语句)
+      - [4.3.1 语句块](#431-语句块)
+      - [4.3.2 空语句](#432-空语句)
+      - [4.3.3 if 语句](#433-if-语句)
+      - [4.3.4 switch 语句](#434-switch-语句)
+      - [4.3.5 循环语句](#435-循环语句)
+        - [4.3.5.1 while 循环 和 do while 循环](#4351-while-循环-和-do-while-循环)
+        - [4.3.5.2 普通 for 循环](#4352-普通-for-循环)
+        - [4.3.5.3 for in 循环](#4353-for-in-循环)
+        - [4.3.5.4 for/of 循环](#4354-forof-循环)
+          - [4.3.5.4.1 for/of 与对象](#43541-forof-与对象)
+          - [4.3.5.4.2 for/of 与 Set 和 Map](#43542-forof-与-set-和-map)
+        - [4.3.5.5 for/await/of 循环](#4355-forawaitof-循环)
+      - [4.3.6 return](#436-return)
+      - [4.3.7 break 和 continue](#437-break-和-continue)
+      - [4.3.8 try 语句和 throw 语句](#438-try-语句和-throw-语句)
+      - [4.3.9 debugger 语句](#439-debugger-语句)
+      - [4.3.10 var](#4310-var)
+      - [4.3.11 let 和 const](#4311-let-和-const)
+      - [4.3.12 class 声明](#4312-class-声明)
+      - [4.3.13 函数声明](#4313-函数声明)
+    - [4.4 表达式语句](#44-表达式语句)
+      - [4.4.1 Primary Expression 主要表达式](#441-primary-expression-主要表达式)
+      - [4.4.2 Member Expression 成员表达式](#442-member-expression-成员表达式)
+        - [4.4.2.1 条件式属性访问](#4421-条件式属性访问)
+      - [4.4.3 Object Create Expression 对象创建表达式](#443-object-create-expression-对象创建表达式)
+      - [4.4.4 call Expression 函数调用表达式](#444-call-expression-函数调用表达式)
+        - [4.4.4.1 条件式调用](#4441-条件式调用)
+      - [4.4.5 LeftHandSideExpression 左值表达式](#445-lefthandsideexpression-左值表达式)
+      - [4.4.6 AssignmentExpression 赋值表达式](#446-assignmentexpression-赋值表达式)
+      - [4.4.7 Expression 表达式](#447-expression-表达式)
+      - [4.4.8 ConditionalExpression 条件表达式](#448-conditionalexpression-条件表达式)
+      - [4.4.9 UpdateExpression 更新表达式](#449-updateexpression-更新表达式)
+      - [4.4.10 UnaryExpression 一元运算表达式](#4410-unaryexpression-一元运算表达式)
+      - [4.4.11 ExponentiationExpression 乘方表达式](#4411-exponentiationexpression-乘方表达式)
+      - [4.4.12 MultiplicativeExpression 乘法表达式](#4412-multiplicativeexpression-乘法表达式)
+      - [4.4.13 AdditiveExpression 加法表达式](#4413-additiveexpression-加法表达式)
+      - [4.4.14 ShiftExpression 移位表达式](#4414-shiftexpression-移位表达式)
+      - [4.4.15 关系表达式 RelationalException](#4415-关系表达式-relationalexception)
+      - [4.4.16 相等表达式 EqualityExpression](#4416-相等表达式-equalityexpression)
+      - [4.4.17 位运算表达式](#4417-位运算表达式)
+      - [4.4.18 逻辑与表达式和逻辑或表达式](#4418-逻辑与表达式和逻辑或表达式)
+      - [4.4.19 TernaryOperatorExpression 三目运算符](#4419-ternaryoperatorexpression-三目运算符)
 
 <!-- /code_chunk_output -->
 
@@ -1795,7 +1798,7 @@ foo();
 
 这里的指令序言最早是为 **use strict** 设计的，它规定了一种给 JS 代码添加元信息的方式。
 
-"use strict" 是 JS 标准中规定的唯一一种指令序言，但是指令序言的目的是，留给 JS 的引擎和实现者一些统一的表达方式，在静态扫描时指定 JS 代码的一些特性。
+**"use strict" 是 JS 标准中规定的唯一一种指令序言**，但是指令序言的目的是，留给 JS 的引擎和实现者一些统一的表达方式，在静态扫描时指定 JS 代码的一些特性。
 
 ```js
 // 假设要设计一种声明本文件不需要进行 lint 检查的指令，可以这样设计
@@ -1809,7 +1812,7 @@ function doSth() {
 
 JS 的指令序言是只有一个字符串直接量的表达式语句，它只能出现在脚本、模块和函数体的最前面。
 
-#### 4.2.4 语句
+### 4.3 语句
 
 JS 遵循了一般编程语言的 "语句-表达式" 结构。
 在 JS 标准中，把语句分成了两种：**声明** 和 **语句**，这两种语句最大的区别就是声明型语句响应预处理过程，普通语句只有执行过程。
@@ -1820,7 +1823,7 @@ JS 遵循了一般编程语言的 "语句-表达式" 结构。
 **声明型语句**
 ![JS声明型语句的种类](./image/JS声明型语句的种类.jpg)
 
-##### 4.2.4.1 语句块
+#### 4.3.1 语句块
 
 ```js
 {
@@ -1832,21 +1835,28 @@ JS 遵循了一般编程语言的 "语句-表达式" 结构。
 
 语句块的意义和好处在于：可以把多行语句视为同一行语句，这样 if、for 等语句定义起来就比较简单。
 
-> 需要注意：语句块会产生作用域
+> 注意：语句块会产生作用域
 
-##### 4.2.4.2 空语句
+#### 4.3.2 空语句
 
-空语句就是一个独立的分号，实际上没什么大用。
+空语句就是一个独立的分号 `;`，JS 解释器在执行空语句时什么也不会做。
+
+空语句偶尔会用于，比如创建一个空循环体的循环。
 
 ```js
-
+// 初始化一个数组 a
+for (let i = 0; i < a.length; a[i++] = 0);
 ```
 
-> 空语句的存在仅仅是从语言设计完备性的角度考虑，容许插入多个分号而不抛出错误。
+空语句的存在是从语言设计完备性的角度考虑，容许插入多个分号而不抛出错误。
 
-##### 4.2.4.3 if 语句
+> **注意**：意外地在 for、while 循环或 if 语句的右括号后面加上分号会导致难以发现的隐患。
 
-if 语句是条件语句。
+#### 4.3.3 if 语句
+
+if 语句是最基本的控制语句。
+
+JS 语法要求在 if 关键字和带括号的表达式后面必须只跟一个语句，但可以使用语句块把多个语句组合成一个语句。
 
 ```js
 if (a < b) {
@@ -1854,33 +1864,41 @@ if (a < b) {
 }
 ```
 
-> **作用** : 在满足条件时执行它的语句内容，这个语句可以是一个语句块，这样就可以实现有条件地执行多个语句。
-
 if 语句还有 else 结构，用于不满足条件时执行，常见的用法是：利用语句的嵌套能力，把 if 和 else 连写成多分支条件判断。
 
-##### 4.2.4.4 switch 语句
+> else if 并不是真正的 JS 语句，而是一个在使用 if/else 时被频繁使用的编程惯例。
 
-switch 语句继承自 Java，Java 中的 switch 语句继承自 C 和 C++，原本 switch 语句是跳转的变形，所以我们如果要用它来实现分支，必须要加上 break。
+#### 4.3.4 switch 语句
+
+switch 语句继承自 Java，Java 中的 switch 语句继承自 C 和 C++，原本 switch 语句是跳转的变形，所以如果要用它来实现分支，必须要加上 `break`。
+
+可以使用 `return` 而非 `break` 语句，来终止 switch 语句，阻止执行流进入下一个 case。
 
 ```js
-switch(num) {
+switch (x) {
   case 1:
-    print 1;
+    console.log(1);
     break;
-  case 2:
-    print 2;
+  case 'string':
+    console.log('string');
     break;
   case 3:
-    print 3;
-    break;
+    return x ** x;
+  default:
+    return String(x);
 }
 ```
 
-在 C 时代，switch 生成的汇编代码性能是略优于 if else 的，但是对 JS 来说，则无本质区别。
+> 注意：
+>
+> 1. 这里的匹配使用 `===` 全等操作符。
+> 2. 在 C 时代，switch 生成的汇编代码性能是略优于 if else 的，但是对 JS 来说，则**无本质区别**。
+> 3. 虽然 case 后面可以跟任意表达式，但最可靠的做法是**只写常量表达式**。
+> 4. 虽然 `default:` 标签通常出现在最后，但事实上，`default:` 标签可以出现在 switch 语句体的任何位置。
 
-##### 4.2.4.5 循环语句
+#### 4.3.5 循环语句
 
-###### 4.2.4.5.1 while 循环 和 do while 循环
+##### 4.3.5.1 while 循环 和 do while 循环
 
 ```js
 let a = 100;
@@ -1898,17 +1916,34 @@ do {
 
 > while 循环与 do while 循环的区别在于 do while 循环至少执行一次。
 
-###### 4.2.4.5.2 普通 for 循环
+##### 4.3.5.2 普通 for 循环
+
+for 语句提供了比 while 语句更方便的循环结构。for 语句简化了遵循常见模式的循环。
+
+多数循环都有某种形式的计数器变量，这个变量在循环开始前会被初始化，然后循环数每次迭代都会测试它的值。另外，计数器变量在循环体结束时、在被再次测试之前会递增或者更新。在**这种循环模式下，初始化、测试和更新是对循环变量的三个关键操作**。
+
+for 语句将这三个操作分别设定为一个表达式，让这些表达式成为循环语法中明确的部分：
 
 ```js
-for (i = 0; i < 100; i++) console.log(i);
-
-for (var i = 0; i < 100; i++) console.log(i);
-
-for (let i = 0; i < 100; i++) console.log(i);
+for (let i = 0; i < 10; i++) {
+  console.log(i);
+}
 ```
 
-###### 4.2.4.5.3 for in 循环
+有时候，每次迭代要改变的变量不止一个。这种情况是 JS 中逗号操作符唯一常见的用处。因为逗号操作符可以把多个初始化和递增表达式组合成一个表达式，从而满足 for 循环的语法要求：
+
+```js
+let i,
+  j,
+  sum = 0;
+for (i = 0, j = 10; i < 10; i++, j--) {
+  sum += i * j;
+}
+```
+
+对 for 循环而言，三个表达式中任何一个都可以省略，只有两个分号是必需的。如果省略了测试表达式，循环会永远执行。
+
+##### 4.3.5.3 for in 循环
 
 for in 循环枚举对象的属性，这里体现了属性的 enumerable 特征。
 
@@ -1916,47 +1951,162 @@ for in 循环枚举对象的属性，这里体现了属性的 enumerable 特征�
 let o = { a: 10, b: 20 };
 Object.defineProperty(o, 'c', { enumerable: false, value: 30 });
 
-for (let p in o) console.log(p);
-```
-
-###### 4.2.4.5.4 for of 循环和 for await of 循环
-
-for of 循环是非常棒的语法特性，它背后机制是 **iterator 机制**
-可以给任何一个对象添加 iterator，使它可以用于 for of 语句
-
-```js
-let o = {
-  [Symbol.iterator]: () => ({
-    _value: 0,
-    next() {
-      if (this._value == 10)
-        return {
-          done: true
-        };
-      else
-        return {
-          value: this._value++,
-          done: false
-        };
-    }
-  })
-};
-for (let e of o) console.log(e);
-```
-
-这段代码展示了如何为一个对象添加 iterator。但是，在实际操作中，一般不需要这样定义 iterator，可以使用 generator function。
-
-```js
-function* foo() {
-  yield 0;
-  yield 1;
-  yield 2;
-  yield 3;
+// 将 o 的属性名赋值给变量 p
+for (let p in o) {
+  console.log(o[p]); // 10 20：打印每个属性的值，因为 c 设置 enumerable 是 false，所以没有打印
 }
-for (let e of foo()) console.log(e);
 ```
 
-此外，JavaScript 还为异步生成器函数配备了异步的 for of
+**`for/in` 循环中的变量可能是任意表达式，只要能求值为赋值表达式的左值可以**。这个表达式在每次循环时都会被求值，这意味着每次的求值结果可能都不同。比如，可以用类似下面的代码把一个对象的所有属性复制到数组中：
+
+```js
+let o = { x: 1, y: 2, z: 3 };
+let a = [],
+  i = 0;
+for (a[i++] in o); /*空循环体*/
+```
+
+> **注意**：
+>
+> 1. `for/in` 循环并不会枚举对象的所有属性，比如它**不会枚举名字为符号的属性**。而对于名字为字符串的属性，它只会遍历可枚举的属性。
+> 2. JavaScript 核心定义的各种内部方法是不可枚举的。比如，所有对象都有 `toString()` 方法，但 `for/in` 循环不会枚举 `tosSring` 属性。
+> 3. 除了内部方法，内部对象的不少其他属性也是不可枚举的。默认情况下，手写代码定义的所有属性和方法都是可枚举的(可以使用 14.1 节<!--TODO-->介绍的技术让它们不可枚举)。
+> 4. 继承的可枚举属性(参见 6.3.2 节<!--TODO-->)也可以被 `for/in` 循环枚举。这意味着如果使用 `for/in` 循环，并且代码中会定义被所有对象继承的属性，那循环就有可能出现意外结果。
+>    很多程序员更愿意[基于 `Object.keys()` 使用 `for/of` 循环](#43541-forof-与对象)，而不是使用 `for/in` 循环。
+> 5. 关于 for/in 枚举对象属性的顺序，可以参见 6.6.1 节。<!--TODO 6.6.1 节-->
+
+##### 4.3.5.4 for/of 循环
+
+ES6 定义了一个新循环语句 `for/of`。这种新循环虽然使用 for 关键字，但它与常规 for 循环是完全不同的两种循环，for/of 循环专门用于[可迭代对象]<!--TODO 第 12 章-->。它背后机制是 **iterator 机制**。
+
+例如，下面这个例子演示了如何迭代一个数值数组并计算所有数值之和:
+
+```js
+let data = [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  sum = 0;
+for (let element of data) {
+  sum += element;
+}
+sum; // 45
+```
+
+在上面的代码中，循环体对应 data 数组中的每个元素都会运行一次。在每次执行循环体之前，都会把数组的下一个元素赋值给元素变量。数组元素是按照从头到尾的顺序迭代的。
+
+数组迭代是“实时”的，即迭代过程中的变化可能影响迭代的输出。如果修改前面的代码，在循环内添加一行 `data.push(sum);` 则会创建一个无穷循环。因为迭代永远不会触及数组的最后一个元素。
+
+###### 4.3.5.4.1 for/of 与对象
+
+对象（默认）是不可迭代的。运行时尝试对常规对象使用 `for/of` 会抛出 TypeError。
+
+- 如果想迭代对象的属性，使用 `for/in` 循环，或者基于 `Object.keys()` 方法的结果使用 `for/of`:
+
+  ```js
+  let o = { x: 1, y: 2, z: 3 };
+  let keys = '';
+  for (let k of Object.keys(o)) {
+    keys += k;
+  }
+  keys; // "xyz"
+  ```
+
+  这是因为 `Object.keys()` 返回一个对象属性名的数组，而数组是可以通过 `for/of` 来迭代的。
+
+  > **注意**：这种对象的键的迭代并不像上面例子那样是实时的，在循环体内修改对象 `o` 不会影响迭代。
+
+- 如果不在乎对象的键，也可以像下面这样迭代每个键对应的值:
+
+  ```js
+  let sum = 0;
+  for (let v of Object.values(o)) {
+    sum += v;
+  }
+  sum; // 6
+  ```
+
+- 如果既想要对象属性的键，也想要属性的值，可以基于 `Object.entries()` 和解构赋值来使用 `for/of`:
+
+  ```js
+  let pairs = '';
+  for (let [k, v] of Object.entries(o)) {
+    pairs += k + v;
+  }
+  pairs; // "×1y2z3"
+  ```
+
+  `Object.entries()` 返回一个数组的数组，其中每个内部数组表示对象的一个属性的键/值对。这里使用解构赋值把这些内部数组拆开，并将它们的元素赋值给两个变量。
+
+- 也可以给任何一个对象添加 iterator，使它可以用于 `for/of` 语句
+
+  ```js
+  let o = {
+    [Symbol.iterator]: () => ({
+      _value: 0,
+      next() {
+        if (this._value == 10)
+          return {
+            done: true
+          };
+        else
+          return {
+            value: this._value++,
+            done: false
+          };
+      }
+    })
+  };
+  for (let e of o) console.log(e);
+  ```
+
+  这段代码展示了如何为一个对象添加 iterator。但是，在实际操作中，一般不需要这样定义 iterator，可以使用 generator function。
+
+  ```js
+  function* foo() {
+    yield 0;
+    yield 1;
+    yield 2;
+    yield 3;
+  }
+  for (let e of foo()) console.log(e);
+  ```
+
+###### 4.3.5.4.2 for/of 与 Set 和 Map
+
+ES6 内置的 Set(集合)和 Map(映射)类是可迭代的。
+
+在使用 `for/of` 迭代 Set 时循环体对集合中的每个元素都会运行一次。可以使用类似下面的代码打印出一个字符串中的唯一单词:
+
+```js
+let text = 'Nanana na na na na na Batman!';
+let wordSet = new Set(text.split(' '));
+let unique = [];
+for (let word of wordSet) {
+  unique.push(word);
+}
+unique; // ["Na", "na", "Batman!"]
+```
+
+**Map 对象的迭代器并不迭代 Map 键或 Map 值，而是迭代键值对**。每次迭代，迭代器都会返回一个数组，其第一个元素是键，第二个元素是对应值。给出一个 Map m，可以像下面这样迭代和解构其键/值对象：
+
+```js
+let m = new Map([[1, 'one']]);
+
+for (let [key, value] of m) {
+  key; // 1
+  value; // "one"
+}
+```
+
+要理解 for/ await 循环,可能需要阅读第 12 章和第 13 章,但这里可以先看一看它的代
+码示例
+/从异步可迭代流中读取数据块并将其打印出来
+async function printstream(stream)[
+for await (let chunk of stream
+console. log(chunk
+第
+
+##### 4.3.5.5 for/await/of 循环
+
+ES2018 新增了一种迭代器，称为异步迭代器，同时新增了一种 for/of 循环，即使用异步迭代器的 `for/await/of` 循环。要理解 for/await 循环，需要阅读 第 12 章和第 13 章<!--TODO-->。
 
 ```js
 function sleep(duration) {
@@ -1964,6 +2114,7 @@ function sleep(duration) {
     setTimeout(resolve, duration);
   });
 }
+
 // 定义了一个异步生成器函数，异步生成器函数每隔一秒生成一个数字，这是一个无限的生成器。
 async function* foo() {
   i = 0;
@@ -1972,15 +2123,16 @@ async function* foo() {
     yield i++;
   }
 }
+
 // 使用 for await of 来访问这个异步生成器函数的结果，可以看到，这形成了一个每隔一秒打印一个数字的无限循环。
 for await (let e of foo()) console.log(e);
 ```
 
-##### 4.2.4.6 return
+#### 4.3.6 return
 
 return 语句用于函数中，它终止函数的运行，并且返回函数的指定值
 
-##### 4.2.4.7 break 和 continue
+#### 4.3.7 break 和 continue
 
 break 用于 跳出循环语句 或 switch 语句，continue 语句用于结束本次循环并继续循环。
 
@@ -1995,7 +2147,7 @@ outer: for (let i = 0; i < 100; i++)
 
 > 带标签的 break 和 continue 可以控制自己被外层的哪个语句结构消费，这可以跳出复杂的语句结构。
 
-##### 4.2.4.8 try 语句和 throw 语句
+#### 4.3.8 try 语句和 throw 语句
 
 try 语句和 throw 语句用于处理异常，它们是配合使用的。在大型的应用中，异常机制非常重要。
 
@@ -2019,11 +2171,11 @@ catch 结构会创建一个局部的作用域，并且把抛出的错误当做�
 
 finally 语句一般用于释放资源，它一定会被执行，即使再 try 中出现 return，finally 中的语句也一定要被执行。
 
-##### 4.2.4.9 debugger 语句
+#### 4.3.9 debugger 语句
 
 debugger 语句的作用：通知调试器在此断点。在没有调试器挂载时，它不产生任何效果。
 
-##### 4.2.4.10 var
+#### 4.3.10 var
 
 var 声明语句是古典的 JS 中声明变量的方式。而现在，在绝大多数情况下，let 和 const 都是更好的选择。
 
@@ -2033,7 +2185,7 @@ var 声明语句是古典的 JS 中声明变量的方式。而现在，在绝大
 - 尽可能在离使用的位置近处声明
 - 不要在意重复声明
 
-##### 4.2.4.11 let 和 const
+#### 4.3.11 let 和 const
 
 let 和 const 都是变量的声明，它们的特性都非常相似。let 和 const 的作用范围是 if、for 等结构型语句。
 
@@ -2050,7 +2202,7 @@ if (true) {
 }
 ```
 
-##### 4.2.4.12 class 声明
+#### 4.3.12 class 声明
 
 class 最基本的用法只需要 class 关键字、名称和一对大括号。它的声明特征跟 const 和 let 类似，都是作用于块级作用域，预处理阶段则会屏蔽外部变量。
 
@@ -2083,7 +2235,7 @@ class Rectangle {
 
 > 以目前的兼容性，class 中的属性只能写在构造函数中，class 默认内部的函数定义都是 **strict 模式** 的。
 
-##### 4.2.4.13 函数声明
+#### 4.3.13 函数声明
 
 函数声明使用 `function` 关键字。
 
@@ -2117,13 +2269,13 @@ function foo(a = 1, ...other) {
 }
 ```
 
-#### 4.2.5 表达式语句
+### 4.4 表达式语句
 
 表达式语句实际上就是一个表达式，它是由 运算符连接变量 或 直接量 构成。
 
 一般来说，表达式语句要么是函数调用、赋值、自增、自减，否则表达式计算的结果没有任何意义。但是，在语法上没有这样的限制，任何合法的表达式都可以当做表达式语句使用。
 
-##### 4.2.5.1 Primary Expression 主要表达式
+#### 4.4.1 Primary Expression 主要表达式
 
 表达式的原子项：**Primary Expression**。它是表达式的最小单位，它所涉及的语法结构也是优先级最高的。
 
@@ -2170,7 +2322,7 @@ let sparseArray = [1, , , , 5];
 > 1. 在语法层面，`function`、`{` 和 `class` 开头的表达式语句和声明语句有语法冲突，所以，要想使用这样的表达式，必须加上括号来回避语法冲突。
 > 2. 任何表达式加上圆括号，都会被认为是 Primary Expression，这个机制使得圆括号成为改变运算优先级的手段。
 
-##### 4.2.5.2 Member Expression 成员表达式
+#### 4.4.2 Member Expression 成员表达式
 
 Member Expression 通常用于访问对象成员，它有几种形式：
 
@@ -2209,7 +2361,7 @@ new Cls('1');
 
 > 实际上，这两种被放入 Member Expression，仅仅意味着它们跟属性运算属于同一优先级，没有任何语义上的关联
 
-###### 4.2.5.2.1 条件式属性访问
+##### 4.4.2.1 条件式属性访问
 
 ES2020 增加了两个新的属性访问表达式
 
@@ -2256,7 +2408,7 @@ index; // 1: 因为 ?.[] 短路所以没有发生递增
 index++; // !TypeError: 不能索引 undefined
 ```
 
-##### 4.2.5.3 Object Create Expression 对象创建表达式
+#### 4.4.3 Object Create Expression 对象创建表达式
 
 对象创建表达式创建一个新对象并调用一个函数（称为构造函数）来初始化这个新对象。对象创建表达式类似于调用表达式，区别在于前面多了一个关键字 `new`
 
@@ -2267,7 +2419,7 @@ new Point(2, 3);
 
 > 注意 : 这里的 New Expression 特指没有参数列表的表达式。
 
-##### 4.2.5.4 call Expression 函数调用表达式
+#### 4.4.4 call Expression 函数调用表达式
 
 除了 New Expression，Member Expression 还能构成 call Expression。
 
@@ -2288,7 +2440,7 @@ a.b(c)`xyz`;
 > 这些变体的形态，跟 Member Expression 几乎是一一对应的。实际上，可以理解为，Member Expression 中的某一个子结构具有函数调用，那么整个表达式就成为了 call Expression。
 > 而 call Expression 就失去了比 New Expression 优先级高的特性，这是一个主要的区分。
 
-###### 4.2.5.4.1 条件式调用
+##### 4.4.4.1 条件式调用
 
 ES2020 中可以用使用 `?.()` 来调用函数。正常情况下，调用函数时，如果圆括号左侧的表达式是 null 或 undefined 或任何其他非函数值，都会抛出 TypeError。而使用 `?.()` 调用语法，如果 `?` 左侧的表达式求值为 null 或 undefined，则整个调用表达式求值为 undefined，不会抛出异常。
 
@@ -2331,7 +2483,7 @@ f?.(x++); // undefined: f 是 null，但不会抛出异常
 x; // 1: 因为短路，递增不会发生
 ```
 
-##### 4.2.5.5 LeftHandSideExpression 左值表达式
+#### 4.4.5 LeftHandSideExpression 左值表达式
 
 New Expression 和 Call Expression 统称 LeftHandSideExpression，左值表达式。
 左值表达式就是可以放到等号左边的表达式，语法如下：
@@ -2349,7 +2501,7 @@ a().c = b;
 > 另外，根据 JS 运行时的设计，不排除某些宿主会提供返回引用类型的函数，这时候，赋值是有效的。
 > 左值表达式最经典的用法是用于构建赋值表达式，在 JS 标准中，它出现在各种场合，凡是需要"可以被修改的变量"的位置，都可以见到它。
 
-##### 4.2.5.6 AssignmentExpression 赋值表达式
+#### 4.4.6 AssignmentExpression 赋值表达式
 
 AssignmentExpression 赋值表达式也有多种形态，最基本的是使用等号赋值：
 
@@ -2380,7 +2532,7 @@ a = a + b;
 *=、/=、%=、+=、-=、<<=、>>=、>>>=、&=、^=、|=、**=
 ```
 
-##### 4.2.5.7 Expression 表达式
+#### 4.4.7 Expression 表达式
 
 赋值表达式可以构成 Expression 表达式的一部分。在 JS 中，表达式就是用逗号运算符连接的赋值表达式。
 
@@ -2394,7 +2546,7 @@ a = a + b;
 
 > 在很多场合，都不允许使用带逗号的表达式，比如：export 后只能跟赋值表达式，意思就是表达式中不能含逗号。
 
-##### 4.2.5.8 ConditionalExpression 条件表达式
+#### 4.4.8 ConditionalExpression 条件表达式
 
 在一些通用的计算机语言设计理论中，能够出现在赋值表达式的右边，叫做：右值表达式（RightHandSideExpression），而在 JS 标准中，规定了在等号右边表达式叫做：条件表达式（ConditionalExpression），不过，在 JS 标准中，从未出现过右值表达式字样。
 
@@ -2402,7 +2554,7 @@ JS 标准也规定了左值表达式同时都是条件表达式（也就是右�
 
 对于右值表达式来说，可以理解为以左值表达式为最小单位开始构成的。
 
-##### 4.2.5.9 UpdateExpression 更新表达式
+#### 4.4.9 UpdateExpression 更新表达式
 
 左值表达式搭配 ++ --运算符，可以形成更新表达式。
 
@@ -2417,7 +2569,7 @@ a++;
 
 > 在 ES2018 中，跟早期版本有所不同，前后自增自减运算被放到同一优先级。
 
-##### 4.2.5.10 UnaryExpression 一元运算表达式
+#### 4.4.10 UnaryExpression 一元运算表达式
 
 更新表达式搭配一元运算符，可以形成一元运算表达式
 
@@ -2433,7 +2585,7 @@ await a;
 
 > 特点就是一个更新表达式搭配了一个一元运算符。a 本身就是一个更新表达式。
 
-##### 4.2.5.11 ExponentiationExpression 乘方表达式
+#### 4.4.11 ExponentiationExpression 乘方表达式
 
 乘方表达式也是由更新表达式构成的。它使用 `**` 号。
 
@@ -2456,7 +2608,7 @@ await a;
 4 ** (3 ** 2);
 ```
 
-##### 4.2.5.12 MultiplicativeExpression 乘法表达式
+#### 4.4.12 MultiplicativeExpression 乘法表达式
 
 更新表达式也可以构成乘法表达式，用乘号、除号、取余符号连接即可。它们的优先级是一样的。
 
@@ -2464,7 +2616,7 @@ await a;
 x * 2;
 ```
 
-##### 4.2.5.13 AdditiveExpression 加法表达式
+#### 4.4.13 AdditiveExpression 加法表达式
 
 加法表达式可以由乘法表达式用 加号(+) 或 减号(-) 连接构成。
 
@@ -2472,7 +2624,7 @@ x * 2;
 a + b - c;
 ```
 
-##### 4.2.5.14 ShiftExpression 移位表达式
+#### 4.4.14 ShiftExpression 移位表达式
 
 移位表达式由加法表达式构成，移位是一种运算，分成 3 种：
 
@@ -2497,7 +2649,7 @@ a + b - c;
 
 > 在 JS 中，二进制操作整数并不能提高性能，移位运算这里也仅仅是作为一种数学运算存在，这些运算存在的意义仅仅是为了照顾 C 系语言的用户的习惯。
 
-##### 4.2.5.15 关系表达式 RelationalException
+#### 4.4.15 关系表达式 RelationalException
 
 关系表达式就是大于、等于、小于、大于等于、小于等于等运算符号连接，统称为关系运算。
 
@@ -2512,7 +2664,7 @@ in
 
 > 注意：这里的 <= 和 >= 关系运算，完全是针对数字的，所以 <= 并不等价于 <或==。
 
-##### 4.2.5.16 相等表达式 EqualityExpression
+#### 4.4.16 相等表达式 EqualityExpression
 
 在语法上，相等表达式是由关系表达式用相等表达式用相等比较运算符连接构成，所以，可以像下面这段代码一样使用，而不需要加括号：
 
@@ -2555,7 +2707,7 @@ a instanceof 'object' == true;
 document.getElementsByTagName('input')[0].value == 100;
 ```
 
-##### 4.2.5.17 位运算表达式
+#### 4.4.17 位运算表达式
 
 位运算表达式含有 3 种：
 
@@ -2582,7 +2734,7 @@ document.getElementsByTagName('input')[0].value == 100;
 3. 按位或表达式：按位或表达式由按位或运算符（|）连接相等表达式构成，按位或表达式把操作数视为二进制整数，然后把两个操作数按位做或运算。
    按位或运算常常被用在一种叫 位掩码 (BitMask) 的技术上。BitMask 相当于使用一个整数来当做多个布尔型变量，现在已经不提倡了。不过，一些比较老的 API 还是会这样设计，比如：DOM 中的 iterator API 。
 
-##### 4.2.5.18 逻辑与表达式和逻辑或表达式
+#### 4.4.18 逻辑与表达式和逻辑或表达式
 
 逻辑与表达式：由按位或表达式经逻辑与运算符连接构成。
 逻辑或表达式：由逻辑与表达式经逻辑或运算符连接构成。
@@ -2601,7 +2753,7 @@ false || undefined; // undefined
 true || foo();
 ```
 
-#### 4.2.5.19 TernaryOperatorExpression 三目运算符
+#### 4.4.19 TernaryOperatorExpression 三目运算符
 
 三目运算符由逻辑或表达式和条件运算符构成，条件运算符又称三目运算符，它有三个部分，由两个运算符 ? 和 : 配合使用。
 
