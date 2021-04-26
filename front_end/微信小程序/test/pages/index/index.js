@@ -1,7 +1,7 @@
 //index.js
 //获取应用实例
 const app = getApp();
-let myBehaviors =  require('../../utils/behaviors.js').default;
+import myBehaviors from '../../utils/behaviors.js';
 
 Page({
   data: {

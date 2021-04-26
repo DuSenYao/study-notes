@@ -7,9 +7,11 @@ module.exports = {
   },
   extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
   parserOptions: {
-    ecmaVersion: 6,
     sourceType: 'module',
-    parser: 'babel-eslint'
+    parser: 'babel-eslint',
+    ecmaFeatures: {
+      impliedStrict: true
+    }
   },
   plugins: ['@typescript-eslint', 'html'],
   rules: {

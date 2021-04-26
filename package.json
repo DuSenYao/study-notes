@@ -10,10 +10,12 @@
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.24.0",
+    "eslint": "^7.25.0",
     "eslint-plugin-html": "^6.1.2"
   },
-  "scripts": {},
+  "scripts": {
+    "lint" : "eslint --ext .js,.ts front_end"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/1758231591/Learning-notes-and-materials.git"
