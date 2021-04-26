@@ -156,8 +156,6 @@ JS 语言的每一个值都属于某一种数据类型。JS 语言规定了 **7*
 
 Undefined 表示未定义，它的类型只有一个值，就是 undefined。任何变量在赋值前都是 Undefined 类型，值为 undefined，一般情况下可以用 undefined（就是名为 undefined 的这个全局变量）来表达这个值，或者 void 运算来把任意一个表达式变成 undefined 值。
 
-> 建议使用 `void 0` 或 `void(0)` 来获取 undefined 值。在实际编程时，一般不会把变量赋值为 undefined，这样可以保证所有值为 undefined 的变量，都是从未赋值的自然状态。
-
 #### 1.1.2 Null
 
 Null 表示的是："定义了但是为空"。Null 的类型也只有一个值，就是 null，与 undefined 不同 `null` 是 JS 关键字，在任何程序中，都可以使用 null 关键字来获取 null 值。
@@ -1437,7 +1435,7 @@ f`Hello ${a}!`; // [["Hello", "!"], world]
 - 有换行符，且语法中规定此处不能有换行符，那么就自动插入分号
 - 源代码结束处，不能形成完整的脚本或模块结构，那么就自动插入分号
 
-![语法](./HTML演示文件/语法.html)
+[语法](./HTML演示文件/语法.html)
 
 #### 4.2.2 no LineTerminator here 规则
 
@@ -1456,7 +1454,7 @@ JS 语法中定义了以下 no LIneTerminator here 规则：
 - 箭头函数的箭头前，都不能插入换行
 - yield 之后，不能插入换行
 
-![语法](./HTML演示文件/语法.html)
+[语法](./HTML演示文件/语法.html)
 
 > no LineTerminator here 规则的存在，多数情况下是为了保证自动插入分号行为是符合预期的，但是在 JS 设计的最初，遗漏了一些重要的情况，所以有一些不符合预期的情况出现，需要格外注意
 
