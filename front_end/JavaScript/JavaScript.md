@@ -49,8 +49,6 @@ title: JavaScript
       - [3.8.1 行为](#381-行为)
       - [3.8.2 机制](#382-机制)
       - [3.8.3 操作 this 的内置函数](#383-操作-this-的内置函数)
-    - [3.9 语句](#39-语句)
-      - [3.9.1 Completion 类型](#391-completion-类型)
   - [四. 文法](#四-文法)
     - [4.1. 词法](#41-词法)
       - [4.1.1 空白符号 WhiteSpace](#411-空白符号-whitespace)
@@ -75,10 +73,16 @@ title: JavaScript
           - [4.2.3.4.3 class 声明](#42343-class-声明)
         - [4.2.3.5 指令序言机制](#4235-指令序言机制)
     - [4.3 语句](#43-语句)
-      - [4.3.1 语句块](#431-语句块)
-      - [4.3.2 空语句](#432-空语句)
-      - [4.3.3 if 语句](#433-if-语句)
-      - [4.3.4 switch 语句](#434-switch-语句)
+      - [4.3.1 语句介绍](#431-语句介绍)
+        - [4.3.1.1 普通语句](#4311-普通语句)
+        - [4.3.1.2 声明型语句](#4312-声明型语句)
+        - [4.3.1.3 语句标签](#4313-语句标签)
+        - [4.3.1.4 Completion 类型](#4314-completion-类型)
+      - [4.3.2 语句块](#432-语句块)
+      - [4.3.3 空语句](#433-空语句)
+      - [4.3.4 条件语句](#434-条件语句)
+        - [4.3.4.1 if 语句](#4341-if-语句)
+        - [4.3.4.2 switch 语句](#4342-switch-语句)
       - [4.3.5 循环语句](#435-循环语句)
         - [4.3.5.1 while 循环 和 do while 循环](#4351-while-循环-和-do-while-循环)
         - [4.3.5.2 普通 for 循环](#4352-普通-for-循环)
@@ -87,14 +91,18 @@ title: JavaScript
           - [4.3.5.4.1 for/of 与对象](#43541-forof-与对象)
           - [4.3.5.4.2 for/of 与 Set 和 Map](#43542-forof-与-set-和-map)
         - [4.3.5.5 for/await/of 循环](#4355-forawaitof-循环)
-      - [4.3.6 return](#436-return)
-      - [4.3.7 break 和 continue](#437-break-和-continue)
-      - [4.3.8 try 语句和 throw 语句](#438-try-语句和-throw-语句)
-      - [4.3.9 debugger 语句](#439-debugger-语句)
-      - [4.3.10 var](#4310-var)
-      - [4.3.11 let 和 const](#4311-let-和-const)
-      - [4.3.12 class 声明](#4312-class-声明)
-      - [4.3.13 函数声明](#4313-函数声明)
+      - [4.3.6 跳转语句](#436-跳转语句)
+        - [4.3.6.1 return](#4361-return)
+        - [4.3.6.2 break](#4362-break)
+        - [4.3.6.3 continue](#4363-continue)
+        - [4.3.6.4 yield](#4364-yield)
+        - [4.3.6.5 try 语句和 throw 语句](#4365-try-语句和-throw-语句)
+      - [4.3.7 声明语句](#437-声明语句)
+        - [4.3.11 var](#4311-var)
+        - [4.3.12 let 和 const](#4312-let-和-const)
+        - [4.3.13 class 声明](#4313-class-声明)
+        - [4.3.14 函数声明](#4314-函数声明)
+      - [4.3.10 debugger 语句](#4310-debugger-语句)
     - [4.4 表达式语句](#44-表达式语句)
       - [4.4.1 Primary Expression 主要表达式](#441-primary-expression-主要表达式)
       - [4.4.2 Member Expression 成员表达式](#442-member-expression-成员表达式)
@@ -1190,115 +1198,12 @@ foo.bind({}, 1, 2, 3)();
 
 > call、apply、bind 用于不接受 this 的函数类型，如：箭头函数、class 都不会报错，这时，它们无法实现改变 this 的能力，但可以实现传参。
 
-### 3.9 语句
-
-语句是任何编程语言的基础结构，与 JS 对象一样 JS 语句 有"看起来很像其他语言，但其实一点都不一样"的特点。
-
-JS 语句存在嵌套关系，所以执行过程主要在树形结构上进行，树形结构的每一个节点执行后产生 Completion Record 类型，根据语句结构和 Completion Record，JS 实现了各种分支和跳出逻辑。
-
-#### 3.9.1 Completion 类型
-
-JS 语句执行的完成状态，可以用一个标准类型来表示：Completion Record 类型(用于描述异常、跳出等语句执行过程)
-
-Completion Record 表示一个语句执行完之后的结果，它有三个字段:
-
-- `[[type]]` : 表示完成的类型，有 break continue return throw 和 normal 几种类型
-- `[[value]]` : 表示语句的返回值，如果语句没有，则是 empty
-- `[[target]]` : 表示语句的目标，通常是一个 JS 标签
-
-JS 正是依靠语句的 Completion Record 类型，方才可以在语句的复杂嵌套结构中，实现各种控制。
-
-```js
-function foo() {
-  try {
-    return 0;
-  } catch (err) {
-  } finally {
-    console.log('a');
-  }
-}
-// return 执行完毕后，但函数并没有立即返回，又执行了finally
-// 因为finally中的语句必须执行，所以，try\catch执行完毕，即使得到的结果是非normal型的完成记录，也必须执行finally
-console.log(foo()); // a 0
-```
-
-```js
-function foo() {
-  try {
-    return 0;
-  } catch (err) {
-  } finally {
-    return 1;
-  }
-}
-// finally中的return“覆盖”了try中的return
-// 当finally执行也得到非normal记录，则会使finally中的记录作为整个try结构的结果
-console.log(foo()); // 1
-```
-
-![语句的分类](./image/语句的分类.jpg)
-
-**普通语句**
-在 JS 中，不带控制能力的语句称为 普通语句。有下面几种：
-
-- 声明类语句
-  - var 声明
-  - const 声明
-  - let 声明
-  - 函数声明
-  - 类声明
-- 表达式语句
-- 空语句
-- debugger 语句
-
-这些语句在执行时，从前到后顺序执行（先忽略 var 和函数声明的预处理机制），没有任何分支或重复执行逻辑。
-
-普通语句执行后，会得到 `[[type]]` 为 normal 的 Completion Record，JS 引擎遇到这样的 Completion Record，会继续执行下一条语句。
-
-这些语句中只有表达式语句会产生 `[[value]]` 。
-
-> Chrome 控制台输入语句下方显示的正是语句的 Completion Record 的 `[[value]]`。
-
-**语句块**
-语句块就是一组用大括号括起来的语句，它是一种语句的复合结构，可以嵌套。
-语句块内部语句的 Completion Record 的 `[[type]]` 如果不为 normal，会打断语句块后续的语句执行。
-在语句块中插入一条 return 语句，产生了一个非 normal 记录，那么整个语句块会成为非 normal。这个结构就保证了非 normal 的完成类型可以穿透复杂的语句嵌套结构，产生控制效果。
-
-**控制型语句**
-控制型语句带 if、switch 关键字，它们会对不同类型的 Completion Record 产生反应。
-控制语句分为两部分：
-
-1. 对其内部造成影响，如：if、switch、while/for、try
-2. 对外部造成影响，如：return、break、continue、throw
-
-这两类的配合，会产生控制代码执行顺序和执行逻辑的效果。
-
-![控制语句和控制类型组合产生的效果](./image/控制语句和控制类型组合产生的效果.png)
-
-**带标签的语句**
-任何 JS 语句都是可以加标签的，在语句前加冒号即可：
-
-```js
-firstStatement: var a = 1;
-```
-
-大部分时候，这个东西相当于注释，没有任何用处。唯一有作用的时候是：与完成记录类型中的 target 相配合，用于跳出多层循环。
-
-```js
-// 与完成记录类型中的target配合，用于跳出多重循环
-outer: while (true) {
-  inner: while (true) {
-    // break/continue 语句如果后面跟了关键字，会产生带 target 的完成记录。一旦完成记录带了 target，那么只有拥有对应 label 的循环语句会消费它。
-    break outer;
-  }
-}
-console.log('finished');
-```
-
 ## 四. 文法
 
 文法是编译原理中对语言的写法的一种规定，一般来说，文法分为 **词法** 和 **语法** 两种。
+
 词法规定了语言的最小语义单位：token，可以翻译为"标记"或"词"。
+
 从字符到词是没有结构的，只要符合词的规则，就构成词，一般来说，词法设计不会包含冲突。词法分析技术上可以使用状态机或正则表达式来进行。
 
 ### 4.1. 词法
@@ -1814,16 +1719,117 @@ JS 的指令序言是只有一个字符串直接量的表达式语句，它只�
 
 ### 4.3 语句
 
-JS 遵循了一般编程语言的 "语句-表达式" 结构。
-在 JS 标准中，把语句分成了两种：**声明** 和 **语句**，这两种语句最大的区别就是声明型语句响应预处理过程，普通语句只有执行过程。
+#### 4.3.1 语句介绍
 
-**普通语句**
+语句是任何编程语言的基础结构，与 JS 对象一样 JS 语句 有"看起来很像其他语言，但其实一点都不一样"的特点。
+
+JS 语句存在嵌套关系，所以执行过程主要在树形结构上进行，**树形结构的每一个节点执行后产生 [Completion Record 类型](#4314-completion-类型)**，根据语句结构和 Completion Record，JS 实现了各种分支和跳出逻辑。
+
+JS 遵循了一般编程语言的 "语句-表达式" 结构。
+
+在 JS 标准中，把语句分成了两种：**声明语句** 和 **普通语句**，这两种语句最大的区别就是声明型语句响应预处理过程，普通语句只有执行过程。
+
+##### 4.3.1.1 普通语句
+
 ![JS普通语句的种类](./image/JS普通语句的种类.png)
 
-**声明型语句**
+普通语句执行后，会得到 `[[type]]` 为 normal 的 Completion Record，JS 引擎遇到这样的 Completion Record，会继续执行下一条语句。
+
+这些语句中只有表达式语句会产生 `[[value]]`。
+
+> Chrome 控制台输入语句下方显示的正是语句的 Completion Record 的 `[[value]]`。
+
+**控制型语句**
+控制型语句带 if、switch 关键字，它们会对不同类型的 Completion Record 产生反应。
+
+控制语句分为两部分：
+
+1. 对其内部造成影响，如：if、switch、while/for、try
+2. 对外部造成影响，如：return、break、continue、throw
+
+这两类的配合，会产生控制代码执行顺序和执行逻辑的效果。
+
+![控制语句和控制类型组合产生的效果](./image/控制语句和控制类型组合产生的效果.png)
+
+##### 4.3.1.2 声明型语句
+
 ![JS声明型语句的种类](./image/JS声明型语句的种类.jpg)
 
-#### 4.3.1 语句块
+##### 4.3.1.3 语句标签
+
+通过前置一个标识符和一个冒号，可以为任何语句加标签，但只有给那些有语句体的语句加标签才有意义。
+
+> `break` 和 `continue` 是 JS 中唯一使用语句标签的语句。
+
+```js
+firstStatement: var a = 1;
+```
+
+大部分时候，这个东西相当于注释，没有任何用处。唯一有作用的时候是：与完成记录类型中的 target 相配合，用于跳出多层循环。
+
+```js
+// 与完成记录类型中的 target 配合，用于跳出多重循环
+outer: while (true) {
+  inner: while (true) {
+    // break / continue 语句如果后面跟了关键字，会产生带 target 的完成记录。一旦完成记录带了 target，那么只有拥有对应 label 的循环语句会消费它。
+    break outer;
+  }
+}
+console.log('finished');
+```
+
+> 注意：
+>
+> 1. 这里用作语句标签的 identifier 可以是任何合法的 JavaScript 标识符(非保留字)。
+> 2. 这些标签与变量和函数不在同一个命名空间中因此同一个标识符既可以作为语句标签，也可以作为变量或函数名。
+> 3. 语句标签只在定义它的语句(当然包括子语句)中有效。如果一条语句被另一条语句包含，那么它们不能使用相同的标签。
+> 4. 如果两条语句没有嵌套关系，那么它们就可以使用相同的标签。已经有标签的语句本身也可以再加标签，这意味着任何语句都可以有多个标签。
+
+##### 4.3.1.4 Completion 类型
+
+JS 语句执行的完成状态，可以用一个标准类型来表示：Completion Record 类型(用于描述异常、跳出等语句执行过程)。
+
+Completion Record 表示一个语句执行完之后的结果，它有三个字段:
+
+- `[[type]]` : 表示完成的类型，有 `break` `continue` `return` `throw` 和 `normal` 几种类型
+- `[[value]]` : 表示语句的返回值，如果语句没有，则是 empty
+- `[[target]]` : 表示语句的目标，通常是一个 JS 标签
+
+JS 正是依靠语句的 Completion Record 类型，方才可以在语句的复杂嵌套结构中，实现各种控制。
+
+```js
+function foo() {
+  try {
+    return 0;
+  } catch (err) {
+  } finally {
+    console.log('a');
+  }
+}
+// return 执行完毕后，但函数并没有立即返回，又执行了finally
+// 因为finally中的语句必须执行，所以，try\catch执行完毕，即使得到的结果是非normal型的完成记录，也必须执行finally
+console.log(foo()); // a 0
+```
+
+```js
+function foo() {
+  try {
+    return 0;
+  } catch (err) {
+  } finally {
+    return 1;
+  }
+}
+// finally中的return“覆盖”了try中的return
+// 当finally执行也得到非normal记录，则会使finally中的记录作为整个try结构的结果
+console.log(foo()); // 1
+```
+
+#### 4.3.2 语句块
+
+语句块就是一组用大括号括起来的语句，它是一种语句的复合结构，可以嵌套。
+语句块内部语句的 Completion Record 的 `[[type]]` 如果不为 normal，会打断语句块后续的语句执行。
+在语句块中插入一条 return 语句，产生了一个非 normal 记录，那么整个语句块会成为非 normal。这个结构就保证了非 normal 的完成类型可以穿透复杂的语句嵌套结构，产生控制效果。
 
 ```js
 {
@@ -1837,7 +1843,7 @@ JS 遵循了一般编程语言的 "语句-表达式" 结构。
 
 > 注意：语句块会产生作用域
 
-#### 4.3.2 空语句
+#### 4.3.3 空语句
 
 空语句就是一个独立的分号 `;`，JS 解释器在执行空语句时什么也不会做。
 
@@ -1852,7 +1858,9 @@ for (let i = 0; i < a.length; a[i++] = 0);
 
 > **注意**：意外地在 for、while 循环或 if 语句的右括号后面加上分号会导致难以发现的隐患。
 
-#### 4.3.3 if 语句
+#### 4.3.4 条件语句
+
+##### 4.3.4.1 if 语句
 
 if 语句是最基本的控制语句。
 
@@ -1868,7 +1876,7 @@ if 语句还有 else 结构，用于不满足条件时执行，常见的用法�
 
 > else if 并不是真正的 JS 语句，而是一个在使用 if/else 时被频繁使用的编程惯例。
 
-#### 4.3.4 switch 语句
+##### 4.3.4.2 switch 语句
 
 switch 语句继承自 Java，Java 中的 switch 语句继承自 C 和 C++，原本 switch 语句是跳转的变形，所以如果要用它来实现分支，必须要加上 `break`。
 
@@ -2128,26 +2136,55 @@ async function* foo() {
 for await (let e of foo()) console.log(e);
 ```
 
-#### 4.3.6 return
+#### 4.3.6 跳转语句
 
-return 语句用于函数中，它终止函数的运行，并且返回函数的指定值
+##### 4.3.6.1 return
 
-#### 4.3.7 break 和 continue
+return 语句只能出现在函数体内，它终止函数的运行，并且返回函数的指定值。
 
-break 用于 跳出循环语句 或 switch 语句，continue 语句用于结束本次循环并继续循环。
+##### 4.3.6.2 break
 
-这两个语句都是控制型语句。都有带标签的用法
+break 用于 跳出循环 或 switch 语句。
+
+当循环有复杂的终止条件时，通常使用 break 语句更便于实现这些条件，而无须在一个循环表达式中包含所有这些条件。
+
+下面的代码从数组元素中搜索特定的值，如果到了数组末尾，循环会退出;如果找到了目标值，它会通过 break 语句终止
 
 ```js
-outer: for (let i = 0; i < 100; i++)
-  inner: for (let j = 0; j < 100; j++) if (i == 50 && j == 50) break outer;
-outer: for (let i = 0; i < 100; i++)
-  inner: for (let j = 0; j < 100; j++) if (i >= 50 && j == 50) continue outer;
+for (let i = 0; i < a.length; i++) {
+  if (a[i] === target) break;
+}
 ```
 
-> 带标签的 break 和 continue 可以控制自己被外层的哪个语句结构消费，这可以跳出复杂的语句结构。
+Javascript 允许 break 关键字后面跟一个语句标签(只有标识符,没有冒号)
 
-#### 4.3.8 try 语句和 throw 语句
+```js
+outer: for (let i = 0; i < 100; i++) {
+  inner: for (let j = 0; j < 100; j++) {
+    if (i == 50 && j == 50) break outer;
+  }
+}
+```
+
+> 注意：无论带不带标签，break 语句都不能把控制权转移到函数边界之外。比如，不能给一个函数定义加标签并在函数内部使用这个标签。
+
+##### 4.3.6.3 continue
+
+continue 语句用于结束本次循环并从头开始执行循环的下一次迭代。
+
+Javascript 允许 continue 关键字后面跟一个语句标签(只有标识符,没有冒号)
+
+```js
+outer: for (let i = 0; i < 100; i++) {
+  inner: for (let j = 0; j < 100; j++) {
+    if (i >= 50 && j == 50) continue outer;
+  }
+}
+```
+
+##### 4.3.6.4 yield
+
+##### 4.3.6.5 try 语句和 throw 语句
 
 try 语句和 throw 语句用于处理异常，它们是配合使用的。在大型的应用中，异常机制非常重要。
 
@@ -2171,11 +2208,9 @@ catch 结构会创建一个局部的作用域，并且把抛出的错误当做�
 
 finally 语句一般用于释放资源，它一定会被执行，即使再 try 中出现 return，finally 中的语句也一定要被执行。
 
-#### 4.3.9 debugger 语句
+#### 4.3.7 声明语句
 
-debugger 语句的作用：通知调试器在此断点。在没有调试器挂载时，它不产生任何效果。
-
-#### 4.3.10 var
+##### 4.3.11 var
 
 var 声明语句是古典的 JS 中声明变量的方式。而现在，在绝大多数情况下，let 和 const 都是更好的选择。
 
@@ -2185,7 +2220,7 @@ var 声明语句是古典的 JS 中声明变量的方式。而现在，在绝大
 - 尽可能在离使用的位置近处声明
 - 不要在意重复声明
 
-#### 4.3.11 let 和 const
+##### 4.3.12 let 和 const
 
 let 和 const 都是变量的声明，它们的特性都非常相似。let 和 const 的作用范围是 if、for 等结构型语句。
 
@@ -2202,7 +2237,7 @@ if (true) {
 }
 ```
 
-#### 4.3.12 class 声明
+##### 4.3.13 class 声明
 
 class 最基本的用法只需要 class 关键字、名称和一对大括号。它的声明特征跟 const 和 let 类似，都是作用于块级作用域，预处理阶段则会屏蔽外部变量。
 
@@ -2235,7 +2270,7 @@ class Rectangle {
 
 > 以目前的兼容性，class 中的属性只能写在构造函数中，class 默认内部的函数定义都是 **strict 模式** 的。
 
-#### 4.3.13 函数声明
+##### 4.3.14 函数声明
 
 函数声明使用 `function` 关键字。
 
@@ -2268,6 +2303,10 @@ function foo(a = 1, ...other) {
   console.log(a, other);
 }
 ```
+
+#### 4.3.10 debugger 语句
+
+debugger 语句的作用：通知调试器在此断点。在没有调试器挂载时，它不产生任何效果。
 
 ### 4.4 表达式语句
 
