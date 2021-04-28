@@ -63,15 +63,13 @@ title: JavaScript
     - [4.2 语法](#42-语法)
       - [4.2.1 自动插入分号](#421-自动插入分号)
       - [4.2.2 no LineTerminator here 规则](#422-no-lineterminator-here-规则)
-      - [4.2.3 语法](#423-语法)
-        - [4.2.3.1 import 声明](#4231-import-声明)
-        - [4.2.3.2 export 声明](#4232-export-声明)
-        - [4.2.3.3 函数体](#4233-函数体)
-        - [4.2.3.4 预处理](#4234-预处理)
-          - [4.2.3.4.1 var 声明](#42341-var-声明)
-          - [4.2.3.4.2 function 声明](#42342-function-声明)
-          - [4.2.3.4.3 class 声明](#42343-class-声明)
-        - [4.2.3.5 指令序言机制](#4235-指令序言机制)
+      - [4.2.3 模块](#423-模块)
+      - [4.2.4 函数体](#424-函数体)
+      - [4.2.5 预处理](#425-预处理)
+        - [4.2.5.1 var](#4251-var)
+        - [4.2.5.2 function](#4252-function)
+        - [4.2.5.3 class](#4253-class)
+      - [4.2.6 指令序言机制](#426-指令序言机制)
     - [4.3 语句](#43-语句)
       - [4.3.1 语句介绍](#431-语句介绍)
         - [4.3.1.1 普通语句](#4311-普通语句)
@@ -95,14 +93,15 @@ title: JavaScript
         - [4.3.6.1 return](#4361-return)
         - [4.3.6.2 break](#4362-break)
         - [4.3.6.3 continue](#4363-continue)
-        - [4.3.6.4 yield](#4364-yield)
-        - [4.3.6.5 try 语句和 throw 语句](#4365-try-语句和-throw-语句)
+        - [4.3.6.4 throw](#4364-throw)
+        - [4.3.6.5 try/catch/finally](#4365-trycatchfinally)
       - [4.3.7 声明语句](#437-声明语句)
-        - [4.3.11 var](#4311-var)
-        - [4.3.12 let 和 const](#4312-let-和-const)
-        - [4.3.13 class 声明](#4313-class-声明)
-        - [4.3.14 函数声明](#4314-函数声明)
-      - [4.3.10 debugger 语句](#4310-debugger-语句)
+        - [4.3.7.1 var](#4371-var)
+        - [4.3.7.2 let 和 const](#4372-let-和-const)
+        - [4.3.7.3 class 声明](#4373-class-声明)
+        - [4.3.7.4 函数声明](#4374-函数声明)
+        - [4.3.7.5 import 和 export](#4375-import-和-export)
+      - [4.3.8 debugger 语句](#438-debugger-语句)
     - [4.4 表达式语句](#44-表达式语句)
       - [4.4.1 Primary Expression 主要表达式](#441-primary-expression-主要表达式)
       - [4.4.2 Member Expression 成员表达式](#442-member-expression-成员表达式)
@@ -1504,9 +1503,14 @@ JS 语法中定义了以下 no LIneTerminator here 规则：
   console.log(RegExp.$1);
   ```
 
-#### 4.2.3 语法
+#### 4.2.3 模块
 
-JS 有两种源文件：一. 脚本 二. 模块。这个区分是在 ES6 引入了模块机制开始的，ES6 以前只有脚本。
+JS 有两种源文件：
+
+- 脚本
+- 模块
+
+这个区分是在 ES6 引入了模块机制开始的，ES6 以前只有脚本。
 
 脚本可以由浏览器或 node 引入执行的，而模块只能由 JS 代码用 `import` 引入执行
 
@@ -1520,80 +1524,15 @@ JS 有两种源文件：一. 脚本 二. 模块。这个区分是在 ES6 引入�
 <script type="module" src="xxxxx.js"></script>
 ```
 
-> `<script>` 标签如果不加 `type=“module”` ，默认加载的文件是脚本而非模块，如果在脚本中写了 `export`，会抛错。
+> `<script>` 标签如果不加 `type="module"`，默认加载的文件是脚本而非模块，如果在脚本中写了 `export`，会抛错。
 
 脚本中可以包含语句，模块中可以包含 3 种内容：
 
-- import 声明
-- export 声明
+- [import 声明语句](#4375-import-和-export)
+- [export 声明语句](#4375-import-和-export)
 - 语句
 
-##### 4.2.3.1 import 声明
-
-import 声明有两种用法
-
-1. 直接 import 一个模块
-
-   ```js
-   import 'mod'; //引入一个模块
-   ```
-
-   这样只能保证这个代码模块被执行，引用它的模块是无法获得它的任何信息的。
-
-2. 带 from 的 import
-   带 from 的 import 的意思是引入模块中的一部分信息，可以把它们变成本地的变量。
-   带 from 的 import 又有三种细分：
-
-   ```js
-   // 1. 引入模块中导出的默认值
-   import x from './a.js';
-   // 2. 引入模块中的变量
-   import { a as x, modify } from './a.js';
-   // 3. 把模块中所有的变量以类似对象属性的方式引入
-   import * as x from './a.js';
-
-   // 第一种方式还可以跟后面两种组合使用
-   // 语法要求不带 `as` 的默认值永远在最前。
-   // 注意这里的变量实际上仍然可以受到原来模块的控制
-   import d, { a as x, modify } from './a.js';
-   import d, * as x from './a.js';
-   ```
-
-##### 4.2.3.2 export 声明
-
-export 承担的是导出的任务
-
-导出变量的方式有两种：
-
-1. 独立使用 export 声明
-
-   ```js
-   export { a, b, c };
-   ```
-
-2. 直接在声明型语句前加 `export` 关键字，这里的 `export` 可以加在任何声明性质的语句前，整理如下：
-
-   - var
-   - function(含 async 和 generator)
-   - class
-   - let
-   - const
-
-   export 还有一种特殊的用法，就是跟 default 联合使用。`export default` 表示导出一个默认变量值，它可以用于 `function` 和 `class`。这里导出的变量是没有名称的，可以使用 `import x from "./a.js"` 这样的语法，从模块中引入。
-   export default 还支持一种语法，后面跟一个表达式，例如：
-
-   ```js
-   var a = {};
-   export default a; // 这里导出的是值，以后a的变化与导出的值无关
-   ```
-
-> import 语句前无法加入 export，但是可以直接使用 `export from` 语法
-
-```js
-export x from 'a.js';
-```
-
-##### 4.2.3.3 函数体
+#### 4.2.4 函数体
 
 执行函数的行为通常是在 JS 代码 执行时，注册宿主环境的某些事件触发的，而执行过程，就是执行函数体（函数的花括号中间的部分）。
 
@@ -1639,16 +1578,17 @@ export x from 'a.js';
 
 ![模块、脚本和函数体能使用的语句](./image/模块、脚本和函数体能使用的语句.jpg)
 
-##### 4.2.3.4 预处理
+#### 4.2.5 预处理
 
 JS 执行前会对，脚本、模块和函数体中的语句进行预处理，预处理的过程将会提前处理 **var、函数声明、class、const、let** 这些语句，以确定其中变量的含义。
 
-###### 4.2.3.4.1 var 声明
+##### 4.2.5.1 var
 
 var 声明永远作用于脚本、模块、函数体这个级别，在预处理阶段，不关心赋值的部分，只管在当前作用域声明这个变量。
+
 var 的作用域能够穿透一切语句结构，它只认脚本、模块和函数体这三种语法结构。
 
-###### 4.2.3.4.2 function 声明
+##### 4.2.5.2 function
 
 function 声明的行为原本跟 var 非常相似，但在最新的 JS 标准中，对它进行了一定的修改。
 
@@ -1666,7 +1606,7 @@ if (true) {
 
 出现在 if 等语句的 function，在 if 创建的作用域中仍然会被提前赋值。
 
-###### 4.2.3.4.3 class 声明
+##### 4.2.5.3 class
 
 class 声明在全局的行为跟 function 和 var 都不一样。
 
@@ -1688,14 +1628,15 @@ function foo() {
 foo();
 ```
 
-执行后，我们看到，仍然抛出了错误，如果去掉 class 声明，则会正常打印出 1，也就是说，出现在后面的 class 声明影响了前面语句的结果。
-说明了，class 声明也是会被预处理的，它会在作用域中创建变量，并且要求访问它时抛出错误。
+执行后看到，仍然抛出了错误，如果去掉 class 声明，则会正常打印出 1，也就是说，出现在后面的 class 声明影响了前面语句的结果。说明了，class 声明也是会被预处理的，它会在作用域中创建变量，并且要求访问它时抛出错误。
 
-> class 声明的作用不会穿透 if 等语句结构，所以只有写在全局环境才会有声明作用。
-> 这样的 class 设计 比 function 和 var 更符合直觉，而且遇到一些比较奇怪的用法时，倾向于抛出错误。
-> 按照现代语言设计的评价标准，及早抛错是好事，它能帮助在开发阶段就发现代码的可能问题。
+> **优点**：
+>
+> 1. class 声明的作用不会穿透 if 等语句结构，所以只有写在全局环境才会有声明作用。
+> 2. 这样的 class 设计 比 function 和 var 更符合直觉，而且遇到一些比较奇怪的用法时，倾向于抛出错误。
+> 3. 按照现代语言设计的评价标准，及早抛错是好事，它能帮助在开发阶段就发现代码的可能问题。
 
-##### 4.2.3.5 指令序言机制
+#### 4.2.6 指令序言机制
 
 脚本和模块都支持一种特别的语法，叫做指令序言（Directive Prologs）。
 
@@ -2431,23 +2372,53 @@ function foo(a = 1, ...other) {
 `import` 指令用于从另一个 JavaScript 代码文件中导入一个或多个值，并在当前模块中为这些值指定名字。`import` 指令有几种不同的形式。下面是几个例子:
 
 ```js
+// 1. 直接 import 一个模块
+import 'mod';
+
+// 2. 引入模块中导出的默认值
 import circle from './geometry/circle.js';
+
+// 3. 引入模块中的变量或常量
 import { PI, TAU } from './geometry/constants.js';
 import { magnitude as hypotenuse } from './vectors/utils.js';
+
+// 4. 把模块中所有的变量以类似对象属性的方式引入
+import * as x from './a.js';
+
+// 第一种方式还可以跟后面两种组合使用
+// 语法要求不带 `as` 的默认值永远在最前。
+// 注意，这里的变量实际上仍然可以受到原来模块的控制
+import d, { a as x, modify } from './a.js';
+import d, * as x from './a.js';
 ```
 
-JS 模块中的值是私有的，除非被显式导出，否则其他模块都无法导入。`export` 指令就是为此而生的，它声明把当前模块中定义的一个或多个值导出。`export` 指令相比 `import` 指令有更多变体，下面是其中一种：
+JS 模块中的值是私有的，除非被显式导出，否则其他模块都无法导入。`export` 指令就是为此而生的，它声明把当前模块中定义的一个或多个值导出。`export` 指令相比 `import` 指令有更多变体，下面是例子：
 
-```js
-// geometry/constants.js
-const PI = Math.PI;
-const TAU = 2 * PI;
-export { PI, TAU };
-```
+1. 独立使用 `export` 声明
 
-`export` 关键字有时候也用作其他声明的标识符，从而构成一种复合声明，在定义常量、变量、函数或类的同时又导出它们。
+   ```js
+   // geometry/constants.js
+   const PI = Math.PI;
+   const TAU = 2 * PI;
+   export { PI, TAU };
+   ```
 
-> 如果一个模块值导出一个值，通常会使用特殊的 export default 形式。因为，使用这种形式，在导入的时候不需要解构。
+2. 直接在声明型语句前加 `export` 关键字，这里的 `export` 可以加在任何声明性质的语句前，整理如下：
+
+   - var
+   - function(含 async 和 generator)
+   - class
+   - let
+   - const
+
+3. `export` 跟 `default` 联合使用。`export default` 表示导出一个默认变量值，它只可以用于 表达式、`function` 和 `class`。
+   这里导出的变量是没有名称的，可以使用 `import x from "./a.js"` 这样的语法，从模块中引入。
+
+4. import 语句前无法加入 `export`，但是可以直接使用 `export from` 语法
+
+   ```js
+   export x from 'a.js';
+   ```
 
 #### 4.3.8 debugger 语句
 

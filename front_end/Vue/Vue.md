@@ -274,6 +274,7 @@ title: Vue
     - [9.1 template 和 JSX 的对比以及它们的本质](#91-template-和-jsx-的对比以及它们的本质)
     - [9.2 为 Vue 文件配置 JSDoc](#92-为-vue-文件配置-jsdoc)
     - [9.3 GitHub Pages 使用 Travis CI 自动更新](#93-github-pages-使用-travis-ci-自动更新)
+    - [9.4 vue-cli-service](#94-vue-cli-service)
 
 <!-- /code_chunk_output -->
 
