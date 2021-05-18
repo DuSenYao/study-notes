@@ -1175,7 +1175,9 @@ object.property
 object['property]
 ```
 
-第一种语法使用点和标识符，与在 C 或 Java 中访问结构体或对象的静态字段的语法类似。第二种语法使用方括号和字符串，看起来像访问数组，只不过是以字符串而非数值作为索引的数组。这种数组也被称为关联数组。**JS 对象是关联数组**。
+第一种语法使用点和标识符，与在 C 或 Java 中访问结构体或对象的静态字段的语法类似。
+
+第二种语法使用方括号和字符串，看起来像访问数组，只不过是以字符串而非数值作为索引的数组。这种数组也被称为关联数组（或散列、映射、字典）。**JS 对象是关联数组**。
 
 在使用点（`.`）操作符访问对象的属性时，属性名是通过标识符来表示的。标识符必须直接书写在 JS 程序中，它们不是一种数据类型，因此不能被程序操作。
 
@@ -1187,3 +1189,257 @@ for (let i = 0; i < 4; i++) {
   addr += customer[`address${i}`] + '\n';
 }
 ```
+
+#### 6.3.2 继承
+
+JS 对象有一组“自有属性”，同时也从它们的原型对象继承一组属性。要理解这一点，必须更详细地分析属性存取。
+
+可以使用 `Object.create()` 函数以指定原型来创建对象。也可以通过 new 创建一个类的实例（第 九 章<!--TODO-->）,这两个都会创建从某个原型对象继承属性的对象。
+
+假设要从对象 `o` 中查询属性 `x`。如果 `o` 没有 `x` 这个自有属性，则会从 `o` 的原型对象查询属性 `x`。如果原型对象也没有叫这个名字的自有属性，但它有自己的原型，则会继续查询这个原型的原型。这个过程一直持续，直至找到属性 `x` 或者查询到一个原型为 null 的对象。可见，对象通过其 `prototype` 属性创建了一个用于继承属性的链条或链表。
+
+> 几乎所有对象都有原型，但大多数对象没有 `prototype` 属性。即便不能通过代码直接访对象的原型, JS 继承机制仍然照常运作。要了解背后的细节,可以参考 14.3 节<!--TODO-->。
+
+```js
+let o = {}; // o 从 Object.prototype 继承对象方法
+o.x = 1; // 现在有自有属性 x
+
+let p = Object.create(o); // p 从 o 和 Object.prototype 继承属性
+p.y = 2; // 而且有一个自有属性 y
+
+let q = Objet.create(p); // q 从 p、o 和 Object.prototype 继承属性
+q.z = 3; // 且有一个自有属性 z
+
+let f = q.toString(); // toString 继承自 Object.prototype
+q.x + q.y; // 3: x 和 y 分别继承自 o 和 p
+```
+
+现在为对象 `o` 的 `y` 属性赋值。如果 `o` 有一个名为 `x` 的自有(非继承)属性，这次赋值就会修改已有 `x` 属性的值。否则，这次赋值会在对象 `o` 上创建一个名为 `x` 的新属性。
+
+如果 `o` 之前继承了属性 `x`，那么现在这个**继承的属性会被新创建的同名属性隐藏**。
+
+**属性赋值査询原型链只为确定是否允许赋值**。如果 `o` 继承了一个名为 `x` 的只读属性，则不允许赋值。不过，如果允许赋值则只会在原始对象上创建或设置属性，而**不会修改原型链中的对象**。
+
+**查询属性时会用到原型链，而设置属性时不影响原型链是一个重要的 JS 特性**，利用这一点，可以选择性地覆盖继承的属性:
+
+```js
+let unitcircle = { r: 1 }; // c 继承的对象
+let c = Object.create(unitcircle); // c 继承了属性
+c.x = 1;
+c.y = 1; // c 定义了两个自有属性
+
+c.r = 2; // c 覆盖了它继承的属性
+
+unitcircle.r; // 1: 原型不受影响
+```
+
+> **注意**：
+>
+> 属性赋值要么失败要么在原始对象上创建或设置属性的规则有一个**例外**:
+> 如果 `o` 继承了属性 `x`，而该属性是一个通过设置方法定义的访问器属性(参见 6.10.6<!--TODO-->)，那么就会调用该设置方法而不会在 `o` 上创建新属性 `x`。
+> 要注意，此时会在对象 `o` 上而不是在定义该属性的原型对象上调用设置方法。因此如果这个设置方法定义了别的属性，那也会在定义同样的属性，但仍然不会修改原型链。
+
+#### 6.3.3 属性访问错误
+
+属性访问表达式并不总是会返回或设置值。
+
+査询不存在的属性不是错误。如果在 `o` 的自有属性和继承属性中都没找到属性 `x`，则属性访问表达式 `o.x` 的求值结果为 `undefined`。例如，book 对象有一个 "sub-title" 属性，没有 "subtitle" 属性：
+
+```js
+book.subtitle; // undefined: 属性不存在
+```
+
+然而，查询不存在对象的属性则是错误。因为 null 和 undefined 值没有属性，查询这两个值的属性是错误。继续前面的示例
+
+```js
+let len = book.subtitle.length; // TypeError: undefined 没有 length 属性
+```
+
+如果 `.` 的左边是 `null` 或 `undefined`，则属性访问表达式会失败。因此在写类似 `book.author.surname` 这样的表达式时，要确保 book 和 book.author 是有定义的。以下是两种防止这类问题的写法:
+
+```js
+// 简单但麻烦的技术
+let surname = undefined;
+if (book) {
+  if (book.author) {
+    surname = book.author.surname;
+  }
+}
+
+// 取得 surname、null 或 undefined 的简洁的惯用技术
+surname = book && book.author && book.author.surname;
+```
+
+ES2020 还可以通过 `?.` 支持条件式属性访问，用它可以把前面的赋值表达式改写成:
+
+```js
+let surname = book?.author?.surname;
+```
+
+尝试在 null 或 undefined 上设置属性也会导致 TypeError。而且，尝试在其他值上设置属性也不总是会成功，因为有些属性是只读的，不能设置，而有些对象不允许添加新属性。在严格模式下，只要尝试设置属性失败就会抛出 TypeError。在非严格模式下，这些失败通常是静默失败。
+
+尝试在对象 `o` 上设置属性 p 在以下情况下会失败。
+
+- `o` 有一个只读自有属性 p: **不可能设置只读属性**。
+- `o` 有一个只读继承属性 p: **不可能用同名自有属性隐藏只读继承属性**。
+- `o` 没有自有属性 `p`，`o` 没有继承通过设置方法定义的属性 `p`,`o` 的 `extensible` 特性(参见 14.2 节)是 false。因为 `p` 在 `o` 上并不存在，如果没有要调用的设置方法，那么 `p` 必须要添加到 `o` 上。但如果 `o` 不可扩展(`extensible` 为 false)，则不能在它上面定义新属性。
+
+### 6.4 删除属性
+
+delete 操作符用于从对象中移除属性。它唯一的操作数应该是属性访问表达式。**delete 并不操作属性的值，而是操作属性本身**:
+
+```js
+delete book.author; // book 对象现在没有 author 属性了
+delete book['main title']; // book 对象也没有 "main title" 属性了
+```
+
+**delete 操作符只删除自有属性，不删除继承属性**（要删除继承属性，必须从定义属性的原型对象上删除。这样做会影响继承该原型的所有对象）。
+
+如果 delete 操作成功或没有影响（如删除不存在的属性），则 delete 表达式求值为 true。对非属性访问表达式（无意义地）使用 delete，同样也会求值为 true：
+
+```js
+let o = { x: 1 }; // o 有自有属性 x 和继承属性 toString
+delete o.x; // true: 删除属性 x
+delete o.x; // true: 什么也不做(x 不存在)但仍然返回 true
+delete o.toString; // true: 什么也不做（toString 不是自有属性）
+delete 1; // true：无意义，但仍然返回 true
+```
+
+delete 不会删除 `configurable` 特性为 false 的属性。与通过变量声明或函数声明创建的全局对象的属性一样，某些内置对象的属性也是不可配置的。在严格模式下，尝试删除不可配置的属性会导致 TypeError。在非严格模式下, delete 直接求值为 false:
+
+```js
+// 在严格模式下，以下所有删除操作都会抛出 TypeError，而不是返回 false
+delete Object.prototype; // false: 属性不可配置
+var x = 1; // 声明一个全局变量
+delete globalThis.x; // false: 不能删除这个属性
+function f() {} // 声明一个全局函数
+delete globalThis.f; // false: 不能删除这个属性
+```
+
+**删除全局对象可配置的属性**:
+
+- 在非严格模式下，可以省略对全局对象的引用，只在 delete 操作符后面加上属性名:
+
+  ```js
+  globalThis.x = 1; // 创建可配置的全局属性(没有 let 或 var)
+  delete x; // true: 这个属性可以删除
+  ```
+
+- 在严格模式下，如果操作数是一个像 x 这样的非限定标识符，delete 会抛出 Syntax Error，即必须写出完整的属性访问表达式:
+
+  ```js
+  delete x; //在严格模式下报 SyntaxError
+  delete globalThis.x; //这样可以
+  ```
+
+### 6.5 测试属性
+
+JS 对象可以被想象成一组属性，实际开发中经常需要测试这组属性的成员关系，即检查对象是否有一个给定名字的属性。为此，可以使用:
+
+- `in` 操作符
+- `hasOwnProperty()`
+- `propertyIsEnumerable()`
+- 或者直接查询相应属性
+
+下面的示例都使用字符串作为属性名，但这些示例也适用于符号属性(参见 6.10.3 节<!--TODO-->)。
+
+`in` 操作符要求左边是一个属性名，右边是一个对象。如果**对象有包含相应名字的自有属性或继承属性，将返回 true**:
+
+```js
+let o = { x: 1 };
+'x' in o; // true: o 有自有属性 "x"
+'y' in o; // false: o 没有属性"y"
+'toString' in o; //=>true: o 继承了 toString 属性
+```
+
+对象的 `hasOwnProperty()` 方法**用于测试对象是否有给定名字的属性。对继承的属性，它返回 false**:
+
+```js
+let o = { x: 1 };
+o.hasOwnProperty('x'); // true: o 有自有属性 X
+o hasOwnProperty('y'); // false: o 没有属性 y
+o.hasOwnProperty('toString'); // false: toString 是继承属性
+```
+
+`propertyIsEnumerable()` 方法细化了 `hasOwnProperty()` 测试。如果**传入的命名属性是自有属性且这个属性的 `enumerable` 特性为 true，这个方法会返回 true**。某些内置属性是不可枚举的。
+
+> 使用常规 JS 代码创建的属性都是可枚举的，除非使用 14.1 节的技术将它们限制为不可枚举。<!--TODO-->
+
+```js
+let o = { x: 1 };
+o.propertyIsEnumerable('x'); // true: o 有一个可枚举属性 x
+o.propertyIsEnumerable('toString'); // false: toString不是自有属性
+Object.prototype.propertyIsEnumerable('toString'); // false: toString 不可枚举
+```
+
+除了使用 `in` 操作符，通常简单的属性查询配合 `!==` 确保其不是未定义的就可以了：
+
+```js
+let o = { x: 1 };
+o.x !== undefined; // true: o 有属性 x
+o.y !== undefined; // false: o 没有属性 y
+o.toString !== undefined; // true: o 继承了 tostring 属性
+```
+
+但有一件事 `in` 操作符可以做，而简单的属性访问技术做不到。**`in` 可以区分不存在的属性和存在但被设置为 undefined 的属性**。来看下面的代码:
+
+```js
+let o = { x: undefined }; // 把属性显式设置为 undefined
+o.x !== undefined; // false: 属性 x 存在但值是 undefined
+o.y !== undefined; // false: 属性 y 不存在
+'x' in o; // true: 属性 x 存在
+'y' in o; // false: 属性 y 不存在
+delete o.x; // 删除属性 ⅹ
+'x' in o; // false: 属性 x 不存在
+```
+
+### 6.6 枚举属性
+
+除了测试属性是否存在，有时候也需要遍历或获取对象的所有属性。为此有几种不同的实现方式。
+
+**`for/in` 循环对指定对象的每个可枚举（自有或继承）属性都会运行一次循环体，将属性的名字赋给循环变量**。对象继承的内置方法是不可枚举的，但 JS 代码添加给对象的属性默认是可枚举的。例如:
+
+```js
+let o = { x: 1, y: 2, z: 3 }; // 3 个可枚举自有属性
+o.propertyIsEnumerable('toString'); // false: toString 不可枚举也不是自有属性
+for (let p in o) {
+  console.log(p); // 打印 x、y、z，但没有 toString
+}
+```
+
+为防止通过 `for/in` 枚举继承的属性，可以在循环体内添加一个显式测试:
+
+```js
+for (let p in o) {
+  if (!o.hasOwnProperty(p)) continue; // 跳过继承属性
+}
+
+for (let p in o) {
+  if (typeof o[p] === 'function') continue; // 跳过所有方法
+}
+```
+
+除了使用 `for/in` 循环，有时候可以先获取对象所有属性名的数组，然后再通过 `for/of` 循环遍历该数组。有 4 个函数可以用来取得属性名数组:
+
+- `Object.keys()` 返回对象可枚举自有属性名的数组。不包含不可枚举属性、继承属性或名字属性(参见 6.10.3 节)。<!--TODO-->
+- `Object.getOwnProperNames()` 与 `Object.keys()` 类似，但也会返回不可枚举自有属性名的数组，只要它们的名字是字符串。
+- `Object.getOwnPropertySymbols()` 返回名字是符号的自有属性，无论是否可枚举。
+- `Reflect.ownKeys()` 返回所有属性名，包括可枚举和不可枚举属性，以及字符串属性和符号属性(参见 14.6 节)<!--TODO-->。
+
+#### 6.6.1 属性枚举顺序
+
+ES6 正式定义了枚举对象自有属性的顺序。`Object.keys()`、`Object.getOwnPropertyNames()`、`Object.getOwnProperSymbols()`、`Reflect.ownKeys()`及 `JS0N.stringify()` 等相关方法都按照下面的顺序列出属性，另外也受限于它们要列出不可枚举属性还是列出字符串属性或符号属性:
+
+- 先列出名字为非负整数的字符串属性，按照数值顺序从最小到最大。这条规则意味着数组和类数组对象的属性会按照顺序被枚举。
+
+- 在列出类数组索引的所有属性之后，再列出所有剩下的字符串名字（包括看起来像负数或浮点数的名字）的属性。这些属性按照它们添加到对象的先后顺序列出。对于在对象字面量中定义的属性，按照它们在字面量中出现的顺序列出。
+
+- 最后，名字为符号对象的属性按照它们添加到对象的先后顺序列出。
+
+`for/in` 循环的枚举顺序并不像上述枚举函数那么严格，但实现通常会按照上面描述的顺序枚举自有属性，然后再沿原型链上溯，以同样的顺序枚举每个原型对象的属性。
+
+> **注意**: 如果已经有同名属性被枚举过了，甚至如果有一个同名属性是不可枚举的，那这个属性就不会枚举了
+
+### 6.7 扩展对象
+
+在 JS 程序中，把一个对象的属性复制到另一个对象上是很常见的。使用下面的代码很容易做到:
