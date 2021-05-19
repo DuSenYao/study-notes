@@ -32,7 +32,7 @@
   - [Chrome-DevTools](/public_knowledge/Chrome_DevTools/Chrome-DevTools.md)
   - [算法与数据结构](/public_knowledge/Data_structure_and_algorithm/算法与数据结构.md)
   - [Git](/public_knowledge/Git/Git.md)
-  - [markdown](/public_knowledge/markdown/markdown_knowledge.md)
+  - [markdown](/public_knowledge/markdown/Markdown.md)
   - [RegRxp](/public_knowledge/regular_expression/正则表达式.md)
   - English
     - [English](/public_knowledge/English/English.md)

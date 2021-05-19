@@ -200,7 +200,7 @@ HTML风格的注释: <!-- notes -->
 - 语法高亮
   可以给代码块添加任何一种语言的语法高亮，如下:
 
-```JavaScript
+```js
 let a = 1, b = 2;
 [a, b] = [b, a];
 ```
@@ -209,7 +209,7 @@ let a = 1, b = 2;
 
 可以给代码块设置 class，达到特定的显示效果
 
-```javascript
+```js
 function add(x, y) {
   return x + y;
 }
@@ -218,7 +218,7 @@ function add(x, y) {
 - 代码行数
   想要代码块显示代码行数，只要添加 line-numbers class 就可以了。
 
-```javascript
+```js
 function ride(x, y) {
   return x * y;
 }

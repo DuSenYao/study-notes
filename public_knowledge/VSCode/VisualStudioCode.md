@@ -1447,7 +1447,7 @@ VSCode 可以自定义额外的 CSS 数据格式。自定义的 CSS 属性、伪
 
 1. HTML CSS Support
    这个插件为多种 HTML 相关语言提供了 CSS 的自动补全功能。支持的语言 ID 如下:
-   html、javascript、javascriptreact、typescript、typescriptreact、vue、laravel-blade、razor、pug、jade、handlebars、php、twig、md、nunjucks
+   html、JavaScript、JavaScriptReact、typescript、typescriptreact、vue、laravel-blade、razor、pug、jade、handlebars、php、twig、md、nunjucks
 
 2. SCSS IntelliSense
    这个插件为 SCSS 语言提供了丰富的支持
