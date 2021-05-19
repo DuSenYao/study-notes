@@ -1443,3 +1443,180 @@ ES6 正式定义了枚举对象自有属性的顺序。`Object.keys()`、`Object
 ### 6.7 扩展对象
 
 在 JS 程序中，把一个对象的属性复制到另一个对象上是很常见的。使用下面的代码很容易做到:
+
+```js
+let target = { x: 1 },
+  source = { y: 2, z: 3 };
+for (let key of Object.keys(source)) {
+  target[key] = source[key];
+}
+```
+
+因为这是个常见操作，各个 JS 框架为此定义了辅助函数，通常会命名为 `extend()`。最终，在 ES6 中，这个能力以 `Object.assign()` 的形式进入了核心 JS 语言。
+
+**`Object.assign()` 接收两个或多个对象作为其参数。它会修改并返回第一个参数，第一个参数是目标对象，但不会修改第二个及后续参数，那些都是来源对象**。
+
+对于每个来源对象，它会把该对象的可枚举自有属性（包括名字为符号的属性）复制到目标对象。它按照参数列表顺序逐个处理来源对象，第一个来源对象的属性会覆盖目标对象的同名属性，而第二个来源对象（如果有）的属性会覆盖第一个来源对象的同名属性。
+
+`Object.assign()` 以普通的属性获取和设置方式复制属性，因此如果一个来源对象有获取方法或目标对象有设置方法，则它们会在复制期间被调用，但这些方法本身不会被复制。
+
+将属性从一个对象分配到另一个对象的一个原因是，如果有一个默认对象为很多属性定义了默认值，并且如果该对象中不存在同名属性，可以将这些默认属性复制到另一个对象中。但是，像下面这样简单地使用 `Object.assign()` 不会达到目的:
+
+```js
+Object.assign(o, defaults); // 用 defaults 覆盖 o 的所有属性
+```
+
+此时，需要创建一个新对象，先把默认值复制到新对象中，然后再使用 `o` 的属性覆盖那些默认值
+
+```js
+o = Object.assign({}, defaults, o);
+```
+
+使用扩展操作符 `...` 也可以表达这种对象复制和覆盖操作:
+
+```js
+o = { ...defaults, ...o };
+```
+
+为了避免额外的对象创建和复制，也可以重写一版 `Object.assign()`，只复制那些不存在的属性:
+
+```js
+// 与 Object.assign() 类似，但不覆盖已经存在的属性
+// （同时也不处理符号属性）
+function merge(target, ...sources) {
+  for (let source of sources) {
+    for (let key of Object.keys(source)) {
+      // 这里跟 Object.assign() 不同
+      if (!(key in target)) {
+        target[key] = source[key];
+      }
+    }
+  }
+  return target;
+}
+Object.assign({ x: 1 }, { x: 2, y: 3 }, { y: 3, z: 4 }); // {x:2, y:3, z:4}
+merge({ x: 1 }, { x: 2, y: 2 }, { y: 3, z: 4 }); // {x:1, y:2, z:4}
+```
+
+### 6.8 序列化对象
+
+**对象序列化（serialization）是把对象的状态转换为字符串的过程，之后可以从中恢复对象的状态**。
+
+函数 `JSON.stringify()` 和 `JSON.parse()` 用于序列化和恢复 JS 对象。这两个函数使用 JSON 数据交换格式。JSON 表示 JavaScript Object Notation（JavaScript 对象表示法），其语法与 JS 对象和数组字面量非常类似：
+
+```js
+let o = { x: 1, y: { z: [false, null, ''] } }; // 定义一个测试对象
+let s = JSON.stringify(o); // s == '{"x":1,"y":{"z":[false,null,""]}}}'
+let p = JSON.parse(s); // p == { x: 1, y: { z: [false, null, ''] } }
+```
+
+JSON 语法是 JavaScript 语法的子集，不能表示所有 JavaScript 的值。**可以序列化和恢复的值包括对象、数组、字符串、有限数值、true、 false 和 null**。
+
+**JSON 无法序列化和恢复的值**：
+
+- `NaN`、`Infinity` 和 `-Infinity` 会被序列化为 `null`。
+- 日期对象会被序列化为 ISO 格式的日期字符串，但 `JSON.parse()` 会保持其字符串形式，不会恢复原始的日期对象。
+- 函数、RegExp 和 Error 对象以及 undefined 值不能被序列化或恢复。
+- **`JSON.stringify()` 只序列化对象的可枚举自有属性**。如果属性值无法序列化，则该属性会从输出的字符串中删除。
+
+`JSON.stringify()` 和 `JSON.parse()` 都接收可选的第二个参数，用于自定义序列化及恢复操作。例如，可以通过这个参数指定要序列化哪些属性，或者在序列化或字符串化过程中如何转换某些值。11.6 节包含这两个函数的完整介绍。<!--TODO-->
+
+### 6.9 对象方法
+
+**所有 JavaScript 对象（除了那些显式创建为没有原型的）都从 `Object.prototype` 继承属性。这些继承的属性主要是方法**，因为它们几乎无处不在，所以对 JavaScript 程序而言特别重要。例如，`hasOwnProperty()` 和
+`propertyIsEnumerable()` 方法。下面是几个 `Object.prototype` 上的通用方法，但这些方法很有可能被更特定的实现取代。
+
+#### 6.9.1 toString() 方法
+
+**`toString()` 方法不接收参数，返回表示调用它的对象的值的字符串**。每当需要把一个对象转换为字符串时，JS 就会调用该对象的这个方法。例如，在使用 `+` 操作符拼接一个字符串和一个对象时，或者把一个对象传入期望字符串参数的方法时。
+
+默认的 `toString()` 方法并不能提供太多信息（但可以用于确定对象的类）。例如，下面这行代码只会得到字符串 "[object Object]":
+
+```js
+let s = { x: 1, y: 1 }.toString(); // s == "[object Object]
+```
+
+由于这个默认方法不会显示太有用的信息，很多类都会重新定义自己的 `toString()` 方法。例如，在把数组转换为字符串时，可以得到数组元素的一个列表，每个元素也都转换为字符串。而把函数转换为字符串时，可以得到函数的源代码。可以像下面这样定义自己的 `toString()` 方法:
+
+```js
+let point = {
+  x: 1,
+  y: 2,
+  toString: function () {
+    return `(${this.x}, ${this.y})`;
+  }
+};
+String(point); // "(1, 2)": toString() 用于转换为字符串
+```
+
+#### 6.9.2 toLocaleString() 方法
+
+除了基本的 `toString()` 方法之外，对象也都有一个 **`toLocaleString()` 方法。这个方法的用途是返回对象的本地化字符串表示**。
+
+- Object 定义的默认 `toLocaleString()` 方法本身没有实现任何本地化，而是简单地调用 `toString()` 并返回该值。
+- Date 和 Number 定义了自己的 `toLocaleString()` 方法，尝试根据本地惯例格式化数值、日期和时闻。
+- 数组也定义了一个与 `toString()` 类似的 `toLocaleString()` 方法，只不过它会调用每个数组元素的 `toLocaleString()` 方法，而不是调用它们的 `toString()` 方法。
+
+对于前面的 point 对象，也可以如法炮制:
+
+```js
+let point = {
+  X: 1000,
+  y: 2000,
+  toString: function () {
+    return `(${this.x}, ${this.y})`;
+  },
+  toLocaleString: function () {
+    return `(${this.x.toLocaleString()}, ${this.y.toLocaleString()})`;
+  }
+};
+
+point.toString(); // "(1000, 2000)"
+point.toLocaleString(); // "(1,000, 2,000)": 千分位分隔符
+```
+
+#### 6.9.3 valueof() 方法
+
+`valueof()` 方法与 `toString()` 方法很相似，但**会在 JS 需要把对象转换为某些非字符串原始值（通常是数值）时被调用**。如果在需要原始值的上下文中使用了对象，JS 会自动调用这个对象的 `valueof()` 方法。
+
+默认的 `valueof()` 方法并没有做什么，因此一些内置类定义了自己的 `valueof()` 方法。Date 类定义的 `valueof()` 方法可以将日期转换为数值，这样就让日期对象可以通过 `<` 和 `>` 操作符来进行比较。类似地，对于 point 对象，也可以定义一个返回原点与当前点之间距离的 `valueof()`:
+
+```js
+let point = {
+  x: 3,
+  y: 4,
+  valueof: function () {
+    return Math.hypot(this.x, this.y);
+  }
+};
+
+Number(point); // 5: valueof() 用于转换为数值
+point > 4;
+point > 5; // false
+point < 6; // true
+```
+
+#### 6.9.4 toJSON() 方法
+
+`Object.prototype` 实际上并未定义 `toJSON()` 方法，但 `JSON.stringify()` 方法会从要序列化的对象上寻找 `toJSON()` 方法。如果要序列化的对象上存在这个方法，就会调用它，然后序列化该方法的返回值，而不是原始对象。
+
+Date 类(参见 11.4 <!--TODO-->节)定义了自己的 `toJSON()` 方法，返回一个表示日期的序列化字符串。同样，也可以给 point 对象定义这个方法:
+
+```js
+let point = {
+  x: 1,
+  y: 2,
+  toString: function () {
+    return `(${this.x}, ${this.y});`;
+  },
+  toJSON: function () {
+    return this.toString();
+  }
+};
+
+JSON.stringify([point]); // '["(1, 2)"]'
+```
+
+### 6.10 对象字面量扩展语法
+
+最近的 JS 版本从几个方面扩展了对象字面量语法。下面将讲解这些扩展。
