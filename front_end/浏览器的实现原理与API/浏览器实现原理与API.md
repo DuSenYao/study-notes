@@ -6,19 +6,19 @@ title: 浏览器的实现原理与API
 
 <!-- code_chunk_output -->
 
-- [浏览器的实现原理与 API](#浏览器的实现原理与api)
+- [浏览器的实现原理与 API](#浏览器的实现原理与-api)
   - [一.浏览器实现原理](#一浏览器实现原理)
     - [1.1 基本工作流程](#11-基本工作流程)
-    - [1.2 HTTP 协议](#12-http协议)
+    - [1.2 HTTP 协议](#12-http-协议)
       - [1.2.1 请求过程](#121-请求过程)
-      - [1.2.2 HTTP 协议格式](#122-http协议格式)
+      - [1.2.2 HTTP 协议格式](#122-http-协议格式)
       - [1.2.3 HTTPS](#123-https)
       - [1.2.4 HTTP2](#124-http2)
-    - [1.3 构建 DOM 树](#13-构建dom树)
-      - [1.3.1 拆分 token](#131-拆分token)
+    - [1.3 构建 DOM 树](#13-构建-dom-树)
+      - [1.3.1 拆分 token](#131-拆分-token)
       - [1.3.2 状态机](#132-状态机)
-      - [1.3.3 构建 DOM 树](#133-构建dom树)
-    - [1.4 DOM 树的 CSS 属性](#14-dom树的css属性)
+      - [1.3.3 构建 DOM 树](#133-构建-dom-树)
+    - [1.4 DOM 树的 CSS 属性](#14-dom-树的-css-属性)
     - [1.5 排版](#15-排版)
       - [1.5.1 基本概念](#151-基本概念)
       - [1.5.2 正常流文字排版](#152-正常流文字排版)
@@ -29,7 +29,7 @@ title: 浏览器的实现原理与API
     - [1.6 渲染](#16-渲染)
     - [1.7 合成](#17-合成)
     - [1.8 绘制](#18-绘制)
-  - [二. 浏览器 API](#二-浏览器api)
+  - [二. 浏览器 API](#二-浏览器-api)
     - [2.1 DOM API](#21-dom-api)
       - [2.1.1 节点](#211-节点)
       - [2.1.2 Node](#212-node)
@@ -532,12 +532,22 @@ DocumentType: <!DOCTYPE html> ProcessingInstruction:
 
 编写 HTML 代码运行后，会在内存中得到一棵 DOM 树，HTML 的写法会被转换成对应的文档模型，可以通过 JS 等语言去访问这个文档模型。
 
-> 这里每天需要用到，要重点掌握的是：**Document、Element、Text 节点**。
+这里每天需要用到，要重点掌握的是：**Document、Element、Text 节点**。
+
 > DocumentFragment(文档片段)也非常有用，它常常被用来高性能的批量添加节点。Comment、DocumentType 和 ProcessingInstruction 很少需要运行时去修改和操作。
 
 #### 2.1.2 Node
 
 Node 是 DOM 树继承关系的根节点，它定义了 DOM 节点在 DOM 树上的操作，首先，Node 提供了一组属性，来表示它在 DOM 树中的关系：
+
+- parentElement: 返回当前节点的父元素（只返回元素节点）
+- children: 返回元素的子元素集合，是一个 HTMLCollection 对象（只返回元素节点）
+- firstElementChild: 返回节点的第一个元素子节点（只返回元素节点）
+- lastElementChild: 返回节点的最后一个元素子节点（只返回元素节点）
+- nextElementSibling: 返回节点的下一个元素节点(同一树层级，不包括文本节点、注释节点)
+- previousElementSibling: 返回节点的前一个元素节点(同一树层级，不包括文本节点、注释节点)
+
+**如需兼容 IE9 以下，使用下面的**：
 
 - parentNode: 返回当前节点的父元素，如果没有返回 null（父节点可能是元素(Element)节点、文档(Document)节点 或 碎片(DocumentFragment)节点）
 - childNodes: 返回节点的子节点集合，一个 nodeList 对象（返回所有的节点，包括文本节点、注释节点）
@@ -545,15 +555,6 @@ Node 是 DOM 树继承关系的根节点，它定义了 DOM 节点在 DOM 树上
 - lastChild: 返回节点的最后一个子节点
 - nextSibling: 返回节点的下一个节点(同一树层级，包括文本节点、注释节点)
 - previousSibling: 返回节点的上一个节点(同一树层级，包括文本节点、注释节点)
-
-> **IE9 以上，优先使用下面的**
-
-- parentElement: 返回当前节点的父元素（只返回元素节点）
-- children: 返回元素的子元素集合，是一个 HTMLCollection 对象（只返回元素节点）
-- firstElementChild: 返回节点的第一个元素子节点（只返回元素节点）
-- lastElementChild: 返回节点的最后一个元素子节点（只返回元素节点）
-- nextElementSibling: 返回节点的下一个元素节点(同一树层级，不包括文本节点、注释节点)
-- previousElementSibling : 返回节点的前一个元素节点(同一树层级，不包括文本节点、注释节点)
 
 **操作 DOM 树的 API**，主要有以下几种：
 
