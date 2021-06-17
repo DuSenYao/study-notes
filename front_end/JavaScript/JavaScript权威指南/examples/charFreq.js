@@ -2,7 +2,7 @@
  * 这个 Node 程序从标准输入读取文本，计算文本中每个字符出现的频率，然后按使用频率降序显示一个柱形图
  * 运行这个程序需要 Node 12 及以上
  *
- * node charFreq.js < ../JavaScript查漏补缺.md
+ * node charFreq.js < ../JavaScript权威指南.md
  */
 
 // 这个类扩展了 Map，以便 get() 方法在 key 不在映射中时，返回指定的值，而不是 null
