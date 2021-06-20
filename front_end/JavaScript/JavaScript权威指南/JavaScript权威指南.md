@@ -133,6 +133,19 @@ title: JavaScript权威指南
       - [8.4.1 定义自己的函数属性](#841-定义自己的函数属性)
     - [8.5 函数作为命名空间](#85-函数作为命名空间)
     - [8.6 闭包](#86-闭包)
+    - [8.7 函数属性、方法与构造函数](#87-函数属性-方法与构造函数)
+      - [8.7.1 length 属性](#871-length-属性)
+      - [8.7.2 name 属性](#872-name-属性)
+      - [8.7.3 prototype 属性](#873-prototype-属性)
+      - [8.7.4 call() 和 apply() 方法](#874-call-和-apply-方法)
+      - [8.7.5 bind() 方法](#875-bind-方法)
+      - [8.7.6 tostring()方法](#876-tostring方法)
+      - [8.7.7 Function() 构造函数](#877-function-构造函数)
+    - [8.8 函数式编程](#88-函数式编程)
+      - [8.8.1 使用函数处理数组](#881-使用函数处理数组)
+      - [8.8.2 高阶函数](#882-高阶函数)
+      - [8.8.3 函数的部分应用](#883-函数的部分应用)
+      - [8.8.4 函数记忆](#884-函数记忆)
 
 <!-- /code_chunk_output -->
 
@@ -3206,9 +3219,9 @@ o = new Object(); // 等价于 new Object
 
 #### 8.2.4 间接调用
 
-JS 函数是对象，与其他 JS 对象一样，JS 函数也有方法。其中有两个方法 `call()` 和 `apply()`，可以用来间接调用函数。这两个方法允许指定调用时的 `this` 值，这意味着可以将任意函数作为任意对象的方法来调用，即使这个函数实际上并不是该对象的方法。
+JS 函数是对象，与其他 JS 对象一样，JS 函数也有方法。其中有两个方法 [`call()` 和 `apply()`](#874-call-和-apply-方法)，可以用来间接调用函数。这两个方法允许指定调用时的 `this` 值，这意味着可以将任意函数作为任意对象的方法来调用，即使这个函数实际上并不是该对象的方法。
 
-这两个方法都支持指定调用参数。其中，`call()` 方法使用自己的参数列表作为函数的参数，而 `apply()` 方法则期待数组值作为参数。8.7.4 节<!--TODO-->会详细介绍 call() 和 apply() 方法。
+这两个方法都支持指定调用参数。其中，`call()` 方法使用自己的参数列表作为函数的参数，而 `apply()` 方法则期待数组值作为参数。
 
 #### 8.2.5 隐式函数调用
 
@@ -3869,4 +3882,415 @@ funcs[5](); // 10; 为什么这时候不返回 5?
 
 ### 8.7 函数属性、方法与构造函数
 
-函数在 JS 中也是一种值。对函数使用 `typeof` 操作符会返回字符串 "function"，但函数实际上是一种特殊的 JS 对象。由于函数是对象，因此
+函数在 JS 中也是一种值。对函数使用 `typeof` 操作符会返回字符串 "function"，但函数实际上是一种特殊的 JS 对象。由于函数是对象，因此它们也有属性和方法。甚至还有一个 `Function()` 构造函数可以用来创建新函数对象。
+
+#### 8.7.1 length 属性
+
+**函数有一个只读的 `length` 属性，表示函数的元数（arity），即函数在参数列表中声明的形参个数**。这个值通常表示调用函数时应该传入的参数个数。如果函数有剩余形参，则这个剩余形参不包含在 length 属性内。
+
+#### 8.7.2 name 属性
+
+函数有一个只读的 `name` 属性，表示定义函数时使用的名字（如果是用名字定义的），如果是未命名的函数，表示在第一次创建这个函数时赋给该函数的变量名或属性名。这个属性**主要用于记录调试或排错消息**。
+
+#### 8.7.3 prototype 属性
+
+除了箭头函数，所有函数都有一个 `prototype` 属性，这个属性引用一个被称为[原型对象](#623-原型)的对象。每个函数都有自己的原型对象。当函数被作为构造函数使用时，新创建的对象从这个原型对象继承属性。
+
+#### 8.7.4 call() 和 apply() 方法
+
+`call()` 和 `apply()` 允许[间接调用](#824-间接调用)一个函数，就像这个函数是某个其他对象的方法一样。`call()` 和 `apply()` 的第一个参数都是要在其上调用这个函数的对象，也就是函数的调用上下文，在函数体内它会变成 this 关键字的值。要把函数 f() 作为对象的方法进行调用（不传参数），可以使用 `call()` 或 `apply()`:
+
+```js
+f.call(o);
+f.apply(o);
+```
+
+这两行代码都类似于下面的代码（假设 o 并没有属性 m）：
+
+```js
+o.m = f; // 把 f 作为 o 的一个临时方法
+o.m(); // 调用它，不传参数
+delete o.m; // 删除这个临时方法
+```
+
+箭头函数从定义它的上下文中继承 this 值。这个 this 值不能通过 `call()` 和 `apply()` 方法重写。**如果对箭头函数调用这两个方法，那第一个参数实际上会被忽略**。
+
+除了作为调用上下文传给 `call()` 的第一参数，后续的所有参数都会传给被调用的函数（调用箭头函数时不会忽略这些参数）。比如，要将函数 f() 作为对象 o 的方法进行调用，并同时给函数 f() 传两个参数，可以这样写：
+
+```js
+f call(o, 1, 2);
+```
+
+`apply()` 方法与 `call()` 方法类似，只不过要传给函数的参数需要以数组的形式提供:
+
+```js
+f.apply(o, [1, 2]);
+```
+
+如果函数定义时可以接收任意多个参数，则使用 `apply()` 方法可以在调用这个函数时把任意长度的数组内容传给它。在 ES6 及之后的版本中可以使用扩展操作符，但也有可能看到使用 `apply()` 的 ES5 代码。
+
+例如，在不使用扩展操作符的情况下，想找到一个数值数组中的最大值，可以使用 `apply()` 方法把数组的元素传给 `Math.max()` 函数:
+
+```js
+let biggest = Math.max.apply(Math, arrayOfNumbers);
+```
+
+用与包装方法（新方法）相同的参数和 this 值调用被包装的方法（原始方法）:
+
+```js
+// 将对象 o 的方法 m 替换成另一个版本,
+// 新版本在调用原始方法前、后会打印日志
+function trace(o, m) {
+  let original = o[m]; // 在闭包中记住原始方法
+  // 定义新方法
+  o[m] = function (...args) {
+    console.log(new Date(), 'Entering: ', m); // 打印消息
+    let result = original.apply(this, args); // 调用原始方法
+    console.log(new Date(), 'Exiting: ', m); // 打印消息
+    return result; // 返回结果
+  };
+}
+```
+
+#### 8.7.5 bind() 方法
+
+**`bind()` 方法的主要目的是把函数绑定到对象**。如果在函数 f 上调用 `bind()` 方法并传入对象 o，则这个方法会返回一个新函数。如果作为函数来调用这个新函数，就会像 f 是 o 的方法一样调用原始函数。传给这个新函数的所有参数都会传给原始函数。例如:
+
+```js
+function f(y) {
+  return this.x + y; // 这个函数需要绑定
+}
+
+let o = { x: 1 }; // 要绑定的对象
+let g = f.bind(o); // 调用 g(x) 会在 o 上调用 f()
+g(2); // 3
+let p = { x: 10, g }; //作为这个对象的方法调用 g()
+p.g(2); // 3: g 仍然绑定到 o，而非 p
+```
+
+箭头函数从定义它们的环境中继承 this 值，且这个值不能被 `bind()` 覆盖，因此如果前面代码中的函数 f() 是以箭头函数定义的，则绑定不会起作用。不过，由于**调用 `bind()` 最常见的目的是让非箭头函数变得像箭头函数**，因此这个关于绑定箭头函数的限制在实践中通常不是问题。
+
+事实上，除了把函数绑定到对象，`bind()` 方法还会做其他事。比如，`bind()` 也可以执行“部分应用”，即在第一个参数之后传给 `bind()` 的参数也会随着 this 值一起被绑定。
+
+部分应用是函数式编程中的一个常用技术，有时候也被称为柯里化（currying）。下面是几个使用 `bind()` 方法实现部分应用的例子:
+
+```js
+let sum = (x, y) => x + y; // 返回 2 个参数之和
+let succ = sum.bind(null, 1); // 把第一个参数绑定为 1
+succ(2); // 3: x 绑定到 1，2 会传给参数 y
+
+function f(y, z) {
+  return this.x + y + z;
+}
+let g = f.bind({ x: 1 }, 2); // 绑定 this 和 y
+g(3); // 6: this.x 绑定到 1，y 绑定到 2，z 是 3
+g.name; // "bound f"
+```
+
+> `bind()` 返回函数的 `name` 属性由单词 "bound" 和调用 `bind()` 的函数的 `name` 属性构成。
+
+#### 8.7.6 tostring()方法
+
+与所有 JS 对象一样，函数也有 `toString()` 方法。ECMAScript 规范要求这个方法返回一个符合函数声明语句的字符串。实践中，这个方法的多数实现都返回函数完整的源代码。内置函数返回的字符串中通常包含 "[native code]"，表示函数体。
+
+#### 8.7.7 Function() 构造函数
+
+因为函数是对象，所以就有一个 `Function()` 构造函数可以用来创建新函数:
+
+```js
+const f = new Function('x', 'y', 'return x*y');
+```
+
+上面的代码创建了一个新函数，差不多相当于使用如下语法定义的函数：
+
+```js
+const f = function (x, y) {
+  return x * y;
+};
+```
+
+`Function()` 构造函数可以接收任意多个字符串参数，其中最后一个参数是函数体的文本。这个函数体文本中可以包含任意 JS 语句，相互以分号分隔。传给这个构造函数的其他字符串都用于指定新函数的参数名。如果新函数没有参数，可以只给构造函数传一个字符串（也就是函数体）。
+
+> **注意**：`Function()` 构造函数不接收任何指定新函数名字的参数。与函数字面量一样，`Function()` 构造函数创建的也是匿名函数。
+
+要理解 `Function()` 构造函数，需要理解以下几点：
+
+- `Function()` 函数允许在运行时动态创建和编译 JS 函数。
+
+- `Function()` 构造函数每次被调用时都会解析函数体并创建一个新函数对象。如果在循环中或者被频繁调用的函数中出现了对它的调用，可能会影响程序性能。相对而言，出现在循环中的嵌套函数和函数表达式不会每次都被重新编译。
+
+- 最后，也是关于 `Function()` 非常重要的一点，就是它创建的函数不使用词法作用域，而是始终编译为如同顶级函数一样，如下所示:
+
+  ```js
+  let scope = 'global';
+  function constructFunction() {
+    let scope = 'local';
+    return new Function('return scope'); // 不会捕获局部作用域
+  }
+  // 这行代码返回 "global"，因为 Function()
+  // 构造函数返回的函数不使用局部作用域。
+  constructFunction()(); // "global"
+  ```
+
+> 最好将 `Function()` 构造函数作为在自己私有作用域中定义新变量和函数的 `eval()` 的全局作用域版。自己写的代码中可能永远也用不到这个构造函数。
+
+### 8.8 函数式编程
+
+JS 并不是 Lisp 或 Haskell 那样的函数式编程语言，但 JS 可以把函数作为对象来操作意味着可以在 JS 中使用函数式编程技巧。像 `map()` 和 `reduce()` 这样的数组方法就特别适合函数式编程风格。
+
+#### 8.8.1 使用函数处理数组
+
+假设有一个数值数组，希望计算这些数值的平均值和标准差。如果使用非函数式风格的代码，可能会这样写
+
+```js
+let data = [1, 1, 3, 5, 5]; // 这是数值数组
+
+// 平均值等于所有元素之和除以元素个数
+let total = 0;
+for (let i = 0; i < data.length; i++) total += data[i];
+let mean = total / data.length; // mean == 3，平均值为 3
+
+// 要计算标准差，首先要计算每个元素
+// 相对于平均值偏差的平方
+total = 0;
+for (let i = 0; i < data.length; i++) {
+  let deviation = data[i] - mean;
+  total += deviation * deviation;
+}
+let stddev = Math.sqrt(total / (data.length - 1)); // stddev == 2
+```
+
+而使用数组方法 `map()` 和 `reduce()`，可以像下面这样以简洁的函数式风格实现同样的计算:
+
+```js
+// 首先，定义两个简单的函数
+const sum = (x, y) => x + y;
+const square = x => x * x;
+
+// 然后，使用数组方法计算平均值和标准差
+let data = [1, 1, 3, 5, 5];
+let mean = data.reduce(sum) / data.length; // mean == 3
+let deviations = data.map(x => x - mean);
+let stddev = Math.sqrt(deviations.map(square).reduce(sum) / (data.length - 1));
+stddev; // 2
+```
+
+新版本的代码看起来与第一个版本差别很大，但仍然调用对象上的方法，因此还可以看出一些面向对象的痕迹。下面再来定义 `map()` 和 `reduce()` 方法的函数版:
+
+```js
+const map = function (a, ...args) {
+  return a.map(...args);
+};
+const reduce = function (a, ...args) {
+  return a.reduce(...args);
+};
+```
+
+定义了 `map()` 和 `reduce()` 函数后，计算平均值和标准差的的代码就变成这样了:
+
+```js
+const sum = (x, y) => x + y;
+const square = x => x * x;
+
+let data = [1, 1, 3, 5, 5];
+let mean = reduce(data, sum) / data.length;
+let deviations = map(data, x => x - mean);
+let stddev = Math.sqrt(reduce(map(deviations, square), sum) / (data.length - 1));
+stddev; // 2
+```
+
+#### 8.8.2 高阶函数
+
+高阶函数就是操作函数的函数，它接收一个或多个函数作为参数并返回一个新函数。例如:
+
+```js
+// 这个高阶函数返回一个新函数
+// 新函数把参数传给 f 并返回 f 返回值的逻辑非
+function not(f) {
+  // 返回一个新函数
+  return function (...args) {
+    let result = f.apply(this, args); // 新函数调用 f
+    return result; // 对结果求逻辑非
+  };
+}
+const even = x => x % 2 === 0; // 确定数值是不是偶数的函数
+const odd = not(even); // 确定数值是不是奇数的新函数
+[1, 1, 3, 5, 5].every(odd); // true: 数组的所有元素都是奇数
+```
+
+下面的 `mapper()` 函数接收一个函数参数并返回一个新函数，新函数使用传入的函数把一个数组映射为另一个数组。这个函数使用了前面定义的 `map()` 函数，理解这两个函数之间的区别非常重要:
+
+```js
+// 返回一个函数，这个函数接收一个数组并对每个元素应用 f，返回每个返回值的数组
+function mapper(f) {
+  return a => map(a, f);
+}
+const increment = x => x + 1;
+const incrementAll = mapper(increment);
+incrementAll([1, 2, 3]); // [2,3,4]
+```
+
+下面是一个更通用的例子，这个高阶函数接收两个函数 f 和 g，返回一个计算 `f(g())` 的新函数：
+
+```js
+// 返回一个计算 f(g(...))的新函数
+// 返回的函数 h 会把它接收的所有参数传给 g
+// 再把 g 的返回值传给 f，然后返回 f 的返回值
+// f 和 g 被调用时都使用与 h 被调用时相同的 this 值
+function compose(f, g) {
+  return function (...args) {
+    // 这里对 f 使用 call 是因为只给它传一个值,
+    // 而对 g 使用 apply 是因为正在传一个值的数组
+    return f.call(this, g.apply(this, args));
+  };
+}
+
+const sum = (x, y) => x + y;
+const square = x => x * x;
+compose(square, sum)(2, 3); // 25，平方和
+```
+
+#### 8.8.3 函数的部分应用
+
+函数 f 的 `bind()` 方法返回一个新函数，这个新函数在指定的上下文中以指定的参数调用 f。可以说它把这个函数绑定到了一个对象并部分应用了参数。`bind()` 方法在左侧部分应用参数，即传给 `bind()` 的参数会放在传给原始函数的参数列表的开头。但是也有可能在右侧部分应用参数:
+
+```js
+// 传给这个函数的参数会传到左侧
+function partialLeft(f, ...outerArgs) {
+  // 返回这个函数
+  return function (...innerArgs) {
+    let args = [...outerArgs, ...innerArgs]; // 构建参数列表
+    return f.apply(this, args); // 然后通过它调用 f
+  };
+}
+
+// 传给这个函数的参数会传到右侧
+function partialRight(f, ...outerArgs) {
+  // 返回这个函数
+  return function (...innerArgs) {
+    let args = [...innerArgs, ...outerArgs]; //构建参数列表
+    return f.apply(this, args); // 然后通过它调用 f
+  };
+}
+
+// 这个函数的参数列表作为一个模板。这个参数列表中的 undefined 值会被来自内部参数列表的值填充
+function partial(f, ...outerArgs) {
+  return function (...innerArgs) {
+    let args = [...outerArgs]; // 外部参数模板的局部副本
+    let innerIndex = 0; // 下一个是哪个内部参数
+    // 循环遍历 args，用内部参数填充 undefined 值
+    for (let i = 0; i < args.length; i++) {
+      if (args[i] === undefined) args[i] = innerArgs[innerIndex++];
+      // 现在把剩余的内部参数都加进来
+    }
+    args.push(...innerArgs.slice(innerIndex));
+    return f.apply(this, args);
+  };
+}
+
+// 下面是有 3 个参数的函数
+const f = function (x, y, z) {
+  return x * (y - z);
+};
+// 注意这3个部分应用的区别
+partialLeft(f, 2)(3, 4); // -2：绑定第一个参数: 2 * (3 - 4)
+partialRight(f, 2)(3, 4); // 6：绑定最后一个参数: 3 * (4 - 2)
+partial(f, undefined, 2)(3, 4); // -6：绑定中间的参数: 3 * (2 - 4)
+```
+
+这些部分应用函数允许在已经定义的函数基础上轻松定义有意思的函数。下面是几个例子
+
+```js
+const increment = partialLeft(sum, 1);
+const cuberoot = partialRight(Math.pow, 1 / 3);
+cuberoot(increment(26)); // 3
+```
+
+部分应用的函数如果与其他高阶函数组合会更有意思。例如，下面的代码通过组合与部分应用定义 `not()` 函数：
+
+```js
+const not = partialLeft(compose, x => !x);
+const even = x => x % 2 === 0;
+const odd = not(even);
+const isNumber = not(isNaN);
+odd(3) && isNumber(2); // true
+```
+
+还可以使用组合和部分应用以函数方式重新计算平均值和标准差：
+
+```js
+// sun() 和 square() 函数在前面定义过。下面是更多函数
+const product = (x, y) => x * y;
+const neg = partial(product, -1);
+const sqrt = partia(Math.pow, undefined, 0.5);
+const reciprocal = partial(Math.pow, undefined, neg(1));
+
+// 现在计算平均值和标准差
+let data = [1, 1, 3, 5, 5];
+let mean = product(reduce(data, sum), reciprocal(data.length));
+let stddev = sqrt(
+  product(
+    reduce(map(data, compose(square, partial(sum, neg(mean)))), sum),
+    reciprocal(sum(data.length, neg(1)))
+  )
+);
+
+[mean, stddev]; // [3, 2]
+```
+
+> **注意**：这里计算平均值和标准差的代码完全是函数调用，没有操作符，圆括号的数量已经多到让 JS 看起来像 Lisp 了。这并不是推荐的 JS 编程风格。但通过这个例子可以知道 JS 中的函数如何实现多层嵌套。
+
+#### 8.8.4 函数记忆
+
+在前面[函数属性](#841-定义自己的函数属性)定义了一个缓存自己之前计算结果的阶乘函数。在函数式编程中，这种缓存被称为函数记忆（memoization）。下面的代码展示了高阶函数 `memoize()` 可以接收一个函数参数，然后返回这个函数的记忆版:
+
+```js
+// 返回 f 的记忆版
+// 只适用于 f 的参数都有完全不同的字符串表示的情况
+function memoize(f) {
+  const cache = new Map(); // cache 保存在这个闭包中
+
+  return function (...args) {
+    // 创建参数的字符串版，以用作缓存键
+    let key = args.length + args.join('+');
+    if (cache.has(key)) {
+      return cache.get(key);
+    } else {
+      let result = f.apply(this, args);
+      cache.set(key, result);
+      return result;
+    }
+  };
+}
+```
+
+这个 `memoize()` 函数创建了一个新对象作为缓存使用，并将这个对象赋值给一个局部变量，从而让它（在闭包中）成为被返回的函数的私有变量。返回的函数将其参数数组转换为字符串，并使用该字符串作为缓存对象的属性。如果缓存存在某个值，就直接返回该值;否则，就调用指定的函数计算这些参数的值，然后缓存这个值，最后返回这个值。
+
+下面是使用 `memoRize()` 的例子：
+
+```js
+// 使用欧几里德算法返回两个整数的最大公约数
+// http://en.wikipedia.org/wiki/euclideanalgorithm
+// 省略了对 a 和 b 的类型检查
+function gcd(a, b) {
+  // 开始时保证 a ≥ b
+  if (a < b) {
+    [a, b] = [b, a]; // 用解构赋值交换变量
+  }
+  // 这是求最大公约数的欧几里德算法
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+  return a;
+}
+
+const gcdmemo = memoize(gcd);
+gcdmemo(85, 187); // 17
+
+// 注意，在编写需要记忆的递归函数时，通常希望递归记忆版，而非原始版
+const factorial = memoize(function (n) {
+  return n <= 1 ? 1 : n * factorial(n - 1);
+});
+
+factorial(5); // 120:也为 4、3、2 和 1 缓存了值
+```
