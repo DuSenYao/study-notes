@@ -77,7 +77,7 @@ title: JavaScript权威指南
     - [6.9 对象方法](#69-对象方法)
       - [6.9.1 toString() 方法](#691-tostring-方法)
       - [6.9.2 toLocaleString() 方法](#692-tolocalestring-方法)
-      - [6.9.3 valueof() 方法](#693-valueof-方法)
+      - [6.9.3 valueOf() 方法](#693-valueof-方法)
       - [6.9.4 toJSON() 方法](#694-tojson-方法)
     - [6.10 对象字面量扩展语法](#610-对象字面量扩展语法)
       - [6.10.1 简写属性](#6101-简写属性)
@@ -156,6 +156,10 @@ title: JavaScript权威指南
       - [9.3.2 获取方法、设置方法及其他形式的方法](#932-获取方法-设置方法及其他形式的方法)
       - [9.3.3 公有、私有和静态字段](#933-公有-私有和静态字段)
       - [9.3.4 示例:复数类](#934-示例复数类)
+    - [9.4 为已有类添加方法](#94-为已有类添加方法)
+    - [9.5 子类](#95-子类)
+      - [9.5.1 子类与原型](#951-子类与原型)
+      - [9.5.2 通过 extends 和 super 创建子类](#952-通过-extends-和-super-创建子类)
 
 <!-- /code_chunk_output -->
 
@@ -612,7 +616,7 @@ _无偏好_
   对象是复合值且多数对象不能真正通过一个原始值来表示，因此 `valueOf()` 方法默认情况下只返回对象本身，而非返回原始值。
 
   - String、Number 和 Boolean 这样的包装类定义的 `valueOf()`方法也只是简单地返回被包装的原始值。
-  - Array、Function 和 RegExp 简单地继承默认方法。在这些类型的实例上调用 `value0f()` 会返回对象本身。
+  - Array、Function 和 RegExp 简单地继承默认方法。在这些类型的实例上调用 `valueOf()` 会返回对象本身。
   - Date 对象定义的 `valueOf()` 方法返回日期的内部表示形式: 自 1970 年 1 月 1 日至今的毫秒数:
 
     ```js
@@ -1674,22 +1678,22 @@ point.toString(); // "(1000, 2000)"
 point.toLocaleString(); // "(1,000, 2,000)": 千分位分隔符
 ```
 
-#### 6.9.3 valueof() 方法
+#### 6.9.3 valueOf() 方法
 
-`valueof()` 方法与 `toString()` 方法很相似，但**会在 JS 需要把对象转换为某些非字符串原始值（通常是数值）时被调用**。如果在需要原始值的上下文中使用了对象，JS 会自动调用这个对象的 `valueof()` 方法。
+`valueOf()` 方法与 `toString()` 方法很相似，但**会在 JS 需要把对象转换为某些非字符串原始值（通常是数值）时被调用**。如果在需要原始值的上下文中使用了对象，JS 会自动调用这个对象的 `valueOf()` 方法。
 
-默认的 `valueof()` 方法并没有做什么，因此一些内置类定义了自己的 `valueof()` 方法。Date 类定义的 `valueof()` 方法可以将日期转换为数值，这样就让日期对象可以通过 `<` 和 `>` 操作符来进行比较。类似地，对于 point 对象，也可以定义一个返回原点与当前点之间距离的 `valueof()`:
+默认的 `valueOf()` 方法并没有做什么，因此一些内置类定义了自己的 `valueOf()` 方法。Date 类定义的 `valueOf()` 方法可以将日期转换为数值，这样就让日期对象可以通过 `<` 和 `>` 操作符来进行比较。类似地，对于 point 对象，也可以定义一个返回原点与当前点之间距离的 `valueOf()`:
 
 ```js
 let point = {
   x: 3,
   y: 4,
-  valueof: function () {
+  valueOf: function () {
     return Math.hypot(this.x, this.y);
   }
 };
 
-Number(point); // 5: valueof() 用于转换为数值
+Number(point); // 5: valueOf() 用于转换为数值
 point > 4;
 point > 5; // false
 point < 6; // true
@@ -4536,7 +4540,7 @@ Range.prototype.toString = function () {
 
 ### 9.3 使用 class 关键字的类
 
-JS 早在它最初的版本就支持类，只不过自 ES6 引入 c1ass 关键字才有了自己的语法。示例 9-3 展示了以这种新语法重写的 Range 类。
+JS 在它最初的版本就支持类，只不过自 ES6 引入 `class` 关键字才有了自己的语法。示例 9-3 展示了以这种新语法重写的 Range 类。
 
 ```js
 // 示例 9-3：使用 class 重写的 Range 类
@@ -4573,7 +4577,7 @@ r.toString(); // "(1...3)"
 [...r]; // [1, 2, 3]; 通过迭代器转换为数组
 ```
 
-示例 9-2 和示例 9-3 中定义的类工作方式完全一样，理解这一点非常重要。新增 `class` 关键字并未改变 JS 类基于原型的本质。虽然示例 9-3 使用了 `class` 关键字，但得到的 Range 对象是一个构造函数，与示例 9-2 定义的版本一样。新的 c1ass 语法虽然明确、方便，但最好把它看成示例 9-2 中更基础的类定义机制的“语法糖”
+示例 9-2 和示例 9-3 中定义的类工作方式完全一样，理解这一点非常重要。新增 `class` 关键字并未改变 JS 类基于原型的本质。虽然示例 9-3 使用了 `class` 关键字，但得到的 Range 对象是一个构造函数，与示例 9-2 定义的版本一样。新的 `class` 语法虽然明确、方便，但最好把它看成示例 9-2 中更基础的类定义机制的“语法糖”
 
 对于示例 9-3 展示的类语法，需要注意以下几点:
 
@@ -4714,3 +4718,194 @@ static parse(s) {
 #### 9.3.4 示例:复数类
 
 示例 9-4 定义了一个表示复数的类。这个类相对比较简单，但包含了实例方法（包括获取方法）、静态方法、实例字段和静态字段。代码中的注释解释了应该怎么在类体中使用尚未成为标准的定义实例字段和静态字段的语法。
+
+```js
+/**
+ * 这个 Complex 类的实例代表复数
+ * 复数是一个实数和一个虚数之和,
+ * 而虚数 i 是 -1 的平方根
+ */
+class Complex {
+  // 在这种类字段声明标准化之后，可以像下面这样，声明私有字段来保存复数的实数和虚数部分
+  // #r = 0;
+  // #i = 0;
+
+  // 这个构造函数定义了它需要在每个实例上
+  // 创建的实例属性 r 和 i。这两个字段保存复数的实数和虚数部分，即对象的状态
+  constructor(real, imaginary) {
+    this.r = real; // 这个字段保存这个数的实数部分
+    this.i = imaginary; // 这个字段保存这个数的虚数部分
+  }
+
+  // 这里是两个实例方法，用于做复数的加法和乘法。如果 c 和 d 是这个类两个实例，则
+  // 可以写 c.plus(d) 或 d.times(c)
+  plus(that) {
+    return new Complex(this.r + that.r, this.i + that.i);
+  }
+  times(that) {
+    return new Complex(this.r * that.r - this.i * that.i, this.r * that.i + this.i * this.r);
+  }
+
+  // 而这里是两个复数计算方法的静态版本。这样可以写
+  // Complex.sum(c, d) 和 Complex.product(c, d)
+  static sum(c, d) {
+    return c.plus(d);
+  }
+  static product(c, d) {
+    return c.times(d);
+  }
+
+  // 这些也是实例方法,但是使用获取函数定义的，因此可以像使用字段一样使用它们。
+  // 如果我们使用的是私有字段 this.#r 和 this.#i，那这里的获取方法就有用了
+  get real() {
+    return this.r;
+  }
+  get imaginary() {
+    return this.i;
+  }
+  get magnitude() {
+    return Math.hypot(this.r, this.i);
+  }
+
+  // 每个类都应该有一个 toString() 方法
+  toString() {
+    return `(${this.r},${this.i})`;
+  }
+
+  // 这个方法可以用来测试类的两个实例是否表示相同的值
+  equals(that) {
+    return that instanceof Complex && this.r === that.r && this.i === that.i;
+  }
+
+  // 如果类体支持静态字段，那我们就可以像下面这样定义一个常量 Complex.ZERO
+  // static ZERO = new Complex(0,0)
+}
+
+// 下面定义了几个保存预定义复数的类字段
+Complex.ZERO = new Complex(0, 0);
+Complex.ONE = new Complex(1, 0);
+Complex.I = new Complex(0, 1);
+```
+
+有了示例 9-4 中的 Complex 类，就可以像下面这样使用构造函数、实例字段、实例方法、类字段和类方法：
+
+```js
+let c = new Complex(2, 3); // 通过构造函数创建一个新对象
+let d = new Complex(c.i, c.r); // 使用 c 的实例字段
+c.plus(d).toString(); // "(5,5}"; 使用实例方法
+c.magnitude; // Math.hypot(2,3); 使用获取函数
+Complex.product(c, d); // new Complex(0,13); 使用静态方法
+Complex.ZERO.toString(); // "{0,0}"; 使用静态属性
+```
+
+### 9.4 为已有类添加方法
+
+JS 基于原型的继承机制是动态的。换句话说，对象从它的原型继承属性，如果在创建对象之后修改了原型的属性,则对象继承修改后的属性。这意味着只要给原型对象添加方法，就可以增强 JS 类。
+
+例如，下面的代码为示例 9-4 定义的 Complex 类添加了一个计算共轭复数的方法:
+
+```js
+// 返回当前复数的共轭复数
+Complex.prototype.conj = function () {
+  return new Complex(this.r, this.i);
+};
+```
+
+**内置 JS 类的原型对象也跟这里一样是开放的**，因此可以为数值、字符串、数组、函数等添加方法。如果想在旧版本 JS 中添加新语言特性,就可以这么做:
+
+```js
+// 如果字符串上没有定义 startsWith() 方法……
+if (!String.prototype.startswith) {
+  // 则使用已有的 indexOf() 方法实现一个
+  String.prototype.startsWith = function (s) {
+    return this.indexOf(s) === 0;
+  };
+}
+```
+
+下面是另一个示例：
+
+```js
+// 多次调用函数 f，传给它送代数值
+// 如，要打印 3 次 "hello"
+// let n = 3
+// n.times(i => { console.log(`hello ${i}`); });
+Number.prototype.times = function (f, context) {
+  let n = this.valueOf();
+  for (let i = 0; i < n; i++) f.call(context, i);
+};
+```
+
+> **注意**：**像这样给内置类型的原型添加方法通常被认为是不好的做法**。因为如果 JS 未来某个新版本也定义了同名方法，就会导致困惑和兼容性问题。当然，给 `Object.prototype` 添加方法也是可以的，这样所有对象都会继承新方法。但最好不要这样做，因为添加到 `Object.prototype` 上的属性在 for/in 循环中是可见的（尽管使用 14.1 节介绍的 `Object.defineProperty()` 方法把新属性设置为不可枚举能够避免这个问题）。
+
+### 9.5 子类
+
+在面向对象编程中，类 B 可以扩展或子类化类 A。此时说 A 是父类，B 是子类。B 的实例继承 A 的方法。类 B 也可以定义自己的方法，其中有些方法可能覆盖类 A 的同名方法。如果 B 的方法覆盖了 A 的方法，B 中的覆盖方法经常需要调用 A 中被覆盖的方法。类似地，子类构造函数 B() 通常必须调用父类构造函数 A() 才能将实例完全初始化。
+
+本节首先展示如何以 ES6 之前的旧方式定义子类，然后迅速转换为使用 `class` 和 `extends` 关键字定义子类，以及通过 `super` 关键字调用父类构造函数。接下来讨论如何避免使用子类，利用对象组合而非继承。本节最后将展示一个综合性的示例，其中定义了几个层次的 Set 类，演示了如何利用抽象类分隔接口与实现。
+
+#### 9.5.1 子类与原型
+
+假设想定义示例 9-2 中 Range 类的一个子类 Span。这个子类与 Range 相似，但不是初始化起点和终点，而是初始化起点和距离或跨度（span）。
+
+Span 类的实例也是父类 Range 的实例。跨度的实例从 `Span.prototype` 继承了自定义的 `toString()` 方法，但为了成为 Range 的子类，它也必须从 `Range.prototype` 继承方法（如 `includes()`）。
+
+```js
+// 示例 9-5: Range 的简单的子类（Span.js）
+// 这是子类构造函数
+function Span(start, span) {
+  if (span >= 0) {
+    this.from = start;
+    this.to = start + span;
+  } else {
+    this.to = start;
+    this.from = start + span;
+  }
+
+  // 确保 Span 的原型继承 Range 的原型
+  Span.prototype = Object.create(Range.prototype);
+
+  // 不想继承 Range.prototype.constructor
+  // 因此需要定义自己的 constructor 属性
+  Span.prototype.constructor = Span;
+
+  // 通过定义自己的 toString() 方法，Span 覆盖了 toString(，否则就要从 Range 继承
+  Span.prototype.toString = function () {
+    return `(${this.from}...${this.to - this.from})`;
+  };
+}
+```
+
+为了让 Span 成为 Range 的子类，需要让 `Span.prototype` 继承 `Range.prototype`。前面示例中最关键的一行代码就是这一行，如果能明白，那就理解了 JS 中子类的工作机制:
+
+```js
+Span.prototype = Object.create(Range.prototype);
+```
+
+通过 Span() 构造函数创建的对象会继承 `Span.prototype` 对象。但在创建该对象时让它继承了 `Range.prototype`，因此 Span 对象既会继承 `Span.prototype`，也会继承 `Range.prototype`。
+
+> **注意**：
+>
+> Span() 构造函数像 Range() 构造函数一样，也设置了 from 和 to 属性，因此不需要调用 Range() 构造函数来初始化新对象。
+> 类似地，Span 的 toString() 方法完全重新实现了字符串转换逻辑，不需要调用 Range 的 toString()。这让 Span 成为一个特例，只有在知道父类实现细节的前提下才可能这样定义子类。健壮的子类化机制应该允许类调用父类的方法和构造函数，但在 ES6 之前，JS 中没有简单的办法做这些。
+> 好在 ES6 通过 `super` 关键字作为 `class` 语法的一部分解决了这个问题。
+
+#### 9.5.2 通过 extends 和 super 创建子类
+
+在 ES6 及以后，要继承父类，可以简单地在类声明中加上一个 `extends` 子句，甚至对内置的类也可以这样:
+
+```js
+// Array 的一个简单子类，为第一个和最后一个元素添加了获取函数
+class EZArray extends Array {
+  get first() {
+    return this[0];
+  }
+  get last() {
+    return this[this.length - 1];
+  }
+}
+let a = new EZArray();
+a instanceof EZArray; // true：a 是子类的实例
+a instanceof Array; // true：a 也是父类的实例
+a.push(1, 2, 3, 4); // a.length == 4; 可以使用继承的方法
+```
