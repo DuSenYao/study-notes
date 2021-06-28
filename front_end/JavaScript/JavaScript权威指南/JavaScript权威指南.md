@@ -160,6 +160,7 @@ title: JavaScript权威指南
     - [9.5 子类](#95-子类)
       - [9.5.1 子类与原型](#951-子类与原型)
       - [9.5.2 通过 extends 和 super 创建子类](#952-通过-extends-和-super-创建子类)
+      - [9.5.3 委托而不是继承](#953-委托而不是继承)
 
 <!-- /code_chunk_output -->
 
@@ -4908,4 +4909,151 @@ let a = new EZArray();
 a instanceof EZArray; // true：a 是子类的实例
 a instanceof Array; // true：a 也是父类的实例
 a.push(1, 2, 3, 4); // a.length == 4; 可以使用继承的方法
+a.pop(); // 4: 使用另一个继承的方法
+a.first; // 1:子类定义的 first 获取方法
+a.last; // 3:子类定义的 last 获取方法
+a[1]; // 2:普通数组访问语法仍然有效
+Array.isArray(a); // true:子类实例确实是数组
+EZArray.isArray(a); // true:子类也继承了静态方法
 ```
+
+这个 EZArray 子类定义了两个简单的获取方法。EZArray 的实例就像普通数组一样，拥有继承的方法和属性，如 `push()`、`pop()` 和 `length`。但是它也有子类定义的 first 和 last 获取方法。另外，子类实例不仅继承了 `pop()` 等实例方法，子类本身也继承了 `Array.isArray` 这种静态方法。这是 ES6 类语法带来的新特性: `EZArray()` 是个函数，但它继承 Array()。
+
+```js
+// EZArray 的实例之所以能继承实例方法，是因为 EZArray.prototype 继承 Array.prototype
+Array.prototype.isPrototypeOf(EZArray.prototype); // true
+
+// EZArray 之所以能继承静态方法和属性，是因为 EZArray 继承 Array。这是 extends 关键字独有的特性，在 ES6 之前是不可能做到的
+Array.isPrototypeOf(EZArray); // true
+```
+
+EZArray 子类太简单，很难充分说明问题。示例 9-6 是一个相对更完善的示例，该示例为内置 Map 类定义了一个 TypedMap 子类，添加了类型检查以确保映射的键和值都是指定的类型（根据 typeof）。重点是，该示例展示了使用 `super` 关键字调用父类构造函数和方法。
+
+```js
+// 示例 9-6: Map 检查键和值类型的子类（TypedMap.js）
+class TypedMap extends Map {
+  constructor(keyType, valueType, entries) {
+    // 如果指定了条目，检查它们的类型
+    if (entries) {
+      for (let [k, v] of entries) {
+        if (typeof k !== keyType || typeof v !== valueType) {
+          throw new TypeError(`wrong type for entry [${k}, ${v}]`);
+        }
+      }
+    }
+    // 使用（通过类型检查的）初始条目初始化父类
+    super(entries);
+    // 然后初始化子类，保存键和值的类型
+    this.keyType = keyType;
+    this.valueType = valueType;
+  }
+
+  // 现在，重定义 set() 方法，为所有新增映射条目添加类型检查逻辑
+  set(key, value) {
+    // 如果键或值的类型不对就抛出错
+    if (this.keyType && typeof key !== this.keyType) {
+      throw new TypeError(`${key} is not of type ${this.keyType}`);
+    }
+    if (this.valueType && typeof value !== this.valueType) {
+      throw new TypeError(`${value} is not of type ${this.valueType}`);
+    }
+    // 如果类型正确，则调用超类的 set()，方法为映射添加条目。同时,返回父类方法返回的值
+    return super.set(key, value);
+  }
+}
+```
+
+`TypedMap()` 构造函数的前两个参数是期望的键和值类型，应该是字符串，例如 "number"、"boolean" 等 `typeof` 操作符返回的值。还可以指定第三个参数：一个 `[key, value]` 数组的数组（或可迭代对象），用于指定映射的初始条目。如果指定了初始条目，则构造函数的第一件事就是检查它们的类型是否正确。然后，再通过 `super` 调用父类构造函数，就像它是一个函数名一样。
+
+`Map()` 构造函数接收一个可选的参数：一个 `[key, value]` 数组的可迭代对象。因此，`TypedMap()` 构造函数可选的第三个参数就是 `Map()` 构造函数可选的第一个参数，通过 `super(entries)` 把它传给父类构造函数。
+
+在调用父类构造函数初始化父类状态后，`TypedMap()` 构造函数接着通过把 `this.keyType` 和 `this.valueType` 设置为指定类型初始化了自己这个子类的状态。之所以要保存这两个值，是因为后面的 `set()` 方法要使用。
+
+关于在构造函数中使用 `super()`，有几个重要的规则需要知道：
+
+- 如果使用 `extends` 关键字定义了一个类，那么这个类的构造函数必须使用 `super()` 调用父类构造函数。
+
+- 如果没有在子类中定义构造函数，解释器会自动创建一个。这个隐式定义的构造函数会取得传给它的值，然后把这些值再传给 `super()`。
+
+- 在通过 `super()` 调用父类构造函数之前，不能在构造函数中使用 `this` 关键字。这条强制规则是为了确保父类先于子类得到初始化。
+
+- 在没有使用 `new` 关键字调用的函数中，特殊表达式 `new.target` 的值是 `undefined`。而在构造函数中，`new.target` 引用的是被调用的构造函数。当子类构造函数被调用并使用 `super()` 调用父类构造函数时，该父类构造函数通过 `new.target` 可以获取子类构造函数。设计良好的父类无须知道自己是否有子类，但它们可以使用 `new.target.name` 来记录日志消息。
+
+在示例 9-6 中，构造函数后面是一个名为 `set()` 的方法。父类 `Map()` 定义了一个名为 `set()` 的方法用于向映射中添加新条目。TypedMap 中的这个 `set()` 方法覆盖了其父类的 `set()` 方法。
+
+这个简单的 TypedMap 子类并不知道怎么向映射中添加新条目，但它知道怎么检查类型，这也是它先做的：验证添加到映射的键和值都是正确的类型，如果不是则抛出错误。这个 `set()` 方法本身不能向映射中添加键和值，但这正是父类 `set()` 方法的作用。因此再次使用 `super` 关键字，调用父类的这个方法。此时，`super` 的角色很像 `this` 关键字，它引用当前对象，但允许访问父类定义的被覆盖的方法。
+
+在构造函数中，必须先调用父类构造函数才能访问 `this` 并初始化子类的新对象。但在覆盖方法时则没有这个限制。覆盖父类方法的方法不一定调用父类的方法。如果它确实要通过 `super` 调用父类被覆盖的方法（或其他方法），那在覆盖方法的开头、中间或末尾调用都没问题。
+
+#### 9.5.3 委托而不是继承
+
+使用 `extends` 关键字可以轻松地创建子类。但这并不意味就应该创建很多子类。如果写了一个类，这个类与另一类有相同的行为，可以通过创建子类来继承该行为。但是，在类中创建另一个类的实例，并在需要时委托该实例去做希望的事反而更方便，也更灵活。
+
+这时候，不需要创建一个类的子类，只要**包装或组合其他类即可。这种委托策略常常被称为“组合”**（composition），也是面向对象编程领域奉行的一个准则，即**开发者应该“能组合就不继承”**（favor composition over inherit）。
+
+例如，假设想写一个 Histogram（直方图）类，这个类有些像 JS 的 Set 类，但除了记录一个值是否被添加到集合，它还要维护值被添加的次数。因为这个 Histogram 类的 API 类似于 Set，可以考虑扩展 Set 并添加一个 `count()` 方法。但从另一个角度有看，在思考如何实现这个 `count()` 方法时，又会发现这个 Histogram 类更像是 Map 而不是 Set。因为它需要维护值与添加次数的映射。所以与其创建 Set 的子类，不如创建一个类，为它定义类似 Set 的 API，但通过把相应操作委托给一个内部 Map 对象来实现那些方法。示例 9-7 展示了这个类：
+
+```js
+// 示例 9-1：通过委托实现的类似 Set 的类（Histogram.js）
+
+/**
+ * 一个类似 Set 的类，但会记录值被添加的次数，可以像使用 Set 一样调用 add() 和 remove()
+ * 调用 count() 获取某个值已经被添加了多少次
+ * 默认迭代器回送至少被添加过1次的值。如果想迭代 [value, count] 对，使用 entries()
+ */
+
+class Histogram {
+  // 初始化只涉及创建一个要委托的 Map 对象
+  constructor() {
+    this.map = new Map();
+  }
+
+  // 对给定的键，次数就是映射中的值。如果映射中不存在这个键，则为 0
+  count(key) {
+    return this.map.get(key) || 0;
+  }
+
+  // 这个类似 Set 的方法 has() 在次数大于 0 时返回true
+  has(key) {
+    return this.count(key) > 0;
+  }
+
+  // 直方图的大小就是映射中条目的数量
+  get size() {
+    return this.map.size;
+  }
+
+  // 要添加一个键，只需递增其在映射中的次数
+  add(key) {
+    this.map.set(key, this.count(key) + 1);
+  }
+
+  // 删除键稍微麻烦点，因为必须在次数回到 0 时从映射中删除相应的键
+  delete(key) {
+    let count = this.count(key);
+    if (count === 1) {
+      this.map.delete(key);
+    } else if (count > 1) {
+      this.map.set(key, count - 1);
+    }
+  }
+
+  // 迭代直方图就是返回映射中存储的键
+  [Symbol.iterator]() {
+    return this.map.keys();
+  }
+
+  // 其他迭代器方法直接委托给映射对象
+  keys() {
+    return this.map.keys();
+  }
+  values() {
+    return this.map.values();
+  }
+  entries() {
+    return this.map.entries();
+  }
+}
+```
+
+例 9-7 中 Histogram() 构造函数只做了一件事，就是创建了一个 Map 对象。而这个类的多数方法只有一行，因为都委托给了相应的映射方法，所以实现特别简单。由于使用委托而非继承，Histogram 对象既不是 Set 的实例，也不是 Map 的实例。但 Histogram 实现了一些常用的 Set 方法，在像 JS 这样的弱类型语言中，这通常就足够了。正式的继承关系有时候确实好，但并不是必需的。
