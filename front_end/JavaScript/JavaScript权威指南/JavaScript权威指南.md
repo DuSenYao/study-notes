@@ -161,6 +161,17 @@ title: JavaScript权威指南
       - [9.5.1 子类与原型](#951-子类与原型)
       - [9.5.2 通过 extends 和 super 创建子类](#952-通过-extends-和-super-创建子类)
       - [9.5.3 委托而不是继承](#953-委托而不是继承)
+      - [9.5.4 类层次与抽象类](#954-类层次与抽象类)
+  - [十. 模块](#十-模块)
+    - [10.1 基于类、对象和闭包的模块](#101-基于类-对象和闭包的模块)
+      - [10.1.1 基于闭包的自动模块化](#1011-基于闭包的自动模块化)
+    - [10.2 Node 中的模块](#102-node-中的模块)
+      - [10.2.1 Node 的导出](#1021-node-的导出)
+      - [10.2.2 Node 的导入](#1022-node-的导入)
+    - [10.3 ES6 中的模块](#103-es6-中的模块)
+      - [10.3.1 ES6 的导出](#1031-es6-的导出)
+      - [10.3.2 ES6 的导入](#1032-es6-的导入)
+      - [10.3.3 导入和导出时重命名](#1033-导入和导出时重命名)
 
 <!-- /code_chunk_output -->
 
@@ -5056,4 +5067,602 @@ class Histogram {
 }
 ```
 
-例 9-7 中 Histogram() 构造函数只做了一件事，就是创建了一个 Map 对象。而这个类的多数方法只有一行，因为都委托给了相应的映射方法，所以实现特别简单。由于使用委托而非继承，Histogram 对象既不是 Set 的实例，也不是 Map 的实例。但 Histogram 实现了一些常用的 Set 方法，在像 JS 这样的弱类型语言中，这通常就足够了。正式的继承关系有时候确实好，但并不是必需的。
+例 9-7 中 `Histogram()` 构造函数只做了一件事，就是创建了一个 Map 对象。而这个类的多数方法只有一行，因为都委托给了相应的映射方法，所以实现特别简单。由于使用委托而非继承，Histogram 对象既不是 Set 的实例，也不是 Map 的实例。但 Histogram 实现了一些常用的 Set 方法，在像 JS 这样的弱类型语言中，这通常就足够了。正式的继承关系有时候确实好，但并不是必需的。
+
+#### 9.5.4 类层次与抽象类
+
+示例 9-6 演示了如何创建 Map 的子类。示例 9-7 演示了如何委托 Map 对象而不创建子类。使用 JS 类封装数据和组织代码通常是个不错的技术，因此可能会经常使用 `class` 关键字。但是，可能会发现组合比继承更常用，因而几乎不会用到 `extends`（除非使用某个库或框架，要求必须扩展其基类）。
+
+然而，也存在需要多级子类的情况。示例 9-8 其中涉及表示不同集合的类层次（其中定义的集合类与 JS 内置的 Set 类相似，但不完全兼容）。
+
+示例 9-8 定义了很多子类，同时也演示了如何定义抽象类，也就是不包含完整实现的类。抽象类在这里作为一组相关子类的公共父类。抽象父类可以定义部分实现，供所有子类继承和共享。子类只需实现父类定义（但未实现）的抽象方法。不过，JS 没有正式定义抽象方法或抽象类的语法。这里只是借用它们来指代未实现的方法和未完全实现的类。
+
+示例 9-8 包含完善的注释，自成一体。建议读者将它作为本章展示 JS 类使用的顶级范例。示例 9-8 定义的最后一个类通过 `&`、`|` 和 `~` 操作符实现了很多位操作。
+
+```js
+// 示例 9-8: 抽象与具体的集合类层次（Sets.js）
+
+/**
+ * AbstractSet 类只定义了一个抽象方法 has()
+ */
+class AbstractSet {
+  // 抛出错误，强制子类必须定义这个方法的可用版本
+  has(x) {
+    throw new Error('Abstract method');
+  }
+}
+
+/**
+ * Notset 是 AbstractSet 的一个具体子类，这个集合的成员是不属于其他集合的任何值
+ * 因为使用另一个集合定义，所以它不可写，而且因为它有无限个成员，所以不可枚举
+ * 这个类只支持检测成员关系和使用数学符号把集合转换为字符串
+ */
+class NotSet extends AbstractSet {
+  constructor(set) {
+    super();
+    this.set = set;
+  }
+  // 实现继承的抽象方法
+  has(x) {
+    return !this.set.has(x);
+  }
+  // 同时覆盖 Object 的方法
+  toString() {
+    return `{ x| x ∉ ${this.set.toString()} }`;
+  }
+}
+
+/**
+ * Range 集合是 AbstractSet 的一个具体子类
+ * 这个集合的成员是介于 from 和 to（含二者）之间的所有值
+ * 由于其成员可能是浮点数值，因此不可枚举，也不具备有意义的大小
+ */
+class RangeSet extends AbstractSet {
+  constructor(from, to) {
+    super();
+    this.from = from;
+    this.to = to;
+  }
+
+  has(x) {
+    return x >= this.from && x <= this.to;
+  }
+  toString() {
+    return `{ x| ${this.from} ≦ x ≦ ${this.to} }`;
+  }
+}
+
+/**
+ * AbstractEnumerableSet 是 AbstractSet 的一个抽象子类
+ * 这个抽象类定义了一个抽象的获取方法，返回集合的大小
+ * 还定义了一个抽象迭代器。然后在此基础上实现了具体的 isEmpty()、toString() 和 equals() 方法。
+ * 实现这个迭代器、大小获取方法以及（继承的） has() 方法的子类无偿获得这些具体方法
+ */
+class AbstractEnumerableSet extends AbstractSet {
+  get size() {
+    throw new Error('Abstract method');
+  }
+  [Symbol.iterator]() {
+    throw new Error('Abstract method');
+  }
+
+  isEmpty() {
+    return this.size === 0;
+  }
+  toString() {
+    return `{${Array.from(this).join(', ')}}`;
+  }
+
+  equals(set) {
+    // 如果另一个集合不是 AbstractEnumerableSet，那肯定不等于当前集合
+    if (!(set instanceof AbstractEnumerableSet)) return false;
+
+    // 如果两个集合大小不一样，它们也不相等
+    if (this.size !== set.size) return false;
+
+    // 循环检查集合的元素
+    for (let element of this) {
+      // 只要有一个元素不在另一个集合中，它们就不相等
+      if (!set.has(element)) return false;
+    }
+
+    // 元素匹配，因此两个集合相等
+    return true;
+  }
+}
+
+/**
+ * SingletonSet 是 AbstractEnumerableSet 的一个具体子类
+ * 单体集合是只有一个成员的只读集合
+ */
+class SingletonSet extends AbstractEnumerableSet {
+  constructor(member) {
+    super();
+    this.member = member;
+  }
+
+  // 实现 3 个抽象方法，同时继承基于这 3 个方法实现的 isEmpty()、equals() 和 toString()
+  has(x) {
+    return x === this.member;
+  }
+  get size() {
+    return 1;
+  }
+  *[Symbol.iterator]() {
+    yield this.member;
+  }
+}
+
+/**
+ * AbstractWritableSet 是 AbstractEnumerableSet 的一个抽象子类
+ * 这个抽象类定义了抽象方法 insert() 和 remove()，分别用于插入和删除个别集合元素
+ * 然后在此基础上实现了具体的 add()、subtract()和 intersect() 方法。
+ *
+ * 注意，API 从这里开始偏离了标准的 JS Set 类
+ */
+class AbstractWritableSet extends AbstractEnumerableSet {
+  insert(x) {
+    throw new Error('Abstract method');
+  }
+  remove(x) {
+    throw new Error('Abstract method');
+  }
+
+  add(set) {
+    for (let element of set) {
+      this.insert(element);
+    }
+  }
+
+  subtract(set) {
+    for (let element of set) {
+      this.remove(element);
+    }
+  }
+
+  intersect(set) {
+    for (let element of this) {
+      if (!set.has(element)) {
+        this.remove(element);
+      }
+    }
+  }
+}
+
+/**
+ * Bitset 是 AbstractwritableSet 的一个具体子类
+ * 这个类是非常高效的固定大小集合的实现，用于元素为小于某个最大值的非负整数集合
+ */
+class BitSet extends AbstractwritableSet {
+  constructor(max) {
+    super();
+    this.max = max; // 可存储的最大整数
+    this.n = 0; // 集合中整数的个数
+    this.numBytes = Math.floor(max / 8) + 1; // 需要多少字节
+    this.data = new Unit8Array(this.numBytes); // 实际的字节
+  }
+
+  // 内部方法，检测一个值是否为当前集合的合法成员
+  _valid(x) {
+    return Number.isInteger(x) && x >= 0 && x <= this.max;
+  }
+
+  // 测试数据数组中指定字节的指定位是否有值，返回 true 或 false
+  _has(byte, bit) {
+    return (this.data[byte] & BitSet.bits[bit]) !== 0;
+  }
+
+  // x 在这个 BitSet 中吗?
+  has(x) {
+    if (this._valid(x)) {
+      let byte = Math.floor(x / 8);
+      let bit = x % 8;
+      return this._has(byte, bit);
+    } else {
+      return false;
+    }
+  }
+
+  // 把 x 插入当前 BitSet
+  insert(x) {
+    // 如果这个值有效
+    if (this._valid(x)) {
+      let byte = Math.floor(x / 8); // 转换为字节和位
+      let bit = x % 8;
+      // 如果对应的位没有值
+      if (!this._has(byte, bit)) {
+        this.data[byte] |= BitSet.bits[bit]; // 则设置该位的值
+        this.n++; // 并递增集合大小
+      }
+    } else {
+      throw new TypeError('Invalid set element: ' + x);
+    }
+  }
+
+  remove(x) {
+    // 如果这个值有效
+    if (this._valid(x)) {
+      let byte = Math.floor(x / 8); // 则计算字节和位
+      let bit = x % 8;
+      if (this._has(byte, bit)) {
+        // 如果该位已经设置了值
+        this.data[byte] &= Bitset.masks[bit]; // 则取消设置的值
+        this.n--; // 并递减集合大小
+      }
+    } else {
+      throw new TypeError('Invalid set element：' + x);
+    }
+  }
+
+  // 获取方法，返回集合大小
+  get size() {
+    return this.n;
+  }
+
+  // 迭代集合，只依次检查每一位(应该可以更聪明一点，大幅优化这里的逻辑)
+  *[Symbol.iterator]() {
+    for (let i = 0; i <= this.max; i++) {
+      if (this.has(i)) {
+        yield i;
+      }
+    }
+  }
+}
+
+// has()、insert() 和 remove() 方法会用的几个预定义值
+BitSet.bits = new Uint8Array([1, 2, 4, 8, 16, 32, 64, 128]);
+BitSet.masks = new Uint8Array([~1, ~2, ~4, ~8, ~16, ~32, ~64, ~1281]);
+```
+
+## 十. 模块
+
+模块化编程的目标是能够用不同作者和来源的代码模块组装成大型程序，即使不同模块的作者无法预知如何使用，代码仍然可以正确运行。**实践中，模块化的作用主要体现在封装和隐藏私有实现细节，以及保证全局命名空间清洁上，因而模块之间不会意外修改各自定义的变量、函数和类**。
+
+### 10.1 基于类、对象和闭包的模块
+
+**类的一个重要特性，就是它们充当了自己方法的模块**。示例 9-8 中定义了几个不同的类，这些类都有个名叫 `has()` 的方法。可以在一个程序中同时使用该示例定义的多个集合类，而不必担心 BitSet 的 `has()` 方法会被 SingletonSet 的 `has()` 方法重写。
+
+**不相关的类的方法之所以能够相互独立，是因为每个类的方法都被定义为独立原型对象的属性**。而类之所以成为模块是因为对象是模块：给一个 JS 对象定义属性非常像声明变量，但给对象添加属性不影响程序的全局命名空间，也不影响其他对象的属性。
+
+JS 定义了不少数学函数和常量，但并没有把它们定义在全局命名空间中，而是将它们分组作为属性定义在全局 Math 对象上。示例 9-8 也借鉴了同样的思路。例如，不是把 SingletonSet 和 Bitset 定义为全局类，而是只定义一个全局 Sets 对象，通过这个对象的属性引用不同的类。然后，这个 Sets 库的用户可以通过类似 `Sets.Singleton` 和 `Sets.Bit` 这样的方式引用这些类。
+
+使用类和对象实现模块化是 JS 编程中常见且有用的技术，但这还不够。特别地，类和对象没有提供任何方式来隐藏模块的内部实现细节。再看看示例 9-8，如果把该示例写成一个模块，那么会希望把各种抽象类作为模块的内部代码，只对模块用户暴露具体的子类。类似地，在 BitSet 类中，`_valid()` 和 `_has()` 是内部辅助方法，也不应该暴露给类的用户。而 `Bitset.bits` 和 `Bitset.masks` 也是实现细节，最好也隐藏。
+
+在函数中声明的局部变量和嵌套函数都是函数私有的。这意味着可以使用立即调用的函数表达式来实现某种模块化，把实现细节和辅助函数隐藏在包装函数中，只将模块的公共 API 作为函数的值返回。以 BitSet 类为例，可以像下面这样实现这个模块：
+
+```js
+// 将 Bitset 设置为这个函数的返回值
+const BitSet = (function () {
+  // 这里是私有实现细节
+  function isValid(set, n) {}
+  function has(set, byte, bit) {}
+  const BITS = new Uint8Array([1, 2, 4, 8, 16, 32, 64, 128]);
+  const MASKS = new Uint8Array([~1, ~2, ~4, ~8, ~16, ~32, ~64, ~1281]);
+
+  // 这个模块的公共 API 就是 BitSet 类，在这里定义并返回
+  // 这个类可以使用上面定义的私有函数和常量，但这些私有函数和常量对这个类的用户是不可见的
+  return class BitSet extends AbstractWritableSet {
+    // 省略实现
+  };
+})();
+```
+
+如果模块需要暴露多个值，这种实现模块化的方式就比较有意思了。例如，以下代码定义了一个小型统计模块，暴露了 `mean()` 和 `stddev()` 函数，同时隐藏了实现细节:
+
+```js
+// 可以像这样定义 stats 模块
+const stats = (function () {
+  // 模块私有的辅助函数
+  const sum = (x, y) => x + y;
+  const square = x => x * x;
+
+  //要导出的公有函数
+  function mean(data) {
+    return data.reduce(sum) / data.length;
+  }
+
+  // 另一个要导出的公有函数
+  function stddev(data) {
+    let m = mean(data);
+    return Math.sqrt(
+      data
+        .map(x => x - m)
+        .map(square)
+        .reduce(sum) /
+        (data.length - 1)
+    );
+  }
+
+  // 将公有函数作为一个对象的属性导出出来
+  return { mean, stddev };
+})();
+
+// 下面是使用这个模块的示例
+stats.mean([1, 3, 5, 7, 9]); // 5
+stats.stddev([1, 3, 5, 7, 9]); // Math.sqrt(10)
+```
+
+#### 10.1.1 基于闭包的自动模块化
+
+在一个 JS 代码文件开头和末尾插入一些文本，把它转换为类似的模块是一个相当机械的过程。这里所需要的就是对 JS 代码文件设定一些规则，按照规则可以指定哪些值要导出，哪些值不导出。
+
+可以想象有一个工具，它能解析代码文件，把每个文件的内容包装在一个立即调用的函数表达式中，还可以跟踪每个函数的返回值，并将所有内容拼接为一个大文件。结果可能类似如下所示:
+
+```js
+const modules = {};
+function require(moduleName) {
+  return modules[moduleName];
+}
+
+modules["sets.js"] = (function() {
+  const exports = {}
+
+  // sets.js 文件的内容在这里:
+  exports.BitSet = class BitSet {};
+  return export;
+}());
+
+modules["stats.js"] = (function() {
+  const exports = {}
+
+  // stats.js 文件的内容在这里
+  const sum = (x, y) => x + y;
+  const square = x => x * x;
+  exports.mean= function(data) {}
+  exports.stddev = function(data) {}
+  return exports;
+}());
+```
+
+把所有模块都打包到类似上面的单个文件中之后，可以像下面这样写代码来使用它们:
+
+```js
+// 取得对所需模块(或模块内容)的引用
+const stats = require('stats.js');
+const BitSet = require('sets.js').Bitset;
+
+// 接下来写使用这些模块的代码
+let s = new BitSet(100);
+s.insert(10);
+s.insert(20);
+s.insert(30);
+let average = stats.mean([...s]); // 平均数是 20
+```
+
+以上代码展示了针对浏览器的代码打包工具（如 webpack 和 Parcel）的基本工作原理。也是对 Node 程序中使用的 `require()` 函数的一个简单介绍。
+
+### 10.2 Node 中的模块
+
+编写 Node 程序时，可以随意将程序拆分到任意多个文件中。这些 JS 代码文件被假定始终存在于一个快速文件系统中。与通过相对较慢的网络连接读取 JS 文件的浏览器不同，把所有 Node 代码都写到一个 JS 文件中既无必要也无益处。
+
+在 Node 中，每个文件都是一个拥有私有命名空间的独立模块。在一个文件中定义的常量、变量、函数和类对该文件而言都是私有的，除非该文件会导出它们。而被模块导出的值只有被另一个模块显式导入后才会在该模块中可见。
+
+Node 模块使用 `require()` 函数导入其他模块，通过设置 `Exports` 对象的属性或完全替换 `module.exports` 对象来导出公共 API。
+
+#### 10.2.1 Node 的导出
+
+Node 定义了一个全局 exports 对象，这个对象始终有定义。如果要写一个导出多个值的 Node 模块，可以直接把这些值设置为 exports 对象的属性:
+
+```js
+const sum = (x, y) => x + y;
+const square = x => x * x;
+
+exports.mean = data => data.reduce(sum) / data.length;
+exports.stddev = function (d) {
+  let m = exports.mean(d);
+  return Math.sqrt(
+    d
+      .map(x => x - m)
+      .map(square)
+      .educe(sum) /
+      (d.length - 1)
+  );
+};
+```
+
+不过，更多的时候只想让模块导出一个函数或类，而非一个包含很多函数或类的对象。为此，只要把想导出的值直接赋给 `module.exports` 即可：
+
+```js
+module.exports = class BitSet extends AbstractWritableSet {
+  // 省略实现
+};
+```
+
+`module.exports` 的默认值与 exports 引用的是同一个对象。在前面的统计模块中，实际上也可以直接把 mean 函数赋值给 `module.exports.mean`。另一种重写这个统计模块的方式是在模块末尾导出一个对象，而不是写一个函数导出一个：
+
+```js
+// 定义所有公有函数和私有函数
+const sum = (x, y) => x + y;
+const square = x => x * x;
+const mean = data => data.reduce(sum) / data.length;
+const stddev = d => {
+  let m = mean(d);
+  return Math.sqrt(
+    d
+      .map(x => x - m)
+      .map(square)
+      .reduce(sum) /
+      (d.length - 1)
+  );
+};
+
+// 最后只导出公有函数
+module.exports = { mean, stddev };
+```
+
+#### 10.2.2 Node 的导入
+
+**Node 模块通过调用 `require()` 函数导入其他模块。这个函数的参数是要导入模块的名字，返回值是该模块导出的值（通常是一个函数、类或对象）**。
+
+如果想导入 Node 内置的系统模块或通过包管理器安装在系统上的模块，可以使用模块的非限定名，即不带会被解析为文本系统路径的 “/” 字符的模块名：
+
+```js
+// 这些都是 Node 内置的模块
+const fs = require('fs'); // 内置的文件系统模块
+const https = require('http'); // 内置的 HTP 模块
+
+// Express Http 服务器框架是第三方模块不属于 Node，但已经安装在本地
+const express = require('express');
+```
+
+如果想导入自己代码中的模块，则模块名应该是指向包含模块代码的模块文件的路径（相对于当前模块文件）。虽然可以使用以 “/” 开头的绝对路径，但在导入自己程序的模块时，通常都使用以 “./” 或 “../” 开头的模块名，以表示它们相对于当前的目录或父目录。例如：
+
+```js
+const stats = require('/stats.js');
+const Bitset = require('./utils/bitset.js');
+```
+
+虽然省略导入文件的 `.js` 后缓，Node 仍然可以找到这些文件，但包含这些文件扩展名还是很常见的。
+
+如果模块只导出一个函数或类，则只要调用 `require()` 取得返回值即可。如果模块导出一个带多个属性的对象，则有两个选择：
+
+- 导入整个对象
+
+- 通过解构赋值只导入打算使用的特定属性
+
+比较一下这两种方式:
+
+```js
+// 导入整个 stats 对象，包含所有函数
+const stats = require('./stats.js');
+
+// 虽然导入了用不到的函数，但这些函数都隐藏在 "stats" 命名空间之后
+let average = stats.mean(data);
+
+// 当然，也可以使用常见的解构赋值直接向本地命名空间中导入想用的函数
+const { stddev } = require('/stats.js');
+
+// 这样当然简洁明了，只是 stddev() 函数没有 'stats' 前缀作为命名空间，因此少了上下文信息
+let sd = stddev(data);
+```
+
+### 10.3 ES6 中的模块
+
+ES6 为 JS 添加了 `import` 和 `export` 关键字，终于将模块作为核心语言特性来支持了。**ES6 模块化与 Node 的模块化在概念上是相同的：每个文件本身都是模块，在文件中定义的常量、变量、函数和类对这个文件而言都是私有的，除非它们被显式导出**。
+
+另外，一个模块导出的值只有在显式导入它们的模块中才可以使用。**ES6 模块与 Node 模块的区别在于导入和导出所用的语法，以及浏览器中定义模块的方式**。
+
+**ES6 模块与常规 JS “脚本”的区别**：
+
+- 最明显的区别是模块化本身：在常规脚本中，顶级声明的变量、函数和类会进入被所有脚本共享的全局上下文。而在模块中，每个文件都有自己的私有上下文，可以使用 `import` 和 `export` 语句。
+
+- ES6 模块中的代码自动应用严格模式。这意味着在使用 ES6 模块时，永远不用再写 `use strict` 了。同时也意味着模块中的代码无法使用 `with` 语句和 `arguments` 对象或未声明的变量。ES6 模块甚至比严格模式还要更严格：在严格模式下，在作为函数调用的函数中 this 是 undefined。而在模块中，即便在顶级代码中 this 也是 undefined（相对而言，浏览器和 Node 中的脚本都将 this 设置为全局对象）。
+
+#### 10.3.1 ES6 的导出
+
+要从 ES6 模块导出常量、变量、函数或类，只要在声明前加上 `export` 关键字即可:
+
+```js
+export const PI = Math.PI;
+
+export function degreesToRadians(d) {
+  return (d * PI) / 180;
+}
+
+export class Circle {
+  constructor(r) {
+    this.r = r;
+  }
+  area() {
+    return PI * this.r * this.r;
+  }
+}
+```
+
+要取代使用多个 `export` 关键字的做法，可以先正常定义常量、变量、函数和类，不加 `export` 关键字。然后（通常在模块末尾）只用一个 `export` 语句声明真正要导出的值。也就是说，前面使用三个 `export` 的代码等价于下面这一行代码：
+
+```js
+export { Circle, degreesToRadians, PI };
+```
+
+这个语法看起来是 `export` 关键字后跟一个对象字面量（使用了简化写法），但这里的花括号实际上不会定义对象字面量。这个导出语法仅仅是要求在一对花括号中给出一个逗号分隔的标识符列表。
+
+一个模块只导出一个值（通常是一个函数或类）的情况是很常见的，此时通常可以使用 `export default` 而不是 `export`：
+
+```js
+export default class BitSet {
+  // 省略实现
+}
+```
+
+> **注意**：
+>
+> 1. 使用 `export` 的常规导出只对有名字的声明有效。而使用 `export default` 的默认导出则可以导出任意表达式，包括匿名函数表达式和匿名类表达式。这意味着如果使用 `export default`，则可以导出对象字面量。因此，与 `export` 语法不同，位于 `export default` 后面的花括号是实实在在会被导出的对象字面量。
+> 2. 模块中同时有一些常规导出和一个默认导出是合法的，只是不太常见。如果模块中有默认导出，那就只能有一个。
+> 3. `export` 关键字只能出现在 JS 代码的顶层。不能在类、函数、循环或条件内部导出值（这是 ES6 模块系统的重要特性，用以支持静态分析：模块导出的值在毎次运行时都相同，而导出的符号可以在模块实际运行前确定）。
+
+#### 10.3.2 ES6 的导入
+
+导入其他模块导出的值要使用 `import` 关键字。最简单的形式是导入定义了默认导出的模块：
+
+```js
+import BitSet from './bitset.js';
+```
+
+首先是 `import` 关键字，跟着一个标识符，再跟着一个 `from` 关键字，最后的字符串字面值是要导入其默认导出的模块的名字。指定模块默认导出的值会变成当前模块中指定标识符的值。
+
+获得导入值的标识符是一个常量，就像是使用 `const` 关键字声明的一样。与导出类似，导入也只能出现在模块顶层，不允许在类、函数、循环或条件中出现。按照惯例，一个模块所需的导入都应该放在这个模块的开头。不过，这个规则并不是强制性的。导入与函数声明类似，会被“提升”到顶部，因此所有导入的值在模块代码运行时都是可用的。
+
+**从中导入值的模块**
+从中导入值的模块以常量字符串字面量的形式在单引号或双引号中给出（不能使用变量或其他值作为字符串的表达式，也不能把字符串放在反引号中，因为模板字面量有可能插入变量，并非只包含常量值）。
+
+在浏览器中，这个字符串会被解释为一个相对于导入模块位置的 URL（在 Node 中，或当使用打包工具时，这个字符串会被解释为相对于当前模块的文件名，不过这在实践中没有太大差别）。模块标识符字符串必须是一个以 "/" 开头的绝对路径，或者是一个以 "./" 或 "../" 开头的相对路径，又或者是一个带有协议及主机名的完整 URL。
+
+ES6 规范不允许类似 "util.js" 的非限定模块标识符字符串，因为它存在歧义：它是当前模块同级目录下的一个模块呢，还是安装在特殊位置的某个系统模块呢?（webpack 等代码打包工具不会限制这种“裸模块标识符”，因为通过配置很容易在指定的库目录中找到裸模块）。JS 语言未来的某个版本可能会允许“裸模块标识符”，但现在还不允许。如果想从当前模块的同级目录导入模块，只需要在模块名前面加上 "./"，也就是使用 "./util.js" 而非 "util.js"。
+
+导出多个值的模块导入值的语法:
+
+```js
+import { mean, stddev } from './stats.js';
+```
+
+默认导出在定义它们的模块中不需要名字，在导入这些值的时候可以再给它们提供一个局部名。但非默认导出在导出它们的模块中则是有名字的，在导入这些值时，需要通过名字引用它们。导出模块可以导出任意多个命名的值。引用该模块的 `import` 语句可以导入这些值的任意子集，只要在花括号中列出它们的名字即可。花括号让 `import` 语句看起来像是解构赋值，而解构赋值也确实是这种导入风格一个不错的类比。花括号中的标识符都会被提升到导入模块顶部，行为类似常量。
+
+风格指南有时会推荐显式导入模块将用到的所有符号。不过在从定义了很多导出的模块导入值时，可以像下面这样以一条 `import` 语句导入所有值：
+
+```js
+import * as stats from './stats.js';
+```
+
+像这样一条 `import` 语句可以创建一个对象，并将其赋值给一个名为 `stats` 的常量。被导入模块的每个非默认导出都会变成这个 `stats` 对象的一个属性。非默认导出始终有名字，这些名字将作为这个对象的属性名。这些属性是常量，不能被重写或删除。在使用前面这个带通配符的导入语句时，导入模块需要通过 `stats` 对象使用导入的 `mean()` 和 `stddev()` 函数，即要通过 `stats.mean()` 和 `stats.stddev()` 调用它们。
+
+模块通常要么定义一个默认导出，要么定义多个命名导出。但一个模块同时使用 `export` 和 `export default` 也合法。可以只通过以下语句同时导入默认值和命名值：
+
+```js
+import Histogram, { mean, stddev } from './histogram-stats.js';
+```
+
+`import` 语句还有另一种形式，用于导入没有任何导出的模块。要在程序中包含没有导出的模块，只要在 `import` 关键字后面直接写出模块标识符即可：
+
+```js
+import './analytics.js';
+```
+
+这样的模块会在被首次导入时运行一次（之后再导入时则什么也不做）。如果模块中只定义了一些函数，那么它至少要导出其中一个函数才能有用。而如果模块中运行一些代码，那么即便没有符号导入也会很有用。
+
+Web 应用可以使用分析模块（如 analytics.js）运行注册各种事件处理程序的代码，然后通过这些事件处理程序在合适的时机向服务器发送遥测数据。虽然模块是自包含的，不需要导出任何值，但仍然需要通过 `import` 导入才能让它作为程序的一部分运行。
+
+> **注意**：对那些有导出的模块也可以使用这种什么也不导入的 `import` 语法。如果模块定义了与它的导出值无关的有用行为，而程序不需要它的任何导出值，那么可以只为它的默认行为导入这个模块。
+
+#### 10.3.3 导入和导出时重命名
+
+如果两个模块使用相同的名字导出了两个不同的值，而希望同时导入这两个值，那必须在导入时对其中一个或这两个进行重命名。类似地，如果在导入某个值时发现它的名字已经被占用了，则需要重命名这个导入值。可以在命名导入时使用 `as` 关键字对导入值进行重命名：
+
+```js
+import { render as renderImage } from './imageUtils.js';
+import { render as renderUI } from './ui.js';
+```
+
+这两行代码向当前模块导入了两个函数。这两个函数在定义它们的模块中都被命 `render()`，但在导入时被重命名为更好理解且没有歧义的 `renderImage()` 和 `renderUI()`。
+
+默认导出没有名字。导入模块在导入默认导出时始终需要选择一个名字。因此这种情况下不需要特殊语法。
+
+尽管如此，导入时重命名的机制也为同时定义了默认导出和命名导出的模块提供了另一种导入方式:
+
+```js
+import { default as histogram, mean, stddev } from './histogram-stats.js';
+```
+
+在这种情况下，JS 关键字 `default` 充当一个占位符，允许指明想导入模块的默认导出并为其提供一个名字。
+
+导出值时也可以重命名，但仅限于使用 `export` 语句的花括号形式。通常并不需要这样做，但如果在模块内部使用了简洁短小的名字，那在导出值时可能希望使用更有描述
