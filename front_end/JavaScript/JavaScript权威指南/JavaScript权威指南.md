@@ -5331,7 +5331,7 @@ JS 定义了不少数学函数和常量，但并没有把它们定义在全局�
 在函数中声明的局部变量和嵌套函数都是函数私有的。这意味着可以使用立即调用的函数表达式来实现某种模块化，把实现细节和辅助函数隐藏在包装函数中，只将模块的公共 API 作为函数的值返回。以 BitSet 类为例，可以像下面这样实现这个模块：
 
 ```js
-// 将 Bitset 设置为这个函数的返回值
+// 将 BitSet 设置为这个函数的返回值
 const BitSet = (function () {
   // 这里是私有实现细节
   function isValid(set, n) {}
@@ -5347,7 +5347,7 @@ const BitSet = (function () {
 })();
 ```
 
-如果模块需要暴露多个值，这种实现模块化的方式就比较有意思了。例如，以下代码定义了一个小型统计模块，暴露了 `mean()` 和 `stddev()` 函数，同时隐藏了实现细节:
+如果模块需要暴露多个值。以下代码定义了一个小型统计模块，暴露了 `mean()` 和 `stddev()` 函数，同时隐藏了实现细节:
 
 ```js
 // 可以像这样定义 stats 模块
@@ -5394,24 +5394,24 @@ function require(moduleName) {
   return modules[moduleName];
 }
 
-modules["sets.js"] = (function() {
-  const exports = {}
+modules['sets.js'] = (function () {
+  const exports = {};
 
   // sets.js 文件的内容在这里:
   exports.BitSet = class BitSet {};
-  return export;
-}());
+  return exports;
+})();
 
-modules["stats.js"] = (function() {
-  const exports = {}
+modules['stats.js'] = (function () {
+  const exports = {};
 
   // stats.js 文件的内容在这里
   const sum = (x, y) => x + y;
   const square = x => x * x;
-  exports.mean= function(data) {}
-  exports.stddev = function(data) {}
+  exports.mean = function (data) {};
+  exports.stddev = function (data) {};
   return exports;
-}());
+})();
 ```
 
 把所有模块都打包到类似上面的单个文件中之后，可以像下面这样写代码来使用它们:
@@ -5419,7 +5419,7 @@ modules["stats.js"] = (function() {
 ```js
 // 取得对所需模块(或模块内容)的引用
 const stats = require('stats.js');
-const BitSet = require('sets.js').Bitset;
+const BitSet = require('sets.js').BitSet;
 
 // 接下来写使用这些模块的代码
 let s = new BitSet(100);
@@ -5512,12 +5512,9 @@ const stats = require('/stats.js');
 const Bitset = require('./utils/bitset.js');
 ```
 
-虽然省略导入文件的 `.js` 后缓，Node 仍然可以找到这些文件，但包含这些文件扩展名还是很常见的。
-
 如果模块只导出一个函数或类，则只要调用 `require()` 取得返回值即可。如果模块导出一个带多个属性的对象，则有两个选择：
 
 - 导入整个对象
-
 - 通过解构赋值只导入打算使用的特定属性
 
 比较一下这两种方式:
@@ -5529,7 +5526,7 @@ const stats = require('./stats.js');
 // 虽然导入了用不到的函数，但这些函数都隐藏在 "stats" 命名空间之后
 let average = stats.mean(data);
 
-// 当然，也可以使用常见的解构赋值直接向本地命名空间中导入想用的函数
+// 也可以使用常见的解构赋值直接向本地命名空间中导入想用的函数
 const { stddev } = require('/stats.js');
 
 // 这样当然简洁明了，只是 stddev() 函数没有 'stats' 前缀作为命名空间，因此少了上下文信息
@@ -5646,23 +5643,21 @@ Web 应用可以使用分析模块（如 analytics.js）运行注册各种事件
 
 #### 10.3.3 导入和导出时重命名
 
-如果两个模块使用相同的名字导出了两个不同的值，而希望同时导入这两个值，那必须在导入时对其中一个或这两个进行重命名。类似地，如果在导入某个值时发现它的名字已经被占用了，则需要重命名这个导入值。可以在命名导入时使用 `as` 关键字对导入值进行重命名：
+- 如果两个模块使用相同的名字导出了两个不同的值，而希望同时导入这两个值，那必须在导入时对其中一个或这两个进行重命名。类似地，如果在导入某个值时发现它的名字已经被占用了，则需要重命名这个导入值。可以在命名导入时使用 `as` 关键字对导入值进行重命名：
 
-```js
-import { render as renderImage } from './imageUtils.js';
-import { render as renderUI } from './ui.js';
-```
+  ```js
+  import { render as renderImage } from './imageUtils.js';
+  import { render as renderUI } from './ui.js';
+  ```
 
-这两行代码向当前模块导入了两个函数。这两个函数在定义它们的模块中都被命 `render()`，但在导入时被重命名为更好理解且没有歧义的 `renderImage()` 和 `renderUI()`。
+  这两行代码向当前模块导入了两个函数。这两个函数在定义它们的模块中都被命 `render()`，但在导入时被重命名为更好理解且没有歧义的 `renderImage()` 和 `renderUI()`。
 
-默认导出没有名字。导入模块在导入默认导出时始终需要选择一个名字。因此这种情况下不需要特殊语法。
+- 默认导出没有名字。导入模块在导入默认导出时始终需要选择一个名字。因此这种情况下不需要特殊语法。尽管如此，导入时重命名的机制也为同时定义了默认导出和命名导出的模块提供了另一种导入方式:
 
-尽管如此，导入时重命名的机制也为同时定义了默认导出和命名导出的模块提供了另一种导入方式:
+  ```js
+  import { default as histogram, mean, stddev } from './histogram-stats.js';
+  ```
 
-```js
-import { default as histogram, mean, stddev } from './histogram-stats.js';
-```
+  在这种情况下，JS 关键字 `default` 充当一个占位符，允许指明想导入模块的默认导出并为其提供一个名字。
 
-在这种情况下，JS 关键字 `default` 充当一个占位符，允许指明想导入模块的默认导出并为其提供一个名字。
-
-导出值时也可以重命名，但仅限于使用 `export` 语句的花括号形式。通常并不需要这样做，但如果在模块内部使用了简洁短小的名字，那在导出值时可能希望使用更有描述
+  导出值时也可以重命名，但仅限于使用 `export` 语句的花括号形式。通常并不需要这样做，但如果在模块内部使用了简洁短小的名字，那在导出值时可能希望使用更有描述
