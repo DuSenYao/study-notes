@@ -190,6 +190,13 @@ title: JavaScript权威指南
     - [11.3 正则表达式与模式匹配](#113-正则表达式与模式匹配)
       - [11.3.1 定义正则表达式](#1131-定义正则表达式)
       - [11.3.2 模式匹配的字符串方法](#1132-模式匹配的字符串方法)
+      - [11.3.3 RegExp 类](#1133-regexp-类)
+    - [11.4 日期与时间](#114-日期与时间)
+      - [11.4.1 时间戳](#1141-时间戳)
+      - [11.4.2 日期计算](#1142-日期计算)
+      - [11.4.3 格式化与解析日期字符串](#1143-格式化与解析日期字符串)
+    - [11.5 Error 类](#115-error-类)
+    - [11.6 JSON 序列化与解析](#116-json-序列化与解析)
 
 <!-- /code_chunk_output -->
 
@@ -6578,4 +6585,432 @@ String 支持 4 个使用正则表达式的方法。
 'Python'.search(/script/iu); // -1
 ```
 
-如果 search() 方法的参数不是正则表达式，它会先把这个参数传给 RegEXp() 构造函
+如果 search() 方法的参数不是正则表达式，它会先把这个参数传给 RegEXp() 构造函数，把它转换为正则表达式。search() 方法不支持全局搜索，因此其正则表达式参数中包含的 `g` 标志会被忽略。
+
+**replace()**
+replace() 方法执行搜索替换操作。它接收一个正则表达式作为第一个参数，接收一个替换字符串作为第二个参数。它搜索调用它的字符串，寻找与指定模式匹配的文本。如果正则表达式带 `g` 标志，replace() 方法会用替换字符串中的所有匹配项；否则，它只替换第一个匹配项。
+
+如果 replace() 的第一个参数是字符串而非正则表达式，这个方法不会像 search() 那样将字符串通过 RegExp() 转换为正则表达式，而是会按照字面值搜索。比如，可以像下面这样使用 replace() 规范文本字符串中所有 “JavaScript” 的大小写：
+
+```js
+// 无论之前是什么大小形式，都替换成规范的大小写形式
+text.replace(/javascript/gi, 'JavaScript');
+```
+
+不过，replace() 的能力远不止这些。正则表达式中括号分组的子表达式是从左到右编号的，而且正则表达式能够记住每个子表达式匹配的文本。如果替换字符串中出现了 `$` 符号后跟一个数字，replace() 会将这两个字符替换为与指定子表达式匹配的文本。比如，可以通过它将字符串中的引号替换成其他字符：
+
+```js
+// quote 表示一个引号后跟任意多个非引号字符，最后又是一个引号
+let quote = /"([^"]*)"/g;
+// 将直引号替换成书名号，同时引用的文本不变（保存在 $1 中）
+'He said "stop"'.replace(quote, '《$1》'); // 'He said 《stop》'
+```
+
+如果 RegExp 中使用的是命名捕获组，可以通过名字而非数字来引用匹配的文本：
+
+```js
+let quote = /"(?<quotedText>[^"]*)"/g;
+'He said "stop"'.replace(quote, '《<quotedText>》'); // 'He said 《stop》'
+```
+
+除了给 replace() 传替换字符串，还可以传一个函数，这个函数会被调用以计算替换的值。这个替换函数在被调用时会接收到几个参数。第一个是匹配的整个文本。然后，如果 RegExp 有捕获组，则后面几个参数分别是这些捕获组匹配的子字符串。再接下来的参数是在字符串找到匹配项的位置。再然后一个参数是调用 replace() 方法的整个字符串。最后，如果 RegExp 包含命名捕获组，替换函数还会收到一个参数，这个参数是一个对象，其属性名是捕获组的名字，属性值是匹配的文本。比如，下面的代码使用替换函数将字符串中的十进制整数替换成了十六进制：
+
+```js
+let s = '15 times 15 is 225';
+s.replace(/\d+/gu, n => parseInt(n).toString(16)); // "f times f is e1"
+```
+
+**match()**
+match() 是字符串最通用的正则表达式方法，它只有一个正则表达式参数（如果参数不是正则表达式，会把它传给 RegExp() 构造函数），返回一个数组，其中包含匹配的结果；如果没有找到匹配项，就返回 null。如果正则表达式有 `g` 标志，这个方法返回的数组会包含在字符串中找到的所有匹配项。例如：
+
+```js
+'7 plus 8 equals 15'.match(/d+/g); // ["7", "8", "15"]
+```
+
+如果正则表达式没有 `g` 标志，match() 不会执行全局搜索，只会查找第一个匹配项。在非全局搜索时，match() 仍然返回数组，但数组元素完全不同。在没有 `g` 标志的情况下，返回数组的第一个元素是匹配的字符串，剩下的所有元素是正则表达式中括号分组的捕获组匹配的子字符串。因此，如果 match() 返回一个数组 a，则 `a[0]` 包含与整个正则表达式匹配的字符串，`a[1]` 包含与第一个捕获组匹配的子字符串，以此类推。如果与 replace() 方法做个比较，则 `a[1]` 相当于 `$1`，`a[2]` 相当于 `$2`，以此类推。
+
+比如，下面的代码是一个解析 URL 的例子：
+
+```js
+// 一个非常简单的解析 URL 的 RegExp
+let url = /(\w+):\/\/([\w.]+)\/(\S*)/;
+let text = 'visit my blog at http://www.example.com/~david';
+let match = text.match(url);
+let fullurl, protocol, host, path;
+if (match !== null) {
+  fullurl = match[0]; // fullurl == "http://www.example.com/~david"
+  protocol = match[1]; // protocol == "http"
+  host = match[2]; // host == "www.example.com"
+  path = match[3]; // path == "~david"
+}
+```
+
+在非全局搜索的情况下，match() 返回的数组除了可以通过数值索引的元素，也有一些对象属性。其中，`input` 属性引用调用 match() 的字符串。`index` 属性是匹配项在字符串中的起始位置。如果正则表达式包含命名捕获组，则返回的数组也有一个 `groups` 属性，其值是一个对象。这个对象的属性就是命名捕获组的名字，而属性的值就是匹配的文本。比如，可以将前面那个匹配 URL 的例子重写成下面这样:
+
+```js
+let url = /?<protocol>\w+):\/\/(?<host>[\w.]+)\/(?<path>\S*)/;
+let text = 'visit my blog at http://www.example.com/~david';
+let match = text.match(url);
+match[0]; // http://www.example.com/~david
+match.input; // text
+match.index; // 17
+match.groups.protocol; // "http"
+match.groups.host; // "www.example.com"
+match.groups.path; // "~david"
+```
+
+match() 的行为会因为 RegExp 是否带 `g` 标志而有很大不同。另外，是否设置 `y` 标志对 match() 的行为也有一些影响。`y` 标志通过控制字符串匹配的开始位置让正则表达式 “有粘性”。如果 RegExp 同时设置了 `g` 和 `y` 标志，match() 返回包含所有匹配字符串的数组，就跟只设置了 `g` 而没有设置 `y` 一样。但第一个匹配项必须始于字符串开头，每个后续的匹配项必须从前一个匹配项的后一个字符开始。
+
+如果只设置了 `y` 而没有设置 `g` 标志，match() 会尝试找到第一个匹配项，且默认情况下，这个匹配项被限制在字符串开头。不过，这个默认的起始位置是可以修改的，设置 RegExp 对象的 `lastIndex` 属性就可以指定匹配开始的位置。如果找到了匹配项，`lastIndex` 属性会自动被更新为匹配项之后第一个字符的位置，因此如果像这里一样再次调用 match()，它会继续寻找后面的匹配项（`lastIndex` 看起来并不像是一个可以指定下一次匹配开始位置的属性）。
+
+```js
+let vowel = /[aeiou]/y; // 粘着元音匹配
+'test'.match(vowel); // null："test" 开头的字符不是元音字母
+voweL.lastIndex = 1; // 指定一个不同的匹配位置
+'test'.match(vowel)[0]; // "e"：在位置 1 找到了元音字母
+voweL.lastIndex; // 2：lastIndex 会自动更新
+test.match(voweL); // null：位置 2 不是元音字母
+vowel.lastIndex; // 0：匹配失败后，lastIndex 会被重置
+```
+
+> **注意**：即给字符串的 math() 方法传一个非全局正则表达式，相当于把字符串传给正则表达式的 exec() 方法。这两种情况下返回的数组及其属性都相同。
+
+**matchAll()**
+matchAll() 方法是 ES2020 中定义的。matchAll() 接收一个带 `g` 标志的正则表达式。但它并不像 match() 那样返回所有匹配项的数组，而是返回一个迭代器，每次迭代都产生一个与使用 match() 时传入非全局 RegExp 得到的匹配对象相同的对象。正因为如此，matchAll() 成为循环遍历字符串中所有匹配项最简单和最通用的方式。
+
+可以像下面这样使用 matchAll() 遍历字符串中包含的单词：
+
+```js
+// 位于词边界之间的一个或多个 Unicode 字母字符
+const words = /\b\p{Alphabetic}+\b/gu;
+const text = 'This is a naive test of the matchAll() method.';
+for (let word of text.matchAll(words)) {
+  console.log(`Found '${word[0]}' at index ${word.index}.`);
+}
+```
+
+也可以设置 RegExp 对象的 `lastIndex` 属性，告诉 matchAll() 从字符串中的哪个索引开始匹配。但是，与其他模式匹配方法不同的是，matchAll() 不会修改传入 RegExp 的 `lastIndex` 属性，这也使得它不太可能在代码中导致 bug。
+
+**split()**
+String 对象的最后一个正则表达式方法是 split()。这个方法使用传入的参数作为分隔符，将调用它的字符串拆分为子字符串保存到一个数组中。可以像这样给它传入一个字符串参数：
+
+```js
+'123,456,789'.split(','); // ['123', '456', '789']
+```
+
+split() 方法也可以接收一个正则表达式参数，这样就可以指定更通用的分隔符。下面这个例子中指定的分隔符允许逗号两侧包含任意数量的空格：
+
+```js
+'1, 2, 3,\n4, 5'.split(/\s*,\s*/); // ['1', '2', '3', '4', '5']
+```
+
+如果调用 split() 时传入 RegExp 作为分隔符，且这个正则表达式中包含捕获组，则捕获组匹配的文本也会包含在返回的数组中：
+
+```js
+const htmlTag = /<([^>]+)>/; // < 后跟一个或多个非 > 字符，再后跟 >
+'Testing<br/>1,2,3'.split(htmLTag); // ["Testing", "br/", "1,2,3"]
+```
+
+#### 11.3.3 RegExp 类
+
+RegExp() 构造函数接收一个或两个字符串参数，创建一个新 RegExp 对象。这个构造函数的第一个参数是包含正则表达式主体的表达式，即在正则表达式字面量中出现在斜杠中间的部分。
+
+> **注意**：字符串字面量和正则表达式都使用 `\` 字符转义，因此在以字符串字面量形式给 RegExp() 传入正则表达式时，必须把所有 `\字` 符替换成 `\\`。
+
+RegExp() 的第二个参数是可选的。如果提供了这个参数，则代表指定正则表达式的标志。这个参数应该是 `g`、`i`、`m`、`s`、`u`、`y` 或它们的任意组合。
+
+```js
+// 查找字符串中包含的所有 5 位数字。注意这里的双反斜杠 \\。
+let zipcode = new RegExp('\\d{5}', 'g');
+```
+
+**RegExp() 构造函数主要用于动态创建正则表达式，即创建那些无法用正则表达式字面量语法表示的正则表达式**。例如，要搜索用户输入的字符串，就必须使用 RegExp() 在运行时创建正则表达式。
+
+除了给 RegExp() 的第一个参数传字符串，也可以传一个 RegExp 对象。这样可以复制已有的正则表达式，并且修改它的标志：
+
+```js
+let exactMatch = /JavaScript/;
+let caseInsensitive = new RegExp(exactMatch, 'i');
+```
+
+**RegExp 属性**
+RegExp 对象有以下属性。
+
+`source`
+: 这是个只读属性，包含正则表达式的源文本，即出现在 RegExp 字面量的两个斜杠中间的字符。
+
+`flags`
+: 这是个只读属性，包含指定 RegExp 标题的一个或多个字母。
+
+`global`
+: 只读布尔属性，如果设置了 `g` 标志则为 true。
+
+`ignoreCase`
+: 只读布尔属性，如果设置了标志 `i` 则为 true。
+
+`multiline`
+: 只读布尔属性，如果设置了 `m` 标志则为 true。
+
+`dotAll`
+: 只读布尔属性，如果设置了 `s` 标志则为 true。
+
+`unicode`
+: 只读布尔属性，如果设置了 `u` 标志则为 true。
+
+`sticky`
+: 只读布尔属性，如果设置了 `y` 标志则为 true。
+
+`lastIndex`
+: 这是个可以读、写的整数属性。对于带有 `g` 或 `y` 标志的模式，这个属性用于指定下次匹配的起始字符位置。
+
+**test()**
+RegExp 类的 test() 方法是使用正则表达式的最简单方式。该方法接收一个字符串参数，如果字符串与模式匹配则返回 true，如果没有找到匹配项则返回 false。
+
+test() 方法的原理很简单，它会调用下面的（更复杂的）exec()方法，如果 exec() 返回非空值就返回 true。正因为如此，如果调用 test() 的 RegExp 使用了 `g` 或 `y` 标志，则这个方法的行为取决于 RegExp 对象的 `lastIndex` 属性的值，而这个属性的值可能会被意外修改。详细信息可以参考下面的 “lastIndex 属性与重用 RegExp”。
+
+**exec()**
+RegExp 的 exec() 方法是使用正则表达式最通常、最强大的方式。该方法接收一个字符串参数，并从这个字符串寻找匹配。如果没有找到匹配项，则返回 null。而如果找到了匹配项，则会返回一个数组，跟字符串的 match() 方法在非全局搜索时返回的数组一样。这个数组的元素 0 包含匹配整个正则表达式的字符串，后面的数组元素包含与正则表达式中捕获组匹配的子字符串。这个返回的数组也有对象属性：`index` 属性包含匹配项起始字符的位置，`input` 属性包含搜索的目标字符串，而 `groups` 属性（如果有捕获组）引用一个对象，保存与每个命名捕获组匹配的子字符串。
+
+与 String 的 match() 方法不同，exec() 方法无论正则表达式是否设置了 `g` 标志都会返回相同的数组。match() 方法在收到一个全局正则表达式时会返回所有匹配项的数组。相对而言，exec() 始终返回一个匹配项，并提供关于该匹配项的完整信息。
+
+在通过设置了全局 `g` 或粘着 `y` 标志的正则表达式调用 exec() 时，exec() 会根据 RegExp 对象的 `lastIndex` 属性来决定从哪里开始査找匹配（如果设置了 `y` 标志，那么也会限制匹配项必须从该位置开始）。对一个新创建的 RegExp 对象来说，它的 `lastIndex` 为 0，因此搜索从字符串的起点开始。但每次 exec() 成功执行，找到一个匹配项，都会更新 RegExp 的 `lastindex` 属性，将其改写为匹配文本之后第一个字符的索引。如果 exec() 没有找到匹配项，它会将 `lastIndex` 重置为 0。这个特殊行为得以重复调用 exec()，从而逐个找到字符串中所有的匹配项（ES2020 及之后的版本为 String 新增了 catchAll() 方法。而 matchAll() 是遍历所有匹配的更简单方式）。例如，下面代码中的循环会运行两次：
+
+```js
+let pattern = /Java/g;
+let text = 'JavaScript > Java';
+let match;
+while ((match = pattern.exec(text)) !== null) {
+  console.log(`Matched ${match[0]} at ${match.index}`);
+  console.log(`Next search begins at ${pattern.lastIndex}`);
+}
+```
+
+**lastIndex 属性与重用 RegExp**
+JS 正则表达式 API 是比较复杂的。其中配合 `g` 和 `y` 标志的 `lastIndex` 属性则是这套 API 中最费解的地方。每当使用这两个标志时，都要
+在调用 match()、exec() 或 test()方法时特别小心。因为这些方法的行为依赖于 `lastIndex`，而 `lastIndex` 的值依赖于之前对 RegExp 对象做了什么。这一连串的依赖很容易导致写出问题代码。
+
+比如，假设想找到一段 HTML 文本中所有 `<p>` 标签的索引，可能会写出下面这样的代码：
+
+```js
+let match,
+  positions = [];
+// 可能无穷循环
+while ((match = /<p>/g.exec(html)) !== null) {
+  positions.push(match.index);
+}
+```
+
+这段代码不会达成想要的结果。如果 html 字符串包含至少一个 `<p>` 标签，那循环将永远不会停止。问题在于 while 循环条件中使用了一个 RegExp 字面量。循环的每次选代都创建一个新的 RegExp 对象，其 lastIndex 初始值为 0。因此 exec() 每次都从字符串的开头查找，如果有匹配，那就会一遍一遍不停地匹配。解决方案当然就是只定义一次 RegExp，把它们保存在一个变量中，让循环的每次选代都使用同一个 RegExp 对象。
+
+另一方面，有时候重用一个 RegExp 对象也是不对的。比如，假设要遍历一个词典中的所有单词，查找其中所有包含双字母的单词：
+
+```js
+let dictionary = ['apple', 'book', 'coffee'];
+let doubleLetterWords = [];
+let doubleLetter = /(\w)\1/g;
+for (let word of dictionary) {
+  if (doubleLetter.test(word)) {
+    doubleLetterWords.push(word);
+  }
+}
+doubleLetterwords; // ["apple", "coffee"]：没有 "book"!
+```
+
+由于这个 RegExp 设置了 `g` 标志，所以它的 `lastIndex` 属性会在每次成功匹配后被修改，而（基于 exec() 的）test()方法就会从 `lastIndex` 指定的位置开始下一次搜索。在匹配完 “apple” 中的 “pp” 后，`lastIndex` 值被更新为 3，因此再从位置 3 开始搜索 “book” 时就会跳过其中包含的 “oo”。
+
+要解决这个问题，可以删除 `g` 标志（在这个特定的例子中 `g` 标志并不是必需的），也可以把 RepExp 字面量挪到循环体内，以便每次迭代时都创建一个新实例，还可以在每次调用 test() 之前把 `lastIndex` 重置为 0。
+
+> 举上面这些例子是为了说明 lastIndex 让 RegExp api 很容易出错。因此在使用 `g` 或 `y` 标志和循环时要格外注意。在 ES2020 及之后的版本中，应该使用 String 的 `matchAll()` 方法而不是 exec() 来避开这个问题，因为 `matchAll()` 不会修改 lastIndex。
+
+### 11.4 日期与时间
+
+Date 类是 JS 中用于操作日期和时间的 API。使用 Date() 构造函数可以创建一个日期对象。在不传参数的情况下，这个构造函数会返回一个表示当前日期和时间的 Date 对象：
+
+```js
+let now = new Date(); // 当前时间
+```
+
+如果传入一个数值参数，Date() 构造函数会将其解释为自 1970 年至今经过的亳秒数：
+
+```js
+let epoch = new Date(0); // 格林尼治标准时间 1970 年 1 月 1 日 θ 时
+```
+
+如果传入一个或多个整数参数，它们会被解释为本地时区的年、月、日、时、分、秒和毫秒，如下所示：
+
+```js
+let century = new Date(
+  2100, // 2100 年
+  0, // 1 月
+  1, // 1 日
+  2,
+  3,
+  4,
+  5 //本地时间 02:03:04.005
+);
+```
+
+Date API 有个奇怪的地方，即每年第一个月对应数值 0，而每月第一天对应数值 1。如果省略时间字段，Date() 构造函数默认它们都为 0，将时间设置为半夜 12 点。
+
+> **注意**：在使用多个参数调用时，Date() 构造函数会使用本地计算机的时区来解释它们。如果想以 UTC（Universal Coordinated Time，通用协调时间;也称 GMT，即 Greenwich Mean Time，格林尼治标准时间）指定日期和时间，可以使用 `Date.UTC()`。这个静态方法接收与 Date()构造函数同样的参数，但使用 UTC 来解释它们，并返回毫秒时间戳，可以传给 Date() 构造函数：
+
+```js
+// 英格兰 2100 年 1 月 1 日半夜 12 点
+let century = new Date(Date.UTC(2100, 0, 1));
+```
+
+如果要打印日期（比如，使用 console.log(century)），默认会以本地时区打印。如果想以 UTC 显示日期，应该先使用 `toUTCString()` 或 `toISOString()` 转换它。
+
+最后，如果给 Date() 构造函数传入字符串，它会尝试按照日期和时间格式来解析该字符串。这个构造函数可以解析 `toString()`、`toUTCString()` 和 `toISOString()` 方法产生的格式：
+
+```js
+let century = new Date('2100-01-01T00:00:00Z'); // ISO 格式的日期
+```
+
+有了一个 Date 对象后，可以通过很多方法获取或设置这个对象的年、月、日、时、分、秒和毫秒字段。这些方法都有两种形式：
+
+- 使用本地时间获取和设置
+- 使用 UTC 时间获取和设置
+
+比如，要获取或设置一个 Date 对象的年份，可以使用 `getFullYear()`、`getUTCFullYear()`、`setFullYear()` 或 `setUTCFullYear()`：
+
+```js
+let d = new Date(); // 先用当前日期创建
+d.setFullYear(d.getFullYear() + 1); // 增加1年
+```
+
+要获取或设置 Date 的其他字段，只要将前面方法中的 “FullYear” 替换成 “Month” “Date” “Hours” “Minutes” “Seconds” 或 “Milliseconds”即可。其中一些日期设置方法允许一次性设置多个字段。`setFullYear()` 和 `setUTCFullYear()` 也可选地允许同时设置月和日。而 `setHours()` 和 `setUTCHours()` 除了支持小时字段，还允许指定分钟、秒和毫秒字段。
+
+> **注意**：查询日的方法是 `getDate()` 和 `getUTCDate()`。而名字听起来更自然的函数 `getDay()` 和 `getUTCDay()` 返回的是代表周几的数值（0 表示周日，6 表示周六）。周几字段是只读的，因此没有对应的 `setDay()` 方法。
+
+#### 11.4.1 时间戳
+
+JS 在内部将日期表示为整数，代表自 1970 年 1 月 1 日半夜 12 点起（或之前）的毫秒数。最大支持的整数是 8640000000000000，因此 JS 表示的时间不会超过 27 万年。
+
+对于任何 Date 对象，`getTime()` 方法返回这个内部值，而 `setTime()` 方法设置这个值。因此，可以像下面这样给一个 Date 对象添加 30 秒：
+
+```js
+d.setTime(d.getTime() + 30000);
+```
+
+这些毫秒值有时候也被称为时间戳（timestamp），有时候直接使用这些值比使用 Date 对象更方便。静态的 `Date.now()` 方法返回当前时间的时间戳，经常用于度量代码运行时间：
+
+```js
+let startTime = Date.now();
+reticulateSplines(); // 执行一些耗时操作
+let endTime = Date.now();
+console.log(`Spline reticulation took ${endTime - startTime}ms.`);
+```
+
+**高精度时间戳**
+`Date.now()` 返回的时间戳是以毫秒为单位的。毫秒对计算机来说实际上是个比较长的时间单位。有时候可能需要使用更高的精度来表示经历的时间。此时可以使用 `performance.now()`，虽然它返回的也是以毫秒为单位的时间戳，但返回值并不是整数，包含毫秒后面的小数部分。`performance.now()` 返回的值并不是像 `Date.now()` 返回的值一样的绝对时间戳，而是相对于网页加载完成后或 Node 进程启动后经过的时间。
+
+performance 对象是 W3C 定义的 Performance API 的一部分，已经被浏览器和 Node 实现。要在 Node 中使用 performance 对象，必须先导入它：
+
+```js
+const { performance } = require('perf_hooks');
+```
+
+高精度计时可能会让一些没有底线的网站用于采集访客指纹，因此浏览器默认可能会降低 `performance.now()` 的精度。可以通过某种方式更新启用高精度计时（比如在 Firefox 中可以设置 privacy.reduceTimePrecision 为 false）。
+
+#### 11.4.2 日期计算
+
+Date 对象可以使用 JS 标准的 <、<=、> 和 >= 等比较操作符进行比较。可以用一个 Date 对象减去另一个以确定两个日期相关的毫秒数（这本质上是因为 Date 类定义了 valueOf() 方法，这个方法返回的是日期的时间戳）。
+
+如果想要给 Date 对象加或减指定数量的秒、分或小时，最简单的方式就是像前面例子中（给日期加上 30 秒）那样修改时间戳。但这种方式在涉及加天时就比较麻烦了，因为这不适合所有月份和年份，不同月份和年份的天数也可能不一样。要完成涉及天数、月数和年数的计算，可以使用 `setDate()`、`setMonth()` 和 `setYear()`。比如，下面的代码给当前日期加上了 3 个月和 2 周：
+
+```js
+let d = new Date();
+d.setMonth(d.getMonth() + 3, d.getDate() + 14);
+```
+
+**日期设置方法即使在数值溢出的情况下也能正确工作**。比如，在给当前月份加了 3 个月之后，最终值可能大于 11(11 表示 12 月)。setMonth() 在遇到这种情况时会按照需要增加年份。类似地，在将天数设置为超过相应月份的天数时，月份也会相应递增。
+
+#### 11.4.3 格式化与解析日期字符串
+
+如果使用 Date 类去记录日期和时间（而不只是度量时间），那很可能需要通过代码向用户展示日期和时间。Date 类定义了一些方法，可以将日期对象转换为字符串。下面是几个例子：
+
+```js
+let d = new Date(2020, 0, 1, 17, 10, 30); // 2020 年元旦 5:10:30pn
+d.toString(); // "Wed Jan 01 2020 17:10:30 GMT+0800 (GMT+08:00)"
+d.toUTCString(); // "Wed, 01 Jan 2020 09:10:30 GMT"
+d.toLocaleDateString(); // "2020/1/1"
+d.toLocaleTimeString(); // "下午5:10:30"
+d.toISOString(); // "2020-01-01T09:10:30.000Z"
+```
+
+下面分别介绍 Date 类定义的全部字符串格式化方法。
+
+**toString()**
+: 这个方法使用本地时区但不按照当地惯例格式化日期和时间。
+
+**toUTCString()**
+: 这个方法使用 UTC 时区但不按照当地惯例格式化日期。
+
+**toISOString()**
+: 这个方法以标准的 ISO-8601 “年-月-日时:分:秒:毫秒” 格式打印日期和时间。字母 “T” 在输出中分隔日期部分和时间部分。时间以 UTC 表示，可以通过输出末尾的字母 “Z” 看出来。
+
+**toLocaleString()**
+: 这个方法使用本地时区及与用户当地惯例一致的格式。
+
+**toDateString()**
+: 这个方法只格式化 Date 的日期部分，忽略时间部分。它使用本地时区，但不与当地惯例适配。
+
+**toLocaleDateString()**
+: 这个方法只格式化日期部分。它使用本地时区，也适配当地惯例。
+
+**toTimeString()**
+: 这个方法只格式化时间部分。它使用本地时区，但不与当地惯例适配。
+
+**toLocaleTimeString()**
+: 这个方法只格式化时间部分。它使用本地时区，也适配当地惯例。
+
+除了将 Date 对象转换为字符串的方法，还有一个静态的 `Date.parse()` 方法。该方法接收一个字符串参数，并尝试将其作为日期和时间来解析，返回一个表示该日期的时间戳。`Date.parse()` 可以像 Date() 构造函数一样解析同样的字符串，也可以解析 `toISOString()`、`toUTCString()` 和 `toString()` 的输出。
+
+### 11.5 Error 类
+
+JS 的 `throw` 和 `catch` 语句可以抛出和捕获任何 JS 值，包括原始值。虽然没有用来表示错误的异常类型，但 JS 定义了一个 Error 类。惯常的做法是使用 Error 类或其子类的实例作为 throw 抛出的错误。
+
+使用 Error 对象的一个主要原因就是在创建 Error 对象时，该对象能够捕获 JS 的栈状态，如果异常未被捕获，则会显示包含错误消息的栈跟踪信息，而这对排查错误很有帮助（注意，栈跟踪信息会展示创建 Error 对象的地方，而不是 throw 语句抛出它的地方。如果始终在抛出之前创建该对象，如 throw new Error()，就不会造成任何困惑）。
+
+Error 对象有几个属性：
+
+- `message`
+  message 属性的值是传给 Error() 构造函数的值，必须时会被转换为字符串。
+
+- `name`
+  对使用 Error() 创建的错误对象，name 属性的值始终是 “Error”。
+
+- 还有一个 `toString()` 方法。
+  `toString()` 方法返回一个字符串，由 name 属性的值后跟一个冒号和一个空格，再后跟 message 属性的值构成。
+
+- `stack`
+  虽然 ECMAScript 标准并没有定义，但 Node 和所有现代浏览器也都在 Error 对象上定义了 `stack` 属性。这个属性的值是一个多行字符串，包含创建错误对象时 JS 调用栈的栈跟踪信息。在捕获到异常错误时，可以将这个属性的信息作为日志收集起来。
+
+除了 Error 类，JS 还定义了一些它的子类，以便触发 ECMAScript 定义的一些特殊类型的错误。这些子类包括: `EvalError`、`RangeError`、`ReferenceError`、`SyntaxError`、`TypeError` 和 `URIError`。可以按照自己认为合适的方式在代码中使用这些错误类。与基类 Error 一样，这些子类也都有一个构造函数，接收一个消息参数。每个子类的实例都有一个 `name` 属性，其值就是构造函数的名字。
+
+可以自定义 Error 的子类，以便更好地封装自己程序的错误信息。自定义错误对象可以不限于 `message` 和 `name` 属性。在定义自己的子类时，可以任意添加新属性以提供更多的错误细节。例如，要使用 HTTP 请求，可能需要定义一个 `HttpError` 类，这个类通过 `status` 属性保存请求失败对应的 HTTP 状态码（例如 404 或 500）。
+
+```js
+class HttpError extends Error {
+  constructor(status, statusText, url) {
+    super(`${status} ${statusText}: ${url}`);
+    this.status = status;
+    this.statusText = statusText;
+    this.url = url;
+  }
+
+  get name() {
+    return 'HTTPError';
+  }
+}
+
+let error = new HttpError(404, 'not Found', 'http://example.com/');
+error.status; // 404
+error.message; // "404 not Found http://example.com/"
+error.name; // "HTTPError"
+```
+
+### 11.6 JSON 序列化与解析
+
+当程序需要保存数据或需要通过网络连接向另一个程序传输数据时，必须将内存中的数
