@@ -197,6 +197,11 @@ title: JavaScript权威指南
       - [11.4.3 格式化与解析日期字符串](#1143-格式化与解析日期字符串)
     - [11.5 Error 类](#115-error-类)
     - [11.6 JSON 序列化与解析](#116-json-序列化与解析)
+      - [11.6.1 JSON 自定义](#1161-json-自定义)
+    - [11.7 国际化 API](#117-国际化-api)
+      - [11.7.1 格式化数值](#1171-格式化数值)
+      - [11.7.2 格式化日期和时间](#1172-格式化日期和时间)
+      - [11.7.3 比较字符串](#1173-比较字符串)
 
 <!-- /code_chunk_output -->
 
@@ -7013,4 +7018,248 @@ error.name; // "HTTPError"
 
 ### 11.6 JSON 序列化与解析
 
-当程序需要保存数据或需要通过网络连接向另一个程序传输数据时，必须将内存中的数
+当程序需要保存数据或需要通过网络连接向另一个程序传输数据时，必须将内存中的数据结构转换为字节或字符的序列，才可以保存或传输。而且，之后可以再被解析或恢复为原来内存中的数据结构。这个将数据结构转换为字节或字符流的方式称为序列化（serialization），也称为编排（marshaling）或制备（pickling）。
+
+**JS 中序列化数据的最简单方式是使用一种称为 JSON 的序列化格式**。JSON 是 “JavaScript Object Notation”（JavaScript 对象表示法）的简写形式。顾名思义，这种格式使用 JS 对象和数组字面量语法，将对象和数组形式的数据结构转换为字符串。
+
+JSON 支持原始数值和字符串，也支持 true、false 和 null 值，以及在这些原始值基础上构建起来的对象和数组。JSON 不支持其他 JS 类型，如 Map、Set、RegExp、Date 或定型数组。但实践已经证明 JSON 是一种非常通用的数据格式，就连很多非 JS 程序都支持它。
+
+JS 通过两个函数 `JSON.stringify()` 和 `JSON.parse()` 支持 JSON 序列化和反序列化。如果一个对象或数组，不包含任何无法序列化的值，都可以把它传给 `JSON.stringify()` 进行序列化。顾名思义，`JSON. stringify()` 返回一个字符串值。而给定 `JSON.stringify()` 返回的字符串，可以把它传给 `JSON.parse()` 再重建原始的数据结构：
+
+```js
+let o = { s: '', n: 0, a: [true, false, null] };
+let s = JSON.stringify(o); // s == '{"s":"","n":0,"a":[true,false,null]}'
+let copy = JSON.parse(s); // copy == {s:"", n: 0, a: [true, false, null]};
+```
+
+如果不考虑将序列化之后的数据保存到文件中，或者通过网络发送出去，可以使用这对函数（以没有那么高效的方式）创建对象的深度副本：
+
+```js
+// 创建任何可序列化对象或数组的深度副本
+function deepcopy(o) {
+  return JSON.parse(JSON.stringify(o));
+}
+```
+
+**JSON 是 JS 的子集**
+数据被序列化为 JSON 格式后，结果是有效的 JS 表达式源代码，可以求值为原始数据结构的一个副本。如果在 JSON 字符串前面加上 `var data =` 并将结果传给 `eval()`，就可以把原始数据结构的一个副本赋值给变量 data。但是不要这样做，因为这是一个巨大的安全漏洞。如果攻击者可以向 JSON 文件中注入任意 JS 代码，那就可以让程序运行他们的代码。使用 `JSON.parse()` 解码 JSON 格式的数据既快也安全。
+
+JSON 有时候也被用为人类友好的配置文件格式。JSON 格式是 JS 的严格子集。不允许有注释，属性名也必须包含在双引号中。
+
+通常，只会给 `JSON.stringify()` 和 `JSON.parse()` 传一个参数，这两个函数其实都可以接收可选的第二个参数，能够扩展 JSON 格式。`JSON.stringify()` 还接收可选的第三个参数。如果希望 JSON 格式字符串对人类友好（比如要用作配置文件），那可以在第二个参数传 null，第三个参数传一个数值或字符串。`JSON.stringify()` 的第三个参数告诉它应该把数据格式化为多行缩进格式。如果第三个参数是个数值，则该数值表示每级缩进的空格数。如果第三个参
+数是空白符（如 '\t'）字符串，则每级缩进就使用该字符串。
+
+```js
+let o = { s: 'test', n: 0 };
+JSON.stringify(o, null, 2); // '{\n  \"s\": \"test\",\n  \"n\": 0\n}'
+```
+
+> `JSON.parse()` 忽略空白符，因此给 `JSON.stringify()` 传第三个参数不会影响将其输出的字符串再转换为原型的数据结构。
+
+#### 11.6.1 JSON 自定义
+
+如果 `JSON.stringify()` 在序列化时碰到了 JSON 格式原生不支持的值，它会查找这个值是否有 `toJSON()` 方法。如果有这个方法，就会调用它，然后将其返回值字符串化以代替原始值。Date 对象实现了 `toJSON()` 方法，这个方法返回与 `toISOString()` 方法相同的值。这意味着如果序列化的对象中包含 Date，则该日期会自动转换为一个字符串。而在解析序列化之后的字符串时，重新创建的数据结构就不会与开始时的完全一样了，因为原来的 Date 值变成了字符串。
+
+如果想重新创建这个 Date 对象（或以其他方式修改解析后的对象），可以给 `JSON.parse()` 的第二个参数传一个 “复活”（revive）函数。如果指定了这个 “复活” 函数，该函数就会在解析输入字符串中的每个原始值时被调用（但解析包含这些原始值的对象和数组时不会调用）。调用这个函数时会给它传入两个参数。第一个是属性名，可能是对象属性名，也可能是转换为字符串的数组索引。第二个参数是该对象属性或数组元素对应的原始值。而且，这个函数会作为包含上述原始值的对象或数组的方法调用，因此可以在其中通过 this 关键字引用包含对象。
+
+复活函数的返回值会变成命名属性的新值。如果复活函数返回它的第二个参数，那么属性保持不变。如果它返回 undefined，则相应的命名属性会从对象或数组中删除，即 `JSON.parse()` 返回给用户的对象中将不包含该属性。
+
+下面来看一个例子。这个例子调用 `JSON.parse()` 时传入了复活函数，用于过滤某些属性并重新创建 Date 对象：
+
+```js
+let data = JSON.parse(text, function (key, value) {
+  // 删除以下划线开头的属性和值
+  if (key[0] === '_') return undefined;
+
+  // 如果值是 ISO 8601 格式的日期字符串，则转换为 Date。
+  if (typeof value === 'string' && /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/.test(value)) {
+    return new Date(value);
+  }
+  // 否则,返回原始值
+  return value;
+});
+```
+
+除了使用 `toJSON()`，`JSON.stringify()` 也支持给它传入一个数组或函数作为第二个参数来自定义其输出字符串。如果第二个参数传入的是一个字符串数组（或者数值数组，其中的数值会转换为字符串），那么这些字符串会被当作对象属性（或数组元素）的名字。任何名字不在这个数组之列的属性会被字符串化过程忽略。而且，返回字符串中包含的属性的顺序也会与它们在这个数组中的顺序相同（这在编写测试时非常有用）。
+
+如果给 `JSON.stringify()` 的第二个参数传入一个函数，则该函数就是一个替代函数（作用与传给 `JSON.parse()` 的可选的复活函数恰好相反）。这个替代函数的第一个参数是对象属性名或值在对象中的数组索引，第二个参数是值本身。这个替代函数会作为包含要被字符串化的值的对象或数组的方法调用。替代函数的返回值会替换原始值。如果替代函数返回 undefined 或什么也不返回，则该值（及其数组元素或对象属性）将在字符串化过程中被忽略。
+
+```js
+// 指定要序列化的字段，以及序列化它们的顺序
+let text = JSON.stringify(address, ['city', 'state', 'country']);
+
+// 指定替代函数，忽略值为 RegExp 的属性
+let json = JSON.stringify(o, (k, v) => (v instanceof RegExp ? undefined : v));
+```
+
+这里对 `JSON.stringify()` 的两次调用友好地使用了第二个参数，即产生的序列化输出在反序列化时不需要特殊的复活函数。但一般来说，如果为某个类型定义了 `toJSON()` 方法，或者使用替代函数将本来无法序列化的值变成了可序列化的值，应该都要写一个自定义的复活函数让 `JSON.parse()` 能够复原最初的数据结构。如果真的这样做了，那应该知道这是在自定义数据格式，因而也牺牲了可移植性以及与庞大 JSON 工具、语言生态的兼容性。
+
+### 11.7 国际化 API
+
+JS 国际化 API 包括 3 个类：
+
+- Int.NumberFormat
+- Intl.DateTimeFormat
+- Intl.Collator
+
+这 3 个类允许以适合当地的方式格式化数值（包括货币数量和百分数）日期和时间，以及以适合当地的方式比较字符串。这些类并不是 ECMAScript 标准定义的，而是 ECMA402 标准定义的，而且得到了浏览器的普遍支持。Node 也支持 Intl API，
+
+但 2020 年初，预构建版 Node 二进制文件中并未包含除 US English 地区之外的国际化 API 依赖的本地化数据。因此要在 Node 中使用这些类，可能需要单独下载数据包或者使用自定义构建的 Node 版本。
+
+#### 11.7.1 格式化数值
+
+世界各地的用户对数值格式的预期是不同的。小数点可能是句点，也可能是逗号。千分位分隔符可能是逗号，也可能是句点，而且并不是所有地区都是 3 个数字一组。某些地区的货币要以百为单位分隔，有些则以千为单位，还有的不需要分隔。虽然所谓的阿拉伯数字 0 到 9 在很多语言中使用，但其实也不是普适的，某些国家的用户期待看到以自己的文字书写的数字。
+
+`Intl.NumberFormat` 类定义了一个 `format()` 方法，考虑到了上述所有格式化的可能性。这个构造函数接收两个参数，第一个参数指定作为数值格式化依据的地区，第二个参数是用于指定格式化细节的对象。如果第一个参数被省略，或者传入的是 undefined，则使用系统设置中的地区（假设该地区为用户偏好地区）。如果第一个参数是字符串，那它指定就是期望地区，例如 "en-U5"（美国英语）和"fr"（法语）。第一个参数也可以是一个地区字符串数组，此时 Intl.NumberFormat 会选择支持最好的一个。
+
+如果指定 `Intl.NumberFormat()` 构造函数的第二个参数，则该函数应该是一个对象，且包含一个或多个下列属性：
+
+**style**
+: 指定必需的数值格式类型。默认为 "decimal"，如果指定 "percent" 则按百分比格式化数值，指定 "currency" 则表示数值为货币数量。
+
+**currency**
+: 如果 style 的值为 "currency"，则这个属性是必需的，用于指定 3 个字母的 ISO 货币代码（如 "USD" 表示美元，"GBP" 表示英镑）。
+
+**currencyDisplay**
+: 如果 style 的值为 "currency"，则这个属性指定如何显示货币值。默认值为 "symbol"，即如果货币有符号则使用货币符号。值 "code" 表示使用 3 个字母的 ISO 代码，值 "name" 表示以完整形式拼出货币的名字。
+
+**useGrouping**
+: 如果不想让数值有千分位分隔符（或其他地区相关的样式），将这个属性设置为 false。
+
+**minimumIntegerDigits**
+: 数值中最少显示几位整数。如果数值的位数小于这个值，则在左侧填补 0。默认值是 1，但最高可以设置为 21。
+
+**minimumFractionDigits、maximumFractionDigits**
+: 这两个属性控制数值小数部分的格式。如果数值的小数部分位数小于最小值，则在右侧填补 0。如果大于最小值，则小数部分会被舍入。这两个属性的取值范围是 0 到 20。默认最小值为 0，最大值为 3，但格式化货币数量时是例外，此时小数部分的长度根据指定的货币会有所不同。
+
+**minimumSignificantDigits、maximumSignificantDigits**
+: 这两个属性控制数值中有效位的数量，比如让它们适合格式化科学数据。如果指定，这两个属性会覆盖前面列出的整数和小数属性。合法取值范围是 1 到 21。
+
+以期望的地区和选项创建了 Intl.Numberformat 对象之后，可以把要格式化的数值传给这个对象的 format() 方法，该方法返回适当格式化之后的字符串。例如：
+
+```js
+let euros = Intl.NumberFormat('es', { style: 'currency', currency: 'EUR' });
+euros.format(10); // "10.00 €"：10欧元，西班牙惯例
+
+let pounds = Intl.NumberFormat('en', { style: 'currency', currency: 'GBP' });
+pounds.format(1000); // "1,000.00"：1000 镑，英国格式
+```
+
+Intl.NumberFormat（及其他 Int 类）有一个很有用的特性，即它的 format() 方法会绑定到自己所属的 NumberFormat 对象。因此，不需要定义变量引用这个格式化对象，然后再在上面调用 format() 方法，而是可以直接把这个 format() 方法赋值给一个变量，然后就像使用独立的函数一样使用它，比如:
+
+```js
+let data = [0.05, 0.75, 1];
+let formatData = Intl.NumberFormat(undefined, {
+  style: 'percent',
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1
+}).format;
+
+data.map(formatData); // ["5.0%", "75.0%", "100.0%"]：地区是 en-US
+```
+
+某些语言，比如阿拉伯语，使用自己的文字表示十进制数字：
+
+```js
+let arabic = Intl.NumberFormat('ar', { useGrouping: false }).format;
+arabic(1234567890);
+```
+
+其他语言，如印地语（北印度语）使用有自己数字符号的文字，但倾向于默认使用 ASCI 数字 0~9。如果想覆盖这种用于数字的默认文字，可以在地区中加上 `-u-nu-`，后面跟上简写形式的文字名。比如，可以像下面这样使用印度风格的分组和梵文字母来格式化数值：
+
+```js
+let hindi = Intl.NumberFormat('hi-IN-u-nu-deva').format;
+hindi(1234567890);
+```
+
+`-u-` 在地区中表示后面是一个 Unicode 扩展。`nu` 是记数制扩展的名字，deva 则是梵文 Devanagari 的简写。Intl API 标准也为其他一些记数制定义了名字，大多数针对南亚和东南亚的印欧语系。
+
+#### 11.7.2 格式化日期和时间
+
+Intl.DateTimeFormat 类与 Intl.Numberformat 类很相似。`Intl.DateTimeFormat()` 构造函数与 `Intl.NumberFormat()` 接收相同的两个参数：
+
+- 一个地区或地区数组
+- 格式化选项的对象
+
+使用 Intl.DateTimeFormat 实例的方式也是调用其 format() 方法，将 Date 对象转换为字符串。
+
+Date 类定义了简单的 `toLocaleDateString()` 和 `toLocaleTimeString()` 方法，可以生成适合用户地区的输出。但这些方法不支持对要显示的日期和时间进行任何控制。比如，想要在输出中省略年份，同时增加一周就做不到。
+
+Intl.DateTimeformat 类提供了细粒度的控制，通过传给构造函数的第二个选项对象的属性来实现。但是，Intl.DateTimeFormat 并不能始终严格按照要求来输出。比如，如果指定了格式化时和秒的选项，但省略了分钟的，格式化的结果仍然会包含分钟的。背后的思想是可以通过选项对象指定想向用户展示哪些日期和时间的字段，以及这些字段的展示样式（如展示名字还是数值），而格式化程序则会选择与这个选项对象含义最接近的地区格式。
+
+选项对象中的属性如下所示：
+
+**year**
+: 年，使用 "numeric" 表示完整的 4 位数年份，或使用 "2-digit" 表示两位数简写形式。
+
+**month**
+: 月，使用 "numeric" 表示可能比较短的数字，如 “1”，或使用 "2-digit" 表示始终使用 2 位数字，如 “01”。使用 "long" 表示全名，如 “January”，使用 "short" 表示简称，如 “Jan”，而使用 "narrow" 表示高度简写的名字，如“J”，但不保证唯一。
+
+**day**
+: 日，使用 "numeric" 表示 1 位或 2 位数字，或使用 "2-digit" 表示 2 位数字。
+
+**weekday**
+： 周，使用 "long" 表示全名，如 “Monday"，或使用 "short" 表示简称，如 “Mon”，或使用 "narrow" 表示高度简写的名字，如 “M”，但不保证唯一。
+
+**era**
+: 这个属性指定日期在格式化时是否考虑纪元，例如 CE 或 BCE。这个属性在格式化很久以前的日期或者使用日文日历时有用。合法值为 "long" "short" 和 "narrow"。
+
+**hour、minute、second**
+: 这几个属性指定如何显示时间。使用 "numeric" 表示 1 位或 2 位数字，使用 "2-digit" 表示强制 1 位数值在左侧填补 0
+
+**timeZone**
+: 这个属性指定格式化日期时使用的时区。如果省略，则使用本地时区。实现可能始终以 UTC 时区为准，也可能以 IANA（Internet Assigned Numbers Authority，因特网地址分配机构）的时区（如 “America/Los——Angeles”）为准。
+
+**timeZoneName**
+: 这个属性指定在格式化的日期和时间中如何显示时区。使用 "long" 表示时区全称，而 "short" 表示简写或数值形式的时区。
+
+**hour12**
+: 这是个布尔值属性，指定是否使用 12 小时制。默认值取决于地区设置，但可以使用这个属性来覆盖。
+
+**hourCycle**
+: 这个属性允许指定半夜 12 点是写为 0 时、12 时还是 24 时。默认值取决于地区设备，但可以使用这个属性来覆盖。注意：hour12 相比这个属性具有更高的优先级。使用 "h11" 指定半夜 12 点是 0 时，而此前 1 小时是晚上 11 点。使用"h12"指定半夜是 2 点。使用 "h23“ 指定半夜是 0 时，而此前 1 小时是 23 时。最后，使用 "h24" 将半夜指定为 24 时。
+
+下面是几个例子：
+
+```js
+let d = new Date('2020-01-02T13:14:15Z'); // Thu Jan 02 2020 21:14:15 GMT+0800 (中国标准时间)
+
+// 没有选项对象，就是基本的数值式日期格式
+Intl.DateTimeFormat('en-US').format(d); // "1/2/2020"
+Intl.DateTimeFormat('fr-FR').format(d); // "02/01/2020"
+
+// 周和月使用名字
+let opts = { weekday: 'long', month: 'long', year: 'numeric', day: 'numeric' };
+Intl.DateTimeFormat('en-US', opts).format(d); // "Thursday, January 2, 2020"
+Intl.DateTimeFormat('es-ES', opts).format(d); // "jueves, 2 de enero de 2020"
+
+// 纽约时间，但适合讲法语的加拿大人
+opts = { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' };
+Intl.DateTimeFormat('fr-CA', opts).format(d); // "8 h 14"
+```
+
+Intl.DateTimeFormat 默认使用儒略历，但也可以使用其他日历。虽然有些地区默认可能使用非儒略历，但可以在地区中添加 `-u-ca-` 后跟日期名来明确指定要使用什么日历。可以使用的日历名包括 “buddhist” “chinese” “coptic” “ethiopic” “gregory” “hebrew” “indian” “islamic” “iso8601” “japanese” 和 “persian”。继续前面的例子，可以使用各种非公历来确定年份：
+
+```js
+let opts = { year:"numeric", era:"short"}
+Intl.DateTimeFormat("en", opts) format(d) // "2020 AD"
+Intl.DateTimeFormat("en-u-ca-iso8601", opts).format(d) // "2020 AD"
+Intl.DateTimeFormat("en-u-ca-hebrew", opts) format(d) // "5780 AM"
+Intl.DateTimeFormat("en-u-ca-buddhist", opts).format(d) // "2563 BE"
+Intl.DateTimeFormat("en-U-ca-islamic", opts).format(d) // "1441 AH"
+Intl.DateTimeFormat("en-u-ca-persian", opts).format(d)// "1398 AP"
+Intl.DateTimeFormat("en-U-ca-indian", opts).format(d) // "1941 Saka"
+Intl.DateTimeFormat("en-u-ca-chinese", opts) format(d) // "36 78"
+Intl.DateTimeFormat("en-u-ca-japanese",opts).format(d) // "2 Reiwa"
+```
+
+#### 11.7.3 比较字符串
+
+按字母顺序对字符串排序（或者更通用的说法是对非字母文字 “整理排序”）是一个经常超出英语人土预想的问题。英语的字母表相对较小，没有重音字母，而且有字符编码的优势（ASCII，已经整合到 Unicode 中），其中数字值完全匹配英语标准的字符串排序习惯。对其他语言来说就没有那么简单了。
+
+如果想以自然的方式向用户显示字符串，只使用字符串数组的 `sort()` 方法是不够的。但如果创建一个 IntlCollator 对象，可以将这个对象的 compare() 方法传给 sort() 方法，以执行适合当地的字符串排序。Intl.Collator 对象可以配置让 compare() 方法执行不匹配大小写的比较，甚至只考虑基本字母且忽略重音和其他变音符号的比较。
+
+与 Intl.NumberFormat() 和 Intl.DateTimeFormat() 类似，Intl.Collator() 构造函数也接收两个参数。第一个参数指定地区或地区数组，第二个参数是一个可选的对象，其属性指定具体执行哪种比较。以下是选项对象参数支持的属性。
+
+**usage**
+这个属性指定如何使用整理器（collator）对象，默认值为 "sort"，但也可以指定为
