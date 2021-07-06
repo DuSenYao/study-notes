@@ -202,6 +202,7 @@ title: JavaScript权威指南
       - [11.7.1 格式化数值](#1171-格式化数值)
       - [11.7.2 格式化日期和时间](#1172-格式化日期和时间)
       - [11.7.3 比较字符串](#1173-比较字符串)
+    - [11.8 控制台 API](#118-控制台-api)
 
 <!-- /code_chunk_output -->
 
@@ -7262,4 +7263,145 @@ Intl.DateTimeFormat("en-u-ca-japanese",opts).format(d) // "2 Reiwa"
 与 Intl.NumberFormat() 和 Intl.DateTimeFormat() 类似，Intl.Collator() 构造函数也接收两个参数。第一个参数指定地区或地区数组，第二个参数是一个可选的对象，其属性指定具体执行哪种比较。以下是选项对象参数支持的属性。
 
 **usage**
-这个属性指定如何使用整理器（collator）对象，默认值为 "sort"，但也可以指定为
+: 这个属性指定如何使用整理器（collator）对象，默认值为 "sort"，但也可以指定为 "search"。背后的思想是在排序字符串时，通常希望整理器区分尽可能多的字符串以产生可靠的排序。但在比较两个字符串时，某些地区可能想进行不那么严格的比较，比如忽略重音。
+
+**sensitivity**
+: 这个属性指定整理器在比较字符串时是否区分字母大小写和重音。值 "base" 意味着比较时忽略大小写和重音，只考虑每个字符的基本字母（不过要注意，某些语言认为有的重读字符不同于基本字母）。"accent" 在比较时考虑重音但忽略大小写。"case" 考虑大小写但忽略重音。而 "variant" 执行严格的比较，既区分大小写也考虑重音。这个属性的默认值在 usage 是 "sort" 时是 "variant"。如果 usage 是 "search"，默认的大小写规则取决于地区。
+
+ignorePunctuation
+: 将这个属性设置为 true 以便在比较字符串时忽略空格和标点符号。比如，将这个属性设置为 true 时，字符串 “any one” 和 “anyone” 会被认为相等。
+
+**numeric**
+: 如果比较的内容是整数或包含整数，而希望按照数值顺序而非字母顺序对它们进行排序，要将这个属性设置为 true。设置这个选项后，字符串 “Version9” 会排在 “Version10” 前面。
+
+**caseFirst**
+: 这个属性指定是大写字母还是小写字母应该排在前面。如果指定 "upper"，则 "A" 会排在 "a" 前面。如果指定 "lower"，则 "a" 会排在 "A" 前面。无论哪种形式优先，同一字母的大写变体和小写变体在排序中都会紧挨在一起，而不同于所有 ASCII 大写字母会位于所有 ASCII 小写字母之前的 Unicode 字典顺序（即 Array 的 sort() 方法的默认行为）。这个属性的默认值因地区而异，实现可能会忽略这个属性，不允许覆盖大小写排列的顺序。
+
+在通过选项为目标地区创建 Intl.Collator 对象之后，可以使用它的 compare() 方法比较两个字符串。这个方法返回一个数值。如果返回的值小于 0，则第一个字符串位于第二个字符串前面。如果返回的值大于 0，则第一个字符串位于第二个字符串后面。如果 compare() 返回 0，则说明整理器认为两个字符串相等。
+
+compare() 方法接收两个字符串参数，返回一个小于、等于或大于 0 的数值，这跟 Array 的 sort() 方法期待的可选参数和返回值特点完全一致。同样，Intl.Collator 也会自动将 compare() 方法绑定到它的实例，因此可以直接把这个方法传给 sort() 而无须编写包装函数再通过整理器调用它。下面是几个例子：
+
+```js
+// 按照用户地区排序的简单整理器
+// 千万不要像这个例子这样什么也不传就对人类可读的字符串进行排序
+const collator = new Intl.Collator().compare;
+['a', 'z', 'A', 'Z'].sort(collator); // ["a", "A", "z", "Z"]
+
+// 文件名经常包含数值，因此需要进行特殊排序
+const filenameOrder = new Intl.Collator(undefined, { numeric: true }).compare;
+['page10', 'page9'].sort(filenameOrder); // ["page9", "page10"]
+
+// 查找大致匹配目标字符串的所有字符串
+const fuzzyMatcher = new Intl.Collator(undefined, {
+  sensitivity: 'base',
+  ignorePunctuation: true
+}).compare;
+
+let strings = ['food', 'fool', 'Fog Bar'];
+strings.findIndex(s => fuzzyMatcher(s, 'foobar') === 0); // 2
+```
+
+有些地区可能存在多种整理顺序。比如在德国，电话号码簿使用与字典顺序稍微不一样的字母发音排序。1994 年以前在西班牙，“ch” 和 “ll” 被当成两个字母，因此该国目前有一个现代排序和一个传统排序。而在中国，整理顺序可以基于字符的编码、字符的笔画或字符的拼音。这些不同的整理方式无法通过 Intl.collator 的选项对象来指定，但可以通过给地区字符串添加 `-u-co-` 及期待的变体名字来指定。比如，在德国可以使用 "de-DE-U-co-phonebk" 来指定按字母发音排序。
+
+```js
+//1994年以前，西班牙将 CH 和 LL 当成两个字母
+const modernSpanish = Intl.Collator('es-ES').compare;
+const traditionalspanish = Intl.Collator('es-es-u-co-trad').compare;
+let palabras = ['Luz', 'llama', 'como', 'chico'];
+palabras.sort(modernSpanish); // ["chico", "como", "llama", "Luz"]
+palabras.sort(traditionalSpanish); // ["como", "chico", "luz", "llama"]
+```
+
+### 11.8 控制台 API
+
+在浏览器中，console.log() 会在开发者工具面板的 “控制台” 标签页中打印字符串，这是排查问题时非常有用的功能。在 Node 中，console.log() 是通用的输出函数，可以将其参数打印到进程的标准输出流，通常会作为程序输出显示在用户的终端窗口中。
+
+除了 console.log() 之外，控制台 API 还定义了其他几个非常有用的函数。这个 API 并不是 ECMAScript 标准，但已经被浏览器和 Node 支持，并已经正式写入标准并通过 WHATWG 标准化: [https://console.spec.whatwg.org/](https://console.spec.whatwg.org/)
+
+控制台 API 定义了以下函数：
+
+**console.log()**
+: 这是最常用的控制台函数。它将参数转换为字符串并输出到控制台。它会在参数之间输出空格，并在输出所有参数后重新开始一行。
+
+**console.debug()、 console.info()、 console.warn()、 console.error()**
+: 这几个函数与 console.log() 几乎相同。在 Node 中 console.error() 将其输出发送到标准错误流，而不是标准输出流。除此之外的其他函数都是 console.log() 的别名。在浏览器中，这几个函数生成的输出消息前面可能会带一个图标，表示级别或严重程度。开发者控制台可能也支持开发者按照级别筛选控制台消息。
+
+**console.assert()**
+: 如果这个函数的第一个参数是真值（也就是断言通过），则这个函数什么也不做。但如果第一个参数是 false 或其他假值，则剩余参数会像被传给 console.error() 一样打印出来，且前面带一个 “Assertion failed” 前缀。注意，与典型的 assert() 函数不同，console.assert() 不会在断言失败时抛出异常。
+
+**console.clear()**
+: 这个函数在可能的情况下清空控制台。在浏览器及 Node 中通过终端显示输出时，这个函数是有效的。如果 Node 的输出被重定向到文件或管道，则调用这个函数没有任何效果。
+
+**console.table()**
+: 这个函数有一个极其强大但却鲜为人知的特性，即可以生成表列数据输出，这对于需要产生摘要数据的 Node 程序尤其有用。console.table() 尝试以表列形式显示其参数（如果无法实现，则使用常规的 console.log() 格式）。如果参数是相对比较短的对象数组，而数组中的所有对象具有（不那么多的）相同属性时，使用这个函数效果最好。在这种情况下，数组中的每个对象的信息会显示在表格的一行中，对象的每个属性就是表格的一列。也可以传入一个属性数组作为可选的第二个参数，以指定想要显示的列。如果传显示属性值入的是对象而非对象的数组，那么输出会用一列显示属性名，一列显示属性名。如果属性值本身也是对象，则它们的属性名会变成表格的列。
+
+**console.trace()**
+: 这个函数会像 console.log() 一样打印它的参数，此外在输出之后还会打印栈跟踪信息。在 Node 中，这个函数的输出会进入标准错误而不是标准输出。
+
+**console.count()**
+: 这个函数接收一个字符串参数，并打印该字符串，后面跟着已经通过该字符串调用的次数。在调试事件处理程序时，如果需要知道事件处理程序被触发的次数，可以使用这个函数。
+
+**console.countReset()**
+: 这个函数接收一个字符串参数，并重置针对该字符串的计数器。
+
+**console.group()**
+: 这个函数将它的参数像传给 console.log() 一样打印到控制台，然后设置控制台的内部状态，让所有后续的控制台消息（在下一次调用 console.groupEnd() 之前）相对刚刚打印的消息缩进。这样可以通过缩进从视觉上把相关消息分为一组。在浏览器中，开发者控制台通常支持分组后消息以组为单位折叠和扩展。console.group() 的参数通常用于为分组提供解释性的名字。
+
+**console.groupCollapsed()**
+: 这个函数与 console.group() 类似，但在浏览器中分组默认会被“折叠”，因而其中包含的消息会隐藏，除非用户点击扩展分组。在 Node 中，这个函数与 console.group() 是同义函数。
+
+**console.groupEnd()**
+: 这个函数没有参数，本身也没有输出，只用于结束由最近一次调用 console.group() 或 console.groupCollapsed() 导致的缩进和分组。
+
+**console.time()**
+: 这个函数接收一个字符串参数，并记录以该字符串调用自身时的时间，没有输出。
+
+**console.timeLog()**
+: 这个函数接收字符串作为第一个参数。如果这个字符串之前传给过 console.time()，那么它会打印该字符串及自上次调用 console.time() 之后经过的时间。如果还有额外的参数传给 console.timeLog()，则这些参数会像被传给 console.log() 一样打印出来。
+
+**console.timeEnd()**
+: 这个函数接收一个字符串参数。如果该参数之前传给过 console.time()，则它打印该参数及经过的时间。在调用 console.timeEnd() 之后，如果不再调用 console.time()，则调用 console.timeLog() 将是不合法的。
+
+#### 11.8.1 通过控制台格式化输出
+
+像 console.log() 这样打印自己参数的控制台函数都有一个不太为人所知的特性：如果第一个参数是包含 `%s`、`%i`、`%d`、`%f`、`%o`、`%O` 或 `%c` 的字符串，则这个参数会被当成格式字符串，后续参数的值会被代入这个字符串，以取代这些两个字符的 `%` 序列。
+
+这些序列的含义如下：
+
+**%s**
+: 这个参数会被转换为字符串。
+
+**%i 和 %d**
+: 这个参数会被转换为数值，然后截断为整数。
+
+**%f**
+: 这个参数会被转换为数值。
+
+**%o 和 %O**
+: 这个参数会被转换为对象，对象的属性名和值会显示出来（在浏览器中，显示结果通常是可以交互的，用户可以扩展和折叠属性以查看嵌套的数据结构）。`%o` 和 `%O` 都会显示对象细节。但大写的变体使用实现决定的输出格式，即由实现决定什么格式对软件开发者最有用。
+
+**%c**
+: 在浏览器中，这个参数会被解释为 CSS 样式字符串，用于给后面的文本添加样式（直到下一个 `%c` 序列或字符串结束）。在 Node 中，`%c` 序列及其对应的参数会被忽略。
+
+> **注意**：在使用控制台函数时，通常并不需要格式字符串。一般来说，只要把一个或多个值（包括对象）传给这些函数，由实现决定如何以有用的方式显示它们就可以了。比如，给 console.log()` 传入一个 Error 对象，它会自动在打印输出中包含栈跟踪信息。
+
+### 11.9 URL API
+
+由于 JS 多用于浏览器和服务器，因此 JS 代码经常需要操作 URL。URL 类可以解析 URL，同时允许修改已有的 URL（如添加搜索参数或修改路径），还可以正确处理对不同 URL 组件的转义和反转义。
+
+URL 类并不是 ECMAScript 标准定义的，但 Node 和所有浏览器（除 IE 之外）都实现了它。这个类是在 WHATWG 中标准化的，参见 [https://url.spec.whatwg.org/](https://url.spec.whatwg.org/)
+
+使用 URL() 构造函数创建 URL 对象时，要传入一个绝对 URL 作为参数。也可以将一个相对 URL 作为第一个参数，将其相对的绝对 URL 作为第二个参数。创建了 URL 对象后，可以通过它的各种属性查询 URL 不同部分的非转义值：
+
+```js
+let url = new URL('https://example.com:8000/path/name?q=term#fragment');
+url.href; // "https://example.com:8000/path/name?q=term#fragment"
+url.origin; // "https://example.com:8000"
+url.protocol; // "https:"
+url.host; // "example.com:8000"
+url.hostname; // "example.com"
+url.port; // 8080
+url.pathname; // "/path/name"
+url.search; // "?q=term"
+url.hash; // "#fragment"
+```

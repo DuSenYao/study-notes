@@ -190,6 +190,14 @@ npm 是随 Node.js 一起安装的包管理器，能解决 Node.js 在模块管�
 
 ##### 2.1.2.1 使用 npm 安装模块
 
+npm 默认安装源为 `https://registry.npmjs.org/`。
+
+命令行永久更改使用指定镜像（淘宝）
+
+```js
+npm config set registry https://registry.npm.taobao.org
+```
+
 npm 的包安装是最核心的功能，分为本地安装 (local) 、全局安装 (global) 两种。
 
 ![npm常用参数及说明](./image/npm常用参数及说明.jpg)
@@ -200,7 +208,7 @@ npm 的包安装是最核心的功能，分为本地安装 (local) 、全局安�
 - 可以通过 require() 来引入本地的包
   例 : 先安装常用的 Node.js 调试模块 `npm install debug`，安装好后，debug 包存在于工程目录下的 node_modules 目录中，因此在代码中只执行 `const debug = require('debug')`即可，无需指定第三方包路径。
 
-全局安装，具体缩颈:
+全局安装，具体说明:
 
 - 如果不是使用 nvm 安装的，安装包将放在 /user/local 下，安装全局模块需要超级用户授权。
 - 不能通过 require() 来引入本地的包
