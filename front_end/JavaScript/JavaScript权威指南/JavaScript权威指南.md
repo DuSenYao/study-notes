@@ -7405,3 +7405,146 @@ url.pathname; // "/path/name"
 url.search; // "?q=term"
 url.hash; // "#fragment"
 ```
+
+尽管并不常用，但 URL 可以包含用户名或者用户和密码，URL 类也可以解析这些 URL 组件：
+
+```js
+let url = new URL('ftp://admin:1337!@ftp.example.com/');
+url.href; // "ftp://admin:1337!@ftp.example.com/"
+url.origin; // "ftp://ftp.example.com"
+url.username; // "admin"
+url.password; // 1337
+```
+
+这里的 `origin` 属性就是 URL 协议和主机的组合（如果提供了端口，则也会包含在内），而且它是个只读属性。但前面例子中展示的其他属性是可读写属性，即可以通过设置这些属性来设置 URL 中对应的部分：
+
+```js
+let url = new URL('https://example.com'); // 创建服务器 URL
+url.pathname = 'api/search'; // 为这个 API 添加路径
+url.search = 'q=test'; // 添加查询参数
+url.toString(); // "https://example.com/api/search?q=test"
+```
+
+**URL 类有一个重要特性，即它会在需要时正确地在 URL 中添加标点符号及转义特殊字符**：
+
+```js
+let url = new URL('https://example.com');
+url.pathname = 'path with spaces';
+url.search = 'q=foo#bar';
+url.pathname; // "/path%20with%20spaces"
+url.search; // "?q=foo%23bar"
+url.href; // "https://example.com/path%20with%20spaces?q=foo%23bar"
+```
+
+以上例子中的 `href` 属性比较特殊，读取 `href` 属性相当于调用 toString()，即将 URL 的所有部分组合成一个字符串形式的正式 URL。将 `href` 设置为一个新字符串会返回新字符串的 URL 解析器，就好像再次调用了 URL() 构造函数一样。
+
+在前面的例子中，使用 `search` 属性引用 URL 中的整个查询部分。查询部分从一个问号开头到 URL 末尾或第一个井字符结束。有时候，把这个部分作为一个 URL 属性就足够了。但是，HTTP 请求经常会使用 `application/x-www-form-urlencoded` 格式将多个表单字段的值或多个 API 参数编码为 URL 的查询部分。在这个格式中，URL 的查询部分以问号开头，然后是一个或多个由和号（&）分隔的名/值对。可以有多个相同的名字，此时该搜索参数就有多个值。
+
+如果要把这种名/值对编码为 URL 的查询部分，那么 `searchParams` 属性比 `search` 属性更有用。`search` 属性是一个可读写的字符串，通过它可以获取或设置 URL 的查询部分。`searchParams` 属性则是一个对 URLSearchParams 对象的只读引用，而 URLSearchParams 对象具有获取、设置、添加、删除和排序参数（该参数编码为 URL 查询部分）的 API：
+
+```js
+let url = new URL("https://example.com/search");
+url.search // "" 还没有参数
+url.searchParams.append("q", "term");// 添加一个搜索参数
+url.search// "?q=term"
+url.searchParams.set("q","x") // 修改这个参数的值
+url.search // "?q=x"
+url.searchParams.get("q") // "x"：查询参数值
+url.searchParams.has("q") // true：有一个 q 参数
+url.searchParams.has ("p") // false：没有 p 参数
+url.searchParams.append("opts","1");// 再添加一个搜索参数
+url.search // "?q=x&opts=1"
+url.searchParams.append("opts","&"); // 为同一个参数再添加一个值
+url.search // "?q=x&opts=1&opts=%26"：有转义
+url.searchParams.get("opts") // "1"：第一个值
+url.searchParams.getAll("opts") // ["1", "&"]：所有值
+url.searchParams.sort() // 对参数进行排序
+url.search // "?opts=1&opts=%26&q=x"
+url.searchParams.set("opts","y"); // 修改 opts 参数
+url.search // "?opts=y&q=x"
+// searchParams 是可迭代对象
+[...urL.searchParams] // [["opts", "y"],["q", "x"]]
+url.searchParams.delete("opts") // 删除 opts 参数
+url.search // "?q=x"
+url.href // "https://example.com/search?q=x"
+```
+
+`searchParams` 属性的值是一个 URLSearchParams 对象。如果想把 URL 参数编码为查询字符串，可以创建 URLSearchParams 对象，追加参数，然后再将它转换为字符串并将其赋值给 URL 的 search 属性:
+
+```js
+let url = new URL("http://example.com");
+let params = new URLSearchParams();
+params.append("q", "term")
+params.append("opts", "exact")
+params.toString() // "q=term&opts=exact"
+url.search = params
+url.href // "http://example.com/?q=term&opts=exact"
+```
+
+#### 11.9.1 遗留 URL 函数
+
+在前面介绍的 URL API 标准化之前，JS 语言也曾多次尝试支持对 URL 的转义和反转义。第一次尝试定义全局的 escape() 和 unescape() 函数，这两个函数如今已经废弃，但仍然被广泛实现了。不应该再使用这两个函数了。
+
+在废弃 escape()和 unescape() 的同时，ECMAScript 增加了两对替代性的全局函数：
+
+**encodeURI() 和 decodeURI()**
+: encodeURI() 接收一个字符串参数，返回一个新字符串，新字符串中非 ASCII 字符及某些 ASCII 字符（如空格）会被转义。decodeURI() 正好相反。需要转义的字符首先会被转换为它们的 UTF-8 编码，然后再将该编码的每个字节替换为 %xx 转义序
+列,其中xx是两个十六进制数字。因为 encoder()是要编码整个URL,所以不
+会转义URL分隔符(如/、?和#)。但这意味着 encoder()不能正确地处理其组
+件中包含这些字符的URL。
+encodeURI Component() Fn decodeURIComponent(
+这对函数与 encodeR()和 decodeR()类似,只不过它们专门用于转义URL的
+单个组件,因此它们也会转义用于分隔URL组件的/、?和#字符。这两个函数是
+最有用的遗留URL函数,但要注意e
+ncodeURIComponent()也会转义路径名中的/
+字符,而这可能并不是我们想要的。另外它也会把查询参数中的空格转换为%20,
+而实际上查询参数中的空格应该被转义为+。
+这些遗留函数的根本问题在于它们都在寻求把一种编码模式应用给URL的所有部分,
+而事实却是URL的不同部分使用的是不同的编码方案。如果想正确地格式化和编码
+URL,最简单的办法就是使用URL类完成所有URL相关的操作。
+
+### 11.10 计时器
+
+从 JavaScript问世开始,浏览器就定义了两个函数: settimeout()和 setInterval()。
+利用这两个函数,程序可以让浏览器在指定的时间过后调用一个函数,或者每经过一定
+时间就重复调用一次某个函数。这两个函数至今没有被写进核心语言标准,但所有浏览
+器和Node都支持,属于 JavaScript标准库的事实标准。
+setTimeout()的第一个参数是函数,第二个参数是数值,数值表示过多少毫秒之后调用
+第一个函数。在经过指定时间后(如果系统忙可能会稍微晚一点),将会调用作为第一个
+参数的函数,没有参数。例如,下面是3个 setTimeout()调用,分别在1秒、2秒和3
+秒之后打开一条控制台消息
+setTimeout((=>(
+setTimeout((=>t
+console.Log("set.,…·):},1000);
+.");},200。
+setTimeout(()=>[
+console. log(".
+},360
+注意, setTimeout()并不会等到指定时间之后再返回。前面这3行代码都会立即运行并
+返回,只是在未到1000毫秒时什么也不会发生。
+如果省略传给 setTimeout()的第二个参数,则该参数默认值为0。但这并不意味着你的
+函数会立即被调用,只意味着这个函数会被注册到某个地方,将被“尽可能快地”调用。
+如果浏览器由于处理用户输入或其他事件而没有空闲,那么调用这个函数的时机可能在
+10毫秒甚至更长时间以后。
+setTimeout()注册的函数只会被调用一次。有时候,这个函数本身会再次调用
+Timeout(),以便将来某个时刻会再有一次调用。不过,要想重复调用某个函数,通
+常更简单的方式是使用
+setInterval(
+)。 setInterval()接收的参数与 setTimeout()相
+同,但会导致每隔指定时间(同样是个近似的毫秒值)就调用一次指定函数。
+setTimeout()和 setInterval1()都返回一个值。如果把这个值保存在变量中,之后
+可以把它传给 cleartimeout()或 clearInterval()以取消对函数的调用。在浏览器
+中,这个返回值通常是一个数值,而在Node中则是一个对象。具体什么类型其实不
+重要,只要把它当成一个不透明的值就行了。这个值的唯一作用就是可以把它传给
+clearTimeout()以取消使用 setTimeout(注册的函数调用(假设函数尚未被调用),或
+者传给 clearInterva()以取消对通过 setInterval1()注册的函数的重复调用。
+下面这个例子演示了使用 setTimeout()、 setInterval1()和 cLearInterva1(),以及控
+制台API显示简单的数字时钟
+每隔1秒:清空控制台并打印当前时间
+Let clock setInterval(o=> I
+consoLe. clear:
+console. Log (new Date(). toLocaleTimeString();
+,1000);
+10秒钟后:停止重复上面的代码
+setTimeout((=>[ clearInterval(clock);], 10000);
+在第13章介绍异步编程时,我们还会看到 setTimeout()和 setInterval()。
