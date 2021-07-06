@@ -203,6 +203,10 @@ title: JavaScript权威指南
       - [11.7.2 格式化日期和时间](#1172-格式化日期和时间)
       - [11.7.3 比较字符串](#1173-比较字符串)
     - [11.8 控制台 API](#118-控制台-api)
+      - [11.8.1 通过控制台格式化输出](#1181-通过控制台格式化输出)
+    - [11.9 URL API](#119-url-api)
+      - [11.9.1 遗留 URL 函数](#1191-遗留-url-函数)
+    - [11.10 计时器](#1110-计时器)
 
 <!-- /code_chunk_output -->
 
@@ -5159,7 +5163,7 @@ class RangeSet extends AbstractSet {
     return x >= this.from && x <= this.to;
   }
   toString() {
-    return `{ x| ${this.from} ≦ x ≦ ${this.to} }`;
+    return `{ x| ${this.from} ≤ x ≤ ${this.to} }`;
   }
 }
 
@@ -7472,13 +7476,13 @@ url.href // "https://example.com/search?q=x"
 `searchParams` 属性的值是一个 URLSearchParams 对象。如果想把 URL 参数编码为查询字符串，可以创建 URLSearchParams 对象，追加参数，然后再将它转换为字符串并将其赋值给 URL 的 search 属性:
 
 ```js
-let url = new URL("http://example.com");
+let url = new URL('http://example.com');
 let params = new URLSearchParams();
-params.append("q", "term")
-params.append("opts", "exact")
-params.toString() // "q=term&opts=exact"
-url.search = params
-url.href // "http://example.com/?q=term&opts=exact"
+params.append('q', 'term');
+params.append('opts', 'exact');
+params.toString(); // "q=term&opts=exact"
+url.search = params;
+url.href; // "http://example.com/?q=term&opts=exact"
 ```
 
 #### 11.9.1 遗留 URL 函数
@@ -7488,63 +7492,166 @@ url.href // "http://example.com/?q=term&opts=exact"
 在废弃 escape()和 unescape() 的同时，ECMAScript 增加了两对替代性的全局函数：
 
 **encodeURI() 和 decodeURI()**
-: encodeURI() 接收一个字符串参数，返回一个新字符串，新字符串中非 ASCII 字符及某些 ASCII 字符（如空格）会被转义。decodeURI() 正好相反。需要转义的字符首先会被转换为它们的 UTF-8 编码，然后再将该编码的每个字节替换为 %xx 转义序
-列,其中xx是两个十六进制数字。因为 encoder()是要编码整个URL,所以不
-会转义URL分隔符(如/、?和#)。但这意味着 encoder()不能正确地处理其组
-件中包含这些字符的URL。
-encodeURI Component() Fn decodeURIComponent(
-这对函数与 encodeR()和 decodeR()类似,只不过它们专门用于转义URL的
-单个组件,因此它们也会转义用于分隔URL组件的/、?和#字符。这两个函数是
-最有用的遗留URL函数,但要注意e
-ncodeURIComponent()也会转义路径名中的/
-字符,而这可能并不是我们想要的。另外它也会把查询参数中的空格转换为%20,
-而实际上查询参数中的空格应该被转义为+。
-这些遗留函数的根本问题在于它们都在寻求把一种编码模式应用给URL的所有部分,
-而事实却是URL的不同部分使用的是不同的编码方案。如果想正确地格式化和编码
-URL,最简单的办法就是使用URL类完成所有URL相关的操作。
+: encodeURI() 接收一个字符串参数，返回一个新字符串，新字符串中非 ASCII 字符及某些 ASCII 字符（如空格）会被转义。decodeURI() 正好相反。需要转义的字符首先会被转换为它们的 UTF-8 编码，然后再将该编码的每个字节替换为 `%xx` 转义序列，其中 `xx` 是两个十六进制数字。因为 encodeURI() 是要编码整个 URL，所以不会转义 URL 分隔符（如`/`、`?` 和 `#`）。但这意味着 encodeURI() 不能正确地处理其组件中包含这些字符的 URL。
+
+**encodeURIComponent() 和 decodeURIComponent()**
+: 这对函数与 encodeURI() 和 decodeURI() 类似，只不过它们专门用于转义 URL 的单个组件，因此它们也会转义用于分隔 URL 组件的 `/`、`?` 和 `#` 字符。这两个函数是最有用的遗留 URL 函数，但要注意 encodeURIComponent() 也会转义路径名中的 `/` 字符，而这可能并不是想要的。另外它也会把查询参数中的空格转换为 `%20`，而实际上查询参数中的空格应该被转义为 `+`。
+
+> 这些遗留函数的根本问题在于它们都在寻求把一种编码模式应用给 URL 的所有部分，而事实却是 URL 的不同部分使用的是不同的编码方案。如果想正确地格式化和编码 URL，最简单的办法就是使用 URL 类完成所有 URL 相关的操作。
 
 ### 11.10 计时器
 
-从 JavaScript问世开始,浏览器就定义了两个函数: settimeout()和 setInterval()。
-利用这两个函数,程序可以让浏览器在指定的时间过后调用一个函数,或者每经过一定
-时间就重复调用一次某个函数。这两个函数至今没有被写进核心语言标准,但所有浏览
-器和Node都支持,属于 JavaScript标准库的事实标准。
-setTimeout()的第一个参数是函数,第二个参数是数值,数值表示过多少毫秒之后调用
-第一个函数。在经过指定时间后(如果系统忙可能会稍微晚一点),将会调用作为第一个
-参数的函数,没有参数。例如,下面是3个 setTimeout()调用,分别在1秒、2秒和3
-秒之后打开一条控制台消息
-setTimeout((=>(
-setTimeout((=>t
-console.Log("set.,…·):},1000);
-.");},200。
-setTimeout(()=>[
-console. log(".
-},360
-注意, setTimeout()并不会等到指定时间之后再返回。前面这3行代码都会立即运行并
-返回,只是在未到1000毫秒时什么也不会发生。
-如果省略传给 setTimeout()的第二个参数,则该参数默认值为0。但这并不意味着你的
-函数会立即被调用,只意味着这个函数会被注册到某个地方,将被“尽可能快地”调用。
-如果浏览器由于处理用户输入或其他事件而没有空闲,那么调用这个函数的时机可能在
-10毫秒甚至更长时间以后。
-setTimeout()注册的函数只会被调用一次。有时候,这个函数本身会再次调用
-Timeout(),以便将来某个时刻会再有一次调用。不过,要想重复调用某个函数,通
-常更简单的方式是使用
-setInterval(
-)。 setInterval()接收的参数与 setTimeout()相
-同,但会导致每隔指定时间(同样是个近似的毫秒值)就调用一次指定函数。
-setTimeout()和 setInterval1()都返回一个值。如果把这个值保存在变量中,之后
-可以把它传给 cleartimeout()或 clearInterval()以取消对函数的调用。在浏览器
-中,这个返回值通常是一个数值,而在Node中则是一个对象。具体什么类型其实不
-重要,只要把它当成一个不透明的值就行了。这个值的唯一作用就是可以把它传给
-clearTimeout()以取消使用 setTimeout(注册的函数调用(假设函数尚未被调用),或
-者传给 clearInterva()以取消对通过 setInterval1()注册的函数的重复调用。
-下面这个例子演示了使用 setTimeout()、 setInterval1()和 cLearInterva1(),以及控
-制台API显示简单的数字时钟
-每隔1秒:清空控制台并打印当前时间
-Let clock setInterval(o=> I
-consoLe. clear:
-console. Log (new Date(). toLocaleTimeString();
-,1000);
-10秒钟后:停止重复上面的代码
-setTimeout((=>[ clearInterval(clock);], 10000);
-在第13章介绍异步编程时,我们还会看到 setTimeout()和 setInterval()。
+从 JS 问世开始，浏览器就定义了两个函数: `setTimeout()` 和 `setInterval()`。利用这两个函数，程序可以让浏览器在指定的时间过后调用一个函数，或者每经过一定时间就重复调用一次某个函数。这两个函数至今没有被写进核心语言标准，但所有浏览器和 Node 都支持，属于 JSON 标准库的事实标准。
+
+setTimeout() 的第一个参数是函数，第二个参数是数值，数值表示过多少毫秒之后调用第一个函数。在经过指定时间后（如果系统忙可能会稍微晚一点），将会调用作为第一个参数的函数，没有参数。
+
+> **注意**：setTimeout() 并不会等到指定时间之后再返回。它会立即运行并返回，只是在未到 1000 毫秒时什么也不会发生。
+
+如果省略传给 setTimeout() 的第二个参数，则该参数默认值为 0。但这并不意味着函数会立即被调用，只意味着这个函数会被注册到某个地方，将被 “尽可能快地” 调用。如果浏览器由于处理用户输入或其他事件而没有空闲，那么调用这个函数的时机可能在 10 毫秒甚至更长时间以后。
+
+setTimeout() 注册的函数只会被调用一次。有时候，这个函数本身会再次调用 setTimeout()，以便将来某个时刻会再有一次调用。不过，要想重复调用某个函数，通常更简单的方式是使用 setInterval()。setInterval() 接收的参数与 setTimeout() 相同，但会导致每隔指定时间（同样是个近似的毫秒值）就调用一次指定函数。
+
+setTimeout() 和 setInterval() 都返回一个值。如果把这个值保存在变量中，之后可以把它传给 clearTimeout() 或 clearInterval() 以取消对函数的调用。在浏览器中，这个返回值通常是一个数值，而在 Node 中则是一个对象。具体什么类型其实不重要，只要把它当成一个不透明的值就行了。这个值的唯一作用就是可以把它传给 clearTimeout() 以取消使用 setTimeout() 注册的函数调用（假设函数尚未被调用），或者传给 clearInterval() 以取消对通过 setInterval() 注册的函数的重复调用。
+
+## 十二. 迭代器与生成器
+
+可迭代对象及其相关的迭代器是 ES6 的一个特性。数组（包括 Typed Array）是可迭代的，字符串、Set 对象和 Map 对象也是。这意味着这些数据结构的内容可以通过 for/of 循环来迭代（或循环访问）：
+
+```js
+let sum = 0;
+// 对每个值都循环一次
+for (let i of [1, 2, 3]) {
+  sum += i;
+}
+sum; // 6
+```
+
+迭代器让 `...` 操作符能够展开或 “扩展” 可迭代对象：
+
+```js
+let chars = [...'abcd']; // chars == ["a", "b", "c", "d"]
+let data = [1, 2, 3, 4, 5];
+Math.max(...data); // 5
+```
+
+迭代器也可以用于解构赋值：
+
+```js
+let purpleHaze = Uint8Array.of(255, 0, 255, 128);
+let [r, g, b, a] = purpleHaze; // a == 128
+```
+
+选代 Map 对象时，返回值是 `[key, value]` 对，在 for/of 循环中可以直接使用解构赋值：
+
+```js
+tm = new Map([
+  ['one', 1],
+  ['two', 2]
+]);
+for (let [k, v] of m) console.log(k, v); // 打印 'one 1' 和 'two 2'
+```
+
+如果只想迭代键或值，而不是键/值对，可以使用 keys() 或 values() 方法：
+
+```js
+[...m]; // [["one", 1], ["two", 2]]：默认迭代
+[...m.entries()]; // [["one", 1], ["two", 2]]：entries() 方法相同
+[...m.keys()]; // ["one", "tow"]：keys() 方法只迭代键
+[...m.values()]; // [1,2]：values() 方法只迭代值
+```
+
+最后，有些会接收 Array 对象的内置函数和构造函数（在 ES6 及之后的版本中）可以接收任意迭代器。例如，Set() 构造函数就是这样一个 API:
+
+```js
+// 字符串是可迭代的，因此两个集合相同:
+new Set('abc'); // new Set(["a", "b", "c"])
+```
+
+### 12.1 迭代器原理
+
+要理解 JS 中的迭代，必须理解 3 个不同的类型：
+
+- 可迭代对象，类似于 Array、Set、Map，都是可以迭代的。
+  可迭代对象指的是任何具有专用迭代器方法，且该方法返回迭代器对象的对象。
+
+- 迭代器对象，用于执行迭代。
+  迭代器对象指的是任何具有 next() 方法，且该方法返回迭代结果对象的对象。
+
+- 迭代结果对象，保存每次迭代的结果。
+  迭代结果对象是具有属性 value 和 done 的对象。
+
+要迭代一个可迭代对象，首先要调用其迭代器方法获得一个迭代器对象。然后，重复调用这个迭代器对象的 next() 方法，直至返回 done 属性为 true 的迭代结果对象。这里比较特别的地方是，可迭代对象的迭代器方法没有使用惯用名称，而是使用了符号 `Symbol.iterator` 作为名字。因此可迭代对象 iterable 的简单 for/of 循环也可以写成如下这种复杂的形式：
+
+```js
+let iterable = [99];
+let iterator = iterable[Symbol.iterator]();
+for (let result = iterator.next(); !result.done; result = iterator.next()) {
+  console.log(result.value); // result.value == 99
+}
+```
+
+内置可迭代数据类型的迭代器对象本身也是可迭代的（也就是说，它们有一个名为 Symbol.iterator 的方法，返回它们自己）。在下面的代码所示的需要迭代 “部分使用” 的迭代器时，这种设计是有用的：
+
+```js
+let list = [1, 2, 3, 4, 5];
+let iter = list[Symbol.iterator]();
+let head = iter.next().value; // head == 1
+let tail = [...iter]; // tail == [2,3,4,5]
+```
+
+### 12.2 实现可迭代对象
+
+在 ES6 中，可迭代对象非常重要。因此，只要数据类型表示某种可迭代的结构，就应该考虑把它们实现为可迭代对象。
+
+为了让类可迭代，必须实现一个名为 `Symbol.iterator` 的方法。这个方法必须返回一个迭代器对象，该对象有一个 next() 方法。而这个 next() 方法必须返回一个迭代结果对象，该对象有一个 `value` 属性和一个布尔值 `done` 属性。示例 12-1 实现了一个可迭代的 Range 类，演示了如何创建可迭代对象、迭代器对象和迭代结果对象。
+
+```js
+/*
+ * 示例 12-1：可选代的数值 Range 类
+ * Range 对象表示一个数值范围 {x : from <= x <= to}
+ * Range 定义了 has() 方法用于测试给定数值是不是该范围的成员
+ * Range 是可迭代的，迭代其范围内的所有整数
+ */
+class Range {
+  constructor(from, to) {
+    this.from = from;
+    this.to = to;
+  }
+
+  // 让 Range 对象像数值的集合一样
+  has(x) {
+    return typeof x === 'number' && this.from <= x && x <= this.to;
+  }
+
+  // 使用集合表示法返回当前范围的字符串表示
+  toString() {
+    return `{ x | ${this.from} ≤ x ≤ ${this.to} }`;
+  }
+
+  // 通过返回一个迭代器对象，让 Range 对象可迭代
+  // 注意这个方法的名字是一个特殊符号，不是字符串
+  [Symbol.iterator]() {
+    // 每个迭代器实例必须相互独立、互不影响地迭代自己的范围
+    // 因此需要一个状态变量跟踪迭代的位置。从第一个大于等于 from 的整数开始
+    let next = Math.ceil(this.from); // 这是下一个要返回的值
+    let last = this.to; // 不会返回大于它的值
+    // 这是迭代器对象
+    return {
+      // 这个 next() 方法是迭代器对象的标志，它必须返回一个迭代器结果对象
+      next() {
+        return next <= last // 如果还没有返回 last
+          ? { value: next++ } // 则返回 next 并给它加 1
+          : { done: true }; // 否则返回表示完成的对象
+      },
+
+      // 为了方便起见，让迭代器本身也可迭代
+      [Symbol.iterator]() {
+        return this;
+      }
+    };
+  }
+}
+
+for (let x of new Range(1, 10)) console.log(x); // 打印数值 1 到 10
+[...new Range(-2, 2)]; // [-2, -1, 0, 1, 2]
+```
