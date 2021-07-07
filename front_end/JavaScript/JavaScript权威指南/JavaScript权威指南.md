@@ -7571,16 +7571,16 @@ new Set('abc'); // new Set(["a", "b", "c"])
 
 要理解 JS 中的迭代，必须理解 3 个不同的类型：
 
-- 可迭代对象，类似于 Array、Set、Map，都是可以迭代的。
+- **可迭代对象**，类似于 Array、Set、Map，都是可以迭代的。
   可迭代对象指的是任何具有专用迭代器方法，且该方法返回迭代器对象的对象。
 
-- 迭代器对象，用于执行迭代。
-  迭代器对象指的是任何具有 next() 方法，且该方法返回迭代结果对象的对象。
+- **迭代器对象**，用于执行迭代。
+  迭代器对象指的是任何具有 `next()` 方法，且该方法返回迭代结果对象的对象。
 
-- 迭代结果对象，保存每次迭代的结果。
-  迭代结果对象是具有属性 value 和 done 的对象。
+- **迭代结果对象**，保存每次迭代的结果。
+  迭代结果对象是具有属性 `value` 和 `done` 的对象。
 
-要迭代一个可迭代对象，首先要调用其迭代器方法获得一个迭代器对象。然后，重复调用这个迭代器对象的 next() 方法，直至返回 done 属性为 true 的迭代结果对象。这里比较特别的地方是，可迭代对象的迭代器方法没有使用惯用名称，而是使用了符号 `Symbol.iterator` 作为名字。因此可迭代对象 iterable 的简单 for/of 循环也可以写成如下这种复杂的形式：
+要迭代一个可迭代对象，首先要调用其迭代器方法获得一个迭代器对象。然后，重复调用这个迭代器对象的 `next()` 方法，直至返回 `done` 属性为 true 的迭代结果对象。这里比较特别的地方是，可迭代对象的迭代器方法没有使用惯用名称，而是使用了符号 `Symbol.iterator` 作为名字。因此可迭代对象 iterable 的简单 for/of 循环也可以写成如下这种复杂的形式：
 
 ```js
 let iterable = [99];
@@ -7590,7 +7590,7 @@ for (let result = iterator.next(); !result.done; result = iterator.next()) {
 }
 ```
 
-内置可迭代数据类型的迭代器对象本身也是可迭代的（也就是说，它们有一个名为 Symbol.iterator 的方法，返回它们自己）。在下面的代码所示的需要迭代 “部分使用” 的迭代器时，这种设计是有用的：
+内置可迭代数据类型的迭代器对象本身也是可迭代的（也就是说，它们有一个名为 `Symbol.iterator` 的方法，返回它们自己）。在下面的代码所示的需要迭代 “部分使用” 的迭代器时，这种设计是有用的：
 
 ```js
 let list = [1, 2, 3, 4, 5];
@@ -7655,3 +7655,296 @@ class Range {
 for (let x of new Range(1, 10)) console.log(x); // 打印数值 1 到 10
 [...new Range(-2, 2)]; // [-2, -1, 0, 1, 2]
 ```
+
+除了可以把类变成可迭代的类之外，定义返回可迭代值的函数也很有用。例如，下面定义了两个函数，可以代替 JS 数组的 map() 和 filter() 方法：
+
+```js
+// 返回一个可迭代对象，迭代的结果是对传入的可迭代对象的每个值应用 f() 的结果
+function map(iterable, f) {
+  let iterator = iterable[Symbol.iterator]();
+  // 这个对象既是迭代器对象也是可迭代对象
+  return {
+    [Symbol.iterator]() {
+      return this;
+    },
+    next() {
+      let v = iterator.next();
+      if (v.done) {
+        return v;
+      } else {
+        return { value: f(v.value) };
+      }
+    }
+  };
+}
+
+// 把一个范围内的整数映射为它们的平方并转换为一个数组
+[...map(new Range(1, 4), x => x * x)]; // [1, 4, 9, 16]
+
+// 返回一个可迭代对象，只迭代 predicate 返回 true 的函数
+function filter(iterable, predicate) {
+  let iterator = iterable[Symbol.iterator]();
+
+  // 这个对象既是迭代器对象也是可迭代对象
+  return {
+    [Symbol.iterator]() {
+      return this;
+    },
+    next() {
+      for (;;) {
+        let v = iterator.next();
+        if (v.done || predicate(v.value)) {
+          return v;
+        }
+      }
+    }
+  };
+}
+
+// 筛选整数范围，只保留偶数
+[...filter(new Range(1, 10), x => x % 2 === 0)]; // [2, 4, 6, 8, 10]
+```
+
+**可迭代对象与迭代器有一个重要的特点，即它们天性懒惰：如果计算下一个值需要一定的计算量，则相应计算会推迟到实际需要下一个值的时候再发生**。
+
+假设有一个非常长的文本字符串，想对它进行分词，返回以空格分隔的单词。如果使用字符串的 split() 方法，那么哪怕一个单词都还没用也要处理整个字符串。这样可能会占用很多内存来保存返回的数组和其中的字符串。下面这个函数可以对字符串中的单词进行懒惰迭代，不必把它们全部保存在内存里（[返回迭代器的 matchAll() 方法](#1132-模式匹配的字符串方法)实现这个函数更简单，该方法是 ES2020 新增的）：
+
+```js
+function words(s) {
+  var r = /\s+|$/g; // 匹配一个或多个空格或末尾
+  r.lastIndex = s.match(/[^ ]/).index; // 开始匹配第一个非空格
+
+  // 返回一个可迭代的迭代器对象
+  return {
+    // 这个方法是可迭代对象必需的
+    [Symbol.iterator]() {
+      return this;
+    },
+
+    // 这个方法是迭代器必需的
+    next() {
+      let start = r.lastIndex; // 从上次匹配结束的地方恢复
+      // 如果还没有处理完
+      if (start < s.length) {
+        let match = r.exec(s); // 匹配下一个单词边界
+        // 如果找到了一个单词，则返回它
+        if (match) {
+          return { value: s.substring(start, match.index) };
+        }
+      }
+      return { done: true }; // 否则，返回表示处理完成的结果
+    }
+  };
+}
+
+[...words(' abc def ghi! ')]; // ["abc", "def", "ghi!"]
+```
+
+#### 12.2.1 “关闭” 迭代器：return() 方法
+
+如果在服务器端实现了上面的 words() 迭代器，它不接收字符串，而是接收文件名，然后打开文件，读取行，再迭代行。在大多数操作系统中，打开文件读取内容的程序都需要记得在读取后关闭文件。因此，这个假想的迭代器需要确保在 next() 方法返回最后一个单词后关闭文件。
+
+但迭代器有时候不一定会跑完，如 for/of 循环可能被 break、return 或异常终止。类似地，在使用迭代器进行解构赋值时，next() 方法被调用的次数取决于要赋值变量的个数。虽然迭代器可能还剩下很多值没有返回，但是已经用不到它们了。
+
+假设，文件内单词迭代器即使永远跑不到终点，也需要关闭它打开的文件。为此，除了 next() 方法，迭代器对象还可以实现 return() 方法。如果迭代在 next() 返回 done 属性为 true 的迭代结果之前停止（最常见的原因是通过 break 语句提前退出 for/of 循环），那么解释器就会检查迭代器对象是否有 return() 方法。如果有，解释器就会调用它（不传参数），让迭代器有机会关闭文件、释放内存，或者做一些其他清理工作。这个 return() 方法必须返回一个迭代器结果对象。这个对象的属性会被忽略，但返回非对象值会导致报错。
+
+for/of 循环和扩展操作符是 JS 中非常有用的特性，因此在创建 API 时，应该尽可能使用它们。但是可迭代对象、它的迭代器对象，加上迭代器的结果对象让事情变得有点复杂。**好在生成器可以极大地简化自定义迭代器的创建**。
+
+### 12.3 生成器
+
+生成器是一种使用强大的新 ES6 语法定义的迭代器，**特别适合要迭代的值不是某个数据结构的元素，而是计算结果的场景**。
+
+要创建生成器，首先必须定义一个生成器函数。生成器函数在语法上类似常规的 JS 函数，但使用的关键字是 `function*` 而非 `function`（严格来讲，`function*` 并不是一个新关键字，只是在 function 后面、函数名前面加了个 `*`）调用生成器函数并不会实际执行函数体，而是返回一个生成器对象。这个生成器对象是一个迭代器。调用它的 next() 方法会导致生成器函数的函数体从头（或从当前位置）开始执行，直至遇见一个 `yield` 语句。`yield`（回送）是 ES6 的新特性，类似于 return 语句。`yield` 语句的值会成为调用迭代器的 next() 方法的返回值。
+
+```js
+// 这个生成器函数回送一组素数（10进制）
+// 调用这个函数不会运行下面的代码，而只会返回一个生成器对象。调用该对象的 next()会开始运行，直至一个 yield 语句为 next() 方法提供返回值
+function* oneDigitPrimes() {
+  yield 2;
+  yield 3;
+  yield 5;
+  yield 7;
+}
+
+// 调用生成器函数，得到一个生成器
+let primes = oneDigitPrimes();
+
+// 生成器是一个迭代器对象，可以迭代回送的值
+primes.next().value; // 2
+primes.next().value; // 3
+primes.next().value; // 5
+primes.next().value; // 7
+primes.next().done; // true
+
+// 生成器有一个 Symbol.iterator 方法，因此也是可迭代对象
+primes[Symbol.iterator](); // primes
+
+// 可以像使用其他可迭代对象一样使用生成器
+[...oneDigitPrimes()]; // [2, 3, 5, 7]
+let sum = 0;
+for (let prime of oneDigitPrimes()) sum += prime;
+sum; // 17
+```
+
+与常规函数一样，也可以使用表达式定义生成器。同样，只要在 function 关键字前面加个星号即可：
+
+```js
+const seq = function* (from, to) {
+  for (let i = from; i <= to; i++) yield i;
+};
+[...seq(3, 5)]; // [3, 4, 5]
+```
+
+**在类和对象字面量中，定义方法时可以使用简写形式，省略 function 关键字**。在这种情况下定义生成器，只要在应该出现 function 关键字的地方（如果用的话）加一个星号：
+
+```js
+let o = {
+  x: 1,
+  y: 2,
+  z: 3,
+  // 这个生成器会回送当前对象的每个键
+  *g() {
+    for (let key of Object.keys(this)) {
+      yield key;
+    }
+  }
+};
+[...o.g()]; //["x", "y", "z", "g"]
+```
+
+> **注意**：不能使用箭头函数语法定义生成器函数生成器。
+
+生成器在定义可迭代类时特别有用。例如，可以把示例 12-1 中的 `[Symbol.iterator]()` 方法替换成像下面这样更简短的 `*[Symbol.iterator]()` 生成器函数
+
+```js
+*[Symbol.iterator]() {
+  for(let x = Math.ceil(this.from); x <= this.to; x++) yield x;
+}
+```
+
+#### 12.3.1 生成器的示例
+
+如果确实生成自己通过某种计算回送的值，生成器还会有更大的用处。例如，下面这个生成器函数回送的是斐波纳契数：
+
+```js
+function* fibonacciSequence() {
+  let x = 0,
+    y = 1;
+  for (;;) {
+    yield y;
+    [x, y] = [y, x + y];
+  }
+}
+```
+
+这个 fibonacciSequence（生成器函数中有一个无限循环，永远回送值而不返回。如果通过扩展操作符 `...` 来使用它，就会一直循环到内存耗尽，程序崩溃为止。不过，通过设置退出条件，可以在 for/of 循环中使用它：
+
+```js
+// 返回第 n 个斐波纳契数
+function fibonacci(n) {
+  for (let f of fibonacciSequence()) {
+    if (n-- <= 0) return f;
+  }
+}
+
+fibonacci(20); // 10946
+```
+
+配合下面这个 take() 生成器，这种无穷生成器可以派上更大的用场：
+
+```js
+// 回送指定可迭代对象的前 n 个元素
+function* take(n, iterable) {
+  let it = iterable[Symbol.iterator](); // 取得可迭代对象的生成器
+  // 循环 n 次
+  while (n-- > 0) {
+    let next = it.next(); // 从迭代器中取得下一项
+    // 如果没有更多值了,直接返回
+    if (next.done) return;
+    else yield next.value; // 否则，回送这个值
+  }
+}
+
+// 包含前 5 个斐波纳契数的数组
+[...take(5, fibonacciSequence())]; // [1, 1, 2, 3, 5]
+```
+
+下面也是一个有用的生成器函数，它可以交替回送多个可迭代对象的元素：
+
+```js
+// 拿到一个可迭代对象的数组，交替回送它们的元素
+function* zip(...iterables) {
+  // 取得每个可迭代对象的迭代器
+  let iterators = iterables.map(i => i[Symbol.iterator]());
+  let index = 0;
+  // 在还有迭代器的情况下
+  while (iterators.length > 0) {
+    // 如果到了最后一个迭代器
+    if (index > iterators.length) {
+      index = 0; // 返回至第一个迭代器
+    }
+
+    let item = iterators[index].next(); // 从下一个迭代器中取得下一项
+
+    // 如果该迭代器完成
+    if (item.done) {
+      iterators.splice(index, 1); // 则从数组中删除它
+    } else {
+      // 否则，回送迭代的值
+      yield item.value;
+      index++; // 并前进到下一个迭代器
+    }
+  }
+}
+
+// 交替3个可迭代对象
+[...zip(oneDigitPrimes(), 'ab', [0])]; // [2,"a",0,3,"b",5,7]
+```
+
+#### 12.3.2 `yield*` 与递归生成器
+
+除了前面定义的交替多个可迭代对象的 zip() 生成器，按顺序回送它们的元素的生成器函数也很有用。为此，可以写出下面的函数：
+
+```js
+function* sequence(...iterables) {
+  for (let iterable of iterables) {
+    for (let item of iterable) {
+      yield item;
+    }
+  }
+}
+
+[...sequence('abc', oneDigitPrimes())]; // ["a", "b", "c", 2, 3, 5, 7]
+```
+
+这种在生成器函数中回送其他可迭代对象元素的操作很常见，所以 ES6 为它定义了特殊语法。`yield*` 关键字与 `yield` 类似，但它不是只回送一个值，而是迭代可迭代对象并回送得到的每个值。使用 `yield*` 可以将前面定义的 sequence() 生成器函数简化成这样：
+
+```js
+function* sequence(...iterables) {
+  for (let iterable of iterables) {
+    yield* iterable;
+  }
+}
+
+[...sequence('abc', o.neDigitPrimes())];
+```
+
+数组的 forEach() 方法通常是遍历数组元素的简便方式，但这样写不行：
+
+```js
+function* sequence(...iterables) {
+  iterables.forEach(iterable => yield * iterable); // 错误
+}
+```
+
+`yield` 和 `yield*` 只能在生成器函数中使用，而这里嵌套的箭头函数是一个常规函数，不是 `function*` 生成器函数，所以不能出现 `yield`。
+
+`yield*` 可以用来迭代任何可迭代对象，包括通过生成器实现的。这意味着使用 `yeld*` 可以定义递归生成器，利用这个特性可以通过简单的非递归迭代遍历递归定义的树结构。
+
+### 12.4 高级生成器特性
+
+生成器函数最常见的用途是创建迭代器，但生成器的基本特性是可以暂停计算，回送中间结果，然后在某个时刻再恢复计算。这意味着生成器拥有超越迭代器的特性。
+
+#### 12.4.1 生成器函数的返回值
+
+到目前为止，看到的生成器函数都没有 return 语句，或者即便有，也用于提前退出，而不是返回值。与其他函数一样，生成器函数也可以返回值。为了理解这种情况
