@@ -207,6 +207,23 @@ title: JavaScript权威指南
     - [11.9 URL API](#119-url-api)
       - [11.9.1 遗留 URL 函数](#1191-遗留-url-函数)
     - [11.10 计时器](#1110-计时器)
+  - [十二. 迭代器与生成器](#十二-迭代器与生成器)
+    - [12.1 迭代器原理](#121-迭代器原理)
+    - [12.2 实现可迭代对象](#122-实现可迭代对象)
+      - [12.2.1 “关闭” 迭代器：return() 方法](#1221-关闭-迭代器return-方法)
+    - [12.3 生成器](#123-生成器)
+      - [12.3.1 生成器的示例](#1231-生成器的示例)
+      - [12.3.2 `yield*` 与递归生成器](#1232-yield-与递归生成器)
+    - [12.4 高级生成器特性](#124-高级生成器特性)
+      - [12.4.1 生成器函数的返回值](#1241-生成器函数的返回值)
+      - [12.4.2 yield 表达式的值](#1242-yield-表达式的值)
+      - [12.4.3 生成器的 return() 和 throw() 方法](#1243-生成器的-return-和-throw-方法)
+  - [十三. 异步 JS](#十三-异步-js)
+    - [13.1 使用回调的异步编程](#131-使用回调的异步编程)
+      - [13.1.1 事件](#1311-事件)
+      - [13.1.2 网络事件](#1312-网络事件)
+      - [13.1.3 Node 中的回调与事件](#1313-node-中的回调与事件)
+    - [13.2 期约](#132-期约)
 
 <!-- /code_chunk_output -->
 
@@ -7947,4 +7964,231 @@ function* sequence(...iterables) {
 
 #### 12.4.1 生成器函数的返回值
 
-到目前为止，看到的生成器函数都没有 return 语句，或者即便有，也用于提前退出，而不是返回值。与其他函数一样，生成器函数也可以返回值。为了理解这种情况
+到目前为止，看到的生成器函数都没有 return 语句，或者即便有，也用于提前退出，而不是返回值。与其他函数一样，生成器函数也可以返回值。next() 方法的返回值是一个有 value 或 done 属性的对象。
+
+通常，无论是迭代器还是生成器，如果 value 属性有定义，那么 done 属性未定义或为 false。如果 done 是 true，那么 value 就是未定义的。但对于返回值的生成器，最后一次调用 next() 返回的对象的 value 和 done 都有定义: value 是生成器返回的值，done 是 true（表示没有可迭代的值了）。最后这个值会被 for/of 循环和扩展操作符忽略，但手工迭代时可以通过显式调用 next() 得到：
+
+```js
+function* oneAndDone() {
+  yield 1;
+  return 'done';
+}
+
+// 正常迭代中不会出现返回的值
+[...oneAndDone()]; // [1]
+
+// 但在显式调用 next() 时可以得到
+let generator = oneAndDone();
+generator.next(); // { value: 1, done: false }
+generator.next(); // { value: "done", done: true }
+
+// 如果生成器已经完成，则不会再返回值
+generator.next(); // { value: undefined, done: true }
+```
+
+#### 12.4.2 yield 表达式的值
+
+`yield` 是一个表达式（回送表达式），可以有值。调用生成器的 next() 方法时，生成器函数会一直运行直到到达一个 `yield` 表达式。
+
+`yield` 关键字后面的表达式会被求值，该值成为 next() 调用的返回值。此时，生成器函数就在求值 yield 表达式的中途停了下来。下一次调用生成器的 next() 方法时，传给 next() 的参数会变成暂停的 yield 表达式的值。换句话说，生成器通过 yield 向调用者返回值，而调用者通过 next() 给生成器传值。生成器和调用者是两个独立的执行流，它们交替传值（和控制权）。来看下面的代码：
+
+```js
+function* smallNumbers() {
+  console.log('next() 第一次被调用；参数被丢弃');
+  let y1 = yield 1; // y1 == "b"
+  console.log('next() 第二次被调用，参数是', y1);
+  let y2 = yield 2; // y2 == "c"
+  console.log('next() 第三次被调用，参数是', y2);
+  let y3 = yield 3; // y3 == ""d
+  console.log('next() 第四次被调用,参数是', y3);
+  return 4;
+}
+
+let g = smallNumbers();
+console.log('创建了生成器；代码未运行');
+
+let n1 = g.next('a'); // n1.value = 1
+console.log('生成器回送', n1.value);
+let n2 = g.next('b'); // n2.value = 2
+console.log('生成器回送', n2.value);
+let n3 = g.next('c'); // n3.value = 3
+console.log('生成器回送', n3.value);
+let n4 = g.next('d'); // n4.value = 4
+console.log('生成器回送', n4.value);
+```
+
+以上代码执行时，会打印下列输出，这些输出演示了两个代码块的交互过程：
+
+```txt
+创建了生成器；代码未运行
+next() 第一次被调用；参数被丢弃
+生成器回送 1
+next() 第二次被调用，参数是 b
+生成器回送 2
+next() 第三次被调用，参数是 c
+生成器回送 3
+next() 第四次被调用，参数是 d
+生成器返回 4
+```
+
+> **注意**：第一次调用 next() 启动生成器，但传入的值无法在生成器中访问到。
+
+#### 12.4.3 生成器的 return() 和 throw() 方法
+
+可以接收生成器函数回送或返回的值。同时，也可以通过生成器的 next() 方法给运行中的生成器传值。
+
+除了通过 next() 为生成器提供输入之外，还可以调用它的 return() 和 throw() 方法，改变生成器的控制流。顾名思义，在生成器上调用这两个方法会导致它返回值或抛出异常，就像生成器函数中的一下条语句是 return 或 throw 一样。
+
+如果迭代器定义了 return() 方法且迭代提前停止，解释器会自动调用 return() 方法，从而让迭代器有机会关闭文件或做一些其他清理工作。对生成器而言，无法定义这样一个 return() 方法来做清理工作，但可以在生成器函数中使用 try/finally 语句，保证生成器返回时（在 finally 块中）做一些必要的清理工作。在强制生成器返回时，生成器内置的 return() 方法可以保证这些清理代码运行（生成器也不会再被使用）。
+
+正如 next() 方法可以给运行中的生成器传入任意值一样，生成器的 throw() 方法也提供了（以异常形式）向生成器发送任意信号的途径。调用 throw() 方法就会导致生成器函数抛出异常。如果生成器函数中有适当的异常处理代码，则这个异常就不一定致命，而是可以成为一种改变生成器行为的手段。例如，有一个计数器生成器，不断回送递增的整数。那可以把它写成一旦遇到 throw() 发送的异常就把计数器归零。
+
+当生成器使用 `yield*` 回送其他可迭代对象的值时，调用生成器的 next() 方法会导致调用该可迭代对象 next() 方法。同样，return() 和 throw() 方法也是如此。如果一个生成器的 `yield*` 作用于一个可选代对象，而该对象定义了这两个方法，那么在生成器上调用 return() 或 throw() 会导致相应迭代器的 return() 或 throw() 方法被调用。
+
+> 所有迭代器都必须有 next() 方法。需要在未完成迭代时做清理工作的迭代器应该定义 return() 方法。而任何迭代器都可以定义 throw() 方法，但其现实意义未知。
+
+## 十三. 异步 JS
+
+浏览器中的 JS 程序是典型的事件驱动型程序，即它们会等待用户单击或触发，然后才会真正执行。而基于 JS 的服务器则通常要等待客户端通过网络发送请求，然后才能执行操作。这种异步编程在 JS 中是司空见惯的。本章将介绍三种重要的语言特性，可以让编写异步代码更容易：
+
+- ES6 新增的期约（Promise）是一种对象，代表某个异步操作尚不可用的结果。
+
+- 关键字 `async` 和 `await` 是 ES2017 中引入的，为简化异步编程提供了新语法，它允许开发者将基于期约的异步代码写成同步的形式。
+
+- 异步迭代器和 for/await 循环是 ES2018 中引入的，允许在看起来同步的简单循环中操作异步事件流。
+
+讽刺的是，JS 虽然提供了这些编写异步代码的强大特性，但其核心语言特性中却没有一个是异步的。
+
+### 13.1 使用回调的异步编程
+
+在最基本的层面上，JS 异步编程是使用回调实现的。回调就是函数，可以传给其他函数。而其他函数会在满足某个条件或发生某个（异步）事件时调用（“回调”）这个函数。回调函数被调用，相当于通知满足了某个条件或发生了某个事件，有时这个调用还会包含函数参数，能够提供更多细节。
+
+#### 13.1.1 事件
+
+客户端 JS 编程几乎全都是事件驱动的。也就是说，不是运行某些预定义的计算，而是等待用户做一些事，然后响应用户的动作。用户在按下键盘按键、移动鼠标、单击鼠标或轻点触摸屏设备时，浏览器会生成事件。事件驱动的 JS 程序在特定上下文中为特定类型的事件注册回调函数，而浏览器在指定的事件发生时调用这些函数。这些回调函数叫作事件处理程序或者事件监听器，是通过 `addEventListener()` 注册的
+
+```js
+// 要求浏览器返回一个对象，表示与下面的 CSS 选择符匹配的 HTML <button> 元素
+let okay = document.querySelector('#confirmUpdateDialog button.okay');
+
+// 接下来注册一个回调函数，当用户单击该按钮时会被调用
+okay.addEventListener('click', applyUpdate);
+```
+
+在这个示例中，applyUpdate() 是一个假想的回调函数。调用 `document.querySelector()` 会返回一个对象，表示网页中单个特定的元素。在这元素上调用 `addEventListener()` 可以注册回调函数。`addEventListener()` 的第一个参数是一个字符串，指定要注册的事件类型。
+
+#### 13.1.2 网络事件
+
+JS 编程中另一个常见的异步操作来源是网络请求。浏览器中运行的 JS 可以通过类似下面的代码从 Web 服务器获取数据：
+
+```js
+//注意回调参数
+function getCurrentVersionNumber(versionCallback) {
+  // 通过脚本向后端版本 API 发送一个 HTTP 请求
+  let requests = new XMLHttpRequest();
+  request.open('GET', 'http://www.example.com/api/version');
+  request.send();
+
+  // 注册一个将在响应到达时调用的回调
+  request.onload = function () {
+    if (request.status === 200) {
+      // 如果 HTTP 状态码没问题，则取得版本号并调用回调
+      let currentVersion = parseFloat(request.responseText);
+      versionCallback(null, currentVersion);
+    } else {
+      // 否则，通过回调报告错误
+      versionCallback(response.statusText, null);
+    }
+  };
+  // 注册另一个将在网络出错时调用的回调
+  request.onerror = request.ontimeout = function (e) {
+    versionCallback(e.type, null);
+  };
+}
+```
+
+> XMLHttpRequest 类与 XML 没有特殊的关系。在现代客户端 JS 中，这个类很大程度上已经被 fetch() <!--TODO 15.11.1-->API 所取代。
+
+客户端 JS 代码可以使用 XMLHttpRequest 类及回调函数来发送 HTTP 请求并异步处理服务器返回的响应。这里定义的 getCurrentVersionNumber() 函数会发送 HTTP 请求并定义事件处理程序，后者在收到服务器响应或者超时或其他错误导致请求失败时会被调用。
+
+> **注意**：如果 XMLHttpRequest 正常工作，则 getCurrentVersionNumber() 调用回调时会给第一个参数传 null，把版本号作为第二个参数。否则，如果发生错误，则 getCurrentVersionNumber() 调用回调时将错误细节作为第一个参数，将 null 作为第二个参数。
+
+#### 13.1.3 Node 中的回调与事件
+
+Node.js 服务器端 JS 环境底层就是异步的，定义了很多使用回调和事件的 API。例如，读取文件内容的默认 API 就是异步的，会在读取文件内容后调用一个回调函数：
+
+```js
+const fs = require('fs'); // "fs" 模块有文件系统相关的 API
+// 保存程序选项的对象
+let options = {
+  // 默认选项可以写在这里
+};
+
+// 读取配置文件，然后调用回调函数
+fs.readFile('config.json', 'utf-8', (err, text) => {
+  if (err) {
+    // 如果有错误，显示一条警告消息，但仍然继续
+    console.warn('Could not read config file:', err);
+  } else {
+    // 否则，解析文件内容并赋值给选项对象
+    Object.assign(options, JSON.parser(text));
+  }
+
+  // 无论是什么情况，都会启动运行程序
+  startProgram(options);
+});
+```
+
+Node 的 fs.readFile() 函数以接收两个参数的回调作为最后一个参数。它会异步读取指定文件，然后调用回调。如果读取文件成功，它会把文件内容传给回调的第二个参数。如果发生错误，它会把错误传给回调的第一个参数。在这个示例中，把回调写成了箭头函数，对于这种简单操作，箭头函数既简洁又自然。
+
+Node 也定义一些基于事件的 API。下面这个函数展示了在 Node 中如何通过 HTTP 请求获取 URL 的内容。它包含两层处理事件监听器的异步代码。
+
+> **注意**：Node 使用 `on()` 方法而非 addEventListener() 注册事件监听器。
+
+```js
+const https = require('https');
+
+// 读取 URL 的文本内容，将其异步传给回调
+function getText(url, callback) {
+  // 对 URL 发送一个 HTTP GET 请求
+  request = https.get(url);
+
+  // 注册一个函数处理 "response" 事件
+  request.on('response', response => {
+    // 这个响应事件意味着收到了响应头
+    let httpStatus = response.statusCode;
+
+    // 此时并没有收到 HTTP 响应体
+    // 因此还要再注册几个事件处理程序，以便收到响应体时被调用
+    response.setEncoding('utf-8'); // 应该收到 Unicode 文本
+    let body = ''; // 需要在这里累积
+
+    // 每个响应体块就绪时都会调用这个事件处理程序
+    response.on('data', chunk => {
+      body += chunk;
+    });
+
+    // 响应完成时会调用这个事件处理程序
+    response.on('end', () => {
+      // 如果 HTTP 响应码没问题
+      if (httpStatus === 200) {
+        callback(null, body); // 把响应体传给回调
+      } else {
+        // 否则传错误
+        callback(httpStatus, null);
+      }
+    });
+  });
+
+  // 这里也为底层网络错误注册了一个事件处理程序
+  request.on('error', err => {
+    callback(err, null);
+  });
+}
+```
+
+### 13.2 期约
+
+**期约（Promise）是一种为简化异步编程而设计的核心语言特性。期约是一个对象，表示异步操作的结果**。这个结果可能就绪也可能未就绪。而期约 API 在这方面故意含糊：没有办法同步取得期约的值，只能要求期约在值就绪时调用一个回调函数。
+
+假设要定义一个像上一节中 getText() 函数一样的异步 API，但希望它基于期约，没有回调参数，返回一个期约对象。然后调用者可以在这个期约对象上注册一
