@@ -3518,7 +3518,7 @@ function vectorAdd(
 vectorAdd({ x: 1, y: 2 }, { x: 3, y: 4 }); // {x: 4, y: 6}
 ```
 
-无论是解构赋值还是解构函数调用，要记住的是声明的变量或参数都位于对象字面量中<!--TODO 少个字 182页-->待值的位置。因此，**属性名始终在冒号左侧，而形参名则在冒号右侧**。
+无论是解构赋值还是解构函数调用，要记住的是声明的变量或参数都位于对象字面量中期待值的位置。因此，**属性名始终在冒号左侧，而形参名则在冒号右侧**。
 
 在解构赋值中也可以为形参定义默认值。下面是针对 2D 或 3D 向量乘法的例子：
 
@@ -4068,7 +4068,7 @@ g.name; // "bound f"
 
 > `bind()` 返回函数的 `name` 属性由单词 "bound" 和调用 `bind()` 的函数的 `name` 属性构成。
 
-#### 8.7.6 tostring()方法
+#### 8.7.6 toString() 方法
 
 与所有 JS 对象一样，函数也有 `toString()` 方法。ECMAScript 规范要求这个方法返回一个符合函数声明语句的字符串。实践中，这个方法的多数实现都返回函数完整的源代码。内置函数返回的字符串中通常包含 "[native code]"，表示函数体。
 
@@ -8355,4 +8355,109 @@ let p3 = p2.then(c2); // 期约3，任务3
 #### 13.2.4 再谈期约和错误
 
 细致的错误处理在异步编程中是非常重要的。在同步代码中，如果不编写错误处理逻辑，至少会看到异常和栈追踪信息，从而能够查找出错的原因。而在异步代码中，未处理的异常往往不会得到报告，错误只会静默发生，导致它们更难调试。好消息是 catch() 方法可以让处理期约错误更容易。
-<!--TODO 再看解决期约-->
+
+**catch 和 finally 方法**
+**期约的 `catch()` 方法实际上是对以 null 为第一个参数、以错误处理回调为第二个参数的 then() 调用的简写**。对于任何期约 p 和错误回调 c，以下两行代码是等价的：
+
+```js
+p.then(null, c);
+p.catch(c);
+```
+
+应该首选 catch() 简写形式：
+
+- 它更简单
+- 它的名字对应 try/catch 异常处理语句的 catch 子句。
+
+传统的异常处理在异步代码中并不适用。当同步代码出错时，一个异常会 “沿着调用栈向上冒泡”，直到碰上一个 catch 块。而对于异步期约链，类似的比喻可能是一个错误 “沿着期约链向下流淌”，直到碰上一个 catch() 调用。
+
+在 ES2018 中，期约对象还定义了一个 finally() 方法，其用途类似 try/catch/finally 语句的 finally 子句。如果在期约链中添加一个，finally() 调用，那么传给 finally() 的回调会在期约落定时被调用。无论这个期约是兑现还是被拒绝，回调都会被调用，而且调用时不会给它传任何参数，因此也无法知晓期约是兑现了还是被拒绝了。
+
+但假如需要在任何情况下都运行一些清理代码（如关闭打开的文件或网络连接），那么 finally() 回调是做这件事的理想方式。与 then() 和 catch() 一样，finally() 也返回一个新期约对象。但 finally() 回调的返回值通常会被忽略，
+
+而解决或拒绝调用 finally() 的期约的值一般也会用来解决或拒绝 finally() 返回的期约。不过，如果 finally() 回调抛出异常，就会用这个错误值拒绝 finally() 返回的期约。
+
+前几节展示的 URL 抓取代码并没有做任何错误处理。下面将其重构为一个更接近现实的版本：
+
+```js
+fetch('/api/user/ profile') // 发送HTP请求
+  .then(response => {
+    // 在状态和头部就绪时调用
+    if (!response.ok) {
+      // 如果遇到 404 Not Found 或类似的错误
+      return null; // 可能用户未登录;返回空简介
+    }
+
+    // 检查头部以确保服务器发送的是 JSON
+    // 如果不是说明服务器坏了，这是一个严重错误
+    let type = response.headers.get('content-type');
+    if (type !== 'application/json') {
+      throw new TypeError('Expected JSON, got ${type}');
+    }
+    // 如果到这里了，说明状态码是 2xx，内容类型也是 JSON
+    // 因此可以安心地返回一个期约，表示解析响应体之后得到的50N对象
+
+    return response.json();
+  })
+  .then(profile => {
+    // 调用时传入解析后的响应体或 null
+    if (profile) {
+      displayUserProfile(profile);
+    } else {
+      displayLoggedoutProfilePage();
+    }
+  })
+  .catch(err => {
+    if (e instanceof NetworkError) {
+      // fetch() 在互联网连接故障时会走到这里
+      displayErrorMessage('Check your internet connection.');
+    } else if (e instanceof TypeError) {
+      // 在上面抛出 TypeError 时会走到这里
+      displayErrorMessage('Something is wrong with our server!');
+    } else {
+      // 走到这里说明发生了意料之外的错误
+      console.error(e);
+    }
+  });
+```
+
+下面通过分析不同的错误来理解以上代码。使用之前用过的命名模式：p1 是 fetch() 调用返回的期约。p2 是第一个 then() 调用返回的期约，而 c1 是传给该 then() 调用的回调。p3 是第二个 then() 调用返回的期约，而 c2 是传给该调用的回调。最后，c3 是传给 catch()调用的回调（这个调用也返回一个期约，但不用给它命名）。
+
+第一种可能失败的情况是 fetch() 请求本身。如果网络连接出现故障（或由于其他因素无法发送 HTP 请求），那么期约 p1 会以一个 NetworkError 对象被拒绝，并没有给 then() 调用传错误处理回调函数作为第二个参数，因此 p2 也会以同一个 NetworkError 对象被拒绝（如果给第一个 then() 调用传了错误处理程序，该程序就会被调用。如果它正常返回，p2 会以该处理程序返回的值解决或兑现）。不过，并未传这个处理程序，因此 p2 被拒绝，而 p3 也会以同样的理由被拒绝。此时，c3 错误处理回调会被调用，其中特定于 NetworkError 的代码会运行。
+
+代码的另一种失败方式是 HTTP 请求返回了 404 Not Found 或其他 HTTP 错误。这些都是有效的 HTTP 响应，因此 fetch() 调用不会认为它们是错误。此时，fetch()会把 404 Not Found 封装在一个 Response 对象中并以该对象兑现 p1。p1 兑现导致 c1 被调用。c1 中的代码会检查 Response 对象的 ok 属性，如果检测到它并未收到一个正常的 HTTP 响应，就会简单地返回 null。因为这个返回值并不是期约，所以它会立即兑现 p2，从而导致 c2 被以这个值调用。c2 中的代码显式检查了输入值是否为假，据此向用户显示不同的结果。这是将反常条件作为非错误且实际上不使用错误处理程序来处理的一个示例。
+
+在 c1 中，如果拿到了正常的 HTTP 响应码，但 Content-Type 头部设置得不对，则会发生更严重的错误。代码期待 JSON 格式的响应，因此如果服务器发送的是 HTML、XML 或纯文本，那么后续处理就会出问题。c1 中包含检查 Content-Type 头部的代码。如果这个头部不对，它会将其视为一个不可恢复问题，抛出 TypeError。如果传给 then()（或 catch()）的回调抛出一个值，则这个 then() 返回的期约会以这个抛出的值被拒绝。在这里，c1 的代码抛出 TypeError 会导致 p2 以该 TypeError 对象被拒绝。因为没有给 p2 指定错误处理程序，所以 p3 也会被拒绝。此时不会调用 c2，TypeError 会直接传给 c3，其中包含显式检查和处理这种错误的代码。
+
+> 这个错误对象是以常规、同步 throw 语句抛出的，而该错误最终在期约链中被一个 catch() 方法调用处理。这充分说明了为什么应该尽量使用这种简写形式，而不是给 then() 传第二个参数。同时也说明了为什么在期约链末尾添加一个 catch() 调用是个惯例。
+
+尽管在期约链末尾加上一个 catch() 来清理（或至少记录）链调用中发生的任何错误是一个惯例，在期约链的任何地方使用 catch() 也是完全有效的。如果期约链的某一环会因错误而失败，而该错误属于某种可恢复的错误，不应该停止后续环节代码的运行，那么可以在链中插入一个 catch() 调用，得到类似如下所示的代码：
+
+```js
+startAsyncOperation()
+  .then(doStageTwo)
+  .catch(recoverFromStageTwoError)
+  .then(doStageThree)
+  .then(doStageFour)
+  .catch(logStageThreeAndFourErrors);
+```
+
+传给 catch() 的回调只会在上一环的回调抛出错误时才会被调用。如果该回调正常返回，那么这个 catch() 回调就会被跳过，之前回调返回的值会成为下一个 then() 回调的输入。还有 catch() 回调不仅仅可以用于报告错误，还可以处理错误并从错误中恢复。一个错误只要传给了 catch()回调，就会停止在期约链中向下传播。catch() 回调可以抛出新错误，但如果正常返回，那这个返回值就会用于解决或兑现与之关联的期约，从而停止错误传播。
+
+在刚才的代码示例中，无论 startAsyncOperation() 还是 doStageTwo() 抛出错误，都会调用 recoverFromStageTwoError() 函数。如果 recoverFromStageTwoError() 正常返回，那么它的返回值会传给 doStageThree()，异步操作将正常继续。而如果 recoverFromStageTwoError() 不能恢复，它自己应该抛出一个错误（或者把传给它的错误再抛出来）。此时，doTageThree() 和 doStageFour() 都不会被调用，recoverFromStageTwoError()
+抛出的错误会直接传给 logStageThreeAndFourErrors()。
+
+有时候，在复杂的网络环境下，错误可能多少会以某种概率随机发生。处理这些错误时，可以简单地重新发送异步请求。假设写了一个基于期约的操作来查询数据库：
+
+```js
+queryDatabase().then(displayTable).catch(displayDatabaseError);
+```
+
+现在假设瞬间网络负载问题会导致这个查询有 1% 的失败概率。一个简单的解决方案是通过 catch() 调用来重新发送请求：
+
+```js
+queryDatabase()
+  .catch(e => wait(500).then(queryDatabase)) // 如果失败，等待并重试
+  .then(displayAble)
+  .catch(displayDatabaseError);
+```
