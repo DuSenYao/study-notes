@@ -4114,7 +4114,7 @@ const f = function (x, y) {
 
 ### 8.8 函数式编程
 
-JS 并不是 Lisp 或 Haskell 那样的函数式编程语言，但 JS  可以把函数作为对象来操作意味着可以在 JS 中使用函数式编程技巧。像 `map()` 和 `reduce()` 这样的数组方法就特别适合函数式编程风格。
+JS 并不是 Lisp 或 Haskell 那样的函数式编程语言，但 JS 可以把函数作为对象来操作意味着可以在 JS 中使用函数式编程技巧。像 `map()` 和 `reduce()` 这样的数组方法就特别适合函数式编程风格。
 
 #### 8.8.1 使用函数处理数组
 
@@ -8452,4 +8452,588 @@ queryDatabase()
   .catch(e => wait(500).then(queryDatabase)) // 如果失败，等待并重试
   .then(displayAble)
   .catch(displayDatabaseError);
+```
+
+#### 13.2.5 并行期约
+
+有时候，希望并行执行多个异步操作。函数 `Promise.all()` 可以做到这一点。`Promise.all()` 接收一个期约对象的数组作为输入，返回一个期约。如果输入期约中的任意一个拒绝，返回的期约也将拒绝；否则，返回的期约会以每个输入期约兑现值的数组兑现。例如，想抓取多个 URL 的文本内容，可以使用如下代码：
+
+```js
+// 先定义一个URL数组
+const urls = [
+  /* 零或多个URL */
+];
+
+// 然后把它转换为一个期约对象的数组
+promises = urls.map(url => fetch(url).then(r => r.text()));
+// 现在用一个期约来并行运行数组中的所有期约
+Promise.all(promises)
+  .then(bodies => {
+    /* 处理得到的字符串数组 */
+  })
+  .catch(e => console.error(e));
+```
+
+Promise.all() 实际上比刚才描述的稍微更灵活一些。其输入数组可以包含期约对象和非期约值。如果这个数组的某个元素不是期约，那么它就会被当成一个已兑现期约的值，被原封不动地复制到输出数组中。
+
+由 Promise.all() 返回的期约会在任何一个输入期约被拒绝时拒绝。这会在第一个拒绝发生时立即发生，此时其他期约的状态可能还是待定。在 ES2020 中，Promise.allSettled() 也接收一个输入期约的数组，与 Promise.all() 一样。但是，Promise.allSettled() 永远不拒绝返回的期约，而是会等所有输入期约全部落定后兑现。这个返回的期约解决为一个对象数组，其中每个对象都对应一个输入期约，且都有一个 status 属性，值为 fulfilled 或 rejected。如果 status 属性值为 fulfilled，那么该对象还会有一个 value 属性，包含兑现的值。而如果 status 属性值为 rejected，那么该对象还会有一个 reason 属性，包含对应期约的错误或拒绝理由：
+
+```js
+Promise.allSettled([Promise.resolve(1), Promise.reject(2), 3]).then(results => {
+  results[0]; // { status: "fulfilled", value: 1 }
+  results[1]; // { status: "rejected", reason: 2 }
+  results[2]; // { status: "fulfilled", value:3 }
+});
+```
+
+可能想同时运行多个期约，但只关心第一个兑现的值。此时，可以使用 Promise.race() 而不是 Promise.all()。Promise.race() 返回一个期约，这个期约会在输入数组中的期约有一个兑现或拒绝时马上兑现或拒绝（或者，如果输入数组中有非期约值，则直接返回其中第一个非期约值）。
+
+#### 13.2.6 创建期约
+
+在前面的几个示例中，一直使用返回期约的函数 fetch()，因为它是浏览器内置返回期约的一个最简单的函数。关于期约的讨论也建立在假想的返回期约的函数 getJSON() 和 wait() 上。
+
+**基于其他期约的期约**
+如果有其他返回期约的函数，那基于这个函数写一个返回期约的函数很容易，给定一个期约，调用 then() 就可以创建（并返回）一个新期约。因此，如果以已有的 fetch() 函数为起点，可以以像下面这样实现 getJSON()：
+
+```js
+function getJSON(url) {
+  return fetch(url).then(response => response.json());
+}
+```
+
+fetch() API 的 Response 对象有一个预定义的 json() 方法。这个 json() 方法返回一个期约，这个期约又通过回调返回。所以，getJSON() 返回的期约会解决为 response.json() 返回的期约。当该期约兑现时，getJSON() 返回的期约也会以相同的值兑现。
+
+> **注意**：getJSON() 的实现没有错误处理。没有检查 response.ok 和 Content-Type 头部，只是简单地让 json() 方法在响应体无法解析为 JSON 时以 SyntaxError 拒绝返回的期约。
+
+下面再写另一个返回期约的函数，这一次把 getJSON() 作为初始期约的来源：
+
+```js
+function getHighScore() {
+  return getJSON('/api/user/profile').then(profile => profile.highScore);
+}
+```
+
+**基于同步值的期约**
+有时候，可能需要实现一个已有的基于期约的 API，并从一个函数返回期约、尽管要执行的计算实际上并不涉及异步操作。在这种情况下，静态方法 Promise.resolve() 和 Promise.reject() 可以帮助达成目的。Promise.resolve() 接收一个值作为参数并返回一个会立即（但异步）以该值兑现的期约。类似地，Promise.reject() 也接收一个参数，并返回一个以该参数作为理由拒绝的期约（明确一下：这两个静态方法返回的期约在被返回时并未兑现或拒绝，但它们会在当前同步代码块运行结束后立即兑现或拒绝。通常，这会在几毫秒之后发生，除非有很多待定的异步任务等待运行）。
+
+解决期约并不等同于兑现期约。调用 Promise.resolve() 时，通常会传入兑现值，创建一个很快就兑现为该值的期约对象。如果把期约 p1 传给 Promise.resolve()，它会返回一个新期约 p2，p2 会立即解决，但要等到 p1 兑现或被拒绝时才会兑现或被拒绝。
+
+写一个基于期约的函数，其中值是同步计算得到的，但使用 Promise.resolve() 异步返回是可能的，但不常见。不过在一个异步函数中包含同步执行的代码，通过 Promise.resolve() 和 Promise.reject() 来处理这些同步操作的值倒是相当常见。特别地，如果在开始异步操作前检测错误条件（如坏参数值），那可以通过返回 Promise.reject() 创建的期约来报告该错误（这种情况下也可以同步抛出一个错误，但这种做法并不推荐，因为这样一来，函数的调用者为了处理错误既要写同步的 catch 子句，还要使用异步的 catch() 方法）。最后，Promise.resolve() 有时候也可以用来创建一个期约链的第一个期约。
+
+**从头开始创建期约**
+对于 geJSON() 和 getHighScore()，都是一开始先调用一个现有函数得到初始期约，然后再通过调用该期约的 then() 方法创建并返回新期约。如果不能使用一个返回期约的函数作为起点，那么怎么写一个返回期约的函数呢？这时候，可以使用 Promise() 构造函数来创建一个新期约对象，而且可以完全控制这个新期约。过程如下：
+
+1. 调用 Promise() 构造函数，给它传一个函数作为唯一参数。传的这个函数需要写成接收两个参数，按惯例要将它们命名为 resolve 和 reject。
+2. 构造函数同步调用函数并为 resolve 和 reject 参数传入对应的函数值。
+3. 调用函数后，Promise() 构造函数返回新创建的期约。这个返回的期约由传给 Promise() 构造函数的函数控制。传的函数应该执行某些异步操作，然后调用 resolve 函数解决或兑现返回的期约，或者调用 reject 函数拒绝返回的期约。函数不一定非要执行异步操作，可以同步调用 resolve 或 reject，但此时创建的期约仍会异步解决、兑现或拒绝。
+
+下面是前面几个示例中用到的基于期约的 wait() 函数的实现：
+
+```js
+// 创建并返回新期约
+function wait(duration) {
+  // 这两个函数控制期约
+  return new Promise((resolve, reject) => {
+    // 如果参数无效，拒绝期约
+    if (duration < 0) {
+      reject(new Error('Time travel not yet implemented'));
+    }
+    // 否则，异步等待，然后解决期约
+    // setTimeout 调用 resolve() 时未传参，这意味着新期约会以 undefined 值兑现
+    setTimeout(resolve, duration);
+  });
+}
+```
+
+> **注意**：用来控制 Promise() 构造函数创建的期约命运的那对函数叫 resolve() 和 reject()，不是 fulfill() 和 reject()。
+
+如果把一个期约传给 resolve()，返回的期约将会解决为该新期约。不过，通常在这里都会传一个非期约值，这个值会兑现返回的期约。
+
+示例 13-1 是另一个使用 Promise() 构造函数的示例。这个示例实现了在 Node 中使用的 getJSON() 函数，而 Node 并没有内置的 fetch() API。这个示例中也用到了回调和事件处理程序，因此它很好地示范了如何在其他异步编程风格基础上实现基于期约的 API：
+
+```js
+// 示例 13-1：异步 getJSON() 函数
+const http = require('http');
+
+function getJSON(url) {
+  // 创建并返回一个新期约
+  return new Promise((resolve, reject) => {
+    // 向指定的 URL 发送一个 HTTP GET 请求
+    // 收到响应时调用
+    request = http.get(url, response => {
+      // 如果HTTP状态码不对，拒绝这个期约
+      if (response.statusCode !== 200) {
+        reject(new Error(`HTTP status ${response.statusCode}`));
+        response.resume(); // 这样不会导致内存泄漏
+      }
+      // 如果响应头不对同样拒绝
+      else if (response.headers['content-type'] !== 'application/json') {
+        reject(new Error('Invalid content-type'));
+        response.resume(); // 不会造成内存泄漏
+      } else {
+        // 否则，注册事件处理程序读取响应体
+        let body = '';
+        response.setEncoding('utf-8');
+        response.on('data', chunk => {
+          body + chunk;
+        });
+        response.on('end', () => {
+          // 接收完全部响应体后，尝试解析它
+          try {
+            let parsed = JSON.parse(body);
+            // 如果解析成功，兑现期约
+            resolve(parsed);
+          } catch (e) {
+            // 如果解析失败，拒绝期约
+            reject(e);
+          }
+        });
+      }
+    });
+
+    // 如果收到响应之前请求失败，也会拒绝期约
+    request.on('error', error => {
+      reject(error);
+    });
+  });
+}
+```
+
+#### 13.2.7 串行期约
+
+使用 Promise.all() 可以并行执行任意数量的期约，而期约链则可以表达一连串固定数量的期约。不过，按顺序运行任意数量的期约有点棘手。假设有一个要抓取的 URL 数组，但为了避免网络过载，想一次只抓取一个 URL。假如这个数组是任意长度，内容也未知，那就不能提前把期约链写出来，而是要像以下代码这样动态构建：
+
+```js
+function fetchSequentially(urls) {
+  // 抓取 URL 时，要把响应体保存在这里
+  const bodies = [];
+
+  // 这个函数返回一个期约，它只抓取一个 URL 响应体
+  function fetchOne(url) {
+    return fetch(url)
+      .then(response => response.text())
+      .then(body => {
+        // 把响应体保存到数组，这里故意省略了返回值（返回 undefined）
+        bodies.push(body);
+      });
+  }
+
+  // 从一个立即（以 undefined 值）兑现的期约开始
+  let p = Promise.resolve(undefined);
+
+  // 现在循环目标 URL，构建任意长度的期约链
+  // 链的每个环节都会拿取一个 URL 的响应体
+  for (url of urls) {
+    p = p.then(() => fetchOne(url));
+  }
+
+  // 期约链的最后一个期约兑现后，响应体数组（bodies）也已经就绪。
+  // 因此，可以将这个 bodies 数组通过期约返回。
+  // 注意，这里并未包含任何错误处理程序，希望把错误传播给调用者
+  return p.then(() => bodies);
+}
+```
+
+有了这个 fetchSequentially() 函数定义，就可以像使用前面演示的 Promise.all() 并行抓取一样，按顺序依次抓取每个 URL：
+
+```js
+fetchSequentially(urls)
+  .then(bodies => {
+    /* 处理抓到的字符串数组 */
+  })
+  .catch(e => console.error(e));
+```
+
+fetchSequentially() 函数首先会创建一个返回后立即兑现的期约。然后基于这个初始期约构建一个线性的长期约链并返回链中的最后一个期约。这有点类似摆好一排多米诺骨牌，然后推倒第一张。
+
+还有一种（可能更简练）的实现方式。不是事先创建期约，而是让每个期约的回调创建并返回下一个期约。换句话说，不是创建并连缀一串期约，而是创建解决为其他期约的期约。这种方式创建的就不是多米诺骨牌形式的期约链了，而是像俄罗斯套娃那样一系列相互嵌套的期约。此时，代码可以返回第一个（最外层的）期约，知道它最终会兑现（或拒绝）为序列中最后一个（最内层的）期约兑现（或拒绝）的值。下面这个 promiseSequence() 函数是一个通用函数，不限于抓取 URL。
+
+> **注意**：promiseSequence() 内部的那个函数，看起来它是在递归地调用自身，但因为这个 “递归” 调用是通过 then() 方法完成的，所以不会有任何传统递归的行为发生。
+
+```js
+// 这个函数接收一个输入值数组和一个 promiseMaker 函数
+// 对输入数组中的任何值 x，promiseMaker(x) 都应该返回一个兑现为输出值的期约。
+// 这个函数返回一个期约，该期约最终会兑现为一个包含计算得到的输出值的数组
+
+// promiseSequence() 不是一次创建所有期约然后让它们并行运行，而是每次只运行一个期约，直到上一个期约兑现之后，才会调用 promiseMaker() 计算下一个值
+function promiseSequence(inputs, promiseMaker) {
+  // 为数组创建一个可以修改的私有副本
+  inputs = [...inputs];
+
+  // 这是要用作期约回调的函数，它的伪递归魔术是核心逻辑
+  function handleNextInput(outputs) {
+    if (inputs.length === 0) {
+      // 如果没有输入值了，则返回输出值的数组
+      // 这个数组最终兑现这个期约，以及所有之前已经解决但尚未兑现的期约
+      return outputs;
+    } else {
+      // 如果还有要处理的输入值，那么将返回一个期约对象，把当前期约解决为一个来自新期约的未来值
+      let nextInput = inputs.shift(); // 取得下一个输入值
+      return (
+        promiseMaker(nextInput) // 计算下一个输出值
+          // 然后用这个新输出值创建一个新输出值的数组
+          .then(output => outputs.concat(output))
+          // 然后 “递归”，传入新的、更长的输出值的数组
+          .then(handleNextInput)
+      );
+    }
+  }
+}
+
+// 从一个以空数组兑现的期约开始使用上面的函数作为它的回调
+return Promise.resolve([]).then(handleNextInput);
+```
+
+这个 promiseSequence() 故意写成了通用的。可以像下面这样使用它抓取多个 URL 的响应：
+
+```js
+// 传入一个 URL，返回一个以该 URL 的响应体文本兑现的期约
+function fetchBody(url) {
+  return fetch(url).then(r => r.text());
+}
+
+// 使用它依次抓取一批 URL 的响应体
+promiseSequence(urls, fetchBody)
+  .then(bodies => {
+    /* 处理字符串数组 */
+  })
+  .catch(console.error);
+```
+
+### 13.3 async 和 await
+
+ES2017 新增了两个关键字：`async` 和 `await`，代表异步 JS 编程范式的迁移。这两个新关键字极大简化了期约的使用。虽然理解期约的工作原理仍然很重要，但在通过 async 和 await 使用它们时，很多复杂性（有时候甚至连期约自身的存在感）都消失了。async 和 await 接收基于期约的高效代码并且隐藏期约，让异步代码像低效阻塞的同步代码一样容易理解和推理。
+
+#### 13.3.1 await 表达式
+
+**`await` 关键字接收一个期约并将其转换为一个返回值或一个抛出的异常**。给定 p，表达式 await p 会一直等到 p 落定。如果 p 兑现，那么 await p 的值就是兑现 p 的值。如果 p 被拒绝，那么 await p 表达式就会抛出拒绝 p 的值。通常并不会使用 await 来接收一个保存期约的变量，更多的是把它放在一个会返回期约的函数调用前面：
+
+```js
+let response = await fetch('/api/user/profile');
+let profile = await response.json();
+```
+
+这里的关键是要明白，`await` 关键字并不会导致程序阻塞或者在指定的期约落定前什么都不做。代码仍然是异步的，而 await 只是掩盖了这个事实。这意味着任何使用 await 的代码本身都是异步的。
+
+#### 13.3.2 async 函数
+
+因为任何使用 `await` 的代码都是异步的，所以有一条重要的规则：**只能在以 `async` 关键字声明的函数内部使用 `await` 关键字**。以下是使用 async 和 await 将前面的 getHighScore() 函数重写之后的样子：
+
+```js
+async function getHighScore() {
+  let response = await fetch('/api/user/profile');
+  let profile = await response.json();
+  return profile.highScore;
+}
+```
+
+把函数声明为 `async` 意味着该函数的返回值将是一个期约，即便函数体中不出现期约相关的代码。如果 `async` 函数会正常返回，那么作为该函数真正返回值的期约对象将解决为这个明显的返回值。如果 `async` 函数会抛出异常，那么它返回的期约对象将以该异常被拒绝。
+
+这个 getHighScore() 函数前面加了 async，因此它会返回一个期约。由于它返回期约，所以可以对它使用 await 关键字：
+
+```js
+displayHighScore(await getHighScore());
+```
+
+> **注意**：这行代码只有在它位于另一个 `async` 函数内部时才能运行！可以在 `async` 函数中嵌套 `await` 表达式，多深都没关系。但如果是在顶级或因为某种原因在一个非 async 函数内部，那么就不能使用 `await` 关键字，而是必须以常规方式来处理返回的期约。
+
+```js
+getHighScore().then(displayScore).catch(console.error);
+```
+
+> **可以对任何函数使用 `async` 关键字**。例如，可以在 function 关键字作为语句和作为表达式时使用，也可以对箭头函数和类及对象字面量中的简写方法使用。
+
+#### 13.3.3 等候多个期约
+
+使用 `async` 重写了 getJSON( )函数：
+
+```js
+async function getJSON(url) {
+  let response = await fetch(url);
+  let body = await response.json();
+  return body;
+}
+```
+
+再假设想使用这个函数抓取两个 JSON 值：
+
+```js
+let value1 = await getJSON(url1);
+let value2 = await getJSON(url2);
+```
+
+以上代码的问题在于它不必顺序执行。这样写就意味着必须等到抓取第一个 URL 的结果之后才会开始抓取第二个 URL 的值。如果第二个 URL 并不依赖从第一个 URL 抓取的值，那么应该可以尝试同时抓取两个值。这个示例显示了 `async` 函数本质上是基于期约的。要等候一组并发执行的 async 函数，可以像使用期约一样直接使用 Promise.all()：
+
+```js
+let [value1, value2] = await Promise.all([getJSoN(url1), getJSoN(url2)]);
+```
+
+#### 13.3.4 实现细节
+
+假设写了一个这样的 async 函数：
+
+```js
+async function f(x) {
+  /* 函数体 */
+}
+```
+
+可以把这个函数想象成一个返回期约的包装函数，它包装了原始函数的函数体：
+
+```js
+function f(x) {
+  return new Promise(function (resolve, reject) {
+    try {
+      resolve(function (x) {
+        /* 函数体 */
+      })(x);
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+```
+
+像这样以语法转换的形式解释 await 关键宇比较困难。但可以把 await 关键字想象成分隔代码体的记号，它们把函数体分隔成相对独立的同步代码块。ES2017 解释器可以把函数体分割成一系列独立的子函数，每个子函数都将被传给位于它前面的以 await 标记的那个期约的 then() 方法。
+
+### 13.4 异步迭代
+
+本章开始先讨论了基于回调和事件的异步编程，之后在介绍期约时，也强调过它只适合单次运行的异步计算，不适合与重复性异步事件来源一起使用。由于一个期约无法用于连续的异步事件，也不能使用常规的 async 函数和 await 语句来处理这些事件。
+
+ES2018 为此提供了一个解决方案。异步迭代器与[迭代器](#十二-迭代器与生成器)类似，但它们是基于期约的，而且使用时要配合一个新的 fo/of 循环：for/await。
+
+#### 13.4.1 for/await 循环
+
+Node 12 的可读流实现了异步可选代。这意味着可以像下面这样使用 for/await 循环从个流中读取连续的数据块：
+
+```js
+const fs = require('fs');
+async function parseFile(filename) {
+  let stream = fs.createReadStream(filename, { encoding: 'utf-8' });
+  for await (let chunk of stream) {
+    parseChunk(chunk); // 假设 parseChunk() 是在其他地方定义的
+  }
+}
+```
+
+与常规的 await 表达式类似，for/await 循环也是基于期约的。大体上说，这里的异步迭代器会产生一个期约，而 for/await 循环等待该期约兑现，将兑现值赋给循环变量，然后再运行循环体。之后再从头开始，从迭代器取得另一个期约并等待这个新期约兑现。
+
+```js
+// 假设有如下 URL 数组
+const urls = [url1, url2, url3];
+
+// 可以对每个 URL 调用 fetch() 以取得一个期约的数组
+const promises = urls.map(url => fetch(url));
+```
+
+此时可以使用 Promise.all() 来等待数组中的所有期约兑现。但假设希望第一次抓取的结果尽快可用，不想因此而等待抓取其他 URL。数组是可迭代的，因此可以使用常规的 for/of 循环来迭代这个期约数组：
+
+```js
+for (const promise of promises) {
+  response = await promise;
+  handle(response);
+}
+```
+
+这个示例代码使用了常规的 for/of 循环和一个常规迭代器。但由于这个迭代器返回期约，所以也可以使用新的 for/await 循环让代码更简单：
+
+```js
+for await (const response of promises) {
+  handle(response);
+}
+```
+
+这里的 for/await 循环只是把 await 调用内置在循环中，从而让代码稍微简洁了一点。但这两个示例做的事情是一样的。关键在于，这两个示例都只能在以 async 声明的函数内部才能使用。从这方面来说，for/await 循环与常规的 await 表达式没什么不同。
+
+不过，最重要的是应该知道，在这个示例中是对一个常规的迭代器使用了 for/wait。如果是完全异步的迭代器，那么还会更有意思。
+
+#### 13.4.2 异步迭代器
+
+可迭代对象是可以在 for/of 循环中使用的对象。它以一个符号名字 Symbol.iterator 定义了一个方法，该方法返回一个迭代器对象。这个迭代器对象有一个 next() 方法，可以反复调用它获取可迭代对象的值。迭代器对象的这个 next()方法返回迭代结果对象。迭代结果对象有一个 value 属性或一个 done 属性。
+
+异步迭代器与常规迭代器非常相似，但有两个重要区别：
+
+- 异步可迭代对象以符号名字 Symbol.asyncIterator 而非 Symbol.iterator 实现了一个方法（如前所示，for/await 与常规迭代器兼容，但它更适合异步可迭代对象，因此会在尝试 Symbol.iterator 方法前先尝试 Symbol.asyncIterator 方法）。
+
+- 异步迭代器的 next() 方法返回一个期约，解决为一个迭代器结果对象，而不是直接返回一个迭代器结果对象。
+
+上一节，当对一个常规同步可迭代的期约数组使用 for/await 时，操作的是同步迭代器结果对象。其中，value 属性是一个期约对象，但 done 属性是一个同步值。真正的异步迭代器返回的是迭代结果对象的期约，其中 value 和 done 都是异步值。两者的区别很微妙：对于异步迭代器，关于迭代何时结束的选择可以异步实现。
+
+#### 13.4.3 异步生成器
+
+实现迭代器的最简单方式通常是使用生成器。同理，对于异步迭代器也是如此，可以使用声明为 async 的生成器函数来实现它。声明为 async 的异步生成器同时具有异步函数和生成器的特性，即可以像在常规异步函数中一样使用 await，也可以像在常规生成器中一样使用 yield。但通过 yield 生成的值会自动包装到期约中。就连异步生成器的语法也是 `async function` 和 `function *` 的组合：`async function *`。下面这个示例展示了使用异步生成器和 for/await 循环，通过循环代码而非 setInterval() 回调函数实现以固定的时间间隔重复运行代码：
+
+```js
+// 一个基于期约的包装函数，包装 setTimeout()以实现等待
+返回一个期约，这个期约会在指定的毫秒数之后兑现
+function elapsedTime(ms)[
+return new Promise(resolve = setTimeout(resolve， ms
+//一个异步迭代器函数，按照固定的时间间隔
+/递增并生成指定(或无穷)个数的计数器
+async functi
+ck(interval， max=I
+for( Let count=1; count<=nax; count++){∥/常规for循环
+await elapsedTime (interval);
+yield count
+/等待时间流逝
+/生成计数器
+/一个测试函数，使用异步迭代器和for/ await
+async function test()[
+使用 async声明，以便使用for/ awalt
+for await( Let tick of clock(300，100)){∥/循环100次，每次间隔30m5
+console. log(tick);
+```
+
+#### 13.4.4 实现异步迭代器
+
+除了使用异步生成器实现异步迭代器，还可以直接实现异步迭代器。这需要定义一个包
+含 Symbol. asyncIterator()方法的对象，该方法要返回一个包含 next()方法的对象，
+而这个 next()方法要返回解决为一个迭代器结果对象的期约。在下面的代码中，我们
+重新实现了前面示例中的 clock()函数。但它在这里并不是一个生成器，只是会返回
+个异步可迭代对象。注意这个示例中的 next()方法，它并没有显式返回期约，我们只是把它声明为了 async next():
+
+```js
+function clock(interval， max=Infinity)[
+/一个 setTimeout的期约版，可以实现等待
+/注意参数是一个绝对时间而非时间间隔
+function until(time)(
+return new Promise(resolve = setTimeout(resolve， time- Date. nowo))
+/返回一个异步可迭代对象
+return
+startTime:Date.now()，∥记住开始时间
+count: 1
+/记住第几次迭代
+async next()[
+/方法使其成为迭代器
+if(this， count max)t
+/该结束了吗
+return{done:true;∥/表示结束的迭代结果
+/计算下次迭代什么时间开始，
+let targetTime this startTime+ this count interval
+∥/等待该时间到来,
+await until(targetTime);
+∥在迭代结果对象中返回计数器的值
+return value:
+Ls. count++
+这个方法意味着这个迭代器对象同时也是一个可迭代对象
+Symbol. asyncIterator]()[ return this; J
+```
+
+这个基于迭代器的 cock()函数修复了基于生成器版本的一个缺陷。注意，在这个更
+新的代码中，我们使用的是每次迭代应该开始的绝对时间减去当前时间，得到要传给
+setTimeout()的时间间隔。如果在 for/awai 循环中使用 clock()，这个版本会更精确
+地按照指定的时间间隔运行循环迭代。因为这个时间间隔包含了循环体运行的时间。不
+过这个修复并不仅仅与计时精度有关。for/ await 循环在开始下一次迭代之前，总会等
+待一次迭代返回的期约兑现。但如果不是在 for/ await 循环中使用异步迭代器，那你可
+以在任何时候调用 next()方法。对于基于生成器的 cock()版本，如果你连续调用 3
+次 next()方法，就可以得到 3 个期约，而这 3 个期约将几乎同时兑现，而这可能并非
+你想要的。在这里实现的这个基于迭代器的版本则没有这个问题
+异步迭代器的优点的是它允许我们表示异步事件流或数据流。前面讨论的 cock()函数
+写起来相当简单，因为其中的异步性源于由我们决定的 setTimeout()调用。但是，在
+面对其他异步源时，比如事件处理程序的触发，要实现异步迭代器就会困难很多。因
+为通常我们只有一个事件处理程序响应事件，但每次调用迭代器的 next()方法都必
+须返回一个独一无二的期约对象，而在第一个期约解决之前很有可能出现多次调用
+next()的情况。这意味着任何异步迭代器方法都必须能在内部维护一个期约队列，让
+这些期约按照异步事件发生的顺序依次解决。如果把这个期约队列的逻辑封装到一个
+AsyncQueue 类中，再基于这个类编写异步迭代器就会简单多了注 3
+下面定义的这个 AsyncQueue 类包含一个队列类应有的 enqueue()和 dequeue()方
+法。其中， dequeue()方法返回一个期约而不是一个实际的值。这意味着在尚未调用
+enqueue()之前调用 dequeue()是没有问题的。这个 AsyncQueue 类也是一个异步迭代
+器，有意设计为与 for/ await 循环配合使用，其循环体会在每次入队一个新值时运行
+次( AsyncQueue 类有一个 close()方法，一经调用就不能再向队列中加入值了。当一
+个关闭的队列变空时，for/ await 循环会停止循环)。
+
+注意， AsyncQueue 类的实现没有使用 async 和 await，而是直接使用期约。实现代码有
+点复杂，你可以通过它来测试自己对本章那么大篇幅所介绍内容的理解。即使不能完全
+理解这个 AsyncQueue 的实现，也要看一看它后面那个更短的示例，它基于 AsyncQueue
+
+实现一个简单但非常有意思的异步迭代器。
+
+```js
+/**
+ * 一个异步可迭代队列类。使用 enqueue()添加值，
+ * 使用 dequeue()移除值。 dequeue()返回一个期约
+ * 这意味着，值可以在入队之前出队。这个类实现了
+ * Symbol. asyncIterator I
+ **/
+和next()
+因而可以
+与for/ awalt循环一起配合使用(这个循环在调用
+close()方法前不会终止)
+cLass AsyncQueue
+constructor()I
+/已经入队尚未出队的值保存在这里
+this values =[
+//如果期约出队时它们对应的值尚未入队，
+/就把那些期约的解决方法保存在这里
+his resolvers =[I
+//一旦关闭，任何值都不能再入队
+/也不会再返回任何未兑现的期约
+this closed= false
+enqueue (value)t
+if (this closed)t
+throw new Error("AsyncQueue closed");
+f(this resolvers length >o)t
+/如果这个值已经有对应的期约，则解决该期约
+const resolve
+this resolvers shift
+resolve(value);
+else I
+∥否则，让它去排队
+this，values. push(value);
+dequeue()t
+f(this values. length > 0)I
+∥如果有一个排队的值，为它返回一个解决期约
+const value this， values shift:
+return PromLse
+olve(value)
+lse if (this close
+//如果没有排队的值，而且队列已关闭
+返回一个解决为E0s(流终止)标记的期约
+oLve(AsyncQueue， EOS
+return
+Promt
+res
+else
+否则
+返回一个未解决的期约
+∥将解决方法排队，以便后面使用
+return new Promise((resolve)=>
+thisresolvers.push(resolve); 1)
+close([
+/一旦关闭，任何值都不能再入队
+/因此以E0S标记解决所有待决期约
+hile(this resolvers length > 0)[
+iis resolvers shift()(AsyncQueue EOS
+this closed = true
+/定义这个方法，让这个类成为异步可迭代对象
+[SymboL. asyncIterator ]()i return this; I
+/定义这个方法，让这个类成为异步迭代器
+// dequeue()返回的期约会解决为一个值，
+/或者在关闭时解决为E0S标记。这里，我们
+/需要返回一个解决为迭代器结果对象的期约
+next(I
+return this dequeue).then(value =>(value == AsyncQueue EOS)
+?I value: undefined， done: true
+:i value: value， done: false ))
+dequeue()方法返回的标记值，在关闭时表示“流终止”
+AsyncQueue. EOS= Symbol("end-of-stream")
+```
+
+因为这个 AsyncQueue 类定义了异步迭代的基础，所以我们可以创建更有意思的异步迭
+代器，只要简单地对值异步排队即可。下面这个示例使用 AsyncQueue 产生了一个浏览
+器事件流，可以通过 for/ await 循环来处理
+
+```js
+/把指定文档元素上指定类型的事件推入一个 AsyncQueue对象，
+/然后返回这个队列，以便将其作为事件流来使用
+function eventStream(elt， type)
+const q= new AsyncQueue;
+创建一个队列
+eLt. addEventlistener(type，e=>q， enqueue(e));//入队事件
+return
+async function hand leKeys()[
+/取得一个 keypress事件流，对每个事件都执行一次循环
+for await (const event of eventStream(document,keypress"))[
+console. log(event. ke
 ```
