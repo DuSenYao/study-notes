@@ -8864,23 +8864,22 @@ for await (const response of promises) {
 实现迭代器的最简单方式通常是使用生成器。同理，对于异步迭代器也是如此，可以使用声明为 async 的生成器函数来实现它。声明为 async 的异步生成器同时具有异步函数和生成器的特性，即可以像在常规异步函数中一样使用 await，也可以像在常规生成器中一样使用 yield。但通过 yield 生成的值会自动包装到期约中。就连异步生成器的语法也是 `async function` 和 `function *` 的组合：`async function *`。下面这个示例展示了使用异步生成器和 for/await 循环，通过循环代码而非 setInterval() 回调函数实现以固定的时间间隔重复运行代码：
 
 ```js
-// 一个基于期约的包装函数，包装 setTimeout()以实现等待
-返回一个期约，这个期约会在指定的毫秒数之后兑现
+// 一个基于期约的包装函数，包装 setTimeout()以实现等待，返回一个期约，这个期约会在指定的毫秒数之后兑现
 function elapsedTime(ms)[
-return new Promise(resolve = setTimeout(resolve， ms
+return new Promise(resolve = setTimeout(resolve, ms
 //一个异步迭代器函数，按照固定的时间间隔
 /递增并生成指定(或无穷)个数的计数器
 async functi
-ck(interval， max=I
+ck(interval, max=I
 for( Let count=1; count<=nax; count++){∥/常规for循环
 await elapsedTime (interval);
 yield count
 /等待时间流逝
 /生成计数器
-/一个测试函数，使用异步迭代器和for/ await
+// 一个测试函数，使用异步迭代器和for/ await
 async function test()[
 使用 async声明，以便使用for/ awalt
-for await( Let tick of clock(300，100)){∥/循环100次，每次间隔30m5
+for await( Let tick of clock(300，100)){ // 循环100次，每次间隔30m5
 console. log(tick);
 ```
 
@@ -8893,19 +8892,19 @@ console. log(tick);
 个异步可迭代对象。注意这个示例中的 next()方法，它并没有显式返回期约，我们只是把它声明为了 async next():
 
 ```js
-function clock(interval， max=Infinity)[
-/一个 setTimeout的期约版，可以实现等待
+function clock(interval, max=Infinity)[
+// 一个 setTimeout的期约版，可以实现等待
 /注意参数是一个绝对时间而非时间间隔
 function until(time)(
-return new Promise(resolve = setTimeout(resolve， time- Date. nowo))
+return new Promise(resolve = setTimeout(resolve, time- Date. nowo))
 /返回一个异步可迭代对象
 return
-startTime:Date.now()，∥记住开始时间
+startTime:Date.now()∥记住开始时间
 count: 1
 /记住第几次迭代
 async next()[
 /方法使其成为迭代器
-if(this， count max)t
+if(this.count max)t
 /该结束了吗
 return{done:true;∥/表示结束的迭代结果
 /计算下次迭代什么时间开始，
@@ -8980,35 +8979,33 @@ this resolvers shift
 resolve(value);
 else I
 ∥否则，让它去排队
-this，values. push(value);
+this.values. push(value);
 dequeue()t
 f(this values. length > 0)I
-∥如果有一个排队的值，为它返回一个解决期约
-const value this， values shift:
+// 如果有一个排队的值，为它返回一个解决期约
+const value this. values shift:
 return PromLse
 olve(value)
 lse if (this close
 //如果没有排队的值，而且队列已关闭
 返回一个解决为E0s(流终止)标记的期约
-oLve(AsyncQueue， EOS
+oLve(AsyncQueue, EOS
 return
 Promt
 res
 else
-否则
-返回一个未解决的期约
-∥将解决方法排队，以便后面使用
+// 否则，返回一个未解决的期约将解决方法排队，以便后面使用
 return new Promise((resolve)=>
 thisresolvers.push(resolve); 1)
 close([
-/一旦关闭，任何值都不能再入队
-/因此以E0S标记解决所有待决期约
+// 一旦关闭，任何值都不能再入队
+// 因此以E0S标记解决所有待决期约
 hile(this resolvers length > 0)[
 iis resolvers shift()(AsyncQueue EOS
 this closed = true
-/定义这个方法，让这个类成为异步可迭代对象
-[SymboL. asyncIterator ]()i return this; I
-/定义这个方法，让这个类成为异步迭代器
+// 定义这个方法，让这个类成为异步可迭代对象
+[SymboL.asyncIterator ]()i return this; I
+// 定义这个方法，让这个类成为异步迭代器
 // dequeue()返回的期约会解决为一个值，
 /或者在关闭时解决为E0S标记。这里，我们
 /需要返回一个解决为迭代器结果对象的期约
@@ -9027,13 +9024,13 @@ AsyncQueue. EOS= Symbol("end-of-stream")
 ```js
 /把指定文档元素上指定类型的事件推入一个 AsyncQueue对象，
 /然后返回这个队列，以便将其作为事件流来使用
-function eventStream(elt， type)
+function eventStream(elt, type)
 const q= new AsyncQueue;
 创建一个队列
-eLt. addEventlistener(type，e=>q， enqueue(e));//入队事件
+eLt. addEventlistener(type.e=>q.enqueue(e));//入队事件
 return
 async function hand leKeys()[
-/取得一个 keypress事件流，对每个事件都执行一次循环
+// 取得一个 keypress事件流，对每个事件都执行一次循环
 for await (const event of eventStream(document,keypress"))[
 console. log(event. ke
 ```
