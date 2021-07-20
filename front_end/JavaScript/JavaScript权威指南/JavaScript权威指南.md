@@ -8864,96 +8864,83 @@ for await (const response of promises) {
 实现迭代器的最简单方式通常是使用生成器。同理，对于异步迭代器也是如此，可以使用声明为 async 的生成器函数来实现它。声明为 async 的异步生成器同时具有异步函数和生成器的特性，即可以像在常规异步函数中一样使用 await，也可以像在常规生成器中一样使用 yield。但通过 yield 生成的值会自动包装到期约中。就连异步生成器的语法也是 `async function` 和 `function *` 的组合：`async function *`。下面这个示例展示了使用异步生成器和 for/await 循环，通过循环代码而非 setInterval() 回调函数实现以固定的时间间隔重复运行代码：
 
 ```js
-// 一个基于期约的包装函数，包装 setTimeout()以实现等待，返回一个期约，这个期约会在指定的毫秒数之后兑现
-function elapsedTime(ms)[
-return new Promise(resolve = setTimeout(resolve, ms
-//一个异步迭代器函数，按照固定的时间间隔
-/递增并生成指定(或无穷)个数的计数器
-async functi
-ck(interval, max=I
-for( Let count=1; count<=nax; count++){∥/常规for循环
-await elapsedTime (interval);
-yield count
-/等待时间流逝
-/生成计数器
-// 一个测试函数，使用异步迭代器和for/ await
-async function test()[
-使用 async声明，以便使用for/ awalt
-for await( Let tick of clock(300，100)){ // 循环100次，每次间隔30m5
-console. log(tick);
+// 一个基于期约的包装函数，包装 setTimeout() 以实现等待，返回一个期约，这个期约会在指定的毫秒数之后兑现
+function elapsedTime(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// 一个异步迭代器函数，按照固定的时间间隔递增并生成指定（或无穷）个数的计数器
+async function* clock(interval, max = Infinity) {
+  // 常规for循环
+  for (let count = 1; count <= max; count++) {
+    await elapsedTime(interval); // 等待时间流逝
+    yield count; // 生成计数器
+  }
+}
+
+// 一个测试函数，使用异步迭代器和 for/await
+// 使用 async 声明，以便使用 for/await
+async function test() {
+  // 循环100次，每次间隔 30 ms
+  for await (let tick of clock(300, 100)) {
+    console.log(tick);
+  }
+}
 ```
 
 #### 13.4.4 实现异步迭代器
 
-除了使用异步生成器实现异步迭代器，还可以直接实现异步迭代器。这需要定义一个包
-含 Symbol. asyncIterator()方法的对象，该方法要返回一个包含 next()方法的对象，
-而这个 next()方法要返回解决为一个迭代器结果对象的期约。在下面的代码中，我们
-重新实现了前面示例中的 clock()函数。但它在这里并不是一个生成器，只是会返回
-个异步可迭代对象。注意这个示例中的 next()方法，它并没有显式返回期约，我们只是把它声明为了 async next():
+除了使用异步生成器实现异步迭代器，还可以直接实现异步迭代器。这需要定义一个包含 Symbol.asyncIterator() 方法的对象，该方法要返回一个包含 next() 方法的对象，而这个 next() 方法要返回解决为一个迭代器结果对象的期约。在下面的代码中，重新实现了前面示例中的 clock() 函数。但它在这里并不是一个生成器，只是会返回一个异步可迭代对象。
+
+> **注意**：这个示例中的 next() 方法，它并没有显式返回期约，只是把它声明为了 `async next()`。
 
 ```js
-function clock(interval, max=Infinity)[
-// 一个 setTimeout的期约版，可以实现等待
-/注意参数是一个绝对时间而非时间间隔
-function until(time)(
-return new Promise(resolve = setTimeout(resolve, time- Date. nowo))
-/返回一个异步可迭代对象
-return
-startTime:Date.now()∥记住开始时间
-count: 1
-/记住第几次迭代
-async next()[
-/方法使其成为迭代器
-if(this.count max)t
-/该结束了吗
-return{done:true;∥/表示结束的迭代结果
-/计算下次迭代什么时间开始，
-let targetTime this startTime+ this count interval
-∥/等待该时间到来,
-await until(targetTime);
-∥在迭代结果对象中返回计数器的值
-return value:
-Ls. count++
-这个方法意味着这个迭代器对象同时也是一个可迭代对象
-Symbol. asyncIterator]()[ return this; J
+function clock(interval, max = Infinity) {
+  // 一个 setTimeout 的期约版，可以实现等待
+  // 注意：参数是一个绝对时间而非时间间隔
+  function until(time) {
+    return new Promise(resolve => setTimeout(resolve, time - Date.now()));
+  }
+
+  // 返回一个异步可迭代对象
+  return {
+    startTime: Date.now(), // 记住开始时间
+    count: 1, // 记住第几次迭代
+    async next() {
+      // 方法使其成为迭代器
+      if (this.count > max) {
+        // 该结束了吗
+        return { done: true }; //表示结束的迭代结果
+      }
+      // 计算下次迭代什么时间开始
+      let targetTime = this.startTime + this.count * interval;
+      // 等待该时间到来
+      await until(targetTime);
+      // 在迭代结果对象中返回计数器的值
+      return { value: this.count++ };
+    },
+    // 这个方法意味着这个迭代器对象同时也是一个可迭代对象
+    [Symbol.asyncIterator]() {
+      return this;
+    }
+  };
+}
 ```
 
-这个基于迭代器的 cock()函数修复了基于生成器版本的一个缺陷。注意，在这个更
-新的代码中，我们使用的是每次迭代应该开始的绝对时间减去当前时间，得到要传给
-setTimeout()的时间间隔。如果在 for/awai 循环中使用 clock()，这个版本会更精确
-地按照指定的时间间隔运行循环迭代。因为这个时间间隔包含了循环体运行的时间。不
-过这个修复并不仅仅与计时精度有关。for/ await 循环在开始下一次迭代之前，总会等
-待一次迭代返回的期约兑现。但如果不是在 for/ await 循环中使用异步迭代器，那你可
-以在任何时候调用 next()方法。对于基于生成器的 cock()版本，如果你连续调用 3
-次 next()方法，就可以得到 3 个期约，而这 3 个期约将几乎同时兑现，而这可能并非
-你想要的。在这里实现的这个基于迭代器的版本则没有这个问题
-异步迭代器的优点的是它允许我们表示异步事件流或数据流。前面讨论的 cock()函数
-写起来相当简单，因为其中的异步性源于由我们决定的 setTimeout()调用。但是，在
-面对其他异步源时，比如事件处理程序的触发，要实现异步迭代器就会困难很多。因
-为通常我们只有一个事件处理程序响应事件，但每次调用迭代器的 next()方法都必
-须返回一个独一无二的期约对象，而在第一个期约解决之前很有可能出现多次调用
-next()的情况。这意味着任何异步迭代器方法都必须能在内部维护一个期约队列，让
-这些期约按照异步事件发生的顺序依次解决。如果把这个期约队列的逻辑封装到一个
-AsyncQueue 类中，再基于这个类编写异步迭代器就会简单多了注 3
-下面定义的这个 AsyncQueue 类包含一个队列类应有的 enqueue()和 dequeue()方
-法。其中， dequeue()方法返回一个期约而不是一个实际的值。这意味着在尚未调用
-enqueue()之前调用 dequeue()是没有问题的。这个 AsyncQueue 类也是一个异步迭代
-器，有意设计为与 for/ await 循环配合使用，其循环体会在每次入队一个新值时运行
-次( AsyncQueue 类有一个 close()方法，一经调用就不能再向队列中加入值了。当一
-个关闭的队列变空时，for/ await 循环会停止循环)。
+这个基于迭代器的 clock() 函数修复了基于生成器版本的一个缺陷。在这个更新的代码中，使用的是每次迭代应该开始的绝对时间减去当前时间，得到要传给 setTimeout() 的时间间隔。如果在 for/await 循环中使用 clock()，这个版本会更精确地按照指定的时间间隔运行循环迭代。因为这个时间间隔包含了循环体运行的时间。不过这个修复并不仅仅与计时精度有关。for/await 循环在开始下一次迭代之前，总会等待一次迭代返回的期约兑现。但如果不是在 for/await 循环中使用异步迭代器，那可以在任何时候调用 next() 方法。对于基于生成器的 clock() 版本，如果连续调用 3 次 next()方法，就可以得到 3 个期约，而这 3 个期约将几乎同时兑现，而这可能并非是想要的。在这里实现的这个基于迭代器的版本则没有这个问题。
 
-注意， AsyncQueue 类的实现没有使用 async 和 await，而是直接使用期约。实现代码有
-点复杂，你可以通过它来测试自己对本章那么大篇幅所介绍内容的理解。即使不能完全
-理解这个 AsyncQueue 的实现，也要看一看它后面那个更短的示例，它基于 AsyncQueue
+**异步迭代器的优点的是它允许表示异步事件流或数据流**。前面讨论的 clock() 函数写起来相当简单，因为其中的异步性源于由我们决定的 setTimeout() 调用。但是，在面对其他异步源时，比如事件处理程序的触发，要实现异步迭代器就会困难很多。因为通常只有一个事件处理程序响应事件，但每次调用迭代器的 next() 方法都必须返回一个独一无二的期约对象，而在第一个期约解决之前很有可能出现多次调用 next() 的情况。这意味着任何异步迭代器方法都必须能在内部维护一个期约队列，让这些期约按照异步事件发生的顺序依次解决。如果把这个期约队列的逻辑封装到一个 AsyncQueue 类中，再基于这个类编写异步迭代器就会简单多了。
 
-实现一个简单但非常有意思的异步迭代器。
+下面定义的这个 AsyncQueue 类包含一个队列类应有的 enqueue() 和 dequeue() 方法。其中，dequeue() 方法返回一个期约而不是一个实际的值。这意味着在尚未调用 enqueue() 之前调用 dequeue() 是没有问题的。这个 AsyncQueue 类也是一个异步迭代器，有意设计为与 for/await 循环配合使用，其循环体会在每次入队一个新值时运行一次（AsyncQueue 类有一个 close()方法，一经调用就不能再向队列中加入值了。当一个关闭的队列变空时，for/await 循环会停止循环）。
+
+> **注意**：AsyncQueue 类的实现没有使用 async 和 await，而是直接使用期约。
 
 ```js
 /**
- * 一个异步可迭代队列类。使用 enqueue()添加值，
- * 使用 dequeue()移除值。 dequeue()返回一个期约
+ * 一个异步可迭代队列类。使用 enqueue() 添加值，
+ * 使用 dequeue()移除值。dequeue() 返回一个期约
  * 这意味着，值可以在入队之前出队。这个类实现了
- * Symbol. asyncIterator I
+ * Symbol.asyncIterator I
  **/
 和next()
 因而可以
@@ -8961,7 +8948,7 @@ enqueue()之前调用 dequeue()是没有问题的。这个 AsyncQueue 类也是�
 close()方法前不会终止)
 cLass AsyncQueue
 constructor()I
-/已经入队尚未出队的值保存在这里
+// 已经入队尚未出队的值保存在这里
 this values =[
 //如果期约出队时它们对应的值尚未入队，
 /就把那些期约的解决方法保存在这里
@@ -9017,14 +9004,11 @@ dequeue()方法返回的标记值，在关闭时表示“流终止”
 AsyncQueue. EOS= Symbol("end-of-stream")
 ```
 
-因为这个 AsyncQueue 类定义了异步迭代的基础，所以我们可以创建更有意思的异步迭
-代器，只要简单地对值异步排队即可。下面这个示例使用 AsyncQueue 产生了一个浏览
-器事件流，可以通过 for/ await 循环来处理
+因为这个 AsyncQueue 类定义了异步迭代的基础，所以可以创建更有意思的异步迭代器，只要简单地对值异步排队即可。下面这个示例使用 AsyncQueue 产生了一个浏览器事件流，可以通过 for/await 循环来处理：
 
 ```js
-/把指定文档元素上指定类型的事件推入一个 AsyncQueue对象，
-/然后返回这个队列，以便将其作为事件流来使用
-function eventStream(elt, type)
+// 把指定文档元素上指定类型的事件推入一个 AsyncQueue对象，然后返回这个队列，以便将其作为事件流来使用
+function eventStream(elt, type) {
 const q= new AsyncQueue;
 创建一个队列
 eLt. addEventlistener(type.e=>q.enqueue(e));//入队事件
