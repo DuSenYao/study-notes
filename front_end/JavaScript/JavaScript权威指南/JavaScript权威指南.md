@@ -139,7 +139,7 @@ title: JavaScript权威指南
       - [8.7.3 prototype 属性](#873-prototype-属性)
       - [8.7.4 call() 和 apply() 方法](#874-call-和-apply-方法)
       - [8.7.5 bind() 方法](#875-bind-方法)
-      - [8.7.6 tostring()方法](#876-tostring方法)
+      - [8.7.6 toString() 方法](#876-tostring-方法)
       - [8.7.7 Function() 构造函数](#877-function-构造函数)
     - [8.8 函数式编程](#88-函数式编程)
       - [8.8.1 使用函数处理数组](#881-使用函数处理数组)
@@ -228,6 +228,29 @@ title: JavaScript权威指南
       - [13.2.2 期约链](#1322-期约链)
       - [13.2.3 解决期约](#1323-解决期约)
       - [13.2.4 再谈期约和错误](#1324-再谈期约和错误)
+      - [13.2.5 并行期约](#1325-并行期约)
+      - [13.2.6 创建期约](#1326-创建期约)
+      - [13.2.7 串行期约](#1327-串行期约)
+    - [13.3 async 和 await](#133-async-和-await)
+      - [13.3.1 await 表达式](#1331-await-表达式)
+      - [13.3.2 async 函数](#1332-async-函数)
+      - [13.3.3 等候多个期约](#1333-等候多个期约)
+      - [13.3.4 实现细节](#1334-实现细节)
+    - [13.4 异步迭代](#134-异步迭代)
+      - [13.4.1 for/await 循环](#1341-forawait-循环)
+      - [13.4.2 异步迭代器](#1342-异步迭代器)
+      - [13.4.3 异步生成器](#1343-异步生成器)
+      - [13.4.4 实现异步迭代器](#1344-实现异步迭代器)
+  - [十四. 元编程](#十四-元编程)
+    - [14.1 属性的特性](#141-属性的特性)
+    - [14.2 对象的可扩展能力](#142-对象的可扩展能力)
+    - [14.3 prototype 特性](#143-prototype-特性)
+    - [14.4 公认符号](#144-公认符号)
+      - [14.4.1 Symbol.iterator 和 Symbol.asyncIterator](#1441-symboliterator-和-symbolasynciterator)
+      - [14.4.2 Symbol.hasInstance](#1442-symbolhasinstance)
+      - [14.4.3 Symbol.toStringTag](#1443-symboltostringtag)
+      - [14.4.4 Symbol.species](#1444-symbolspecies)
+      - [14.4.5 Symbol.isConcatSpreadable](#1445-symbolisconcatspreadable)
 
 <!-- /code_chunk_output -->
 
@@ -8939,82 +8962,531 @@ function clock(interval, max = Infinity) {
 /**
  * 一个异步可迭代队列类。使用 enqueue() 添加值，
  * 使用 dequeue()移除值。dequeue() 返回一个期约
- * 这意味着，值可以在入队之前出队。这个类实现了
- * Symbol.asyncIterator I
+ * 这意味着，值可以在入队之前出队。这个类实现了 [Symbol.asyncIterator] 和 next()
+ * 因而可以与 for/await 循环一起配合使用（这个循环在调用 close() 方法前不会终止）
  **/
-和next()
-因而可以
-与for/ awalt循环一起配合使用(这个循环在调用
-close()方法前不会终止)
-cLass AsyncQueue
-constructor()I
-// 已经入队尚未出队的值保存在这里
-this values =[
-//如果期约出队时它们对应的值尚未入队，
-/就把那些期约的解决方法保存在这里
-his resolvers =[I
-//一旦关闭，任何值都不能再入队
-/也不会再返回任何未兑现的期约
-this closed= false
-enqueue (value)t
-if (this closed)t
-throw new Error("AsyncQueue closed");
-f(this resolvers length >o)t
-/如果这个值已经有对应的期约，则解决该期约
-const resolve
-this resolvers shift
-resolve(value);
-else I
-∥否则，让它去排队
-this.values. push(value);
-dequeue()t
-f(this values. length > 0)I
-// 如果有一个排队的值，为它返回一个解决期约
-const value this. values shift:
-return PromLse
-olve(value)
-lse if (this close
-//如果没有排队的值，而且队列已关闭
-返回一个解决为E0s(流终止)标记的期约
-oLve(AsyncQueue, EOS
-return
-Promt
-res
-else
-// 否则，返回一个未解决的期约将解决方法排队，以便后面使用
-return new Promise((resolve)=>
-thisresolvers.push(resolve); 1)
-close([
-// 一旦关闭，任何值都不能再入队
-// 因此以E0S标记解决所有待决期约
-hile(this resolvers length > 0)[
-iis resolvers shift()(AsyncQueue EOS
-this closed = true
-// 定义这个方法，让这个类成为异步可迭代对象
-[SymboL.asyncIterator ]()i return this; I
-// 定义这个方法，让这个类成为异步迭代器
-// dequeue()返回的期约会解决为一个值，
-/或者在关闭时解决为E0S标记。这里，我们
-/需要返回一个解决为迭代器结果对象的期约
-next(I
-return this dequeue).then(value =>(value == AsyncQueue EOS)
-?I value: undefined， done: true
-:i value: value， done: false ))
-dequeue()方法返回的标记值，在关闭时表示“流终止”
-AsyncQueue. EOS= Symbol("end-of-stream")
+class AsyncQueue {
+  constructor() {
+    // 已经入队尚未出队的值保存在这里
+    this.values = [];
+    // 如果期约出队时它们对应的值尚未入队，就把那些期约的解决方法保存在这里
+    this.resolvers = [];
+    // 一旦关闭，任何值都不能再入队，也不会再返回任何未兑现的期约
+    this.closed = false;
+  }
+
+  enqueue(value) {
+    if (this.closed) {
+      throw new Error('AsyncQueue closed');
+    }
+    if (this.resolvers.length > 0) {
+      // 如果这个值已经有对应的期约，则解决该期约
+      const resolve = this.resolvers.shift();
+      resolve(value);
+    } else {
+      // 否则，让它去排队
+      this.values.push(value);
+    }
+  }
+
+  dequeue() {
+    if (this.values.length > 0) {
+      // 如果有一个排队的值，为它返回一个解决期约
+      const value = this.values.shift();
+      return Promise.resolve(value);
+    } else if (this.closed) {
+      // 如果没有排队的值，而且队列已关闭
+      // 返回一个解决为 EOS（流终止）标记的期约
+      return Promise.resolve(AsyncQueue, EOS);
+    } else {
+      // 否则，返回一个未解决的期约将解决方法排队，以便后面使用
+      return new Promise(resolve => {
+        this.resolvers.push(resolve);
+      });
+    }
+  }
+
+  close() {
+    // 一旦关闭，任何值都不能再入队
+    // 因此以 EOS 标记解决所有待决期约
+    while (this.resolvers.length > 0) {
+      this.resolvers.shift()(AsyncQueue.EOS);
+    }
+    this.closed = true;
+  }
+
+  // 定义这个方法，让这个类成为异步可迭代对象
+  [SymboL.asyncIterator]() {
+    return this;
+  }
+
+  // 定义这个方法，让这个类成为异步迭代器 dequeue() 返回的期约会解决为一个值，
+  // 或者在关闭时解决为 EOS 标记。这里，需要返回一个解决为迭代器结果对象的期约
+  next() {
+    return this.dequeue().then(value =>
+      value === AsyncQueue.EOS ? { value: undefined, done: true } : { value: value, done: false }
+    );
+  }
+}
+
+// dequeue() 方法返回的标记值，在关闭时表示 “流终止”
+AsyncQueue.EOS = Symbol('end-of-stream');
 ```
 
 因为这个 AsyncQueue 类定义了异步迭代的基础，所以可以创建更有意思的异步迭代器，只要简单地对值异步排队即可。下面这个示例使用 AsyncQueue 产生了一个浏览器事件流，可以通过 for/await 循环来处理：
 
 ```js
-// 把指定文档元素上指定类型的事件推入一个 AsyncQueue对象，然后返回这个队列，以便将其作为事件流来使用
+// 把指定文档元素上指定类型的事件推入一个 AsyncQueue 对象，然后返回这个队列，以便将其作为事件流来使用
 function eventStream(elt, type) {
-const q= new AsyncQueue;
-创建一个队列
-eLt. addEventlistener(type.e=>q.enqueue(e));//入队事件
-return
-async function hand leKeys()[
-// 取得一个 keypress事件流，对每个事件都执行一次循环
-for await (const event of eventStream(document,keypress"))[
-console. log(event. ke
+  const q = new AsyncQueue(); // 创建一个队列
+  elt.addEventlistener(type, e => q.enqueue(e)); // 入队事件
+  return q;
+}
+
+async function handleKeys() {
+  // 取得一个 keypress 事件流，对每个事件都执行一次循环
+  for await (const event of eventStream(document, 'keypress')) {
+    console.log(event.key);
+  }
+}
 ```
+
+## 十四. 元编程
+
+本章介绍一些高级 JS 特性，这些特性日常使用不多，但是对编写可重用的库极其有用。这里的很多特性都可以宽泛地归类为 “元编程” 特性。如果说常规编程是写代码去操作数据，那么元编程就是写代码去操作其他代码。在像 JS 这样的动态语言中，编程与元编程之间的界限是模糊的。在更习惯于静态语言的程序员眼里，即便是迭代对象属性的 for/in 循环这个小小的能力都可能被打上 “元” 标签。
+
+主要介绍的元编程特性如下：
+
+- 控制对象属性的可枚举、可删除和可配置能力。
+- 控制对象的可扩展能力，以及创建 “封存”（sealed）和 “冻结”（frozen）对象。
+- 查询和设置对象的原型。
+- 使用公认符号（well-know symbol）调优类型的行为。
+- 使用模板标签函数创建 DSL（Domain-Specific Language，领域专用语言）
+- 通过反射 API 探究对象。
+- 通过代理控制对象行为。
+
+### 14.1 属性的特性
+
+**JS 的属性有名字和值，但每个属性也有 3 个关联的特性，用于指定属性的行为以及可以对它执行什么操作**。
+
+- **可写**（writable）特性指定是否可以修改属性的值。
+- **可枚举**（enumerable）特性指定是否可以通过 for/in 循环和 object.keys() 方法枚举属性。
+- **可配置**（configurable）特性指定是否可以删除属性，以及是否可以修改属性的特性。
+
+对象字面量中定义的属性，或者通过常规赋值方式给对象定义的属性都可写、可枚举和可配置。但 JS 标准库中定义的很多属性并非如此。
+
+本节讲解与查询和设置属性的特性有关的 API。这个 API 对库作者来说尤其重要，因为：
+
+- 它允许库作者给原型对象添加方法，并让它们像内置方法一样不可枚举
+
+- 它允许库作者 “锁住” 自己的对象，定义不能修改或删除的属性
+
+“数据属性” 有一个值，而 “访问器属性” 有一个获取方法和设置方法。对于本节而言，可以把访问器属性的获取方法（get）和设置方法（set）作为属性的特性来看待。按照这个逻辑，也可以把数据属性的值（value）当成一个特性。这样就可以说一个属性有一个名字和 4 个特性：
+
+- 数据属性的 4 个特性是 `value`、`writable`、`enumerable` 和 `configurable`。
+
+- 访问器属性没有 `value` 特性或 `writable` 特性，它们的可写能力取决于是否存在设置方法。因此访问器属性的 4 个特性是 `get`、`set`、`enumerable` 和 `configurable`。
+
+**用于查询和设置属性特性的 JS 方法使用一个被称为属性描述符（proper descriptor）的对象，这个对象用于描述属性的 4 个特性。属性描述符对象拥有与它所描述的属性的特性相同的属性名**。因此，数据属性的属性描述符有如下属性：`value`、`writable`、`enumerable` 和 `configurable`。而访问器属性的属性描述符没有 value 和 writable 属性，只有 `get` 和 `set` 属性。其中，writable、enumerable 和 configurable 属性是布尔值，而 get 和 set 属性是函数值。
+
+要获得特定对象某个属性的属性描述符，可以调用 `Object.getOwnProperDescriptor()`：
+
+```js
+// 返回 {value: 1, writable: true, enumerable: true, configurable: true}
+Object.getOwnPropertyDescriptor({ x: 1 }, 'x');
+
+// 这个对象有一个只读的访问器属性
+const random = {
+  get octet() {
+    return Math.floor(Math.random() * 256);
+  }
+};
+
+// 返回 {get: /*func*/, set: undefined, enumerable: true, configurable: true}
+Object.geOownPropertyDescriptor(random, 'octet');
+
+// 对继承的属性或不存在的属性返回 undefined
+Object.getOwnPropertyDescriptor({}, 'x'); // undefined；没有这个属性
+Object.getOwnPropertyDescriptor({}, 'toString'); // undefined；继承的属性
+```
+
+顾名思义，Object.getOwnProperDescriptor() 只对自有属性有效。要查询继承属性的特性，必须自己沿原型链上溯（可以参考 14.3 节的 object.getPrototypeOf() 或 14.6 节<!--TODO-->的 Reflect.getPrototypeOf()）。
+
+**要设置属性的特性或者要创建一个具有指定特性的属性，可以调用 `Object.defineProperty()` 方法**，传入要修改的对象、要创建或修改的属性的名字，以及属性描述符对象：
+
+```js
+let o = {}; // 一开始没有任何属性
+// 创建一个不可枚举的数据属性 x，值为 1
+Object.defineProperty(o, 'x', {
+  value: 1,
+  writable: true,
+  enumerable: false,
+  configurable: true
+});
+
+// 确认已经有了这个属性，而且不可枚举
+o.x; // 1
+Object.keys(o); // []
+
+// 现在，修改属性 x，把它设置为只读
+Object.defineProperty(o, 'x', { writable: false });
+
+// 试着修改这个属性的值
+o.x = 2; // 静默失败或在严格模式下抛出 TypeError
+o.x; // 1
+
+// 这个属性依然是可以配置的，因此可以像这样修改它的值
+Object.defineProperty(o, 'x', { value: 2 });
+o.x; // 2
+
+// 把 x 由数据属性修改为访问器属性
+Object.defineProperty(o, 'x', {
+  get: function () {
+    return 0;
+  }
+});
+```
+
+传给 `Object.defineProperty()` 的属性描述符不一定 4 个特性都包含。如果是创建新属性，那么省略的特性会取得 false 或 undefined 值。如果是修改已有的属性，那么省略的特性就不用修改。
+
+> **注意**:这个方法只修改已经存在的自有属性，或者创建新的自有属性，不会修改继承的属性。也可以参考 14.6 节非常类似的 Reflect.defineproperty()<!--TODO-->。
+
+**如果想一次性创建或修改多个属性，可以使用 `Object.defineProperties()`**。第一个参数是要修改的对象，第二个参数也是一个对象，该对象将要创建或修改的属性的名称映射到这些属性的属性描述符。例如：
+
+```js
+let p = Object.defineProperties(
+  {},
+  {
+    x: { value: 1, writable: true, enumerable: true, configurable: true },
+    y: { value: 1, writable: true, enumerable: true, configurable: true },
+    r: {
+      get() {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+      },
+      enumerable: true,
+      configurable: true
+    }
+  }
+);
+
+p.r; // Math.SORT2
+```
+
+这段代码操作的是一个空对象，为该对象添加了两个数据属性和一个只读的访问器属性。它依赖的事实是 `Object.defineProperties()`（与 `Object.defineProperty()` 一样）返回修改后的对象。
+
+`Object.create()` 方法的第一个参数是新创建对象的原型对象。这个方法也接收第二个可选的参数，该参数与 `Object.defineProperties()` 的第二个参数一样。给 `Object.create()` 传入一组属性描述符，可以为新创建的对象添加属性。
+
+如果创建或修改属性的行为是不被允许的，`Object.defineProperty()` 和 `Object.defineProperties()` 会抛出 TypeError。比如给一个不可扩展的对象(参见 14.2<!--TODO00> 节)添加新属性。导致这两个方法抛出 TypeError 的其他原因涉及特性本身。`writable` 特性控制对 `value` 属性的修改，而 `configurable` 特性控制对其他特性的修改（也控制是否可以删除某个属性）。
+
+不过，这里的规则并非直观明了。比如，虽然某个属性是不可写的，但如果它是可以配置的，仍然可以修改它的值。再比如，即使某个属性是不可配置的，但仍然可以把该属性由可写修改为不可写。下面给出了全部规则，在调用 `Object.defineProperty()` 或 `Object.defineProperties()` 时如果违反这些规则就会抛出 TypeError：
+
+- 如果对象不可扩展，可以修改其已有属性，但不能给它添加新属性。
+
+- 如果属性不可配置，不能修改其 `configurable` 或 `enumerable` 特性。
+
+- 如果访问器属性不可配置，不能修改其获取方法或设置方法，也不能把它修改为数据属性。
+
+- 如果数据属性不可配置，不能把它修改为访问器属性。
+
+- 如果数据属性不可配置，不能把它的 `writable` 特性由 false 修改为 true，但可以由 true 修改为 false。
+
+- 如果数据属性不可配置且不可写，则不能修改它的值。不过，如果这个属性可配置但不可写，则可以修改它的值（相当于先把它配置为可写，然后修改它的值，再把它配置为不可写）。
+
+`Object.assign()` 函数可以把一个或多个源对象的属性值复制到目标对象。Object.assign() 只复制可枚举属性和属性值，但不复制属性的特性。这个结果通常都是想要的，但是也要清楚这个结果意味着什么。比如，它意味着如果源对象有一个访问器属性，那么复制到目标对象的是获取函数的返回值，而不是获取函数本身。示例 14-1 演示了如何使用 `Object.getOwnPropertyDescriptor()` 和 `Object.defineProperty()` 创建 Object.assign() 的一个变体，让这个变体能够复制全部属性描述符而不仅仅复制属性的值：
+
+```js
+// 示例 14-1：从一个对象向另一个对象复制属性及它们的特性
+/*
+ * 定义一个新的 Object.assignDescriptors() 函数
+ * 这个函数与 Object.assign() 类似，只不过会从源对象向目标对象复制属性描述符，而不仅仅复制属性的值
+ * 这个函数会复制所有自有属性，包括可枚举和不可枚举的
+ * 因为是复制描述符，它也会从源对象复制获取方法并重写目标对象的设置方法，而不是调用相应的获取方法和设置方法
+ *
+ * Object.assignDescriptors() 会将自己代码中封装的 Object.defineProperty() 抛出的 TypeError 传播出来
+ * 如果目标对象被封存或冻结，或者如果有任何来源属性尝试修改目标对象上已有的不可配置属性，就会发生错误
+ *
+ * 注意，这里是使用 Object.defineProperty() 把属性 assignDescriptors 添加给 Object 的，因此可以把这个新函数像 Object.assign() 一样设置为不可枚举属性
+ */
+Object.defineProperty(Object, 'assignDescriptors', {
+  // 与调用 Object.assign() 时的特性保持一致
+  writable: true,
+  enumerable: false,
+  configurable: true,
+  // 这个函数是 assignDescriptors 属性的值
+  value: function (target, ...sources) {
+    for (let source of sources) {
+      for (let name of Object.getOwnPropertyNames(source)) {
+        let desc = Object.getownPropertyDescriptor(source, name);
+        Object.defineProperty(target, name, desc);
+      }
+
+      for (let symbol of Object.getownPropertySymbols(source)) {
+        let desc = Object.getownPropertyDescriptor(source, symbol);
+        Object.defineProperty(target, symbol, desc);
+      }
+    }
+    return target;
+  }
+});
+
+// 定义包含获取方法的对象
+let o = {
+  c: 1,
+  get count() {
+    return this.c++;
+  }
+};
+let p = Object.assign({}, o); // 复制属性的值
+let q = Object.assignDescriptors({}, o); // 复制属性描述符
+p.count; // 1 这只是一个数据属性
+p.count; // 1：因此它的值并不递增
+q.count; // 2：复制的时候就会递增
+q.count; // 3：复制的是获取方法，因此每次访问都会递增
+```
+
+### 14.2 对象的可扩展能力
+
+**对象的可扩展（extensible）特性控制是否可以给对象添加新属性，即是否可扩展**。普通 JS 对象默认是可扩展的，但可以使用下面介绍的方法修改。
+
+要确定一个对象是否可扩展，把它传给 `Object.isExtensible()` 即可。要让一个对象不可扩展，把它传给 `Object.preventExtensions()` 即可。如此，如果再给该对象添加新属性，那么在严格模式下就会抛出 TypeError，而在非严格模式下则会静默失败。此外，修改不可扩展对象的原型始终都会抛出 TypeError。
+
+> **注意**：把对象修改为不可扩展是不可逆的（即无法再将其改回可扩展）。也要注意，调用 `Object.preventExtensions()` 只会影响对象本身的可扩展能力。如果给一个不可扩展对象的原型添加了新属性，则这个不可扩展对象仍然会继承这些新属性。
+
+14.6<!--TODO--> 节还介绍了两个类似的函数：`Reflect.isExtensible()` 和 `Reflect.preventExtensions()`。
+
+这个 `extensible` 特性的作用是把对象 “锁定” 在已知状态，阻止外部篡改。对象的 `extensible` 特性经常需要与属性的 `configurable` 和 `writable` 特性协同发挥作用。JS 为此还定义了可以一起设置这些特性的函数：
+
+- `Object.seal()` 类似 `Object.preventExtensions()` 但除了让对象不可扩展，它也会让对象的所有自有属性不可扩展。这意味着不能给对象添加新属性，也不能删除或配置已有属性。不过，可写的已有属性依然可写。没有办法 “解封” 已被 “封存” 的对象。可以使用 `Object.isSealed()` 确定对象是否被封存。
+
+- `Object.freeze()` 会更严密地 “锁定” 对象。除了让对象不可扩展，让它的属性不可配置，该函数还会把对象的全部自有属性变成只读的（如果对象有访问器属性，且该访问器属性有设置方法，则这些属性不会受影响，仍然可以调用它们给属性赋值）。使用 `Object.isFrozen()` 确定对象是否被冻结。
+
+**`Object.seal()` 和 `Object.freeze()`，它们只影响传给自己的对象，而不会影响该对象的原型**。如果想彻底锁定一个对象，那可能也需要封存或冻结其原型链上的对象。
+
+`Object.preventExtensions()`、`Object.seal()` 和 `Object.freeze()` 全都返回传给它们的对象，这意味着可以在嵌套函数调用中使用它们：
+
+```js
+// 创建一个原型被冻结的封存对象，它有一个不可枚举的自有属性
+let o = Object.seal(Object.create(Object.freeze({ x: 1 }), { y: { value: 2, writable: true } }));
+```
+
+> 如果编写的 JS 库要把某些对象传给用户写的回调函数，为避免用户代码修改这些对象，可以使用 `Object.freeze()` 冻结它们。这样做虽然简单方便，但也有弊端。比如被冻结的对象可能影响常规的 JS 测试策略。
+
+### 14.3 prototype 特性
+
+对象的 `prototype` 特性指定对象从哪里继承属性。由于这个特性实在太重要了，平时只会说 “o 的原型”，而不说 “o 的 prototype 特性”。但也要记住，当 `prototype` 以代码字体出现时，它指的是一个普通对象的属性，而不是 prototype 特性。构造函数的 `prototype` 属性用于指定通过该构造函数创建的对象的 `prototype` 特性。
+
+> 对象的 `prototype` 特性是在对象被创建时设定的。使用对象字面量创建的对象使用 `Object.prototype` 作为其原型。使用 new 创建的对象使用构造函数的 `prototype` 属性的值作为其原型。而使用 `Object.create()` 创建的对象使用传给它的第一个参数（可能是 null）作为其原型。
+
+要查询任何对象的原型，都可以把该对象传给 `Object.getPrototypeOf()`：
+
+```js
+Object.getPrototypeOf(0); // Object.prototype
+Object.getPrototypeOf([]); // Array.prototype
+Object.getPrototypeOf(() => {}); // Function.prototype
+```
+
+> 14.6 <!--TODO-->节介绍了一个非常类似的函数：`Reflect.getPrototypeOf()`。
+
+要确定一个对象是不是另一个对象的原型（或原型链中的一环），可以使用 `isPrototypeOf()` 方法：
+
+```js
+let p = { x: 1 }; // 定义一个原型对象
+let o = Object.create(p); // 用该原型创建一个对象
+p.isPrototypeOf(o); // true：o 继承 p
+Object.prototype.isPrototypeOf(p); // true：p 继承 Object.prototype
+Object.prototype.isPrototypeOf(o); // true：o 也继承 Object.prototype
+```
+
+> **注意**：`isPrototypeOf()` 的功能与 [`instanceof` 操作符](#444-instanceof-操作符)类似。
+
+对象的 `prototype` 特性在它创建时会被设定，且通常保持不变。不过，可以使用 `Object.setPrototypeOf()` 修改对象的原型：
+
+```js
+let o = { x: 1 };
+let p = { y: 2 };
+Object.setPrototypeOf(o, p); // 把 o 的原型设置为 p
+o.y; // 2：o 现在继承了属性 y
+let a = [1, 2, 3];
+Object.setPrototypeOf(a, p); // 把数组 a 的原型设置为 p
+a.join; // undefined：a 不再有 join() 方法
+```
+
+一般来说很少需要使用 `Object.setPrototypeOf()`。JS 实现可能会基于对象原型固定不变的假设实现激进的优化。这意味着如果调用过 `Object.setPrototypeOf()`，那么任何使用该被修改对象的代码都可能比正常情况下慢很多。
+
+> 14.6 节<!--TODO-->介绍了一个非常类似的函数：`Reflect.setPrototypeOf()`。
+
+JS 的一些早期浏览器实现通过 `__proto__`（前后各有两个下划线）属性暴露了对象的 `prototype` 特性。这个属性很早以前就已经被废弃了，但网上仍然有很多已有代码依赖 `__proto__`。ECMAScript 标准为此也要求所有浏览器的 JS 实现都必须支持它（尽管标准并未要求，但 Node 也支持它）。在现代 JS 中，`__proto__` 是可读且可写的，可以（但不应该）使用它代替 `Object.getPrototypeOf()` 和 `Object.setPrototypeOf()`。`__proto__` 的一个有意思的用法是通过它定义对象字面量的原型：
+
+```js
+let p = { z: 3 };
+let o = {
+  x: 1,
+  y: 2,
+  __proto__: p
+};
+o.z; // 3：o 继承 p
+```
+
+### 14.4 公认符号
+
+Symbol 类型是在 ES6 中添加到 JS 中的。之所以增加这个新类型，主要是为了便于扩展 JS 语言，同时又不会破坏对 Web 上已有代码的向后兼容性。[迭代器与生成器](#十二-迭代器与生成器)介绍了一个符号的例子，通过该例子知道一个类只要实现 “名字” 为 `Symbol.iterator` 符号的方法，这个类就是可迭代的。
+
+`Symbol.iterator` 是最为人熟知的 “公认符号”（well-known symbol）。所谓 “公认符号” 其实就是 Symbol() 工厂函数的一组属性，也就是一组符号值。通过这些符号值，可以控制 JS 对象和类的某些底层行为。
+
+#### 14.4.1 Symbol.iterator 和 Symbol.asyncIterator
+
+[`Symbol.iterator`](#十二-迭代器与生成器) 和 [`Symbol.asyncIterator`](#1342-异步迭代器) 符号可以让对象或类把自己变成可迭代对象和异步可迭代对象。
+
+#### 14.4.2 Symbol.hasInstance
+
+`instanceof` 操作符其右侧必须是一个构造函数，而表达式 `o instanceof f` 在求值时会在 o 的原型链中查找 f.prototype 的值，这是没有问题的，但在 ES6 及之后的版本中，`Symbol.hasInstance` 提供了一个替代选择。在 ES6 中，如果 instanceof 的右侧是一个有 `[Symbol.hasInstance]` 方法的对象，那么就会以左侧的值作为参数来调用这个方法并返回这个方法的值，返回值会被转换为布尔值，变成 `instanceof` 操作符的值。当然，如果右侧的值没有 `[Symbol.hasInstance]` 方法且是个函数，则 `instanceof` 操作符仍然照常行事。
+
+`Symbol.hasInstance` 意味着可以使用 `instanceof` 操作符对适当定义的伪类型对象去执行通用类型检查。例如：
+
+```js
+// 定义一个作为 “类型” 的对象，以便与 instanceof 一起使用
+let uint8 = {
+  [Symbol.hasInstance](x) {
+    return Number.isInteger(x) && x >= 0 && x <= 255;
+  }
+};
+128 instanceof uint8; // true
+256 instanceof uint8; // false：太大
+Math.PI instanceof uint8; // false：不是整数
+```
+
+> **注意**：这个例子很巧妙，但却让人困惑。因为它使用了不是类的对象，而正常情况下应该是一个类。实际上，要写一个不依赖 `Symbol.hasInstance` 的 isUnit8()` 函数也很容易（而且对读者来说代码也更清晰）。
+
+#### 14.4.3 Symbol.toStringTag
+
+调用一个简单 JS 对象的 `toString()` 方法会得到字符串 "[object Object]"：
+
+如果调用与内置类型实例的方法相同的 `Object.prototype.toString()` 函数，则会得到些有趣的结果：
+
+```js
+Object.prototype.toString.call([]); // "[object Array]"
+Object.prototype.toString.call(/./); // "[Object RegEXp]"
+Object.prototype.toString.call(() => {}); // "[object Function]"
+Object.prototype.toString.call(''); // "[object String]"
+Object.prototype.toString.call(0); // "[object Number]"
+Object.prototype.tostring.call(false); // "[object Boolean]"
+```
+
+这说明，使用这种 `Object.prototype.toString.call()` 技术检查任何 JS 值，都可以从一个包含类型信息的对象中获取以其他方式无法获取的 “类特性”。下面这个 classOf() 函数无论怎么说都比 typeof 操作符更有用，因为 typeof 操作符无法区分不同对象的类型：
+
+```js
+function classOf(o) {
+  return Object.prototype.toString.call(o).slice(8, -1);
+}
+
+classOf(null); // "Null"
+classOf(undefined); // "Undefined"
+classOf(1); // "Number"
+classOf(10n ** 100n); // "BigInt"
+classOf(''); // "String"
+classOf(false); // "Boolean"
+classOf(Symbol()); // "Symbol"
+classOf({}); // "Object"
+classOf([]); // "Array"
+classOf(/./); // "RegExp"
+classOf(() => {}); // "Functionf"
+classOf(new Map()); // "Map"
+classOf(new Set()); // "Set"
+classOf(new Date()); // "Date"
+```
+
+在 ES6 之前，`Object.prototype.toString()` 这种特殊的用法只对内置类型的实例有效。如果对自己定义的类的实例调用 classOf()，那只能得到 “Object”。而在 ES6 中，`Object.prototype.toString()` 会查找自己参数中有没有一个属性的符号名是 `Symbol.toStringTag`。如果有这样一个属性，则使用这个属性的值作为输出。这意味着如果自己定义了一个类，那很容易可以让它适配 classOf() 这样的函数：
+
+```js
+class Range {
+  get [Symbol.toStringTag]() {
+    return 'Range';
+  }
+  // 省略这个类其余的代码
+}
+let r = new Range(1, 10);
+Object.prototype.toString.call(r); // "[object Range]"
+classOf(r); // "Range"
+```
+
+#### 14.4.4 Symbol.species
+
+在 ES6 之前，JS 没有提供任何实际的方式去创建内置类的子类。但在 ES6 中，使用 `class` 和 `extends` 关键字就可以方便地扩展任何内置类。9.52 节
+使用下面这个简单的 Aray 子类演示了这一点
+
+```js
+// Array 的一个简单子类，为第一个和最后一个元素添加了获取函数
+class EZArray extends Array {
+  get first() {
+    return this[0];
+  }
+  get last() {
+    return this[this.length - 1];
+  }
+}
+let e = new EZArray(1, 2, 3);
+let f = e.map(x => x * x);
+r.last; // 3：EZArray 实例 e 的最后一个元素
+f.last; // 9：f 也是 EZArray 的实例，有 last 属性
+```
+
+Array 定义了 `concat()`、`filter()`、`map()`、`slice()` 和 `splice()` 方法，这些方法仍然返回数组。在创建类似 EZArray 的数组子类时也会继承这些方法，这些方法应该返回 Array 的实例，还是返回 EZArray 的实例？两种结果似乎都有其合理的一面，但 ES6 规范认为这 5 个数组方法（默认）将返回子类的实例。
+
+以下是实现过程：
+
+- 在 ES6 及之后版本中，Array() 构造函数有一个名字为 `Symbol.species` 符号属性（注意：这个符号是构造函数的属性名。这里介绍的其他大多数公认符号都是原型对象的方法名）。
+
+- 在使用 `extends` 创建子类时，子类构造函数会从超类构造函数继承属性（这是除子类实例继承超类方法这种常规继承之外的一种继承）。这意味着 Array 的每个子类的构造函数也会继承名为 `Symbol.species` 的属性（如果需要，子类也可以用同一个名字定义自有属性）。
+
+- 在 ES6 及之后的版本中，map() 和 slice() 等创建并返回新数组的方法经过了一些修改。修改后它们不仅会创建一个常规的 Array，还会调用 `new this.constructor[Symbol.species]()` 创建新数组。
+
+接下来是最有意思的部分。假设 `Array[Symbol.species]` 仅仅是一个常规数据属性，是按如下的方式定义的：
+
+```js
+Array[Symbol.species] = Array;
+```
+
+那么子类构造函数将作为它的 “物种”（species）继承 Array() 构造函数，在数组子类上调用 map() 将返回这个超类的实例而不返回子类实例。但 ES6 中实际结果并非如此。原因在于 `Array[Symbol.species]` 是一个只读的访问器属性，其获取函数简单地返回 this。子类构造函数继承了这个获取函数，这意味着默认情况下，每个子类构造函数都是它自己的 “物种”。
+
+不过，有时候可能需要修改这个默认行为。如果想让 EZArray 继承的返回数组的方法都返回常规 Array 对象，只需将 ·EZArray[Symbol.species]`设置为 Array 即可。但由于这个继承的属性是一个只读的访问器，不能直接用赋值操作符来设置这个值。此时可以使用`defineProperty()`：
+
+```js
+EZArray[Symbol.species] = Array; // 尝试设置只读属性会失败
+// 可以使用 defineProperty()
+Object.defineProperty(EZArray, Symbol.species, { value: Array });
+```
+
+最简单的做法其实是在一开始创建子类时就定义自己的 `Symbol.species` 获取方法：
+
+```js
+class EZArray extends Array {
+  static get [Symbol.species]() {
+    return Array;
+  }
+  get first() {
+    return this[0];
+  }
+  get last() {
+    return this[this.length - 1];
+  }
+}
+
+let e = new EZArrray(1, 2, 3);
+let f = e.map(x => x - 1);
+e.last; // 3
+f.last; // undefined：f 是一个常规数组，没有 last 获取方法
+```
+
+**增加 `Symbol.species` 的主要目的就是允许更灵活地创建 Array 的子类**，但这个公认符号的用途并不局限于此。定型数组与 Array 类一样，也以同样的方式使用了这个符号。类似地，ArrayBuffer 的 slice() 方法也会查找 this.constructor 的 `Symbol.species` 属性，而不是简单地创建新 ArrayBuffer。而返回新 Promise 对象的方法（比如 then()）同样也是通过这个 “物种协议” 来创建返回的期约。最后，如果某一天会创建 Map 的子类，并且会定义返回新 Map 对象的方法，那么为这个子类的子类考虑，或许会用到 `Symbol.species`。
+
+#### 14.4.5 Symbol.isConcatSpreadable
+
+Array 的方法 concat() 是使用 `Symbol.species` 确定对返回的数组使用哪个构造函数的方法之一。但 concat() 也使用 `Symbol.isConcatSpreadable`。
+
+数组的 concat() 方法对待自己的 this 值和它的数组参数不同于对待非数组参数。换句话说，非数组参数会被简单地追加到新数组末尾，但对于数组参数，this 数组和参数数组都会被打平或 “展开”，从而实现数组元素的拼接，而不是拼接数组参数本身。
+
+在 ES6 之前，concat() 只使用 Array.isArray() 确定是否将某个值作为数组来对待。在 ES6 中，这个算法进行了一些调整：如果 concat() 的参数（或 this 值）是对象且有一个 `Symbol.isConcatSpreadable` 符号属性，那么就根据这个属性的布尔值来确定是否应该 “展开” 参数。如果这个属性不存在，那么就像语言之前的版本一样使用 Array.isArray()。
+
+在两种情况下可能会用到这个 Symbol：
+
+- 如果创建了一个[类数组对象](#79-类数组对象)，并且希望把它传给 concat() 时该对象能像真正的数组一样，那可以给这个对象添加这么一个符号属性：
