@@ -256,6 +256,15 @@ title: JavaScript权威指南
       - [14.4.8 Symbol.unscopables](#1448-symbolunscopables)
     - [14.5 模板标签](#145-模板标签)
     - [14.6 反射 API](#146-反射-api)
+    - [14.7 代理对象](#147-代理对象)
+      - [14.7.1 代理不变式](#1471-代理不变式)
+  - [十五. 浏览器中的 JS](#十五-浏览器中的-js)
+    - [15.1 web 编程基础](#151-web-编程基础)
+      - [15.1.1 HTML `<script>` 标签中的 JS](#1511-html-script-标签中的-js)
+      - [15.1.2 文档对象模型](#1512-文档对象模型)
+      - [15.1.3 浏览器中的全局对象](#1513-浏览器中的全局对象)
+      - [15.1.4 脚本共享一个命名空间](#1514-脚本共享一个命名空间)
+      - [15.1.5 JS 程序的执行](#1515-js-程序的执行)
 
 <!-- /code_chunk_output -->
 
@@ -9758,4 +9767,374 @@ let proxy = new Proxy(target, handlers);
 
 代理对象支持的操作就是反射 API 定义的那些操作。假设 p 是一个代理对象，想执行 `delete p.x`。而 `Reflect.deleteProperty()` 函数具有与 delete 操作符相同的行为。当使用 delete 操作符删除代理对象上的一个属性时，代理对象会在处理器对象上査找 deleteProperty() 方法。如果存在这个方法，代理对象就调用它。如果不存在这个方法，代理对象就在目标对象上执行属性删除操作。
 
-对所有基础操作，代理都这样处理：如果处理器对象上存在对应方法，代理就调用该方
+对所有基础操作，代理都这样处理：如果处理器对象上存在对应方法，代理就调用该方法执行相应操作（这里方法的名字和签名与反射函数完全相同）。如果处理器对象上不存在对应方法，则代理就在目标对象上执行基础操作。这意味着代理可以从目标对象或处理器对象获得自己的行为。如果处理器对象是空的，那代理本质上就是目标对象的一个透明包装器：
+
+```js
+let t = { x: 1, y: 2 };
+let p = new Proxy(t, {});
+p.x; // 1
+delete p.y; // true：从代理上删除属性 y
+t.y; // undefined：也就从目标对象上删除了它
+p.z = 3; // 在代理上定义一个新属性
+t.z; // 3 也就在目标上定义了这个属性
+```
+
+这种透明包装代理本质上就是底层目标对象，这意味着没有理由使用代理来代替包装的对象。然而，透明包装器在创建 “可撤销代理” 时有用。创建可撤销代理不使用 Proxy() 构造函数，而要使用 `Proxy.revocable()` 工厂函数。这个函数返回一个对象，其中包含代理对象和一个 revoke() 函数。一旦调用 revoke() 函数，代理立即失效：
+
+```js
+function accessTheDatabase() {
+  /*省略访问数据库的代码*/ return 42;
+}
+let { proxy, revoke } = Proxy.revocable(accessTheDatabase, {});
+proxy(); // 42：可以通过代理访问底层的目标函数
+revoke(); // 但可以随时关闭这个访问通道
+proxy(); // !TypeError：不能再调用底层的函数了
+```
+
+> **注意**：除了演示可撤销代理，前面的代码也演示了代理既可以封装目标函数也可以封装目标对象。但这里的关键是可撤销代理充当了某种代码隔离的机制，而这可以在使用不信任的第三方库时派上用场。如果必须向一个不受自己控制的库传一个函数，则可以给它传一个可撤销代理，然后在使用完这个库之后撤销代理。这样可以防止第三方库持有对函数的引用，在不知道的时候调用它。这种防御型编程并非 JS 程序特有的，但 Proxy 类让它成为可能。
+
+如果给 Proxy() 构造函数传一个非空的处理器对象，那定义的就不再是一个透明包装器对象了，而是要在代理中实现自定义行为。有了恰当自定义的处理器，底层目标对象本质上就变得不相干了。
+
+例如，在下面的代码中，实现了一个对象，让它看起来好像有无数个只读属性，而每个属性的值就是属性的名字：
+
+```js
+// 使用代理创建一个对象，让它看起来似乎什么属性都有，只不过每个属性的值就是这个属性的名字
+let identity = new Proxy(
+  {},
+  {
+    // 每个属性都以自己的名字作为值
+    get(o, name, target) {
+      return name;
+    },
+
+    // 每个属性的名字都有定义
+    has(o, name) {
+      return true;
+    },
+
+    // 因为可枚举的属性太多，所以干脆抛出错误
+    ownKeys(o) {
+      throw new RangeError('Infinite number of properties');
+    },
+
+    // 所有属性都有,且不可写、不可配置、不可枚举
+    getOwnPropertyDescriptor(o, name) {
+      return {
+        value: name,
+        enumerable: false,
+        writable: false,
+        configurable: false
+      };
+    },
+    // 所有属性都是只读的，因此不能设置
+    set(o, name, value, target) {
+      return false;
+    },
+    // 所有属性都不可配置，因此不能删除
+    deleteProperty(o, name) {
+      return false;
+    },
+    // 所有属性都有但都不可配置，因此不能定义新属性
+    defineProperty(o, name, desc) {
+      return false;
+    },
+    // 实际上，这就意味着这个对象不能扩展
+    isExtensible(o) {
+      return false;
+    },
+    // 所有属性都定义在这个对象上，因此即便它有原型也不需要再从中继承什么
+    getPrototypeOf(o) {
+      return null;
+    },
+    // 这个对象不可扩展，因此不能修改它的原型
+    setPrototypeOf(o, proto) {
+      return false;
+    }
+  }
+);
+
+identity.x; // "x"
+identity.toString; // "toString“
+identity[0]; // "0"
+identity.x = 1; // 设置属性没有效果
+identity.x; // "x"
+delete identity.x; // false：也不能删除属性
+identity.x; // "x"
+Object.keys(identity); // !RangeError：无法列出全部属性
+for (let p of identity); // !RangeError
+```
+
+代理对象可以从目标对象和处理器对象获得它们的行为，到目前为止看到的示例都只用到它们其中一个。而同时用到这两个对象的代理通常才更有用。例如，下面的代码为目标对象创建了一个只读包装器。当代码尝试从该对象读取值时，读取操作会正常转发给目标对象。但当代码尝试修改对象或它的属性时，处理器对象的方法会抛出 TypeError。类似这样的代理在编写测试的时候有用。假设写了一个函数，它接收一个对象参数，希望这个函数不会以任何方式修改它收到的参数。如果测试接收只读的包装器对象，那么任何写入操作都会抛出异常从而导致测试失败：
+
+```js
+function readonlyProxy(o) {
+  function readonly() {
+    throw new TypeError('Readonly');
+  }
+
+  return new Proxy(o, {
+    set: readonly,
+    defineProperty: readonly,
+    deleteProperty: readonly,
+    setPrototypeOf: readonly
+  });
+}
+
+let o = { x: 1, y: 2 }; // 普通可写对象
+let p = readonlyProxy(o); // 它的只读版本
+p.x; // 1：读取属性正常
+p.x = 2; // !TypeError：不能修改属性
+delete p.y; // !TypeError：不能删除属性
+p.z = 3; // !TypeError：不能添加属性
+p.__proto__; // !TypeError：不能修改原型
+```
+
+**另一种使用代理的技术是为它定义处理器方法，拦截对象操作，但仍然把操作委托给目标对象**。[反射 API](#146-反射-api)的函数与处理器方法具有完全相同的签名，从而实现这种委托也很容易。
+
+例如，下面这个函数返回的代理会把所有操作都委托给目标对象，只通过处理器方法打印出执行了什么操作：
+
+```js
+/*
+ * 返回一个封装 o 的代理对象，对于任何操作都打印一条日志
+ * 然后把操作委托给该对象。objname 是一个字符串，它会出现在日志消息中作为对象的标识。
+ * 如果 o 的自有属性的值是对象或函数，那么在查询这些属性的值时会得到一个新的 loggingProxy，这样可以保证代理打印日志的行为能够 “持续” 下去
+ */
+function loggingProxy(o, objname) {
+  // 为日志代理对象定义处理器
+  // 每个处理器都先打印一条消息，再委托到目标对象
+  const handlers = {
+    // 这个处理器比较特殊，因为对于值为对象或函数的自有属性，它会返回一个值的代理，而不是值
+    get(target, property, receiver) {
+      // 打印 get 操作
+      console.log(`Handler get(${objname},${property.toString()})`);
+
+      // 使用反射 API 获取属性值
+      let value = Reflect.get(target, property, receiver);
+
+      // 如果属性是目标的自有属性，而且值为对象或函数，则返回这个值的代理
+      if (
+        Reflect.ownKeys(target).includes(property) &&
+        (typeof value === 'object' || typeof value === 'function')
+      ) {
+        return loggingProxy(value, `${objname}.${property.toString()}`);
+      }
+      // 否则原封不动地返回值
+      return value;
+    },
+
+    // 下面这三个方法没什么特别之处
+    // 它们打印各自的操作，然后委托到目标对象
+    // 如果说它们有什么特别之外，那仅仅是都不会打印 recelver 对象，否则会导致无穷递归
+    set(target, prop, value, receiver) {
+      console.log(`Handler set(${objname},${prop.toString()}, ${value})`);
+      return Reflect.set(target, prop, value, receiver);
+    },
+    apply(target, receiver, args) {
+      console.log(`Handler ${objname}(${args})`);
+      return Reflect.apply(target, receiver, args);
+    },
+    construct(target, args, receiver) {
+      console.log(`Handler ${objname}(${args})`);
+      return Reflect.construct(target, args, receiver);
+    }
+  };
+
+  // 剩下的其他处理器都可以自动生成
+  Reflect.ownKeys(Reflect).forEach(handlerName => {
+    if (!(handlerName in handlers)) {
+      handlers[handlerName] = function (target, ...args) {
+        // 打印操作日志
+        console.log(`Handler ${HandlerName}(${objname},${args})`);
+        // 委托操作
+        return Reflect[handlerName](target, ...args);
+      };
+    }
+  });
+
+  // 返回使用日志处理器为对象创建的代理
+  return new Proxy(o, handlers);
+}
+```
+
+前面定义的 loggingProxy() 函数创建的代理可以把使用对象的各种操作打印出来。如果想知道某个没有文档的函数怎么使用传给它的对象，那就创建这样一个日志代理。
+
+来看下面的例子，通过日志可以看到数组迭代的真正过程：
+
+```js
+// 定义一个数据数组和一个带有函数属性的对象
+let data = [10, 20];
+let methods = { square: x => x * x };
+
+// 为个数组和对象创建日志代理
+let proxyData = loggingProxy(data, 'data');
+let proxyMethods = loggingProxy(methods, 'methods');
+
+// 假设想了解 Array.map() 方法的执行过程
+data.map(methods.square); // [100, 400]
+
+// 首先，先看看日志代理数组
+proxyData.map(methods.square); // [100, 400]
+
+// 它会打印如下日志：
+// Handler get(data, map)
+// Handler get(data, length)
+// Handler get(data, constructor)
+// Handler has(data, 0)
+// Handler get(data, 0)
+// Handler has(data, 1)
+// Handler get(data, 1)
+
+// 接着再试试代理方法对象
+data.map(proxyMethods.square); // [100, 400]
+// 日志输出
+// Handler get(methods, square)
+// Handler methods.square(10, 0, 10, 20)
+// Handler methods.square(20, 1, 10, 20)
+
+// 最后，再通过日志代理来了解一下迭代协议
+for (let x of proxyData) console.log('Datum', x);
+// 日志输出
+// Handler get(data, Symbol(Symbol.iterator))
+// Handler get(data, length)
+// Handler get(data, 0)
+// Datum 10
+// Handler get(data, length)
+// Handler get(data, 1)
+// Datum20
+// Handle get(data, length)
+```
+
+根据第一段日志输出，知道 Array.map() 方法会先检查每个数组元素是否存在（因为调用了 has() 处理器），然后才真正读取元素的值（此时触发 get() 处理器）。由此可以推断，它能够区分不存在的和存在但值为 undefined 的数组元素。
+
+第二段日志输出可以知道，传给 Array.map() 的函数在被调用时会收到 3 个参数：元素的值、元素的索引和数组本身（这个日志输出有个问题：Array.toString() 方法的返回值不包含方括号，如果输出的参数列表是(10, 0, [10, 20])就更清楚了）。
+
+第三段日志输出可以知道，for/of 循环依赖于一个符号名为 `[Symbol.iterator]` 的方法。同时也表明，Array 类对这个迭代器方法的实现在每次迭代时都会检查数组长度，并没有假定数组长度在迭代过程中保持不变。
+
+#### 14.7.1 代理不变式
+
+前面定义的 readOnlyProxy() 函数创建的代理对象实际上是冻结的，即修改属性值或属性特性，添加或删除属性，都会抛出异常。但是，只要目标对象没有被冻结，那么通过 Reflect.isExtensible() 和 Reflect.getOwnPropertyDescriptor() 查询代理对象，都会告诉应该可以设置、添加或删除属性。也就是说，readonlyProxy() 创建的对象与目标对象的状态不一致。为此，可以再添加 isExtensible() 和 getOwnPropertyDescriptor() 处理器来消除不一致，或者也可以保留这种轻微的不一致。
+
+代理处理器 API 允许定义存在重要不一致的对象，但在这种情况下，Proxy 类本身会阻止创建不一致得离谱的代理对象。代理是一种没有自己的行为的对象，因为它们只负责把所有操作转发给处理器对象和目标对象。其实这么说也不全对：**转发完操作后，Proxy 类会对结果执行合理性检查，以确保不违背重要的 JS 不变式（invariant）。如果检查发现违背了，代理会抛出 TypeError（不让操作继续）**。
+
+如果为一个不可扩展对象创建了代理，而它的 isExtensible() 处理器返回 true，代理就会抛出 TypeError：
+
+```js
+let target = Object.preventExtensions({});
+let proxy = new Proxy(target, {
+  isExtensible() {
+    return true;
+  }
+});
+Reflect.isExtensible(proxy); // !TypeError：违背了不变式
+```
+
+相应地，不可扩展目标的代理就不能定义返回目标真正原型之外其他值的 getPrototypeOf() 处理器。同样，如果目标对象的某个属性不可写、不可配置，那么如果 get() 处理器返回了跟这个属性的实际值不一样的结果，Proxy 类也会抛出 TypeError：
+
+```js
+let target = Object.freezed({ x: 1 });
+let proxy = new Proxy(target, {
+  get() {
+    return 99;
+  }
+});
+proxy.x; // !TypeError：get() 返回的值与目标不匹配
+```
+
+> Proxy 还遵循其他一些不变式，几乎都与不可扩展的目标对象和目标对象上不可配置的属性有关。
+
+## 十五. 浏览器中的 JS
+
+JS 创造于 1994 年，其明确的目的就是为浏览器显示的文档赋予动态行为。自此以后，这门语言经过了多次重大改进，而与此同时，Web 平台的范围与能力也出现了爆炸式增长。今天，Web 对 JS 程序员而言已经是一个完善的应用开发平台。浏览器专注于格式化文本与图片的显示，但与原生操作系统一样，浏览器也提供了其他服务，包括图形、视频、音频、网络、存储和线程。JS 这门语言能够使 Web 应用使用 Web 平台提供的服务。
+
+### 15.1 web 编程基础
+
+#### 15.1.1 HTML `<script>` 标签中的 JS
+
+浏览器显示 HTML 文档。如果想让浏览器执行 JS 代码，那么必须在 HTML 文档中包含（或引用）相应代码，这时候就要用到 HTML `<script>` 标签。
+
+虽然 JS 代码可直接嵌入 `<script>` 标签中，但更常见的方式是使用 `<script>` 标签的 `src` 属性指定 JS 代码文件的 URL（绝对 URL 或者相对于当前 HTML 文件的相对 URL）。
+
+JS 文件只包含纯 JS 代码，不包含 `<script>` 或其他 HTML 标签。按照约定，JS 代码文件以 _.js_ 结尾。
+
+> **注意**：即便指定了 `src` 属性，后面的 `</script>` 标签也是 HTML 文件必需的，HTML 不支持 `<script/>` 标签。
+
+使用 `src` 有如下优点：
+
+- 简化 HTML 文件，因为可以把大段的 JS 代码从中移走。换句话说，这样可以实现内容与行为分离。
+
+- 在多个网页共享同一份 JS 代码时，使用 `src` 属性可以只维护一份代码，而无须在代码变化时修改多个 HTML 文件。
+
+- 如果一个 JS 文件被多个页面共享，那它只会被使用它的第一个页面下载一次，后续页面可以从浏览器缓存中获取该文件。
+
+- 因为 `src` 以任意 URL 作为值，所以来自一个 Web 服务器的 JS 程序或网页可以利用其他服务器暴露的代码。很多互联网广告就依赖这个事实。
+
+**模块**
+[JS 模块](#103-es6-中的模块)介绍了 `import` 和 `export` 指令。如果用模块写了一个 JS 程序（且没有使用代码打包工具把所有模块都整合到一个非 JS 模块文件中），那必须使用一个带有 `type="module"` 属性的 `<script>` 标签来加载这个程序的顶级模块。这样，浏览器会加载指定的模块，并加载这个模块导入的所有模块，以及（递归地）加载所有这些模块导入的模块。
+
+**指定脚本类型**
+在 web 的早期，人们认为浏览器将来有一天可能实现 JS 以外的语言。为此，需要给 `<script>` 标签添加 `language="javascript"` 或 `type="application/javascript"` 属性。这些完全是没有必要的。JS 本来就是 web 的默认（也是唯一）语言。因此 `language` 属性被废弃了，而 `type` 属性也只有两个使用场景：
+
+- 用于指定脚本是模块
+- 在网页中嵌入数据但不会显示(参见 15.3.4 节<!--TODO-->)
+
+**脚本运行时机：async 与 defer**
+在浏览器引入 JS 语言之初，还没有任何 API 可以遍历和操作已经渲染好的文档的结构或内容。JS 代码能够影响文档内容的唯一方式，就是在浏览器加载文档的过程中动态生成内容。为此，要使用 `document.write()` 方法在脚本所在的位置向 HTML 中注入文本。
+
+虽然现在已经不再提倡使用 `document.write()` 生成内容了，但由于还存在这种可能，浏览器在解析遇到的 `<script>` 元素时的默认行为是必须要运行脚本，就是为了确保不漏掉脚本可能输出的 HTML 内容，然后才能再继续解析和渲染文档。这有可能严重拖慢网页的解析和渲染过程。
+
+好在默认的这种同步或阻塞式脚本执行模式并非唯一选项。`<script>` 标签也支持 `defer` 和 `async` 属性，这两个属性会导致脚本以不同的方式执行。这两个是布尔值属性，没有值，因此只要它们出现在 `<script>` 标签上就会生效。
+
+> **注意**：这两个属性只对使用 `src` 属性的 `<script>` 标签起作用。
+
+`defer` 和 `async` 属性都会明确告诉浏览器，当前链接的脚本中没有使用 `document.write()` 生成 HTML 输出。因此浏览器可以在下载脚本的同时继续解析和渲染文档。其中，`defer` 属性会让浏览器把脚本的执行推迟到文档完全加载和解析之后，此时已经可以操作文档了。而 `async` 属性会让浏览器尽早运行脚本，但在脚本下载期间同样不会阻塞文档解析。如果 `<script>` 标签上同时存在这两个属性，则 `async` 属性起作用。
+
+> **注意**：推迟（defer）的脚本会按照它们在文档中出现的顺序运行。而异步（async）脚本会在它们加载完毕后运行，所以其运行顺序无法预测。
+
+带有 `type="module"` 属性的脚本默认会在文档加载完毕后执行，就好像有一个 `defer` 属性一样。可以通过 `async` 属性来覆盖这个默认行为，这样会导致代码在模块及其所有依赖加载完毕后就立即执行。
+
+如果不使用 `async` 和 `defer` 属性（特别是对那些直接包含在 HTML 中的代码），也可以选择把 `<script>` 标签放在 HTML 文件的末尾。这样，脚本在运行的时候就知道自己前面的文档内容已经解析，可以操作了。
+
+**按需加载脚本**
+有时，文档在刚刚加载完成时可能并不需要某些 JS 代码，只有当用户执行了某些操作，比如单击某个按钮或打开某个菜单时才需要。如果代码是以模块形式写的，则可以使用 [`import()`](#1036-通过-import-动态导入) 来按需加载。如果没有使用模块，可以通过向文档中动态添加 `<script>` 标签的方式按需加载脚本。
+
+#### 15.1.2 文档对象模型
+
+**客户端 JS 编程中最重要的一个对象就是 Document 对象，它代表浏览器窗口或标签页中显示的 HTML 文档。用于操作 HTML 文档的 API 被称为文档对象模型**（Document Object Model，DOM），将在 15.3<!--TODO--> 节详细讲解。
+
+HTML 文档包含一组相互嵌套的 HTML 元素，构成了一棵树。DOM API 与 HTML 文档的树形结构是一一对应的。文档中的每个 HTML 标签都有一个对应的 JS Element 对象，而文档中的每一行文本也都有一个与之对应的 Text 对象。Element 和 Text 类，以及 Document 类本身，都是一个更通用的 Node 类的子类。各种 Node 对象组合成一个树形结构，JS 可以使用 DOM API 对其进行查询和遍历。
+
+DOM API 包含创建新 Element 和 Text 节点的方法，也包含把它们作为其他 Element 对象的孩子插入文档的方法。还有用来在文档中移动元素的方法，以及把它们从文档中彻底删除的方法。服务器端应用可以通过 console.log() 产生纯文本输出，而客户端 JS 应用则可以使用 DOM API 通过构建或操作文档树产生格式化的 HTML 输出。
+
+每个 HTML 标签类型都有一个与之对应的 JS 类，而文档中出现的每个标签在 JS 中都有对应类的一个实例表示。例如，`<body>` 标签由 HTMLBodyElement 的实例表示，而 `<table>` 标签则由 HTMLTableElement 的实例表示。JS 中这些元素对象都有与 HTML 标签的属性对应的属性。例如，表示 `<img>` 标签的 HTMLImageElement 对象有一个 `src` 属性，对应着标签的相应属性。这个属性的初始值就是 HTML 标签中相应属性的值。在 JS 中修改这个属性的值，也会改变 HTML 属性的值（并导致浏览器加载和显示新图片）。多数 JS 元素类都只是镜像 HTML 标签的属性，但有些也定义了额外的方法。比如， HTMLAudioelement 和 HTMLVideoElement 类都、定义了 play() 和 pause() 方法，用于控制音频和视频文件的回放。
+
+#### 15.1.3 浏览器中的全局对象
+
+每个浏览器窗口或标签页都有一个全局对象。在一个窗口中运行的所有 JS 代码（不包括在工作线程中运行的代码，参见 15.13 <!--TODO-->节）都共享一个全局对象。无论文档中包含多少脚本或模块，这个事实都不会改变：文档中的所有脚本和模块共享同一个全局对象，如果有脚本在该对象上定义了一个属性，则该属性也将对所有其他脚本可见。
+
+全局对象上定义了 JS 标准库，比如 parseInt() 函数、Math 对象、Set 类等。在浏览器中，全局对象也包含各种 Web API 的主入口。例如，document 属性表示当前显示的文档，fetch() 方法用于发送 HTTP 网络请求，而 Audio() 构造函数允许 JS 程序播放声音。
+
+**在浏览器中，全局对象具有双重角色。它既是定义 JS 语言内置类型和函数的地方，也代表当前浏览器窗口定义了 history（表示浏览器浏览历史，参见 15.10.2 节）和 innerWidth（表示窗口的像素宽度）等 Web APl 的属性。全局对象的属性中有一个属性叫 `window`，它的值就是全局对象本身**。这意味着在客户端代码中可以直接通过 `window` 引用全局对象。在使用窗口特定的功能时，最好加上 `window` 前缀。比如，写 window.innerwidth 比只写 innerwidth 更明确。
+
+#### 15.1.4 脚本共享一个命名空间
+
+在模块中，定义在模块顶级（即位于任何函数或类定义之外）的常量、变量、函数和类是模块私有的，除非它们被明确地导出。被导出时，这些模块成员可以被其他模块有选择地导入（注意，模块的这个性质使用代码打包工具时也得到了维护）。
+
+不过在非模块脚本中，情况完全不同。如果在顶级脚本中定义了一个常量、变量、函数或类，则该声明将对同一文档中的所有脚本可见。如果一个脚本定义了函数 f()，另一个脚本定义了类 C，第三个脚本无须采取任何导入操作即可调用该函数和实例化该类。
+
+因此如果没有使用模块，同一个文档中共享同一个命名空间的独立脚本就如同它们是一个更大脚本的组成部分一样。这对于小程序或许会很方便，但在大型程序中避免命名冲突则会变成一件麻烦事，特别是在某些脚本还是第三方库的情况下。
+
+这个共享的命名空间在运行时有一些历史遗留问题。比如，顶级的 var 和 function 声明会在共享的全局对象上创建属性。如果一个脚本定义了顶级函数 f()，那么同一个文档中的另一个脚本可以用 f() 或者 window.f() 调用该函数。而使用 ES6 中 const、let 和 class 的顶级声明则不会在全局对象上创建属性。但是，它们仍然会定义在一个共享的命名空间内。如果一个脚本定义了类 C，另一个脚本也可以通过 new C()（但不能通过 `new window.C()`）创建该类的实例。
+
+简单来说，**在模块中，顶级声明被限制在模块内部，可以明确导出。而在非模块脚本中，顶级声明被限制在包含文档内部，顶级声明由文档中所有的脚本共享**。以前的 var 和 function 声明是通过全局对象的属性共享的，而现在的 const，let 和 class 声明也会被共享且拥有相同的文档作用域，但它们不作为 JS 可以访问到的任何对象的属性存在。
+
+#### 15.1.5 JS 程序的执行
+
+客户端 JS 中没有程序的正式定义，但可以说 JS 程序由文档中包含和引用的所有 JS 代码组成。这些分开的代码共享同一个全局 Window 对象，它们可以通过这个对象访问表示 HTML 文档的同一个底层 Document 对象。不是模块的脚本还额外共享同一个顶级命名空间。
+
+如果网页中包含嵌入的窗格（`<iframe>`元素），被嵌入文档与嵌入它的文档中的 JS 代码拥有不同的全局对象和 Document 对象，可以看成两个不同的 JS 程序。
+
+> **注意**：关于 JS 程序的边界在哪里并没有正式的定义。如果包含文档与被包含文档是从同一个服务器加载的，则一个文档中的代码就能够与另一个文档中的代码交互。此时，如果愿意，可以把它们看成一个程序整体的两个互操作的部分。15.13.6<!--TODO--> 节将解释 JS 程序如何与在 `<iframe>` 中运行的 JSON 代码相互发送和接收消息。
+
+可以把 JS 程序的执行想象成发生在两个阶段：
+
+1. 在第一阶段，文档内容加载完成 `<script>` 元素指定的（内部和外部）代码运行。脚本通常按照它们在文档中出现的顺序依次执行，不过也可以使用前面介绍过的 `async` 和 `defer` 属性来修改。任何一
