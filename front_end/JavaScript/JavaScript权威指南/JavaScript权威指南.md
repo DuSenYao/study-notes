@@ -251,6 +251,11 @@ title: JavaScript权威指南
       - [14.4.3 Symbol.toStringTag](#1443-symboltostringtag)
       - [14.4.4 Symbol.species](#1444-symbolspecies)
       - [14.4.5 Symbol.isConcatSpreadable](#1445-symbolisconcatspreadable)
+      - [14.4.6 模式匹配符号](#1446-模式匹配符号)
+      - [14.4.7 Symbol.toPrimitive](#1447-symboltoprimitive)
+      - [14.4.8 Symbol.unscopables](#1448-symbolunscopables)
+    - [14.5 模板标签](#145-模板标签)
+    - [14.6 反射 API](#146-反射-api)
 
 <!-- /code_chunk_output -->
 
@@ -9490,3 +9495,267 @@ Array 的方法 concat() 是使用 `Symbol.species` 确定对返回的数组使�
 在两种情况下可能会用到这个 Symbol：
 
 - 如果创建了一个[类数组对象](#79-类数组对象)，并且希望把它传给 concat() 时该对象能像真正的数组一样，那可以给这个对象添加这么一个符号属性：
+
+  ```js
+  let arrayLike = {
+    length: 1,
+    0: 1,
+    [Symbol.isConcatSpreadable]: true
+  };
+  [].concat(arraylike); // [1]：(如果不展，这里就是[[1]])
+  ```
+
+- Array 的子类默认是可展开的，因此如果定义了一个数组的子类，但不希望它在传给 concat() 时像数组一样，那么可以像下面这样给这个子类添加一个获取方法：
+
+  ```js
+  class NonSpreadableArray extends Array {
+    [Symbol.isConcatSpreadable]() {
+      return false;
+    }
+  }
+  let a = new NonSpreadableArray(1, 2, 3);
+  [].concat(a).length; // 1；(如果 a 被展开，这里将是3个元素)
+  ```
+
+#### 14.4.6 模式匹配符号
+
+[模式匹配的字符串方法](#1132-模式匹配的字符串方法)记述了使用 RegExp 参数执行模式匹配操作的 String 方法。在 ES6 及之后的版本中，这些方法都统一泛化为既能够使用 RegExp 对象，也能使用任何通过具有符号名的属性定义了模式匹配行为的对象。match()、matchAll()、search()、replace() 和 split() 这些字符串方法中的任何一个，都有一个与之对应的公认符号：Symbol.match、Symbol.search，等等。
+
+RegExp 是描述文本模式的一种通用且强大的方式，但同时它们也比较复杂，而且也不太适合模糊匹配。有了泛化之后的字符串方法，可以使用公认的符号方法定义自己的模式类，提供自定义匹配。例如，可以使用 [Intl.Collator](#1173-比较字符串) 执行字符串比较，从而在比较时忽略重音。或者，可以基于 Soundex 算法实现一个模式类，从而根据读音的近似程度匹配单词或者近似地匹配到某个给定的莱文斯坦（Levenshtein）距离。
+
+一般来说，在像下面这样调用上面 5 个字符串方法时：
+
+```js
+string.method(pattern, arg);
+```
+
+该调用会转换为对模式对象上相应符号化命名方法的调用：
+
+```js
+pattern[symbol](string, arg);
+```
+
+以下面这个模式匹配类为例。这个类使用文件系统中的 `*` 和 `?` 通配符实现了模式匹配。这种风格的模式匹配可以追溯到 Unix 操作系统诞生之初，而模式也被称为 glob：
+
+```js
+class Glob {
+  constructor(glob) {
+    this.glob = glob;
+
+    // 内部使用 RegExp 实现 glob 匹配
+    // ? 匹配除 / 之外的任意字符，* 匹配 0 或多个这样的字符
+    // 每个匹配都使用一个捕获组
+    let regexpText = glob.replace('?', '[^/]').replace('*', '([^/]*)');
+
+    // 使用 u 标签表示支持 Unicode 的匹配
+    // glob 是要匹配整个字符串，所以使用 ^ 和 $ 锚点
+    // 这里没有实现 search() 和 catchAll()，因为它们对这样的模式没有用
+    this.regexp = new RegExp(`^${regexpText}$`, 'u');
+  }
+
+  toString() {
+    return this.glob;
+  }
+  [Symbol.search](s) {
+    return s.search(this.regexp);
+  }
+  [Symbol.match](s) {
+    return s.match(this.regexp);
+  }
+  [Symbol.replace](s, replacement) {
+    return s.replace(this.regexp, replacement);
+  }
+}
+
+let pattern = new Glob('docs/*.txt');
+'docs/js.txt'.search(pattern); // 0：从第 0 个字符开始匹配
+'docs/js.htm'.search(pattern); // -1：不匹配
+let match = 'docs/js.txt'.match(pattern);
+match[0]; // "docs/js.txt"
+match[1]; // "js"
+match.index; // 0
+'docs/js.txt'.replace(pattern, 'web/$1.htm'); // "web/js.htm"
+```
+
+#### 14.4.7 Symbol.toPrimitive
+
+JS 有 3 个稍微不同的算法，用于将对象转换为原始值：
+
+- 对于预期或偏好为字符串值的转换，JS 会先调用对象的 toString() 方法。如果 toString() 方法没有定义或者返回的不是原始值，还会再调用对象的 valueOf() 方法。
+
+- 对于偏好为数值的转换，JS 会先尝试调用 valueOf() 方法，然后在 valueOf() 没有定义或者返回的不是原始值时再调用 toString()。
+
+- 如果没有偏好，JS 会让类来决定如何转换。Date 对象首先使用 toString()，其他所有类型则首先调用 valueOf()。
+
+在 ES6 中，公认符号 `Symbol.toPrimitive` 允许覆盖这个默认的对象到原始值的转换行为，可以完全控制自己的类实例如何转换为原始值。为此，需要定义一个名字为这个符号的方法。这个方法必须返回一个能够表示对象的原始值。这个方法在被调用时会收到一个字符串参数，用于告诉 JS 打算对对象做什么样的转换。
+
+- 如果这个参数是 "string"，则表示 JS 是在一个预期或偏好（但不是必需）为字符串的上下文中做这个转换。比如，把对象作为字符串插值到一个模板字面量中。
+
+- 如果这个参数是 "number"，则表示 JS 是在一个预期或偏好（但不是必需）为数值的上下文中做这个转换。在通过 `<` 或 `>` 操作符比较对象，或者使用算术操作符 `-` 或 `*` 来计算对象时属于这种情况。
+
+- 如果这个参数是 "default"，则表示 JS 做这个转换的上下文可以接受数值也可以接受字符串。在使用 `+`、`==` 或 `!=` 操作符时就是这样。
+
+> 很多类都可以忽略这个参数，在任何情况下都返回相同的原始值。如果希望自己类的实例可以通过 `<` 或 `>` 来比较，那么就需要给这个类定义一个 `[Symbol.toPrimitive]` 方法。
+
+#### 14.4.8 Symbol.unscopables
+
+最后一个要介绍的公认符号不好理解，它是针对废弃的 with 语句所导致的兼容性问题而引入的一个变通方案。with 语句会取得一个对象，而在执行语句体时，就好像在相应的作用域中该对象的属性是变量一样。但这样一来如果再给 Array 类添加新方法就会导致兼容性问题，有可能破坏某些既有代码。`Symbol.unscopables` 应运而生。
+
+在 ES6 及之后的版本中，with 语句被稍微进行了修改。在取得对象 o 时，with 语句会计算 `Object.keys(o[Symbol.unscopables]||{})` 并在创建用于执行语句体的模拟作用域时，忽略名字包含在结果数组中的那些属性。ES6 使用这个机制给 Array.prototype 添加新方法，同时又不会破坏线上已有的代码。这意味着可以通过如下方式获取最新 Array 方法的列表：
+
+```js
+let newArrayMethods = Object.keys(Array.prototype[Symbol.unscopables]);
+```
+
+### 14.5 模板标签
+
+位于反引号之间的字符串被称为 “模板字面量”，如果一个求值为函数的表达式后面跟着一个模板字面量，那就会转换为一个函数调用，称其为 “标签化模板字面量”。可以把定义使用标签化模板字面量的标签函数看成是元编程，因为标签化模板经常用于定义 DSL（Domain-Specific Language，领域专用语言）。而定义新的标签函数类似于给 JS 添加新语法。标签化模板字面量已经被很多前端 JS 包采用了。GraphQL 查询语言使用 **gql``** 标签函数支持在 JS 代码中嵌入查询。
+
+标签函数并没有什么特别之处，它们就是普通的 JS 函数，定义它们不涉及任何特殊语法。当函数表达式后面跟着一个模板字面量时，这个函数会被调用。第一个参数是一个字符串数组，然后是 0 或多个额外参数，这些参数可以是任何类型的值。
+
+参数的个数取决于被插值到模板字面量中值的个数。如果模板字面量就是一个字符串，没有插值的位置，那么标签函数在被调用时只会收到一个该字符串的数组，没有额外的参数。如果模板字面量包含一个要插入的值，那么标签函数被调用时会收到两个参数：
+
+- 第一个是包含两个字符串的数组，一个是插入值左侧的字符串，另一个是插入值右侧的字符串。这两个字符串都可能是空字符串。
+
+- 第二个是被插入的值。
+
+如果模板字面量包含两个要插入的值，那么标签函数在被调用时会收到三个参数：
+
+- 一个包含三个字符串的数组，数组中的三个字符串（其中任何一个甚至全部都可能是空字符串）分别是第一个插入值左侧、两个插入值之间和最后一个插入值右侧的字符串。
+
+- 两个要插入的值。
+
+推而广之，如果模板字面量有 n 个插值，那么标签函数在被调用时会收到 n+1 个参数。第一个参数是一个 n+1 个字符串的数组，其余 n 个参数是要插入的值，顺序为它们在模板字面量中出现的顺序。
+
+模板字面量的值始终是一个字符串。但标签化模板字面量的值则是标签函数返回的值。这个值可能是字符串，但在标签函数被用于实现 DSL 时，返回的值通常是一个非字符串数据结构或者说是对字符串进行解析之后的表示。
+
+作为一个返回字符串的标签函数的例子，可以看看下面这个 html`` 模板。这个模板可以保证向 HTML 字符串中安全地插值。在使用要插入的值构建最终字符串之前，标签会先对它们进行 HTML 转义：
+
+```js
+function html(strings, ...values) {
+  // 把每个值都转换为字符串并转义特殊 HTML 字符
+  let escaped = values.map(v =>
+    String(v)
+      .replace('&', '&amp;')
+      .replace('<', '&lt;')
+      .replace('>', '&gt;')
+      .replace('"', '&quot;')
+      .replace("'", '&#39;')
+  );
+
+  // 返回拼接在一起的字符串和转义值
+  let result = strings[0];
+  for (let i = 0; i < escaped.length; i++) {
+    result += escaped[i] + strings[i + 1];
+  }
+  return result;
+}
+
+let operator = '<';
+html`<b>x ${operator} y</b>`; // "<b>x &lt; y</b>"
+let kind = 'game',
+  name = 'D&D';
+html`<div class="${kind}">${name}</div>`; // '<div class="game">D&amp;D</div>'
+```
+
+下面这个例子是一个不返回字符串而返回字符串解析后表示的标签函数，其中用到了[模式匹配符号](#1446-模式匹配符号)定义的 Glob 模式类。由于 Glob() 构造函数只接收一个字符串参数，可以定义一个标签函数来创建新 Glob 对象：
+
+```js
+function glob(strings, ...values) {
+  // 把 strings 和 values 装配成一个字符串
+  let s = strings[0];
+  for (let i = 0; i < values.length; i++) {
+    s += values[i] + strings[i + 1];
+  }
+  // 返回解析该字符串之后的表示
+  return new Glob(s);
+}
+
+let root = '/tmp';
+let filePattern = glob`${rot}/*.htmL`; // RegExp 的替代
+'/tmp/test.html'.match(filePattern)[1]; //"test"
+```
+
+String.raw`` 标签函数，这个函数返回字符串 “未处理”（raw）的形式，不会解释任何反斜杠转义序列。这个函数使用了当时还没有讨论的标签函数调用特性实现。当标签函数被调用时，知道它的第一个参数是一个字符串数组。不过这个数组也有一个名为 raw 的属性，该属性的值是另一个字符串数组，数组的元素个数相同。参数数组中包含的字符串已经跟往常一样解释了转义序列。而未处理数组中包含的字符串并没有解释转义序列。如果想定义 DSL，而文法中会使用反斜杠，那么这个不起眼的特性很重要。
+
+例如，想让 glob`` 标签函数支持匹配 Windows 风格路径（使用反斜杠而不是正斜杠）的模式，也不希望用户双写每个反斜杠，那可以使用 strings.raw[] 取代 strings[] 来重写该函数。当然，这样做的问题在于不能再在 glob 字面量中使用类似 \u 的转义序列。
+
+### 14.6 反射 API
+
+与 Math 对象类似，Reflect 对象不是类，它的属性只是定义了一组相关函数。这些 ES6 添加的函数为 “反射” 对象及其属性定义了一套 API。这里有一个小功能：Reflect 对象在同一个命名空间里定义了一组便捷函数，这些函数可以模拟核心语言语法的行为，复制各种既有对象功能的特性。
+
+Reflect 函数虽然没有提供新特性，但它们用一个方便的 API 筛选出了一组特性。重点在于，**这组 Reflect 函数一对一地映射了要在 14.7 <!--TODO-->节学习的 Proxy 处理器方法**。
+
+反射 API 包括下列函数：
+
+**Reflect.apply(f, o, args)**
+: 这个函数将函数 f 作为 o 的方法进行调用（如果 o 是 null，则调用函数 f 时没有 this 值），并传入 args 数组的值作为参数。相当于 `f.apply(o, args)`。
+
+**Reflect.construct(c, args, newTarget)**
+: 这个函数像使用了 new 关键字一样调用构造函数 c，并传入 args 数组的元素作为参数。如果指定了可选的 newTarget 参数，则将其作为构造函数调用中的值。如果没有指定，则 new.target 的值是 c。
+
+**Reflect.defineProperty(o, name, descriptor)**
+: 这个函数在对象 o 上定义一个属性，使用 name（字符串或符号）作为属性名。描述符对象 descriptor 应该定义这个属性的值（或获取方法、设置方法）和特性。Reflect.defineProperty() 与 Object.defineProperty() 非常类似，但在成功时返回 true，失败时返回 false（Object.defineProperty() 成功时返回 o，失败时抛出 TypeError）。
+
+**Reflect.deleteProperty(o, name)**
+: 这个函数根据指定的字符串或符号名 name 从对象 o 中删除属性。如果成功（或指定属性不存在）则返回 true，如果无法删除该属性则返回 false。调用这个函数类似于执行 `delete o[name]`。
+
+**Reflect.get(o, name, receiver)**
+: 这个函数根据指定的字符串或符号名 name 返回属性的值。如果属性是一个有获取方法的访问器属性，且指定了可选的 receiver 参数，则将获取方法作为 receiver 而非 o 的方法调用。调用这个函数类似于求值 `o[name]`。
+
+**Reflect.getOwnPropertyDescriptor(o, name)**
+: 这个函数返回描述对象 o 的 name 属性的特性的描述符对象。如果属性不存在则返回 undefined。这个函数基本等于 Object.getOwnPropertyDescriptor()，只不这个反射 API 的版本要求第一个参数必须是对象，否则会抛出 TypeError。
+
+**Reflect.getPrototypeOf(o)**
+: 这个函数返回对象 o 的原型，如果 o 没有原型则返回 null。如果 o 是原始值而非对象，则抛出 TypeError。这个函数基本等于 Object.getPrototypeOf()，只不过 Object.getPrototypeOf() 只对 null 和 undefined 参数抛出 TypeError，且会将其他原始值转换为相应的包装对象。
+
+**Reflect.has(o, name)**
+: 这个函数在对象 o 有指定的属性 name（必须是字符串或符号）时返回 true。调用这个函数类似于求值 `name in o`。
+
+**Reflect.inExtensible(o)**
+: 这个函数在对象 o [可扩展](#142-对象的可扩展能力)时返回 true，否则返回 false。如果。不是对象则抛出 TypeError。Object.isExtensible() 与这个函数类似，但在参数不是
+对象时只会返回 false。
+
+**Reflect.ownKeys(o)**
+: 这个函数返回包含对象 o 属性名的数组，如果 o 不是对象则抛出 TypeError。返回数组中的名字可能是字符串或符号。调用这个函数类似于调用 Object.getOwnPropertyNames() 和 Object.getOwnPropertySymbols() 并将它们返回的结果组合起来。
+
+**Reflect.preventExtensions(o)**
+: 这个函数将对象 o 的[可扩展特性](#142-对象的可扩展能力)设置为 false，并返回表示成功的 true。如果 o 不是对象则抛出 TypeError。Object.preventExtenstons() 具有相同的效果，但返回对象 o 而不是 true，另外对非对象参数也不抛出 TypeError。
+
+**Reflect.set(o, name, value, receiver)**
+: 这个函数根据指定的 name 将对象 o 的属性设置为指定的 value。如果成功则返回 true，失败则返回 false（如属性是只读的）。如果 o 不是对象则抛出 TypeError。如果指定的属性是一个有设置方法的访问器属性，且如果指定了可选的 receLver 参数，则将设置方法作为 receiver 而非 o 的方法进行调用。调用这个函数类似于求值 `o[name] = value`。
+
+**Reflect.setPrototypeOf(o, p)**
+: 这个函数将对象 o 的原型设置为 p，成功返回 true，失败返回 false（如果 o 不可扩展或操作本身会导致循环原型链）。如果 o 不是对象或 p 既不是对象也不是 null 则抛出 TypeError。Object.setPrototypeOf() 与这个函数类似，但在成功时返回 o，在失败时抛出 TypeError。注意，调用这两个函数中的任何一个都可能导致代码变慢，因为它们会破坏 JS 解释器的优化。
+
+| 常规语法                                                    | 反射 API                                    |
+| ----------------------------------------------------------- | ------------------------------------------- |
+| f.apply(o, args)                                            | Reflect.apply(f, o, args)                   |
+| new c(...args)                                              | Reflect.construct(c, args, newTarget)       |
+| Object defineProperty(o, name, descriptor)                  | Reflect.defineProperty(o, name, descriptor) |
+| delete o[name]                                              | Reflect.deleteProperty(o, name)             |
+| o[name]                                                     | Reflect.get(o, name, receiver)              |
+| Object.getownPropertyDescriptor(o, name)                    | Reflect.getOwnPropertyDescriptor(o, name)   |
+| Object.getPrototypeOf(o)                                    | Reflect.getPrototypeOf(o)                   |
+| name in o                                                   | Reflect.has(o, name)                        |
+| Object.isExtensible(o)                                      | Reflect.isExtensible(o)                     |
+| Object.getOwnPropertyNames() Object.getOwnPropertySymbols() | Reflect.ownKeys(o)                          |
+| Object.preventExtensions(o)                                 | Reflect.preventExtensions(o)                |
+| o[name] = value                                             | Reflect.set(o, name, value, receiver)       |
+| Object.setPrototypeOf(o, p); o = Object.create(p)           | Reflect.setPrototypeOf(o,p)                 |
+
+### 14.7 代理对象
+
+ES6 及之后版本中的 Proxy 类是 JS 中最强大的元编程特性。使用它可以修改 JS 对象的基础行为。上节介绍的反射 API 是一组函数，通过它们可以直接对 JS 对象执行基础操作。而 **Proxy 类则提供了一种途径，能够自己实现基础操作，并创建具有普通对象无法企及能力的代理对象**。
+
+**创建代理对象时，需要指定另外两个对象，即目标对象（target）和处理器对象（handlers）**：
+
+```js
+let proxy = new Proxy(target, handlers);
+```
+
+得到的代理对象没有自己的状态或行为。每次对它执行某个操作（读属性、写属性、定义新属性、查询原型、把它作为函数调用）时，它只会把相应的操作发送给处理器对象或目标对象。
+
+代理对象支持的操作就是反射 API 定义的那些操作。假设 p 是一个代理对象，想执行 `delete p.x`。而 `Reflect.deleteProperty()` 函数具有与 delete 操作符相同的行为。当使用 delete 操作符删除代理对象上的一个属性时，代理对象会在处理器对象上査找 deleteProperty() 方法。如果存在这个方法，代理对象就调用它。如果不存在这个方法，代理对象就在目标对象上执行属性删除操作。
+
+对所有基础操作，代理都这样处理：如果处理器对象上存在对应方法，代理就调用该方
