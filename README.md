@@ -6,13 +6,14 @@
 
 - front-end
 
-  - [浏览器实现原理与 API](./front_end/浏览器的实现原理与API/浏览器实现原理与API.md)
+  - [浏览器实现原理与 API](/front_end/浏览器的实现原理与API/浏览器实现原理与API.md)
   - [前端综合应用](/front_end/前端工程实践/前端综合应用.md)
   - [前端性能优化](/front_end/前端性能优化/前端性能优化.md)
   - [CSS](/front_end/CSS/CSS.md)
     - [SCSS](/front_end/CSS/SCSS/Scss.md)
   - [HTML](/front_end/HTML/HTML.md)
   - [JavaScript](/front_end/JavaScript/JavaScript.md)
+    - [JavaScript权威指南](/front_end/JavaScript/JavaScript权威指南/JavaScript权威指南.md)
     - [JS代码规范](/front_end/JavaScript/JS代码规范.md)
     - [JS开发优化技巧](/front_end/JavaScript/JS开发优化技巧.md)
     - [JS设计模式](/front_end/JavaScript/JS设计模式.md)

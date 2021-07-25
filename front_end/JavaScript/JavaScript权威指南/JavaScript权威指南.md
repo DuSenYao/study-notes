@@ -268,6 +268,22 @@ title: JavaScript权威指南
       - [15.1.6 程序输入与输出](#1516-程序输入与输出)
       - [15.1.7 程序错误](#1517-程序错误)
       - [15.1.8 Web 安全模型](#1518-web-安全模型)
+    - [15.2 事件](#152-事件)
+      - [15.2.1 事件类别](#1521-事件类别)
+      - [15.2.2 注册事件处理程序](#1522-注册事件处理程序)
+      - [15.2.3 调用事件处理程序](#1523-调用事件处理程序)
+      - [15.2.4 事件传播](#1524-事件传播)
+      - [15.2.5 事件取消](#1525-事件取消)
+      - [15.2.6 派发自定义事件](#1526-派发自定义事件)
+    - [15.3 操作 DOM](#153-操作-dom)
+      - [15.3.1 选择 Document 元素](#1531-选择-document-元素)
+      - [15.3.2 文档结构与遍历](#1532-文档结构与遍历)
+      - [15.3.3 属性](#1533-属性)
+      - [15.3.4 元素内容](#1534-元素内容)
+      - [15.3.5 创建、插入和删除节点](#1535-创建-插入和删除节点)
+      - [15.3.6 示例：生成目录](#1536-示例生成目录)
+    - [15.4 操作 CSS](#154-操作-css)
+      - [15.4.1 CSS 类](#1541-css-类)
 
 <!-- /code_chunk_output -->
 
@@ -10105,7 +10121,7 @@ JS 文件只包含纯 JS 代码，不包含 `<script>` 或其他 HTML 标签。�
 
 HTML 文档包含一组相互嵌套的 HTML 元素，构成了一棵树。DOM API 与 HTML 文档的树形结构是一一对应的。文档中的每个 HTML 标签都有一个对应的 JS Element 对象，而文档中的每一行文本也都有一个与之对应的 Text 对象。Element 和 Text 类，以及 Document 类本身，都是一个更通用的 Node 类的子类。各种 Node 对象组合成一个树形结构，JS 可以使用 DOM API 对其进行查询和遍历。
 
-DOM API 包含创建新 Element 和 Text 节点的方法，也包含把它们作为其他 Element 对象的孩子插入文档的方法。还有用来在文档中移动元素的方法，以及把它们从文档中彻底删除的方法。服务器端应用可以通过 console.log() 产生纯文本输出，而客户端 JS 应用则可以使用 DOM API 通过构建或操作文档树产生格式化的 HTML 输出。
+DOM API 包含创建新 Element 和 Text 节点的方法，也包含把它们作为其他 Element 对象的子元素插入文档的方法。还有用来在文档中移动元素的方法，以及把它们从文档中彻底删除的方法。服务器端应用可以通过 console.log() 产生纯文本输出，而客户端 JS 应用则可以使用 DOM API 通过构建或操作文档树产生格式化的 HTML 输出。
 
 每个 HTML 标签类型都有一个与之对应的 JS 类，而文档中出现的每个标签在 JS 中都有对应类的一个实例表示。例如，`<body>` 标签由 HTMLBodyElement 的实例表示，而 `<table>` 标签则由 HTMLTableElement 的实例表示。JS 中这些元素对象都有与 HTML 标签的属性对应的属性。例如，表示 `<img>` 标签的 HTMLImageElement 对象有一个 `src` 属性，对应着标签的相应属性。这个属性的初始值就是 HTML 标签中相应属性的值。在 JS 中修改这个属性的值，也会改变 HTML 属性的值（并导致浏览器加载和显示新图片）。多数 JS 元素类都只是镜像 HTML 标签的属性，但有些也定义了额外的方法。比如， HTMLAudioelement 和 HTMLVideoElement 类都、定义了 play() 和 pause() 方法，用于控制音频和视频文件的回放。
 
@@ -10254,4 +10270,574 @@ Hello <img src="x.png" onload="alert('hacked')" />
 
 于是，在图片加载后，`onload` 属性中的 JS 字符串就会执行。全局 alert() 函数将显示一个模态对话框。显示一个对话框没什么大不了，但这演示了在这个网站上显示未经处理的 HTML 会导致任意代码执行的可能性。
 
-之所以称其为跨站点脚本攻击，是因为会涉及不止一个网站。网站 B 包含一个特殊编制的链接（类似前面示例中的 URL），指向网站 A。如果网站 B 能够说服用户点击该链接，用户就会导航到网站 A，但网站 A 此时会运行来自网站 B 的代码。该代码可能会破坏网站 A 的页面，或者导致它功能失效。更危险的是，恶意代码可能读取网站 A 存储的
+之所以称其为跨站点脚本攻击，是因为会涉及不止一个网站。网站 B 包含一个特殊编制的链接（类似前面示例中的 URL），指向网站 A。如果网站 B 能够说服用户点击该链接，用户就会导航到网站 A，但网站 A 此时会运行来自网站 B 的代码。该代码可能会破坏网站 A 的页面，或者导致它功能失效。更危险的是，恶意代码可能读取网站 A 存储的 cookie（可能包含个人账号或其他用户身份信息）并将该数据发送回网站 B。这种注入的代码甚至可以跟踪用户的键盘输入，并将该数据发送回网站 B。一般来说，防止 XSS 攻击的办法是从不可信数据中删除 HTML 标签，然后再用它去动态创建文档内容。对于前面展示的 _greet.html_，可以通过把不可信输入中的特殊 HTML 字符替换成等价的 HTML 实体来解决问题：
+
+```js
+name = name
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#x27;')
+  .replace(/\//g, '&#x2F;');
+```
+
+应对 XSS 攻击的另一个思路是让 Web 应用始终在一个 `<iframe>` 中显示不可信内容，并将这个 `<iframe>` 的 sandbox 属性设置为禁用脚本和其他能力。
+
+跨站点脚本作为一种有害的漏洞，其根源可以追溯到 web 的架构设计。
+
+### 15.2 事件
+
+客户端 JS 程序使用异步事件驱动的编程模型。在这种编程风格下，浏览器会在文档、浏览器或者某些元素或与之关联的对象发生某些值得关注的事情时生成事件。例如，浏览器会在它加载完文档时生成事件，在用户把鼠标移到超链接上时生成事件。如果 JS 应用关注特定类型的事件，那它可以注册一个或多个函数，让这些函数在该类型事件发生时被调用。
+
+> **注意**：这并非 Web 编程的专利，任意具有图形用户界面的应用都是这样设计的。换句话说，界面就在那里等待用户与之交互（也可以说，它们在等待事件发生），然后给出响应。
+
+在客户端 JS 中，事件可以在 HTML 文档中的任何元素上发生，这也导致了浏览器的事件模型比 Node 的事件模型明显更复杂。下面是事件模型的几个重要的定义：
+
+_事件类型_
+: **事件类型是一个字符串，表示发生了什么事件**。例如，“mousemove” 表示用户移动了鼠标，“keydown” 表示用户按下了键盘上的某个键，而 “load” 表示文档（或其他资源）已经通过网络加载完成。因为事件类型是字符串，所以有时也称它为事件名称。
+
+_事件目标_
+: **事件目标是一个对象，而事件就发生在该对象上或者事件与该对象有关**。说到某个事件，必须明确它的类型和目标。Window、Document 和 Element 对象是客户端 JS 应用中最常见的事件目标，不过也有一些事件会在其他对象上发生。例如，Worker 对象(15.13<!--TODO--> 节介绍的一种线程)是 “message” 事件的目标，这种事件在工作线程向主线程发消息时发生。
+
+_事件处理程序或事件监听器_
+: **事件处理程序或事件监听器是一个函数，负责处理或响应事件**。应用通过浏览器注册自己的事件处理程序，指定事件类型和事件目标。当事件目标上发生指定类型的事件时，浏览器会调用这个处理程序。当事件处理程序在某个对象上被调用时，浏览器 “触发” “派发” 或 “分派” 了该事件。注册事件处理程序有不同的方式，15.2.2 节和 15.23<!--TODO--> 节将具体介绍处理程序的注册和调用。
+
+_事件对象_
+: **事件对象是与特定事件关联的对象，包含有关该事件的细节**。事件对象作为事件处理程序的参数传入。所有事件对象都有 `type` 和 `target` 属性，分别表示事件类型和事件目标。每种事件类型都为相关的事件对象定义了一组属性。比如，与鼠标事件相关的事件对象包含鼠标指针的坐标，与键盘事件相关的事件对象包含与被按下的键以及按住不放的修饰键的信息。很多事件类型只定义几个标准属性（包括 type 和 target），并没有其他有用信息。对这些事件，重要的是它们发生了，而不是事件的细节。
+
+_事件传播_
+: **事件传播是一个过程，浏览器会决定在这个过程中哪些对象触发事件处理程序**。对于 Window 对象上的 “load” 或 Worker 对象上的 “message” 等特定于一个对象的事件，不需要传播。但对于发生在 HTML 文档中的某些事件，则会 “冒泡”（bubble）到文档根元素。如果用户在一个超链接上移动鼠标，这个鼠标事件首先会在定义该超链接的 `<a>` 元素上触发，然后在包含元素上触发，可能经过一个 `<p>` 元素、一个 `<section>` 元素，然后到达文档对象本身。有时，只给文档或包含元素注册一个事件处理程序，比给关心的每个元素都分别注册一个处理程序更方便。事件处理程序可以阻止事件传播，从而让事件不再冒泡，也就不会在包含元素上触发处理程序。为此，事件处理程序需要调用事件对象上的一个方法。在另外一种事件传播形式，即事件捕获（event capturing）中，注册在包含元素上的处理程序在事件被发送到实际目标之前，有机会先拦截（或捕获）事件。事件冒泡和捕获将在 15.24 <!--TODO-->节详细介绍。有些事件有与之关联的默认动作（default action）。比如，单击一个超链接，默认动作是让浏览器跟随链接，加载一个新页面。事件处理程序可以通过调用事件对象的一个方法来阻止这个默认动作。对此，有时也称为 “取消” 事件，将在 15.2.5<!--TODO--> 节介绍。
+
+#### 15.2.1 事件类别
+
+客户端 JS 支持的事件类型非常多，本章不可能全部介绍。不过，可以将这些事件分成通用的类别，从而了解它们的范围和差异。
+
+_设备相关输入事件_
+: **这类事件直接与特定输入设备（例如鼠标或键盘）相关**。这类事件类型包括 “mousedown” “mousemove” “mouseup” “touchstart” “touchmove” “touchend” “keydown” “keyup” 等等。
+
+_设备无关输入事件_
+: **这类输入事件并不与特定输入设备直接相关**。比如，“click” 事件表示一个链接或按钮（或其他文档元素）已经被激活。一般来说，这个事件是通过鼠标触发的，但也可能是通过键盘或（在触屏设备上）通过轻击触发的。而“input” 事件是对 “keydown” 事件的设备无关的替代，既支持键盘输入，也支持剪切粘贴和表意文字的输入法。“pointerdown” “countermove” 和 “pointerup”事件是对鼠标和触摸事件的设备无关的替代。它们既适用于鼠标类型的指针，也适用于触屏，以及手写笔输入。
+
+_用户界面事件_
+: **UI 事件是高级事件，通常在定义应用界面的 HTML 表单元素上触发**。这类事件包括 “focus”（当文本输入字段获得键盘焦点时）、“change”（当用户修改了表单元素显示的值时）和 “submit”（当用户单击表单中的“提交”按钮时）。
+
+_状态变化事件_
+: **有些事件并不直接由用户活动触发，而是由网络或浏览器活动触发。这类事件表示某种生命期或状态相关的变化**。其中，分别由 Window 和 Document 对象在文档加载结束时触发的 “load” 和 “DOMContentLoaded” 事件可能是这类事件中最常用的两个事件。浏览器会在网络连接变化时在 Window 对象上触发 “online” 和 “offline” 事件。浏览器的历史管理机制（见 15.10.4 节）<!--TODO-->会触发 “popstate” 事件作为对浏览器 “后退” 按钮的回应。
+
+_API 特定事件_
+: **有一些 HTML 及相关规范定义的 Web API 包含自己的事件类型**。HTML 的 `<video>` 和 `<audio>` 元素定义了一系列事件，比如 “waiting” “playing” “seeking” “volumechange”，等等。可以使用这些事件自定义媒体播放。一般来说，在 JS 支持期约以前定义的异步 Web 平台 API 都是事件驱动的，会定义 API 特定事件。比如，IndexedDB API(见 15.12.3 节<!--TODO-->)在数据库请求成功和失败时分别触发 “success” 和 “error” 事件。虽然用于发送 HTTP 请求的新 fetch()API(见 15.11.1 节)是基于期约的，但它取代的 XMLHttpRequest API 则定义了一些 API 特定事件。
+
+#### 15.2.2 注册事件处理程序
+
+有两种注册事件处理程序的方式：
+
+- Web 早期就有的，即设置作为事件目标的对象或文档元素的一个属性。
+
+- 更新也更通用的是把处理程序传给这个对象或元素的 addEventListener() 方法
+
+**设置事件处理程序属性：JavaScript**
+注册事件处理程序最简单的方式就是把事件目标的一个属性设置为关联的事件处理程序函数。按照惯例，事件处理程序属性的名字都由 “on” 和事件名称组成。
+
+> **注意**：这些属性名是区分大小写的，必须全部小写，即便事件类型包含多个单词。
+
+使用事件处理程序属性有一个缺点，即这种方式假设事件目标对每种事件最多只有一个处理程序。一般来说，**使用 addEventlistener() 注册事件处理程序更好，因为该技术不会重写之前注册的处理程序**。
+
+**设置事件处理程序属性：HTML**
+文档元素的事件处理程序属性也可以直接在 HTML 文件中作为对应 HTML 标签的属性来定义（在 JS 中注册在 Window 元素上的处理程序在 HTML 中可以定义为 `<body>` 标签的属性）。现代 Web 开发中通常不提倡使用这种技术，但它是可能的。
+
+在使用 HTML 属性定义事件处理程序时，属性的值应该是一段 JS 代码字符串。这段代码应该是事件处理程序函数的函数体，不是完整的函数声明。换句话说，HTML 事件处理程序的代码应该没有外围的大括号，前面也没有 function 关键字。例如：
+
+```js
+<button onclick="console.log('Thank you');">Please Click</button>
+```
+
+如果一个 HTML 事件处理程序属性包含多条 JS 语句，则必须用分号分隔这些语句，或者用回车把这个属性值分成多行。
+
+在给 HTML 事件处理程序属性指定 JS 代码字符串时，浏览器会把这个字符串转换为一个函数，这个函数类似如下所示：
+
+```js
+function (event) {
+  with (document) {
+    with (this.form || {}) {
+      with (this) {
+        /* 你的代码在这里 */
+      }
+    }
+  }
+}
+```
+
+这个 `event` 参数意味着处理程序代码可以通过它引用当前的事件对象。而 with 语句意味着处理程序可以直接引用目标对象乃至 Document 对象的属性，就像它们都是作用域内的变量一样。严格模式下是禁止使用 with 语句的，但 HTML 属性中的 JS 代码没有严格这一说。这样定义的事件处理程序将在一个可能存在意外变量的环境中执行，因此可能是一些讨厌的 bug 的来源，也是避免在 HTML 中编写事件处理程序的一个充分理由。
+
+**addEventListener()**
+**任何可以作为事件目标的对象（包括 Window 和 Document 对象以及所有文档元素），都定义了一个名为 `addEventListener()` 的方法，可以使用它来注册目标为调用对象的事件处理程序**。addEventListener() 接收 3 个参数：
+
+- 第一个参数是注册处理程序的事件类型。事件类型（或名称）是一个字符串，不包含作为 HTML 元素属性使用时的前缀 “on”。
+
+- 第二个参数是当指定类型的事件发生时调用的函数。
+
+- 可选的第三个参数是一个布尔值或对象。
+
+> **可以多次调用 `addEventlistener()` 在同一个对象上为同一事件类型注册多个处理程序**。当对象上发生该事件时，所有为这个事件而注册的处理程序都会按照注册它们的顺序被调用。在同一个对象上以相同的参数多次调用 `addEventlistener()` 没有作用，同一个处理程序只能注册一次，重复调用不会改变处理程序被调用的顺序。
+
+**与 `addEventlistener()` 对应的是 `removeEventListener()` 方法，它们的前两个参数是一样的（第三个参数也是可选的），只不过是用来从同一个对象上移除而不是添加事件处理程序**。
+
+`addEventlistener()` 可选的第三个参数是一个布尔值或对象。如果传入 true，函数就会被注册为捕获事件处理程序，从而在事件派发的另一个阶段调用它。15.2.4 节<!--TODO-->将介绍事件捕获。如果在注册事件监听器时给第三个参数传了 true，那么要移除该事件处理程序，必须在调用 `removeEventListener()` 时也传入 true 作为第三个参数。
+
+注册捕获事件处理程序只是 `addEventlistener()` 支持的 3 个选项之一。如果要传入其他选项，可以给第三个参数传一个对象，显式指定这些选项：
+
+```js
+document.addEventListener('click', handleClick, {
+  capture: true,
+  once: true,
+  passive: true
+});
+```
+
+如果这个 Options（选项）对象的 `capture` 属性为 true，那么函数就会被注册为捕获处理程序。如果这个属性为 false 或省略该属性，那么处理程序就不会注册到捕获阶段如果选项对象有 `once` 属性且值为 true，那么事件监听器在被触发一次后会自动移除。如果这个属性为 false 或省略该属性，那么处理程序永远不会被自动移除。
+
+如果选项对象有 `passive` 属性且值为 true，则表示事件处理程序永远不调用 `preventDefault()` 取消默认动作(参见 15.2.5 节<!--TODO-->)。这对于移动设备上的触摸事件特别重要。如果 “touchmove” 事件可以阻止浏览器的默认滚动动作，那浏览器就不能实现平滑滚动。`passive` 属性提供了一种机制，即在注册一个可能存在破坏性操作的事件处理程序时，让浏览器知道可以在事件处理程序运行的同时安全地开始其默认行为（如滚动）。平滑滚动对保证良好的用户体验非常重要，因此 Firefox 和 Chrome 都默认把 “touchmove” 和 “mousewheel” 事件设置为 “被动式”（passive: true）。如果确实想为这两个事件注册一个会调用 preventDefault() 的事件处理程序，应该显式地将 `passive` 属性设置为 false。
+
+可以把选项对象传给 `removeEventListener()`，但其中只有 `capture` 属性才是有用的。
+
+#### 15.2.3 调用事件处理程序
+
+注册事件处理程序后，浏览器会在指定对象发生指定事件时自动调用它。本节介绍调用事件处理程序的细节，解释事件处理程序的参数、调用上下文（this 值）和事件处理程序返回值的含义。
+
+**事件处理程序的参数**
+事件处理程序被调用时会接收到一个 Event 对象作为唯一的参数。这个 Event 对象的属性提供了事件的详细信息。
+
+type
+: 发生事件的类型。
+
+target
+: 发生事件的对象。
+
+currentTarget
+: 对于传播的事件，这个属性是注册当前事件处理程序的对象。
+
+timeStamp
+: 表示事件发生时间的时间戳（毫秒），不是绝对时间。可以用第二个事件的时间戳减去第一个事件的时间戳来计算两个事件相隔多长时间。
+
+isTrusted
+: 如果事件由浏览器自身派发，这个属性为 true；如果事件由 JS 代码派发，这个属性为 false。
+
+**事件处理程序的上下文**
+在通过设置属性注册事件处理程序时，看起来就像为目标对象定义了一个新方法：
+
+```js
+target.onclick = function () {
+  /* 处理程序的代码 */
+};
+```
+
+因此，没有意外，这个事件处理程序将作为它所在对象的方法被调用。换句话说，在事件处理程序的函数体中，this 关键字引用的是注册事件处理程序的对象。
+
+> 即便使用 `addEventlistener()` 注册，处理程序在被调用时也会以目标作为其 this 值。不过，这不适用于箭头函数形式的处理程序。箭头函数中 this 的值始终等于定义它的作用域的 this 值。
+
+**处理程序的返回值**
+**在现代 JS 中，事件处理程序不应该返回值**。在比较老的代码中，还可以看到返回值的事件处理程序，而且返回的值通常用于告诉浏览器不要执行与事件相关的默认动作。比如，如果一个表单 Submit 按钮的 onclick 处理程序返回 false，浏览器将不会提交表单。
+
+**阻止浏览器执行默认动作的标准且推荐的方式，是调用 Event 对象的 `preventDefault()` 方法**(参见 15.2.5 <!--TODO-->节)。
+
+**调用顺序**
+一个事件目标可能会为一种事件注册多个处理程序。当这种事件发生时，浏览器会按照注册处理程序的顺序调用它们。有意思的是，即便混合使用 addEventListener() 注册的事件处理程序和在对象属性 onclick 上注册的事件处理程序，结果仍然如此。
+
+#### 15.2.4 事件传播
+
+如果事件的目标是 Window 或其他独立对象，浏览器对这个事件的响应就是简单地调用该对象上对应的事件处理程序。如果事件目标是 Document 或其他文档元素，就没有那么简单了。
+
+注册在目标元素上的事件处理程序被调用后，多数事件都会沿 DOM 树向上 “冒泡”。目标父元素的事件处理程序会被调用。然后注册在目标祖父元素上的事件处理程序会被调用。就这样一直向上到 Document 对象，然后到 Window 对象。由于事件冒泡，可以不用给个别文档元素注册很多事件处理程序，而是只在它们的公共祖先元素上注册个事件处理程序，然后在其中处理事件。
+
+多数在文档元素上发生的事件都会冒泡。明显的例外是 “focus” “blur” 和 “scroll” 事件。文档元素的 “load” 事件冒泡，但到 Document 对象就会停止冒泡，不会传播到 Window 对象（Window 对象的 “load”事件处理程序只会在整个文档加载完毕后才被触发）。
+
+事件冒泡是事件传播的第三个 “阶段”。调用目标对象本身的事件处理程序是第二个阶段。第一阶段，也就是在目标处理程序被调用之前的阶段，叫作 “捕获” 阶段。如果 addEventlistener() 接收的第三个可选参数是 true 或 `{capture:true}`，那么就表明该事件处理程序会注册为捕获事件处理程序，将在事件传播的第一阶段被调用。事件传播的捕获阶段差不多与冒泡阶段正好相反。最先调用的是 Window 对象上注册的捕获处理程序，然后才调用 Document 对象的捕获处理程序，接着才是 `<body>` 元素。然后沿 DOM 树一直向下，直到事件目标父元素的捕获事件处理程序被调用。注册在事件目标本身的捕获事件处理程序不会在这个阶段被调用。
+
+**事件捕获提供了把事件发送到目标之前先行处理的机会**。捕获事件处理程序可用于调试，或者使用下一节介绍的事件取消技术过滤事件，让目标事件处理程序永远不会被调用。事件捕获最常见的用途是处理鼠标拖动，因为鼠标运动事件需要被拖动的对象来处理，而不是让位于其上的文档元素来处理。
+
+#### 15.2.5 事件取消
+
+- **preventDefault()**
+  浏览器对很多用户事件都会作出响应，无论是否在代码中指定。比如用户在触摸屏上滑动手指，浏览器就会滚动。如果为这些事件注册了事件处理程序，那么就可以阻止浏览器执行其默认动作，为此要调用事件对象的 `preventDefault()` 方法（除非注册处理程序时传入了 `passive` 选项，该选项会导致 `preventDefault()` 无效）。
+
+- **stopPropagation()**
+  取消与事件关联的默认动作只是事件取消的一种情况。除此之外，还可以调用事件对象的 `stopPropagation()` 方法，取消事件传播。使用 `preventDefault()`，如果同一对象上也注册了其他处理程序，则这些处理程序仍然会被调用。但是，在这个对象上调用 `stopPropagation()` 方法之后，其他对象上的事件处理程序都不会再被调用。`stopPropagation()` 可以在捕获阶段、在事件目标本身，以及在冒泡阶段起作用。
+
+  > `stopImmediatePropagation()` 与 `stopPropagation()` 类似，只不过它**会阻止在同一个对象上注册的后续事件处理程序的执行**。
+
+#### 15.2.6 派发自定义事件
+
+客户端 JS 事件 API 相对比较强大，可以使用它定义和派发自己的事件。比如，程序需要周期性地执行耗时计算或者发送网络请求，而在执行此操作期间，不能执行其他操作。想在此时显示一个转轮图标，告诉用户应用程序正忙。但忙碌的模块不需要知道应该在哪里显示转轮图标，它只需要派发一个事件，宣布自己正忙，然后在自己不忙的时候再派发另一个事件即可。UI 模块可以为这两个事件注册处理程序，然后以适当的方式在 UI 上告知用户即可。
+
+如果一个 JS 对象有 `addEventlistener()` 方法，那它就是一个 “事件目标”。这意味着该对象也有一个 `dispatchEvent()` 方法。可以通过 `CustomEvent()` 构造函数创建自定义事件对象，然后再把它传给 `dispatchEvent()`。`CustomEvent()` 的第一个参数是一个字符串，表示事件类型；第二个参数是一个对象，用于指定事件对象的属性。可以将这个对象的 `detail` 属性设置为一个字符串、对象或其他值，表示事件的上下文。如果想在一个文档元素上派发自己的事件，并希望它沿文档树向上冒泡，则要在第二个参数中添加 `bubbles:true`。下面看一个例子：
+
+```js
+// 派发一个自定义事件，通知 UI 自已正忙
+document.dispatchEvent(new CustomEvent('busy', { detail: true }));
+
+// 执行网络操作
+fetch(url)
+  .then(handleNetworkResponse)
+  .catch(handleNetworkError)
+  .finally(() => {
+    // 无论网络请求成功还是失败，都再派发一个事件，通知 UI 现在已经不忙了
+    document.dispatchEvent(new CustomEvent('busy', { detail: false }));
+  });
+
+// 在代码其他地方为 “busy” 事件注册一个处理程序并通过它显示或隐藏转轮图标，告知用户忙与闲
+document.addEventListener('busy', e => {
+  if (e.detail) {
+    showSpinner();
+  } else {
+    hideSpinner();
+  }
+});
+```
+
+### 15.3 操作 DOM
+
+客户端 JS 存在的目的就是把静态 HTML 文档转换为交互式 Web 应用。因此通过脚本操作网页内容无疑是 JS 的核心目标。
+
+每个 Window 对象都有一个 document 属性，引用一个 Document 对象。这个 Document 对象代表窗口的内容。不过，Document 对象并不是孤立存在的，它是 DOM 中表示和操作文档内容的核心对象。本节详细讲解 DOM API，包括以下内容：
+
+- 如何查询或选择文档中特定的元素。
+- 如何遍历文档，如何查找任何文档元素的祖先、兄弟元素和后代。
+- 如何查询和设置文档元素的属性。
+- 如何查询、设置和修改文档的内容。
+- 如何修改文档的结构，包括创建、插入和删除节点
+
+#### 15.3.1 选择 Document 元素
+
+客户端 JS 程序经常需要操作文档中的一个或多个元素。全局 document 属性引用 Document 对象，而 Document 对象有 `head` 和 `body` 属性，分别引用 `<head>` 和 `<body>` 标签对应的 Element 对象。但一个程序要想操作文档中嵌入层级更多的元素，必须先通过某种方式获取或选择表示该元素的 Element 对象。
+
+**通过 CSS 选择符选择元素**
+CSS 样式表有一个非常强大的语法，就是它的选择符（selector）。选择符用来描述文档中元素或元素的集合。DOM 方法 `querySelector()` 和 `querySelectorAll()` 能够在文档中找到与指定选择符匹配的元素。
+
+CSS 选择符可以通过元素类型（标签）、ID、类名、属性，以及元素在文档中的位置来引用元素。`querySelector()` 方法接收一个 CSS 选择符字符串作为参数，返回它在文档中找到的第一个匹配的元素；如果没有找到，则返回 null。
+
+`querySelectorAll()` 也类似，只不过返回文档中所有的匹配元素，而不是只返回第一个。
+
+`querySelectorAll()` 的返回值不是 Element 对象的数组，而是一个类似数组的 NodeList 对象。NodeList 对象有一个 `length` 属性，可以像数组一样通过索引访问，因此可以使用传统的 for 循环遍历。Nodelist 也是可迭代对象，因此也可以在 for/of 循环中使用它们。如果想把 NodeList 转换为真正的数组，只要把它传给 Array.from() 即可。
+
+如果文档中没有与指定选择符匹配的元素，则 `querySelectorAll()` 返回的 NodeList 的 length 属性为 0。
+
+Element 类和 Document 类都实现了 `querySelector()` 和 `querySelectorAll()`。当在元素上调用时，这两个方法只返回该元素后代中的元素。
+
+CSS 也定义了 `::first-line` 和 `::first-letter` 伪元素。在 CSS 中，它们只匹配文本节点的一部分，而不匹配实际的元素。在 `querySelector()` 或 `querySelectorAll()` 中使用它们什么也找不到。而且，很多浏览器也拒绝对 `:link` 和 `:visited` 伪类返回匹配结果，因为这有可能暴露用户的浏览历史。
+
+还有一个基于 CSS 的元素选择方法：`closest()`。这个方法是 Element 类定义的，以一个选择符作为唯一参数。如果选择符匹配那个调用它的元素，则返回该元素，否则就返回与选择符匹配的最近祖先元素；如果没有匹配，则返回 null。某种意义上看，`closest()` 是 `querySelector()` 的逆向操作：`closest()` 从当前元素开始，沿 DOM 树向上匹配；而 `querySelector()` 则从当前元素开始，沿 DOM 树向下匹配。如果在文档树中某个高层级注册了事件处理程序，`closest()` 通常能派上用场。比如，在处理一个单击事件时，可能想知道该事件是否发生在一个超链接上。事件对象会告诉事件目标，但该目标也许是超链接的文本而非 a 标签本身。为此，可以让事件处理程序像这样查找最近的超链接：
+
+```js
+// 查找有 href 属性的最近的外围 <a> 标签
+let hyperlink = event.target.closest('a[href]');
+```
+
+下面是使用 closest() 的另一个例子：
+
+```js
+// 如果 e 被包含在一个 HTML 列表元素内则返回 true
+function insideList(e) {
+  return e.closest('ul, ol, dl') !== null;
+}
+```
+
+另一个相关的方法 `matches()` 既不返回祖先，也不返回后代，只会检查元素是否与选择符匹配。如果匹配，返回 true；否则，返回 false：
+
+```js
+// 如果 e 是一个 HTML 标题元素则返回 true
+function isHeading(e) {
+  return e.matches('h1, h2, h3, h4, h5, h6');
+}
+```
+
+**其他选择元素的方法**
+除了 `querySelector()` 和 `querySelectorAll()`，DOM 也定义了一些[其他的元素选择方法](/front_end/浏览器的实现原理与API/浏览器实现原理与API.md#214-查找元素)。
+
+**预选择的元素**
+由于历史原因，Document 类定义了一些快捷属性，可以通过它们直接访问某种节点。例如，通过 images、forms 和 links 属性可以直接访问文档中的 `<img>`、`<form>` 和 `<a>`元素（但只有 `<a>` 标签有 href 属性）。这些属性引用的是 HTMLCollection 对象，与 Nodelist 对象非常相似，只是还可以通过元素 ID 或名字来索引其中的元素。
+
+例如，使用 `document.forms` 属性，可以像下面这样访问 `<form id="address">` 标签：
+
+```js
+document.forms.address;
+```
+
+#### 15.3.2 文档结构与遍历
+
+从 Document 中选择一个 Element 之后，常常还需要査找文档结构中相关的部分（父元素、兄弟元素、子元素）。如果只关心文档中的 Element 而非其中的文本（以及元素间的空白，其实也是文本），有一个遍历 API 可以把文档作为一棵 Element 对象树，树中不包含同样属于文档的 Text 节点。这个遍历 API 不涉及任何方法，而只是 Element 对象上的一组属性。使用这些属性可以引用当前元素的父元素、子元素和兄弟元素：
+
+parentNode
+: **这个属性引用元素的父节点**，也就是另一个 Element 对象，或者 Document 对象。
+
+children
+: **这个属性是 Nodelist，包含元素的所有子元素**，不含非 Element 节点，如 Text 节点（也不含 Comment 节点）。
+
+childElementCount
+: **这个属性是元素所有子元素的个数**。与 children.length 返回的值相同。
+
+firstElementchild、lastElementChild
+: **这两个属性分别引用元素的第一个子元素和最后一个子元素**。如果没有子元素，它们的值为 null。
+
+**previousELementSibling、nextELementSibling**
+: **这两个属性分别引用元素左侧紧邻的兄弟元素和右侧紧邻的兄弟元素**，如果没有相应的兄弟元素则为 null。
+
+使用这些 Element 属性，可以用下面任意一个表达式引用 Document 第一个子元素的第二子元素：
+
+```js
+// 在标准 HTML 文档中，这两个表达式引用的都是文档的 `<body>` 标签。
+document.children[0].children[1];
+document.firstElementChild.firstELementChild.nextElementSibling;
+```
+
+下面这两个函数演示了如何使用这些属性对文档执行深度优先的遍历，并对文档的每个元素都调用一次指定的函数：
+
+```js
+// 递归遍历 Document 或 ELement e
+// 在 e 和每个后代元素上调用函数 f
+function traverse(e, f) {
+  f(e); // 在 e 上调用 f()
+  // 迭代所有子元素
+  for (let child of e.children) {
+    traverse(child, f); // 每个孩子递归
+  }
+}
+
+function traverse(e, f) {
+  f(e); // 在 e 上调用 f()
+  let child = e.firstElementChild; // 链表式迭代子元素
+  while (child !== null) {
+    traverse(child, f); // 并在这里递归
+    child = child.nextELementSibling;
+  }
+}
+```
+
+**作为节点树的文档**
+如果在遍历文档或文档中的某些部分时不想忽略 Text 节点，可以使用另一组在所有 Node 对象上都有定义的属性。通过这些属性可以看到 Element、Text 节点，甚至 Comment 节点（表示文档中的 HTML 注释）。
+
+所有 Node 对象都定义了以下属性：
+
+parentNode
+: 当前节点的父节点，对于没有父节点的节点或 Document 对象则为 null。
+
+childNodes
+: 只读的 NodeList 对象，包含节点的所有子节点（不仅仅是 Element 子节点）。
+
+firstChild、lastChild
+: 当前节点的第一个子节点和最后一个子节点，如果没有子节点则为 null。
+
+previousSibling、nextSibling
+: 当前节点的前一个兄弟节点和后一个兄弟节点。这两个属性通过双向链表连接节点。
+
+nodeType
+: 表示当前节点类型的数值。Document 节点的值为 9，Element 节点的值为 1，Text 节点的值为 3，Comment 节点的值为 8。
+
+nodeValue
+: Text 或 Comment 节点的文本内容。
+
+nodeName
+: Element 节点的 HTML 标签名，会转换为全部大写。
+
+#### 15.3.3 属性
+
+**HTML 元素由标签名和一组称为属性的名/值对构成**。
+
+Element 类定义了通用的 `getAttribute()`、`setAttribute()`、`hasAttribute()` 和 `removeAttribute()` 方法，用于査询、设置、检测和删除元素的属性。但 HTML 元素的属性（指所有标准 HTML 元素的标准属性）同时也在表示这些元素的 HTMLElement 对象上具有相应的属性。而作为 JS 属性来存取它们，通常要比调用 getAttribute() 及其他方法来得更便捷。
+
+**作为元素属性的 HTML 属性**
+表示 HTML 文档中元素的 Element 对象通常会定义读/写属性，镜像该元素的 HTML 属性。HTMLElement 为通用 HTML 属性（如 id、title、lang 和 dir）和事件处理程序属性（如 onclick）定义了属性。特定的 Element 子类型则定义了特定于相应元素的属性。
+
+对于某些元素（比如 `<input>`)，有的 HTML 属性名会映射到不同的 JS 属性。比如，`<input>` 元素在 HTML 中的 value 属性是由 JS 的 defaultValue 属性镜像的。JS 的 value 属性包含的是用户当前在 `<input>` 元素中输入的值。但是修改这个 value 属性，既不会影响 JS 的 defaultValue 属性，也不会影响 HTML 的 value 属性。
+
+HTML 属性是不区分大小写的，但 JS 属性名区分大小写。要把 HTML 属性转换为 JS 属性，全部小写即可。如果 HTML 属性包含多个单词，则从第二个单词开始，每个单词的首字母都大写。比如，defaultChecked 和 tabIndex。不过，**事件处理程序属性是例外，需要全部小写**。
+
+有些 HTML 属性名是 JS 中的保留字。对于这些属性，通用规则是对应的 JS 属性包含前缀 “html”。比如，`<labeL>` 元素在 HTML 中的 `for` 属性，变成了 JS 的 `htmlFor` 属性。“class” 也是 JS 的保留字，但这个非常重要的 HTML `class` 属性是个例外，它在 JS 代码中会变成 `className`。
+
+JS 中表示 HTML 属性的这些属性通常都是字符串值。但是当 HTML 属性是布尔值或数字值时（如`<input>`元素的 defaultChecked 和 maxLength 属性），相应的 JS 属性则是布尔值或数值，不是字符串。事件处理程序属性的值则始终是函数（或 null）。
+
+> **注意**：这个基于属性的 API 只能获取和设置 HTML 中对应的属性值，并没有定义从元素中删除属性的方式。特别地，不能用 delete 操作符来删除 HTML 属性。如果真想删除 HTML 属性，可以在 JS 中调用 `removeAttribute()` 方法。
+
+**class 属性**
+HTML 元素的 `class` 属性特别重要。它的值是空格分隔的 CSS 类名的列表，用于给元素应用 CSS 样式。由于 `class` 在 JS 中是保留字，所以这个 HTML 属性是通过 Element 对象上的 `className` 属性反映出来的。
+
+`className` 属性可用于设置或返回 HTML 中 class 属性的字符串值。但 class 属性这个名字并不恰当，因为它的值是一个 CSS 类名的列表。在这个列表中添加或删除某个类名（而不是把列表作为整个字符串来操作）在客户端 JS 编程中非常常见。
+
+为此，Element 对象定义了 `classList` 属性，支持将 `class` 属性作为一个列表来操作。`classList` 属性的值是一个迭代的类数组对象。虽然这个属性的名字叫 `classList`，但它的行为更像类名的集合，而且定义了 `add()`、`remove()`、`contains()` 和 `toggle()` 方法。
+
+**dataset 属性**
+有时候在 HTML 元素上附加一些信息很有用，因为 JS 代码在选择并操作相应的元素时可以使用这些信息。在 HTML 中，任何以前缀 `data-` 开头的小写属性都被认为是有效的，可以将它们用于任何目的。这些 “数据集”（ dataset）属性不影响它们所在元素的展示，在保证文档正确性的前提下定义了一种附加额外数据的标准方式。
+
+在 DOM 中，Element 对象有一个 `dataset` 属性，该属性引用的对象包含与 HTML 中的 `data-` 属性对应的属性，但不带这个前缀。也就是说，`dataset.x` 中保存的是 HTML 中 `data-x` 属性的值。连字符分隔的属性将映射为驼峰式属性名：HTML 中的 data-sectlon-number 会变成 JS 中的 dataset.sectionNumber。
+
+#### 15.3.4 元素内容
+
+接下来几小节介绍如何操作元素内容的 HTML 表示和纯文本表示。
+
+**作为 HTML 的内容**
+读取一个 Element 的 `innerHTML` 属性会返回该元素内容的标记字符串。在元素上设置这个属性会调用浏览器的解析器，并以新字符串解析后的表示替换元素当前的内容。浏览器非常擅长解析 HTML，设置 `innerHTML` 通常效率很高。
+
+> **注意**：通过 `+=` 操作符给 `innerHTML` 追加文本的效率不高。因为这个操作既会涉及序列化操作，也会涉及解析操作：先把元素内容转换为字符串，然后再把新字符串转换回元素内容。
+
+Element 的 `outerHTML` 属性与 `innerHTML` 属性类似，只是返回的值包含元素自身。在读取 `outerHTML` 时，该值包含元素的开始和结束标签。而在设置元素的 `outerHTML` 时，新内容会取代元素自身。
+
+> **注意**：在使用这些 HTML API 时，一定要永远不要把用户输入直接插到文档中。如果这样做，恶意用户可能会将他们的脚本[插入应用](#1518-web-安全模型)。
+
+另一个相关的 Element 方法是 `insertAdjacentHTML()`，用于插入与指定元素 “相邻”（adjacent）的任意 HTML 标记字符串。要插入的标签作为第二个参数传入，而 “相邻” 的精确含义取决于第一个参数的值。第一个参数可以是以下字符串值中的一个：“beforebegin” “afterbegin” “beforeend” “afterend”。图 15-2 展示了这几个值对应的插入位置。
+
+![insertAdjacentHTML()的插入位置](<./image/insertAdjacentHTML()的插入位置.jpg>)
+
+**作为纯文本的内容**
+有时候，希望得到元素的纯文本内容，或者向文档中插入纯文本（不转义 HTML 中使用的尖括号和 & 字符）。这样做的标准方式是使用 `textContent` 属性。
+
+这个 `textContent` 属性是由 Node 类定义的，因此在 Text 节点和 Element 节点上都可以使用。对于 Element 节点，它会找到并返回元素所有后代中的文本。
+
+> Element 类定义了一个 `innerText` 属性，与 `textContent` 类似。但 `innerText` 有一些少见和复杂的行为，如试图阻止表格格式化。这个属性的定义不严谨，浏览器间的实现也存在兼容性问题，因此不应该再使用了。
+
+**`<script>` 元素中的文本**
+行内（即那些没有 src 属性的）`<script>` 元素有一个 `text` 属性，可以用于获取它们的文本。浏览器永远不会显示 `<script>` 元素的内容，HTML 解析器会忽略脚本中的尖括号和 & 字符。这就让 `<script>` 元素成为在 Web 应用中嵌入任意文本数据的理想场所。只要把这个元素的 `type` 属性设置为某个值（如 text/x-custom-data），明确它不是可执行的 JS 代码即可。这样，JS 解释器将会忽略这个脚本，但该元素还会出现在文档树中，它的 `text` 属性可以返回在其中保存的数据。
+
+#### 15.3.5 创建、插入和删除节点
+
+Document 类还定义了创建 Element 对象的方法，而 Element 和 Text 对象拥有在树中插入、删除和替换节点的方法。
+
+使用 Document 类的 `createELement()` 方法可以创建一个新元素，并通过自己的 `append()` 和 `prepend()` 方法为自己添加文本或其他元素：
+
+```js
+let paragraph = document.createELement('p'); // 创建一个空的<p>元素
+let emphasis = document.createELement('em'); // 创建一个空的<em>元素
+emphasis.append('World'); // 向<em>元素中添加文本
+paragraph.append('Hello', emphasis, '!'); // 向<p>中添加文本和<em>
+paragraph.prepend('i'); // 在<p>的开头再添加文本
+paragraph.innerHTML; // "iHello <em>World</em>!"
+```
+
+`append()` 和 `prepend()` 接收任意多个参数，这些参数可以是 Node 对象或宇符串。字符串参数会自动转换为 Text 节点（也可以使用 document.createTextNode() 来创建 Text 节点，但很少需要这样做）。`append()` 把参数添加到子元素列表的末尾。`prepend()` 把参数添加到子元素列表的开头。
+
+如果想在包含元素的孩子列表中间插入 Element 或 Text 节点，那 `append()` 和 `prepend()` 都派不上用场。这时候，应该先获取对一个兄弟元素节点的引用，然后调用 `before()` 在该兄弟元素前面插入新内容，或调用 `after()` 在该兄弟元素后面插入新内容。
+
+与 append() 和 prepend() 类似，after() 和 before() 也接收任意个数的字符串和元素参数，在将字符串转换为 Text 节点后把它们全部插入文档中。append() 和 prepend() 只在 Element 对象上有定义，但 after() 和 before() 同时存在于 Element 和 Text 节点上，因此可以使用它们相对于 Text 节点插入内容。
+
+> **注意**：元素只能被插入到文档中的一个地方。如果某个元素已经在文档中了，又把它插入到了其他地方，那它会转移到新位置，而不会复制一个新的过去。
+
+如果确实想创建一个元素的副本，可以使用 `cloneNode()` 方法，传入 true 以复制其全部内容：
+
+```js
+// 创建 paragraph 的一个副本，再把它插入到 greetings 元素后面
+greetings.after(paragraph.cloneNode(true));
+```
+
+调用 `remove()` 方法可以把 Element 或 Text 节点从文档中删除，或者可以调用 `replaceWith()` 替换它。`remove()` 不接收参数，`replaceWith()` 与 `before()` 和 `after()` 一样，接收任意个数的字符串和元素：
+
+```js
+// 从文档中删除 greetings 元素，并代之以 paragraph 元素（如果 paragraph 已经在文档中了，则把它从当前位置移走）
+greetings.replaceWith(paragraph);
+// 删除 paragraph 元素
+paragraph.remove();
+```
+
+> DOM API 也定义了插入和删除内容的老一代方法。比如，appendChild()、insertBefore()、replaceChild() 和 removeChild()，都比这里介绍的方法难用，因此不应该再使用它们了。
+
+#### 15.3.6 示例：生成目录
+
+示例 15-1 展示了如何动态为文档创建目录。这个示例演示了前几节介绍的很多操作 DOM 的技术。
+
+```js
+/**
+ * 示例15-1：使用 DOM API 生成目录
+ * TOC.js：为文档创建一个目录
+ *
+ * 这个脚本在 DOMContentLoaded 事件触发时运行，将自动为文档生成一个目录。它没有定义任何全局符号，因此不会与其他脚本发生冲突。
+ *
+ * 脚本在运行时，首先会查找一个 id 为 “TOC” 的文档元素。如果没有这个元素，它就会在文档开头创建一个。
+ * 然后，它会找到所有 <h2> 到 <h6> 标签，将它们当作每一节的标题，并在 TOC 元素中创建一个目录。
+ * 脚本还会给每个节标题添加一个节号，并将标题包装在一个用 name 属性定义的锚元素中，以便 TOC 可以链接到它们。
+ * 生成的锚元素有 “TOC” 开头的名字，因此不应该在自己的 HTML 中再使用它。
+ *
+ * 生成的 TOC 条目可以通过 CSS 添加样式。所有条目都有一个 TOCEntry 类，而且每个条目还有一个与节标题级别对应的类：
+ * <h1> 生成的条目有 TOCLevel1，<h2> 生成的条目有 TOCLevel2，……。插入到标题中的节号有类 TOCSectNum。
+ *
+ * 使用这个脚本时，可以使用以下样式表：
+ * #TOC { border: solid black 1px; margin: 10px; padding: 10px; }
+ * .TOCEntry { margin: 5px 0; }
+ * .TOCEntry a { text-decoration: none; }
+ * .TOCLevel1 { font-size: 16pt; font-weight: bold; }
+ * .TOCLevel2 { font-size: 14pt; margin-left: .25in; }
+ * .TOCLevel3 { font-size: 12pt; margin-left: .5in; }
+ * .TOCSectNum::after { content: ": "; }
+ * 要隐藏节号，可以加上
+ * .TOCSectNum { display: none }
+ **/
+document.addEventListener('DOMContentLoaded', () => {
+  // 查找 TOC 容器元素
+  // 如果没找到，则在文档开头创建一个
+  let toc = document.querySelector('#TOC');
+  if (!toc) {
+    toc = document.createELement('div');
+    toc.id = 'TOC';
+    document.body.prepend(toc);
+  }
+
+  // 查找所有节标题元素。这里假设文档的标题使用 <h1>，文档中的各节使用 <h2> 到 <h6>
+  let headings = document.querySelectorAll('h2, h3, h4, h5, h6');
+
+  // 数组化一个数组，用来跟踪节号
+  let sectionNumbers = [0, 0, 0, 0, 0];
+
+  // 遍历找到的节标题元素
+  for (let heading of headings) {
+    // 如果标题位于 TOC 容器中则跳过
+    if (heading.parentNode === toc) {
+      continue;
+    }
+
+    // 确定标题的级别减 1，因为 <h2> 算 1 级标题
+    let level = parseInt(heading.tagName.charAt(1)) - 1;
+
+    // 递增这个标题级别的节号并把所有低级编号重置为 0
+    sectionNumbers[level - 1]++;
+    for (let i = level; i < sectionNumbers.length; i++) {
+      sectionNumbers[i] = 0;
+    }
+
+    // 现在组合所有标题级别的节号以产生类似 2.3.1 这样的节号
+    let sectionNumber = sectionNumbers.slice(0, level).join('.');
+
+    // 把节号添加到节标题中，把编号放在 <span> 中方便添加样式
+    let span = document.createELement('span');
+    span.className = 'TOCSectNum';
+    span.textContent = sectionNumber;
+    heading.prepend(span);
+
+    // 把标题包装在一个命名的锚元素中，以便可以链接到它
+    let anchor = document.createELement('a');
+    let fragmentName = `TOC${sectionNumber}`;
+    anchor.name = fragmentName;
+    heading.before(anchor); // 在标题前插入锚元素
+    anchor.append(heading); // 把标题移到锚元素内
+
+    // 接下来创建对这一节的链接
+    let link = document.createELement('a');
+    link.href = `#${fragmentName}`; // 链接目标
+
+    // 把标题文本复制到链接中。此时可以放心使用 innerHTML，因为没有插入任何不可信字符串
+    link.innerHTML = heading.innerHTML;
+
+    // 把链接放到一个 div 中，以便根据级别添加样式
+    let entry = document.createElement('div');
+    entry.classList.add('TOCEntry', `TOCLevel${level}`);
+    entry.append(link);
+
+    // 把 div 添加到 TOC 容器中
+    toc.append(entry);
+  }
+});
+```
+
+### 15.4 操作 CSS
+
+JS 可以控制 HTML 文档的逻辑结构和内容。通过对 CSS 编程，JS 也可以控制文档的外观和布局。接下来几节讲解几种 JS 可以用来操作 CSS 的不同技术。
+
+#### 15.4.1 CSS 类
+
+使用 JS 影响文档内容样式的最简单方式是给 HTML 标签的 `class` 属性添加或删除 CSS 类名。Element 对象的 `classList` 属性可以用来方便地实现此类操作。
