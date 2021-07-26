@@ -284,6 +284,26 @@ title: JavaScript权威指南
       - [15.3.6 示例：生成目录](#1536-示例生成目录)
     - [15.4 操作 CSS](#154-操作-css)
       - [15.4.1 CSS 类](#1541-css-类)
+      - [15.4.2 行内样式](#1542-行内样式)
+      - [15.4.3 计算样式](#1543-计算样式)
+      - [15.4.4 操作样式表](#1544-操作样式表)
+      - [15.4.5 CSS 动画与事件](#1545-css-动画与事件)
+    - [15.5 文档几何与滚动](#155-文档几何与滚动)
+      - [15.5.1 文档坐标与视口坐标](#1551-文档坐标与视口坐标)
+      - [15.5.2 查询元素的几何大小](#1552-查询元素的几何大小)
+      - [15.5.3 确定位于某一点的元素](#1553-确定位于某一点的元素)
+      - [15.5.4 滚动](#1554-滚动)
+      - [15.5.5 视口大小、内容大小和滚动位置](#1555-视口大小-内容大小和滚动位置)
+    - [15.6 Web 组件](#156-web-组件)
+      - [15.6.1 使用 Web 组件](#1561-使用-web-组件)
+      - [15.6.2 HTML 模板](#1562-html-模板)
+      - [15.6.3 自定义元素](#1563-自定义元素)
+      - [15.6.4 影子 DOM](#1564-影子-dom)
+      - [15.6.5 示例：<search-box> Web 组件](#1565-示例search-box-web-组件)
+    - [15.7 可伸缩矢量图形](#157-可伸缩矢量图形)
+      - [15.7.1 在 HTML 中使用 SVG](#1571-在-html-中使用-svg)
+      - [15.7.2 编程操作 SVG](#1572-编程操作-svg)
+      - [15.7.3 通过 JS 创建 SVG 图片](#1573-通过-js-创建-svg-图片)
 
 <!-- /code_chunk_output -->
 
@@ -11081,28 +11101,377 @@ HTML 是一种文档标记语言，为此也定义了丰富的标签。过去 30
 
 #### 15.6.1 使用 Web 组件
 
-Web 组件是在 JS 中定义的，因此要在 HTML 中使用 web 组件，需要包含定义该组件的 JS 文件。Web 组件是相对比较新的技术，经常以 JS 模块形式写成，因此需要在 HTML 中像下面这样包含 Web 组件：
+Web 组件是在 JS 中定义的，因此要在 HTML 中使用 Web 组件，需要包含定义该组件的 JS 文件。Web 组件是相对比较新的技术，经常以 JS 模块形式写成，因此需要在 HTML 中像下面这样包含 Web 组件：
 
-```js
+```html
 <script type="module" src="components/search-box.js">
 ```
 
-Web 组件要定义自己的 HTML 标签名，但有一个重要的限制就是标签名必须包含一个连
-字符(这意味着未来的 HTML 版本可以增加没有连字符的新标签，而这些标签不会跟任
-何人的 Web 组件冲突)。要使用 Web 组件，只要像下面这样在 HTML 文件中使用其标
-签即可
-<search-box placeholder=Search."></search-box>
-Web 组件可以像常规 HTML 标签一样具有属性。你使用组件的文档应该告诉你它支持
-哪些属性。Web 组件不能使用自关闭标签定义，比如不能写成< search-box/>。你的
-HTML 文件必须既包含开标签也包含闭标签
-与常规 HTML 元素类似，有的 web 组件需要子组件，而有的 Web 组件不需要(也不显
-示)子组件。还有的 Web 组件可选地接收有标识的子组件，这些子组件会出现在命名的
-插槽”(slot)中。在图 15-3 展示并在示例 15-3 中实现的< search-box>组件，就使用
-插槽”传递要显示的两个图标。如果想在< search-box>中使用不同的图标，可以这样
-使用 HTML
-<search-box>
-simg src=images/search-icon， png" slot="left/>
-cimg src=images/canceL-icon png" slot="right"/
-</search-box>
-这个 slot 属性是对 HTML 的一个扩展，用于指定把哪个子元素放到哪里。而插槽的名
-字“lef”和“ight”是由这个 Web 组件定义的。如果你使用的组件支持插槽，其文档
+Web 组件要定义自己的 HTML 标签名，但有一个重要的限制就是标签名必须包含一个连字符（这意味着未来的 HTML 版本可以增加没有连字符的新标签，而这些标签不会跟任何人的 Web 组件冲突）。要使用 Web 组件，只要像下面这样在 HTML 文件中使用其标签即可：
+
+```js
+<search-box placeholder="Search..."></search-box>
+```
+
+Web 组件可以像常规 HTML 标签一样具有属性。使用组件的文档应该告诉它支持哪些属性。Web 组件不能使用自关闭标签定义。HTML 文件必须既包含开标签也包含闭标签与常规 HTML 元素类似，有的 Web 组件需要子组件，而有的 Web 组件不需要（也不显示）子组件。还有的 Web 组件可选地接收有标识的子组件，这些子组件会出现在命名的 “插槽”（slot）中。
+
+这个 `slot` 属性是对 HTML 的一个扩展，用于指定把哪个子元素放到哪里。而插槽的名字 “left” 和 “right” 是由这个 Web 组件定义的。如果使用的组件支持插槽，其文档中应该说明。
+
+前面提到过 Web 组件经常以 JS 模块来实现，因此可以通过 `<script type="module">` 标签引入 HTML 文件中。模块就像添加了 `defer` 属性一样，会在文档内容解析之后加载。这意味着浏览器通常会在运行定义 Web 组件的代码之前，就要解析和渲染 Web 组件。这在使用 Web 组件时是正常的。浏览器中的 HTML 解析器很灵活，对自己不理解的输入非常宽容。当在 Web 组件还没有定义就遇到其标签时，浏览器会向 DOM 树中添加一个通用的 HTMLElement，即便它们不知道要对它做什么。之后，当自定义元素有定义之后，这个通用元素会被 “升级”，从而具备预期的外观和行为。
+
+如果 Web 组件包含子元素，那么在组件有定义之前它们可能会被不适当地显示出来。可以使用 CSS 将 Web 组件隐藏到它们有定义为止。
+
+与常规 HTML 元素一样，Web 组件可以在 JS 中使用。如果在网页中包含 `<search-box>` 标签，就可以通过 `querySelector()` 和适当的 CSS 选择符获得对它的引用，就像对任何其他 HTML 标签一样。一般来说，只有在定义这个组件的模块运行之后这样做才有意义。因此在查询 Web 组件时要注意不要过早地做这件事。
+
+Web 组件实现通常都会（但并非必须）为它们支持的每个 HTML 属性都定义一个 JS 属性。另外，与 HTML 元素相似，它们也可能定义有用的方法。同样，所使用 Web 组件的文档应该指出可以在 JS 中使用什么属性和方法。
+
+知道了如何使用 Web 组件，接下来三节将介绍用于实现 Web 组件的三个浏览器特性。
+
+**DocumentFragment 节点**
+DOM API 将文档组织成一个 Node 对象树，其中 Node 可以是 Document、Element、Text 节点，或者 Comment 节点。但这些节点类型都不能用来表示一个文档片段，或者一组没有父节点的同辈节点。这时候就要用到 DocumentFragment 了。
+
+DocumentFragment 也是一种 Node 类型，可以临时充当一组同辈节点的父节点，方便将这些同辈节点作为一个单元来使用。可以使用 `document.createDocumentFragment()` 来创建 DocumentFragment 节点。创建 DocumentFragment 节点后，就可以像使用 Element 一样，通过 `append()` 为它添加内容。
+
+DocumentFragment 与 Element 的区别在于它没有父节点。但更重要的是，**当向文档中插入 DocumentFragment 节点时 DocumentFragment 本身并不会被插入，实际上插入的是它的子节点**。
+
+#### 15.6.2 HTML 模板
+
+HTML 的 `<template>` 标签跟 Web 组件的关系虽然没那么密切，但通过它确实可以对网页中频繁使用的组件进行优化。`<template>` 标签及其子元素永远不会被浏览器渲染，只能在使用 JS 的网页中使用。这个标签背后的思想是，当网页包含多个重复的基本 HTML 结构时（比如表格行或 Web 组件的内部实现），就可以使用 `<template>` 定义次该结构，然后通过 JS 按照需要任意重复使用该结构。
+
+在 JS 中，`<template>` 标签对应的是一个 HTMLTemplateElement 对象。这个对象只定义了一个 `content` 属性，而这个属性的值是包含 `<template>` 所有子节点的 DocumentFragment。可以克隆这个 DocumentFragment，然后把克隆的副本插入文档中需要的地方。这个片段自身不会被插入，只有其子节点会。假设文档中包含一个 `<table>` 和 `<template id="row">` 标签，而后者作为模板定义了表格中行的结构，那可以像下面这样使用模板
+
+```js
+let tableBody= document.querySelector("tbody");
+let template = document.querySelector("#row")；
+let clone = template.content.cloneNode(true);// 深度克隆
+// 先使用 DOM 把内容插入克隆的 <td> 元素，然后把克隆且已初始化的表格行插入表格体
+tableBody.append(clone);
+```
+
+这个模板元素并非只有出现在 HTML 文档中才可以使用。也可以在 JS 代码中创建一个模板，通过 `innerHTML` 创建其子节点，然后再按照需要克隆任意多个副本。这样还不必每次都解析 `innerHTML`。而且这也是 Web 组件中使用 HTML 模板的方式，示例 15-3 演示了这个技术。
+
+#### 15.6.3 自定义元素
+
+实现 Web 的第二个浏览器特性是 “自定义元素”，即可以把一个 HTML 标签与一个 JS 类关联起来，然后文档中出现的这个标签就会在 DOM 树中转换为相应类的实例。创建自定义元素需要使用 `customElements.define()` 方法，这个方法以一个 Web 组件的标签名作为第一个参数（记住这个标签名必须包含一个连字符），以一个 HTMLElement 的子类作为其第二个参数。文档中具有该标签名的任何元素都会被 “升级” 为这个类的一个新实例。如果浏览器将来再解析 HTML，都会自动为遇到的这个标签创建一个这个类的实例。
+
+传给 `customElements.define()` 的类应该扩展 HTMLElement，且不是一个更具体的类型（如 HTMLButtonElement）。当一个 JS 类扩展另一个类时，构造函数必须先调用 super() 然后才能使用 this 关键字。因此如果自定义元素类有构造器，应该先调用 super()（没有参数），然后再干别的。
+
+浏览器会自动调用自定义元素类的特定 “生命期方法”。当自定义元素被插入文档时，会调用 `connectedCallback()` 方法。很多自定义元素通过这个方法来执行初始化。还有个 `disconnectedCallback()` 方法，会在自定义元素从文档中被移除时调用，但用得不多。
+
+如果自定义元素类定义了静态的 `observedAttributes` 属性，其值为一个属性名的数组，且如果任何这些命名属性在这个自定义元素的一个实例上被设置（或修改），浏览器就会调用 `attributeChangedCallback()` 方法，传入属性名、旧值和新值。这个回调可以根据属性值的变化采取必要的步骤以更新组件自定义元素类也可以按照需要定义其他属性和方法。通常，它们都会定义设置方法和获取方法，让元素的属性可以暴露为 JS 属性。
+
+下面举一个自定义元素的例子。假设想在一个常规文本段落中显示圆圈。希望可以像下面这样写 HTML：
+
+```html
+<p>
+  The document has one marble: <inline-circle></inline-circle>
+  The HTML parser instantiates two more marbles:
+  <inline-circle diameter="1.2em" color="blue"></inline-circle>
+  <inline-circle diameter=".6em" color="gold"></inline-circle>
+  How many marbles does The document contain now?
+</p>
+```
+
+```js
+// 示例 15-2: <inline-circle> 自定义元素
+customELements.define(
+  'inline-circle',
+  class InlineCircle extends HTMLElement {
+    // 浏览器会在一个 <inline-circle> 元素被插入文档时调用这个方法。还有一个 disconnectedCallback() 方法，但这个例子中没有用到。
+    connectedCallback() {
+      // 设置创建圆圈所需的样式
+      this.style.display = 'inline-block';
+      this.style.borderRadius = '50%';
+      this.style.border = 'solid black 1px';
+      this.style.transform = 'translateY(10%)';
+      // 如果没有定义大小，则基于当前字体大小来设置一个默认大小
+      if (!this.style.width) {
+        this.style.width = '0.8em';
+        this.style.height = '0.8em';
+      }
+    }
+
+    // 这个静态的 observedAttributes 属性用于指定想在哪个属性变化时收到通知（这里使用了获取方法，是因为只能对方法使用 static 关键字）
+    static get observedAttributes() {
+      return ['diameter', 'color'];
+    }
+
+    // 这个回调会在上面列出的属性变化时被调用，从自定义元素被解析开始，包括之后的变化
+    attributeChangedCallback(name, oldValue, newValue) {
+      switch (name) {
+        case 'diameter':
+          // 如果 diameter 属性改变了，更新大小样式
+          this.style.width = newValue;
+          this.style.height = newValue;
+          break;
+        case 'color':
+          // 如果 color 属性改变了，更新颜色样式
+          this.style.backgroundColor = newValue;
+          break;
+      }
+    }
+
+    // 定义与元素的标签属性对应的 JS 属性
+    // 这些获取和设置方法只是获取和设置底层属性
+    // 如果设置了 JS 的属性，则修改底层的属性会触发调用 attributeChangedCallback 进而更新元素的样式
+    get diameter() {
+      return this.getAttribute('diameter');
+    }
+    set diameter(diameter) {
+      this.setAttribute('diameter', diameter);
+    }
+    get color() {
+      return this.getAttribute('color');
+    }
+    set color(color) {
+      this.setAttribute('color', color);
+    }
+  }
+);
+```
+
+#### 15.6.4 影子 DOM
+
+示例 15-2 定义的自定义元素并没有恰当地封装。比如，设置其 diameter 或 color 属性会导致其 style 属性被修改，而对于一个真正的 HTML 元素，这并不是希望看到的行为。要把一个自定义元素转换为真正的 Web 组件，还需要使用一个强大的封装机制：影子 DOM（shadow DOM）。
+
+影子 DOM 允许把一个 “影子根节点”（shadow root）附加给一个自定义元素（也可以附加给 `<div>`、`<span>`、`<body>`、`<article>`、`<main>`、`<nav>`、`<header>`、`<footer>`、`<section>`、`<p>`、`<blockquote>`、`<aside>` 或 `<h>` 到 `<h6>` 元素），而后者被称为 “影子宿主”（shadow host）。影子宿主元素与所有 HTML 元素一样，随时可以作为包含后代元素和文本节点的正常 DOM 树的根。影子根节点则是另一个更私密的后代元素树的根，这些元素从影子根节点上生长出来，可以把它们当成一个迷你文档。
+
+“影子 DOM” 中的 “影子” 指的是作为影子根节点后代的元素 “藏在影子里”。也就是说，这个子树并不属于常规 DOM 树，不会出现在它们宿主元素的 `children` 数组中，而且对 `querySelector()` 等常规 DOM 遍历方法也不可见。相对而言，影子宿主的常规、普通 DOM 子树有时候也被称为 “阳光 DOM”（light DOM）。
+
+要理解影子 DOM 的用途，可以想象一下 HTML 的 `<audio>` 和 `<video>` 元素。这两个元素都会显示一个并不简单的用户界面，用于控制媒体播放，但播放和暂停按钮以及其他 UI 元素都不属于 DOM 树，不能通过 JS 操控。既然浏览器是设计用来显示 HTML 的，那浏览器厂商只有使用 HTML 来显示这样的内部 UI 才是最自然的。事实上，多数浏览器很早就实现了这样的机制，只不过影子 DOM 让它成为 Web 平台的标准而已。
+
+**影子 DOM 封装**
+影子 DOM 的关键特性是它所提供的封装。影子根节点的后代对常规 DOM 树而言是隐藏且独立的，几乎就像它们是在一个独立的文档中一样。影子 DOM 提供了三种非常重要的封装：
+
+- 影子 DOM 中的元素对 `querySelectorAll()` 等常规 DOM 方法是不可见的。在创建影子根节点并将其附加于影子宿主时，可以指定其模式是 “开放”（open）还是 “关闭”（closed）。关闭的影子根节点将被完全封闭，不可访问。不过，影子根节点更多地是以 “开放” 模式创建的，这意味着影子宿主会有一个 `shadowRoot` 属性，如果需要，JS 可以通过这个属性来访问影子根节点的元素。
+
+- 在影子根节点之下定义的样式对该子树是私有的，永远不会影响外部的阳光 DOM 元素（影子根节点可以为其宿主元素定义默认样式，但这些样式可以被阳光 DOM 样式覆盖）。类似地，应用给影子宿主元素的阳光 DOM 样式也不会影响影子根节点。影子 DOM 中的元素会从阳光 DOM 继承字体大小和背景颜色等，而影子 DOM 中的样式可以选择使用阳光 DOM 中定义的 CSS 变量。不过在大多数情况下，阳光 DOM 的样式与影子 DOM 的样式是完全独立的。因此 Web 组件的作者和 Web 组件的用户不用担心他们的样式会冲突或抵触。可以像这样限定 CSS 的范围或许是影子 DOM 最重要的特性。
+
+- 影子 DOM 中发生的某些事件（如 “load”）会被封闭在影子 DOM 中。另外一些事件，像 focus、mouse 和键盘事件则会向上冒泡、穿透影子 DOM。当一个发源于影子 DOM 内的事件跨过了边界开始向阳光 DOM 传播时，其 `target` 属性会变成影子宿主元素，就好像事件直接起源于该元素一样。
+
+**影子 DOM 插槽和阳光 DOM 子元素**
+作为影子宿主的 HTML 元素有两个后代子树。一个是 `children[]` 数组，即宿主元素常规的阳光 DOM 后代；另一个则是影子根节点及其后代。位于同一宿主元素中的两个完全不同的内容树是怎么显示的呢?下面是它们的工作原理：
+
+- 影子根节点的后代始终显示在影子宿主内
+
+- 如果这些后代中包含一个 `<slot>` 元素，那么宿主元素的常规阳光 DOM 子元素会像它们本来就是该 `<slot>` 的子元素一样显示，替代该插槽中的任何影子 DOM 元素。如果影子 DOM 不包含 `<slot>`，那么宿主的阳光 DOM 内容永远不会显示。如果影子 DOM 有一个 `<slot>`，但影子宿主没有阳光 DOM 子元素，那么该插槽的影子 DOM 内容作为默认内容显示。
+
+- 当阳光 DOM 内容显示在影子 DOM 插槽中时，说那些元素 “已分配”（distributed），此时关键要理解：那些元素实际上并未变成影子 DOM 的一部分。使用 `querySelector()` 依旧可以查询它们，它们仍然作为宿主元素的子元素或后代出现在阳光 DOM 中。
+
+- 如果影子 DOM 定义了多个 `<slot>`，且通过 `name` 属性为它们命名，那么影子宿主的阳光 DOM 后代可以通过 `slot="slotname"` 属性指定自己想出现在哪个插槽中。
+
+**影子 DOM API**
+就其强大的能力而言，影子 DOM 并未提供太多 JS API。要把一个阳光 DOM 元素转换为影子宿主，只要调用其 `attachShadow()` 方法，传入 `{mode:"open"}` 这个唯一的参数即可。这个方法返回一个影子根节点对象，同时也将该对象设置为这个宿主的 `shadowRoot` 属性的值。这个影子根节点对象是一个 DocumentFragment，可以使用 DOM 方法为它添加内容，也可以直接将其 `innerHTML` 属性设置为一个 HTML 字符串。
+
+如果 Web 组件想知道影子 DOM（slot）中的阳光 DOM 内容什么时候变化，那它可以直接在该 `<slot>` 元素上注册一个 “slotchanged” 事件。
+
+#### 15.6.5 示例：<search-box> Web 组件
+
+这个示例用自定义元素实现了 `<search-box>` 组件，并使用 `<template>` 标签来提高效率，使用影子根节点做到了封装。
+
+这个示例展示了如何直接使用低级 Web 组件 API。实践中，很多 Web 组件都是使用某个高级的库创建的。之所以使用库，一个原因是可重用且可定制的组件其实很难写好，很多细节都必须处理到位。示例 15-3 演示了如何实现 Web 组件并添加了一些基本的键盘焦点处理逻辑，但没有考虑无障碍，也没有使用恰当的 ARIA 属性，好让这个组件便于在屏幕阅读器和其他辅助技术中使用。
+
+```js
+/**
+ * 示例 15-3：实现 Web 组件
+ * 这个类定义了一个自定义的 HTML <search-box> 元素，用于显示一个 <input> 文本输入字段加两个图标或表情符号（emoji）。
+ * 默认情况下，它在文本字段的左侧显示一个放大镜表情符号，在文本字段的右侧显示一个 X 表情符号（表示取消）。
+ * 它会隐藏输入字段的边框，显示自己环绕一周的边框，让两个表情符号看起来位于输入字段的内部。类似地，当内部输入字段获得焦点时，焦点环也会显示在 <search-box> 的周围。
+ *
+ * 要覆盖默认的图标，可以让 <search-box> 包含 <span> 或 <img> 子元素，并分别指定 slot="left" 和 slot="right" 属性
+ * <search-box> 支持正常的 hTML disabled 和 hidden 属性，以及 size 和 placeholder 属性，它们对这个元素具有对 <input> 元素一样的作用
+ *
+ * 内部 <input> 元素的输入事件会向上冒泡，事件目标会被设置为外部的 <search-box> 元素
+ *
+ * 当用户单击左侧绘文字（放大镜）时，这个元素会发送 “search” 事件，事件对象的 detail 属性会设置为当前输入的字符串。
+ * 另外，当内部文本字段生成 “change” 事件（文本发生变化且用户按下回车或 Tab 键）时，也会派发这个 “search” 事件
+ * 当用户单击右侧表情符号(X)时,这个元素会发送“ clear”事件。如果这个
+ *
+ * 事件的处理程序没有调用 preventDefault()，则这个元素会在事件派发完成时清除用户的输入
+ *
+ * 注意，HTML 和 JS 都没有 onsearch 和 onclear 属性。“search” 和 “clear” 事件的处理程序只能通过 addEventlistener() 来注册
+ */
+class SearchBox extends HTMLElement {
+  constructor() {
+    super(); // 调用超类的构造器；必须先调用
+    // 创建一个影子 DOM 树并将其附加到这个元素，设置为 this.shadowRoot 的值
+    this.attachShadow({ mode: 'open' });
+
+    // 克隆模板，模板定义了这个自定义组件的后代和样式，然后把内容追加到影子根节点
+    this.shadowRoot.append(SearchBox.template.content.cloneNode(true));
+
+    // 取得对影子 DOM 中重要元素的引用
+    this.input = this.shadowRoot.querySelector('#input');
+    let leftSlot = this.shadowRoot.querySelector('slot[name="left"]');
+    let rightSlot = this.shadowRoot.querySelector('slot[name="right"]');
+
+    // 当内部输入字段获得或失去焦点时，设置或移除 focused 属性，以便样式表在整个组件上显示或隐藏人造的焦点环。
+    // 注意，“blur” 和 “focus” 现在变量 x 的值就是 0，事件会冒泡，就像起源自 <search-box> 一样
+    this.input.onfocus = () => {
+      this.setAttribute('focused', '');
+    };
+    this.input.onblur = () => {
+      this.removeAttribute('focused');
+    };
+
+    // 如果用户点击了放大镜，则触发 “search” 事件。同样在输入字发生 “change” 事件时也触发这个事件（“change” 事件不会冒泡到影子 DOM 外面）
+    leftSlot.onclick = this.input.onchange = event => {
+      event.stopPropagation(); // 阻止单击事件冒泡
+      if (this.disabled) return; // 如果被禁用则什么也不做
+      this.dispatchEvent(
+        new CustomEvent('search', {
+          detail: this.input.value
+        })
+      );
+    };
+
+    // 如果用户单击了 X，则触发 “clear” 事件。如果事件的处理程序没有调用 preventDefault()，则清除输入
+    rightSlot.onclick = event => {
+      event.stopPropagation(); // 不让单击事件向上冒泡
+      if (this.disabled) return; // 如果被禁用则什么也不做
+      let e = new CustomEvent('clear', { cancelable: true });
+      this.dispatchEvent(e);
+      if (!e.defaultPrevented) {
+        // 如果事件没有被取消
+        this.input.value = ''; // 则清除输入字段
+      }
+    };
+  }
+
+  // 在有些属性被设置或改变时，需要设置内部 <input> 元素对应的值。
+  // 这个生命期方法与下面代码的静态属性 observedAttributes 相互配合，实现回调
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'disabled') {
+      this.input.disabled = newValue !== null;
+    } else if (name === 'placeholder') {
+      this.input.placeholder = newValue;
+    } else if (name === 'size') {
+      this.input.size = newValue;
+    } else if (name === 'value') {
+      this.input.value = newValue;
+    }
+  }
+
+  // 最后，为支持的 HTML 属性定义相应的获取方法和设置方法
+  // 获取方法简单地返回属性的值（或存在与否），而设置方法也只是设置属性的值（或存在与否）。
+  // 当某个设置方法修改了一个属性时，浏览器会自动调用上面的 attributeChangedCallback 回调
+  get placeholder() {
+    return this.getAttribute('placeholder');
+  }
+  get size() {
+    return this.getAttribute('size');
+  }
+  get value() {
+    return this.getAttribute('value');
+  }
+  get disabled() {
+    return this.hasAttribute('disabled');
+  }
+  get hidden() {
+    return this.hasAttribute('hidden');
+  }
+  set placeholder(value) {
+    this.setAttribute('placeholder', value);
+  }
+  set size(value) {
+    this.setAttribute('size', value);
+  }
+  set value(text) {
+    this.setAttribute('value', text);
+  }
+  set disabled(value) {
+    if (value) this.setAttribute('disabled', '');
+    else this.removeAttribute('disabled');
+  }
+  set hidden(value) {
+    if (value) this.setAttribute('hidden', '');
+    else this.removeAttribute('hidden');
+  }
+}
+
+// 这个静态属性对 attributeChangedCallback 方法是必需的
+// 只有在这个数组中列出的属性名才会触发对该方法的调用
+SearchBox.observedAttributes = ['disabled', 'placeholder', 'size', 'value'];
+
+// 创建一个 <template> 元素，用于保存样式表和元素树，可以在每个 SearchBox 元素的实例中使用它们
+SearchBox.template = document.createELement('template');
+
+// 通过解析 HTML 字符串初始化模板。不过要注意，当实例化一个 SearchBox 时，可以克隆这个模板中的节点，不需要再次解析HTML。
+SearchBox.template.innerHTML = `
+  <style>
+  /*
+    * 这里的 :host 选择符引用的是阳光 DOM 中的 <search-box> 元素
+    * 这些样式是默认的，<search-box> 的使用者可以通过阳光 DOM 中的样式来覆盖这些样式
+    */
+  :host {
+    display: inline-block; /* 默认显示为行内块 */
+    border: solid black 1px; /* 在 <input> 和 <slots> 周围添加圆角边框 */
+    border-radius: 5px;
+    padding: 4px 6px; /* 边框内部留出适当间隙 */
+  }
+  :host([hidden]) { /* 注意小括号：当宿主隐藏时 */
+    display: none; /* 通过属性设置为不显示 */
+  }
+  :host([disabled]) { /* 当宿主有 disabled 属性时 */
+    opacity: 0.5; /* 将其变灰 */
+  }
+  :host([focused]) { /* 当宿主有 focused 属性时 */
+    box-shadow: 0 0 2px 2px #6AE; /* 显示人造的焦点环 */
+  }
+
+  /* 剩下的样式表只应用给影子 DOM 中的元素。*/
+  input {
+    border-width: 0; /* 隐藏内部输入字段的边框。*/
+    outline: none; /* 也隐藏焦点环 */
+    font: inherit; /* <input> 元素默认不会继承字段 */
+    background: inherit; /* 背景颜色也需要明确继承 */
+  }
+  slot {
+    cursor: default; /* 光标移到按钮上显示箭头 */
+    user-select: none; /* 不让用户选择表情符号文本 */
+  }
+  </style>
+  <div>
+    <slot name="left">\u{1f50d}</slot> <!-- U+1F50D 是放大镜 -->
+    <input type="text"id="input" /> <!-- 实际的输入元素 -->
+    <slot name="right">\u{2573}</slot> <!-- U+2573 是 X -->
+  </div>`;
+
+// 最后，调用 customELement.define() 将 SearchBox 元素注册为 <search-box> 标签的实现。
+// 自定义元素的标签名中必须包含一个连字符
+customELements.define('search-box', SearchBox);
+```
+
+### 15.7 可伸缩矢量图形
+
+SVG（Scalable Vector Graphics，可伸缩矢量图形）是一种图片格式。名字中的 “矢量” 代表着它与 GIF、JPEG、PNG 等指定像素值矩阵的光栅（raster）图片格式有着根本的不同。**SVG “图片” 是一种对绘制期望图形的精确的、分辨率无关（因而 “可伸缩”）的描述。SVG 图片是在文本文件中通过（与 HTML 类似的）XML 标记语言描述的**。
+
+在浏览器中有几种方式使用 SVG：
+
+- 可以在常规的 HTML `<img>` 标签中使用 svg 图片文件，就像使用 _.png_ 或 _.jpeg_ 图片一样。
+
+- 因为基于 XML 的 SVG 格式与 HTML 很类似，所以可以直接把 SVG 标签嵌入在 HTML 文档中。此时，浏览器的 HTML 解析器允许省略 XML 命名空间，并将 SVG 标签当成 HTML 标签一样处理。
+
+- 可以使用 DOM API 动态创建 SVG 元素，按需生成图片。
+
+接下来几小节将演示 SVG 的第二种和第三种用法。不过，要注意 SVG 本身的语法规则很多，还是比较复杂的。除了简单的图形绘制语法，SVG 还支持任意曲线、文本和动画。SVG 图形甚至可以与 JS 脚本和 CSS 样式表组合，以添加行为和表现信息。
+
+#### 15.7.1 在 HTML 中使用 SVG
+
+SVG 图片可以使用 HTML 的 `<img>` 标签来显示，也可以直接在 HTML 嵌入 SVG。而且在嵌入 SVG 后，甚至可以使用 CSS 样式表来指定字体、颜色和线宽。`<svg>` 标签的后代并非标准的 HTML 标签。比如，在 HTML 中使用 SVG 显示一个模拟时钟表盘的例子：
+
+[clock.html](./examples/clock.html)
+
+> **注意**：CSS 简写的 font 属性对 SVG 标签不起作用，因此必须要分别设置 font-family、font-size 和 font-weight 属性。
+
+#### 15.7.2 编程操作 SVG
+
+直接在 HTML 文件中嵌入 SVG（而不是使用静态 `<img>` 标签）的一个原因，就是这样可以使用 DOM API 操作 SVG 图片。假设想使用 SVG 在网页中显示一个图标。可以把 SVG 嵌入一个 `<template>` 标签中，然后在需要向 UI 中插入图标副本时就克隆这个模板的内容。如果想让图标响应用户活动（比如在鼠标指针悬停在图标上时改变颜色），那通常可以使用 CSS 来实现。
+
+操作直接嵌入在 HTML 中的 SVG 图形也是可能的。上一节中的那个表盘的示例显示的是一个静态时钟，时针和分针都指向正上方，表明时间为中午或半夜。可以在示例的HTML文件中通过 `<script>` 标签运行脚本，周期性地执行一个函数，该函数会检查时间并旋转时针和分针对准相应的度数，从而让时钟真正反映当前时间。
+
+[clock.html](./examples/clock.html)
+
+#### 15.7.3 通过 JS 创建 SVG 图片
+
+除了使用脚本简单地操作嵌入在 HTM L文档中的 SVG 图片，还可以通过 JS

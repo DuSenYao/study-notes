@@ -1,0 +1,88 @@
+<html>
+  <head>
+    <title>Analog Clock</title>
+    <style>
+      /* 这些 CSS 样式全都应用给下面定义的 SVG 元素 */
+      /* 适用于整个时钟的样式 */
+      #clock {
+        stroke: black; /* 黑色线条 */
+        stroke-linecap: round; /* 圆形端点 */
+        fill: #ffe; /* 放在灰白色背景上 */
+      }
+      #clock .face {
+        stroke-width: 3;
+      } /* 表盘的轮廓 */
+      #clock .ticks {
+        stroke-width: 2;
+      } /* 标记每小时刻度线 */
+      #clock .hands {
+        stroke-width: 3;
+      } /* 怎么绘制表针 */
+      #clock .numbers {
+        /* 怎么绘制数字 */
+        font-family: sans-serif;
+        font-size: 10;
+        font-weight: bold;
+        text-anchor: middle;
+        stroke: none;
+        fill: black;
+      }
+    </style>
+  </head>
+  <body>
+    <svg id="clock" viewBox="0 0 100 100" width="250" height="250">
+      <!-- 这里的 width 和 height 属性定义图形在屏幕上的大小 -->
+      <!-- 而 viewBox 属性用于定义图形内部的坐标系 -->
+      <circle class="face" cx="50" cy="50" r="45" />
+      <!-- 12小时的刻度线 -->
+      <g class="ticks">
+        <line x1="50" y1="5.000" x2="50.0" y2="10.00" />
+        <line x1="72.50" y1="11.03" x2="70.00" y2="15.36" />
+        <line x1="88.97" y1="27.50" x2="84.64" y2="30.00" />
+        <line x1="95.00" y1="50" x2="90.00" y2="50.00" />
+        <line x1="88.97" y1="72.50" x2="84.641" y2="70.00" />
+        <line x1="72.50" y1="88.97" x2="70.00" y2="84.64" />
+        <line x1="50.00" y1="95.00" x2="50.00" y2="90.00" />
+        <line x1="27.50" y1="88.97" x2="30.00" y2="84.64" />
+        <line x1="11.03" y1="72.50" x2="15.36" y2="70.00" />
+        <line x1="5.00" y1="50.00" x2="10.00" y2="50.00" />
+        <line x1="11.03" y1="27.50" x2="15.36" y2="30.00" />
+        <line x1="27.50" y1="11.03" x2="30.00" y2="15.36" />
+      </g>
+      <!-- 用数字标识基本方向 -->
+      <g class="numbers">
+        <text x="50" y="18">12</text>
+        <text x="85" y="53">3</text>
+        <text x="50" y="88">6</text>
+        <text x="15" y="53">9</text>
+      </g>
+      <!-- 绘制一个指向上方的表针 -->
+      <g class="hands">
+        <line class="hourhand" x1="50" y1="50" x2="50" y2="25" />
+        <line class="minutehand" x1="50" y1="50" x2="50" y2="20" />
+      </g>
+    </svg>
+    <script>
+      // 下面的代码会根据当前时间来确定时针和分针的适当角度，然后使用 querySelector() 找到显示这两个表针的 SVG 元素，设置它们的 transform 属性，围绕表盘的中心旋转相应的角度。这个函数使用 setTimeout() 来确保表针每 10 秒转动一次。
+
+      (function updateClock() {
+        // 更新SVG时钟，显示当前时间
+        let now = new Date(); // 当前时间
+        let sec = now.getSeconds(); // 秒
+        let min = now.getMinutes() + sec / 60; // 分数形式的分钟
+        let hour = (now.getHours() % 12) + min / 60; // 分数形式的小时
+        let minangle = min * 6; // 每分钟 6 度
+        let hourangle = hour * 30; // 每小时 30 度
+        // 取得显示表针的SVG元素
+        let minhand = document.querySelector('#clock .minutehand');
+        let hourhand = document.querySelector('#clock .hourhand');
+
+        // 设置 SVG 属性，围绕表盘移动表针
+        minhand.setAttribute('transform', `rotate(${minangle}, 50, 50)`);
+        hourhand.setAttribute('transform', `rotate(${hourangle},50, 50)`);
+        // 10 秒钟后再次运行这个函数
+        setTimeout(updateClock, 10000);
+      })(); // 注意在这里立即调用函数
+    </script>
+  </body>
+</html>
