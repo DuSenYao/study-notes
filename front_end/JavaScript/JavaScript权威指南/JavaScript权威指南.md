@@ -10151,7 +10151,7 @@ DOM API 包含创建新 Element 和 Text 节点的方法，也包含把它们作
 
 如果网页中包含嵌入的窗格（`<iframe>`元素），被嵌入文档与嵌入它的文档中的 JS 代码拥有不同的全局对象和 Document 对象，可以看成两个不同的 JS 程序。
 
-> **注意**：关于 JS 程序的边界在哪里并没有正式的定义。如果包含文档与被包含文档是从同一个服务器加载的，则一个文档中的代码就能够与另一个文档中的代码交互。此时，如果愿意，可以把它们看成一个程序整体的两个互操作的部分。15.13.6<!--TODO--> 节将解释 JS 程序如何与在 `<iframe>` 中运行的 JSON 代码相互发送和接收消息。
+> **注意**：关于 JS 程序的边界在哪里并没有正式的定义。如果包含文档与被包含文档是从同一个服务器加载的，则一个文档中的代码就能够与另一个文档中的代码交互。此时，如果愿意，可以把它们看成一个程序整体的两个互操作的部分。15.13.6<!--TODO--> 节将解释 JS 程序如何与在 `<iframe>` 中运行的 JS 代码相互发送和接收消息。
 
 可以把 JS 程序的执行想象成发生在两个阶段：
 
@@ -10841,3 +10841,268 @@ JS 可以控制 HTML 文档的逻辑结构和内容。通过对 CSS 编程，JS 
 #### 15.4.1 CSS 类
 
 使用 JS 影响文档内容样式的最简单方式是给 HTML 标签的 `class` 属性添加或删除 CSS 类名。Element 对象的 `classList` 属性可以用来方便地实现此类操作。
+
+#### 15.4.2 行内样式
+
+假设文档的结构中只包含一个提示条元素，而想在显示它之前先动态把它定位好。一般来说，不可能针对提示条的所有可能位置都创建一个类，因此 `classList` 属性不能用于定位。
+
+这种情况下，需要用程序修改提示条在 HTML 中的 `style` 属性，设置只针对它自己的行内样式。DOM 在所有 Element 对象上都定义了对应的 style 属性。但与大多数镜像属性不同，这个 style 属性不是字符串，而是 CSSStyleDeclaration 对象，是对 HTML 中作为 style 属性值的 CSS 样式文本解析之后得到的一个表示。要在 JS 中显示和设置提示条的位置，可以使用类似下面的代码：
+
+```js
+function displayAt(tooltip, x, y) {
+  tooltip.style.display = 'block';
+  tooltip.style.position = 'absolute';
+  tooltip.style.left = `${x}px`;
+  tooltip.style.top = `${x}px`;
+}
+```
+
+**命名约定：JS 中的 CSS 属性**
+很多 CSS 样式属性的名字中都包含连字符。连字符在 JS 中被会解释为减号，因此不允许出现在属性名其他标识符中。为此，CSSStyleDeclaration 对象的属性名与实际的 CSS 属性名稍微有点不一样。如果 CSS 属性名包含一个或多个连字符，对应的 CSSStyleDeclaration 属性名将剔除连字符，并将每个连字符后面的字母变成大写。例如，JS 会使用 borderLeftwidth 属性访问 border-Left-width 这个 CSS 属性。
+
+> **注意**：
+>
+> 1. 在使用 CSSStyleDeclaration 的样式属性时，要记住所有值都必须是字符串。
+> 2. 分号不包含在字符串中，它们只是普通的 JS 分号。在 CSS 样式表中使用的分号在通过 JS 设置字符串值时并不是必需的。
+> 3. 很多 CSS 属性要求包含单位，如 “px” 表示像素，“pt” 表示点。
+
+有些 CSS 属性是其他属性的简写形式，比如 margin 是 margin-top、margun-right、margun-bottom 和 margin-left 的简写。 CSSStyleDeclaration 对象上也有与这些简写属性对应的属性。例如，可以像这样设置 margin 属性：
+
+```js
+e.style.margin = `${top}px ${right}px ${bottom}px ${left}px`;
+```
+
+有时候，以字符串而非 CSSStyleDeclaration 对象形式设置和读取行内样式会更方便。为此，可以使用 Element 的 `getAttribute()` 和 `setAttribute()` 方法，或者也可以使用 CSSStyleDeclaration 对象的 cssText 属性：
+
+```js
+// 把元素 e 的行内样式复制给元素 f
+f.setAttribute.style('style', e.getAttribute('style'));
+// 或者，这样也可以
+f.style.cssText = e.style.cssText;
+```
+
+在读取元素的 `style` 属性时，应该知道它只表示元素的行内样式，而多数元素的多数样式都是在样式表中指定的，不是写在行内的。并且，通过 stye 属性读到的任何单位和简写属性，都是对应 HTML 属性中实际使用的格式，代码可能必须进行复杂解析才能解释它们。一般来说，如果想知道一个元素的样式，那需要的可能是计算样式。
+
+#### 15.4.3 计算样式
+
+元素的计算样式（computed style）是浏览器根据一个元素的行内样式和所有样式表中适用的样式规则导出（或计算得到）的一组属性值，浏览器实际上使用这组属性值来显示该元素。与行内样式类似，计算样式同样以 CSSStyleDeclaration 对象表示。但与行内样式不同的是，计算样式是只读的，不能修改计算样式，但表示一个元素计算样式的 CSSStyleDeclaration 对象可以知道浏览器在渲染该元素时，使用了哪些属性和值。
+
+使用 Window 对象的 `getComputedStyle()` 方法可以获取一个元素的计算样式。这个方法的第一个参数是要查询的元素，可选的第二个参数用于指定一个 CSS 伪元素：
+
+```js
+let title = document.querySelector('#section1title');
+let styles = window.getComputedStyle(title);
+let beforeStyles = window.getComputedStyle(title, '::before');
+```
+
+`getComputedStyle()` 的返回值是一个 CSSStyleDeclaration 对象，该对象包含应用给指定元素（或伪元素）的所有样式。这个 CSSStyleDeclaration 对象与表示行内样式的 CSSStyleDeclaration 对象有一些重要的区别：
+
+- 计算样式的属性是只读的。
+
+- 计算样式的属性是绝对值，百分比和点等相对单位都被转换成了绝对值。任何指定大小的属性（如外边距大小和字体大小）都将以像素度量。相应的值会包含 “px” 后缀，虽然还需要解析，但不用考虑解析或转换其他单位。值为颜色的属性将以 “rgb()” 或 “rgba()” 格式返回。
+
+- 简写属性不会被计算，只有它们代表的基础属性会被计算。例如，不能查询 margin 属性，而要查询 marginLeft、marginTop 等。
+
+- 计算样式的 `cssText` 属性是 undefined。
+
+`getComputedStyle()` 返回的 CSSStyleDeclaration 对象中包含的属性，通常要比行内 style 属性对应的 CSSStyleDeclaration 对象多很多。但计算样式比较难说，查询它们并不一定总能得到想要的信息。以 font-family 属性为例，它接收逗号分隔的字体族的列表，以实现跨平台兼容。在查询计算样式的 fontFamily 属性时，只是得到应用给元素的最特定于 font-family 样式的值，这可能会返回类似 “arial,helvetica,sans-serif” 这样的值，并不说明实际使用了哪种字体。再比如，如果某元素没有被绝对定义，通过计算样式查询其 top 和 left 属性经常会返回 auto。这是个合法的 CSS 值，但却不一定是想找的。
+
+尽管 CSS 可以精确指定文档元素的位置和大小，查询元素的计算样式并非确定该元素大小和位置的理想方式。15.5.2<!--TODO--> 节介绍了一个更简单易用的替代方案。
+
+#### 15.4.4 操作样式表
+
+除了操作 `class` 属性和行内样式，JS 也可以操作样式表。样式表是通过 `<style>` 标签或 `<link rel="stylesheet">` 标签与 HML 文档关联起来的。这两个标签都是普通的 HTML 标签，因此可以为它们指定一个 id 属性，然后使用 document.querySelector() 找到它们。
+
+`<style` >和 `<link>` 标签对应的 Element 对象都有 `disabled` 属性，可以用它禁用整个样式表。比如，可以像下面这样使用这个属性：
+
+```js
+// 这个函数可以实现 “light” 和 “dark” 主题的切换
+function toggleTheme() {
+  let lightTheme = document.querySelector('#light-theme');
+  let darkTheme = document.querySelector('#dark-theme');
+  // 当前是浅色主题，切换到深色主题
+  if (darkTheme.disabled) {
+    lightTheme.disabled = true;
+    darkTheme.disabled = false;
+  }
+  // 当前是深色主题，切换到浅色主题
+  else {
+    lightTheme.disabled = false;
+    darkTheme.disabled = true;
+  }
+}
+```
+
+另一个操作样式表的简单方式是使用前面介绍的 DOM API 向文档中插入新样式表。
+
+虽然算不上巧妙，但也可以向文档中插入一段包含 `<style>` 标签的 HTML 字符串。这是种好玩的技术，例如：
+
+```js
+document.head.insertAdjacentHTML('beforeend', '<style>body{transform: rotate(180deg)}</style>');
+```
+
+浏览器定义了一套 API，以便 JS 能够在样式表中查询、修改、插入或删除样式规则。这套 API 太专业了，可以在 MDN 上搜索 “CSSObject Model” 或 “CSSStyleSheet”。
+
+#### 15.4.5 CSS 动画与事件
+
+假设样式表中定义了下面两个 CSS 类：
+
+```css
+.transparent {
+  opacity: 0;
+}
+.fadeable {
+  transition: opacity 0.5s ease-in;
+}
+```
+
+如果把第一个样式应用给某个元素，该元素会变成完全透明，不可见。而第二个样式中的过渡属性（transition）会告诉浏览器当元素的不透明度（ opacity）变化时，该变化应该在 0.5 秒的时间内以动画的形式呈现。其中的 ease-in 要求不透明度的变化动画应该先慢后快。
+
+现在假设 HTML 文档中包含一个有 “fadeable” 类的元素：
+
+```html
+<div id="subscribe" class="fadeable notification">...</div>
+```
+
+在 JS 中，可以为它添加 “transparent” 类：
+
+```js
+document.querySelector('#subscribe').classList.add('transparent');
+```
+
+这个元素是为不透明度动画而配置的。给它添加 “transparent” 类，改变不透明度，会触发一次动画：浏览器会在半秒内让元素 “淡出” 为完全透明。
+相反的过程也能触发动画：如果删除 “fadable” 元素的 “transparent” 类，又会改变不透明度，因此元素将淡入，变得再次可见。
+
+这个过程不需要 JS 做任何事情，是纯粹的 CSS 动画效果。但 JS 可以用来触发这种动画。
+
+JS 也可以用来监控 CSS 过渡动画的进度，因为浏览器在过渡动画的开始和结束都会触发事件。首次触发过渡时，浏览器会派发 “transitionrun” 事件。这时候可能刚刚指定 transition-delay 样式，而视觉上还没有任何变化。当发生视觉变化时，又会派发 “transitionstart” 事件，而当动画完成时，则会派发 “transitionend” 事件。当然，所有这些事件的目标都是发生动画的元素。这些事件传给处理程序的事件对象是一个 TransitionEvent 对象。该对象的 `propertyName` 属性是发生动画的 CSS 属性而 “transitionend” 事件对应的事件对象的 `elapsedTime` 属性是从 “transitionstart” 事件开始经过的秒数。
+
+除了过渡之外，CSS 也支持更复杂的动画形式，可以称其为 “CSS 动画”。这会用到 `animation-name`、`animation-duration` 和特殊的`@keyframes` 规则来定义动画细节。
+
+与 CSS 过渡类似，CSS 动画也触发事件，可以供 JS 代码监听。动画开始时触发 “animationstart” 事件，完成时触发 “animationend” 事件。如果动画会重复播放，则每次重复（不包括最后一次）都会触发 “animationiteration” 事件。事件目标是发生动画的元素，而传给处理程序的事件对象是 AnimationEvent 对象。这个对象的 `animationName` 属性是定义动画的 `animation-name` 属性，而 `elapsedTime` 属性反映了自动画开始以后经过了多少秒。
+
+### 15.5 文档几何与滚动
+
+本章到现在，一直把文档想象成元素和文本节点的抽象树。但当浏览器在窗口中渲染文档时，它会创建文档的一个视觉表示，其中每个元素都有自己的位置和大小。有时候，Web 应用可以把文档看成元素的树，不考虑这些元素在屏幕上如何展示。但有时候，又必须知道某个元素精确的几何位置。例如，要使用 CSS 动态把一个元素（如提示条）定位到某个常规定位的元素旁边，必须先知道这个常规定位元素的位置。
+
+接下来几节将介绍如何在基于树的抽象文档模型和基于几何坐标系的文档视图之间切换。
+
+#### 15.5.1 文档坐标与视口坐标
+
+文档元素的位置以 CSS 像素度量，其中 x 坐标向右表示增大，y 坐标向下表示增大。但是有两个点可以用作坐标原点：元素的 x 和 y 坐标可以相对于文档的左上角，也可以相对于显示文档的视口（viewport）的左上角。在顶级窗口和标签页中，“视口” 就是浏览器窗口中实际显示文档内容的区域。因此不包含浏览器的 “外框”（chrome），如菜单、工具条和标签。对于显示在 `<iframe>` 标签中的文档，由 DOM 中的内嵌窗格（iframe）元素定义嵌套文档的视口。无论哪种情况，说到元素位置，必须首先搞清楚是使用文档坐标还是视口坐标（有时候，视口坐标也被称为 “窗口坐标”）。
+
+如果文档比视口小，或者如果文档没有被滚动过，则文档左上角就位于视口左上角，文档和视口坐标系是相同的。但通常情况下，要实现这两种坐标系的转换，都必须加上或减去滚动位移（scroll offset）。如果元素在文档坐标中的 y 坐标是 200 像素，用户向下滚动了 75 像素，则元素在视口坐标中的 y 坐标是 125 像素。类似地，如果用户在视口中水平滚动 200 像素之后元素在视口坐标中的 x 坐标是 400 像素，则元素在文档坐标中的 x 坐标是 600 像素。
+
+如果以打印的纸质文档做比喻，则任由用户怎么上下左右移动文档，其中每个元素在文档坐标中都拥有不变的位置。纸质文档具有的这种性质也适用于简单的网页文档，但一般来说，文档坐标并不真正适合网页。问题在于 CSS 的 overflow 属性允许文档中的元素包含比它能显示的更多的内容。元素可以有自己的滚动条，并作为它们所包含内容的视口。Web 允许在滚动文档中存在滚动元素，意味着不可能只使用一个(x，y)点描述元素在文档中的位置。
+
+既然文档坐标实际上没有什么用，客户端 JS 更多地会使用视口坐标。接下来介绍的 `getBoundingClientRect()` 和 `elementFromPoint()` 方法使用的就是视口坐标，而鼠标和指针事件对象的 `clientX` 和 `clientY` 属性使用的也是这个坐标。
+
+在使用 CSS 的 `position:fixed` 显式定位元素时，top 和 1eft 属性相对于视口坐标来解释。如果使用 `position:relative`，则元素会相对于没给它设置 position 属性时的位
+置进行定位。如果使用 `position:absolute`，则 top 和 1eft 相对于文档或者最近的包含定位元素。这意味着，如果一个相对定位元素中包含一个绝对定位元素，则绝对定位元素会相对于这个相对定位的包含元素而不是整个文档定位。实践中，经常会把元素设置为相对定位，同时将其 top 和 left 设置为 0（这样作为容器它的布局没有变化），从而为它包含的绝对定位元素建立一个新的坐标系统。可以把这个新的坐标系统称为 “容器坐标”，以便区分于文档坐标和视口坐标。
+
+#### 15.5.2 查询元素的几何大小
+
+调用 `getBoundingClientRect()` 方法可以确定元素的大小（包括 CSS 边框和内边距，不包括外边距）和位置（在视口坐标中）。这个方法没有参数，返回一个对象，对象有 left、right、top、bottom、width 和 height 属性。其中，left 和 top 属性是元素左上角的 x 和 y 坐标，right 和 bottom 属性是右下角的坐标。这两对属性值的差就是 wight 和 height 属性。
+
+块级元素（如图片、段落和 `<div>` 元素）在浏览器的布局中始终是矩形。行内元素（如 `<span>`、`<code>`和`<b>`元素）则可能跨行，因而包含多个矩形。比如，`<em>` 和 `</em>` 标签间的文本显示在了两行上，则它的矩形会包含第一行末尾和第二行开头。如果在这个元素上调用 `getBoundingClientRect()`，则边界矩形将包含两行的整个宽度。如果想查询行内元素中的个别矩形，可以调用 `getClientRects()` 方法，得到一个只读的类数组对象，其元素为类似 `getBoundingClientRect()` 返回的矩形对象。
+
+#### 15.5.3 确定位于某一点的元素
+
+使用 `getBoundingClientRect()` 方法可以确定视口中某个元素的当前位置。有时候，想从另一个方向出发，确定在视口中某个给定位置上的是哪个元素。为此可以使用 Document 对象的 `elementFromPoint()` 方法。调用这个方法并传入一个点的 x 和 y 坐标（视口坐标，而非文档坐标。比如，可以使用鼠标事件中的 clientX 和 clientY 坐标）。
+
+`elementFromPoint()` 返回一个位于指定位置的 Element 对象。选择元素的碰撞检测（hitdetection）算法并没有明确规定，但这个方法的意图是返回相应位置上最内部（嵌套最
+深）、最外层（最大的 CSS z-index 属性）的元素。
+
+#### 15.5.4 滚动
+
+Window 对象的 `scrollTo()` 方法接收一个点的 x 和 y 坐标（文档坐标），并据以设置滚动条的位移。换句话说，这个方法会滚动窗口，从而让指定的点位于视口的左上角。如果这个点太接近文档底部或右边，浏览器会尽可能让视口左上角接近这个点，但不可能真的移动到该点。以下代码会滚动浏览器让文档最底部的页面显示出来：
+
+```js
+// 取得文档和视口的高度
+let documentHeight = document.documentElement.offsetHeight;
+let viewportHeight = window.innerHeight;
+// 滚动到最后一“页”在视口中可见
+window.scrollTo(0, documentHeight - viewportHeight);
+```
+
+Window 对象的 `scrollBy()` 方法与 `scrollTo()` 类似，但它的参数是个相对值，会加在当前滚动位置之上：
+
+```js
+// 每 500 毫秒向下滚动 50 像素。注意，没有办法停止
+setInterval(() => {
+  scrollBy(0, 50);
+}, 500);
+```
+
+如果想让 `scrollTo()` 和 `scrollBy()` 平滑滚动，需要传入一个对象，而不是两个数值，比如：
+
+```js
+window.scrollTo({
+  left: 0,
+  top: documentHeight - viewportHeight,
+  behavior: 'smooth'
+});
+```
+
+有时候，不是想让文档滚动既定的像素距离，而是想滚动到某个元素在视口中可见。此时可以在相应 HTML 元素上调用 `scrollIntoView()` 方法。这个方法保证在上面调用它的那个元素在视口中可见。默认情况下，滚动后的结果会尽量让元素的上边对齐或接近视口上沿。如果给这个方法传入唯一的参数 false，则滚动后的结果会尽量让元素的底边对齐视口下沿。为了让元素可见，浏览器也会水平滚动视口。
+
+同样可以给 `scrollIntoView()` 传入一个对象，设置 `behavior:"smooth"` 属性，以实现平滑滚动。而设置 `block` 属性可以指定元素在垂直方向上如何定位，设置 `inline` 属性可以指定元素在水平方向上如何定位（假设需要水平滚动）。这两个属性的有效值均包括 start、end、nearest 和 center。
+
+#### 15.5.5 视口大小、内容大小和滚动位置
+
+前面说过，浏览器窗口和一些 HTML 元素可以显示滚动的内容。在这种情况下，有时候需要知道视口大小、内容大小和视口中内容的滚动位移。本节介绍这些细节。
+
+对浏览器窗口而言，视口大小可以通过 `window.innerWidth` 和 `window.innerHeight` 属性获得（针对移动设备优化的网页通常会在 `<head>` 中使用 `<meta name="viewport">` 标签为页面设置想要的视口宽度）。文档的整体大小与 `<html>` 元素，即 `document.documentELement` 的大小相同。要获得文档的宽度和高度，可以使用 `document.documentELement`
+的 `getBoundingClientRect()` 方法，也可以使用 `document.documentElement` 的 `offsetWidth` 和 `offsetHeight` 属性。文档在视口中的滚动位移可以通过 `window.scrollX` 和 `window.scrollY` 获得。这两个属性都是只读的，因此不能通过设置它们的值来滚动文档。滚动文档应该使用 `window.scrollTo()`。
+
+对元素来说，问题稍微复杂一点。每个 Element 对象都定义了下列三组属性：
+
+| offset       | client       | scroll       |
+| ------------ | ------------ | ------------ |
+| offsetWidth  | clientWidth  | scrollWidth  |
+| offsetHeight | clientHeight | scrollHeight |
+| offsetLeft   | clientLeft   | scrollLeft   |
+| offsetTop    | clientTop    | scrollTop    |
+| offsetParent | -            | -            |
+
+元素的 `offsetWidth` 和 `offsetHeight` 属性返回它们在屏幕上的 CSS 像素大小。这个大小包含元素边框和内边距，但不包含外边距。元素的 `offsetLeft` 和 `offsetTop` 属性返回元素的 x 和 y 坐标。对很多元素来说，这两个值都是文档坐标。但对定位元素的后代或者另一些元素（如表格单元）来说，这两个值是相对于祖先元素而非文档的坐标。而 `offsetParent` 属性保存着前述坐标值相对于哪个元素。这一组属性都是只读的。
+
+元素的 `clientWidth` 和 `clientHeight` 属性与 `offsetWidth` 和 `offsetHeight` 属性类似，只是它们不包含元素边框，只包含内容区及内边距。`clientLeft` 和 `clientTop` 属性没有多大用处，它们是元素内边距外沿到边框外沿的水平和垂直距离。一般来说，这两个值就等于左边框和上边框的宽度。这一组属性都是只读的。对于行内元素，这些属性的值全为 0。
+
+元素的 `scrollWidth` 和 `scrollHeight` 属性是元素内容区大小加上元素内边距，再加上溢出内容的大小。在内容适合内容区而没有溢出时，这两个属性等同于 `clientWidth` 和 `clientHeight`。但在有溢出时，这两个属性还包含溢出内容，因此它们的值大于 `clientWidth` 和 `clientHeight`。`scrollLeft` 和 `scrollTop` 是元素内容在元素视口中的滚动位移。与本节介绍的其他属性不同，`scrollLeft` 和 `scrollTop` 是可写属性，因此可以通过设置它们的值滚动元素中的内容（在多数浏览器中，Element 对象也跟 Window 对象一样有 `scrollTo()` 和 `scrollBy()` 方法，但并非所有浏览器都支持）。
+
+### 15.6 Web 组件
+
+HTML 是一种文档标记语言，为此也定义了丰富的标签。过去 30 年，HTML 已经变成 Web 应用描述用户界面的语言，但 `<input>` 和 `<button>` 等简单的 HTML 标签并不能满足现代 UI 设计的需要。Web 开发者可以凑合着使用它们，但必须以 CSS 和 JS 来增强这些 HTML 标签的外观和行为。
+
+很多 Web 开发者使用 React、Angular 等框架，这些框架支持创建可重用的用户界面组件。Web 组件是浏览器原生支持的替代这些框架的特性，主要涉及相对比较新的三个 Web 标准。这些 Web 标准允许 JS 使用新标签扩展 HTML，扩展后的标签就是自成一体的、可重用的 UI 组件。
+
+接下来几小节将展示如何在自己的网页中使用其他开发者定义的 Web 组件，然后解释构成 Web 组件的这三个技术，最后通过一个示例将这三个技术整合在一起。
+
+#### 15.6.1 使用 Web 组件
+
+Web 组件是在 JS 中定义的，因此要在 HTML 中使用 web 组件，需要包含定义该组件的 JS 文件。Web 组件是相对比较新的技术，经常以 JS 模块形式写成，因此需要在 HTML 中像下面这样包含 Web 组件：
+
+```js
+<script type="module" src="components/search-box.js">
+```
+
+Web 组件要定义自己的 HTML 标签名，但有一个重要的限制就是标签名必须包含一个连
+字符(这意味着未来的 HTML 版本可以增加没有连字符的新标签，而这些标签不会跟任
+何人的 Web 组件冲突)。要使用 Web 组件，只要像下面这样在 HTML 文件中使用其标
+签即可
+<search-box placeholder=Search."></search-box>
+Web 组件可以像常规 HTML 标签一样具有属性。你使用组件的文档应该告诉你它支持
+哪些属性。Web 组件不能使用自关闭标签定义，比如不能写成< search-box/>。你的
+HTML 文件必须既包含开标签也包含闭标签
+与常规 HTML 元素类似，有的 web 组件需要子组件，而有的 Web 组件不需要(也不显
+示)子组件。还有的 Web 组件可选地接收有标识的子组件，这些子组件会出现在命名的
+插槽”(slot)中。在图 15-3 展示并在示例 15-3 中实现的< search-box>组件，就使用
+插槽”传递要显示的两个图标。如果想在< search-box>中使用不同的图标，可以这样
+使用 HTML
+<search-box>
+simg src=images/search-icon， png" slot="left/>
+cimg src=images/canceL-icon png" slot="right"/
+</search-box>
+这个 slot 属性是对 HTML 的一个扩展，用于指定把哪个子元素放到哪里。而插槽的名
+字“lef”和“ight”是由这个 Web 组件定义的。如果你使用的组件支持插槽，其文档
