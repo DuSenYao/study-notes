@@ -316,6 +316,12 @@ title: JavaScript权威指南
       - [15.9.1 Audio() 构造函数](#1591-audio-构造函数)
       - [15.9.2 WebAudio APl](#1592-webaudio-apl)
     - [15.10 位置、导航与历史](#1510-位置-导航与历史)
+      - [15.10.1 加载新文档](#15101-加载新文档)
+      - [15.10.2 浏览历史](#15102-浏览历史)
+      - [15.10.3 使用 hashchange 事件管理历史](#15103-使用-hashchange-事件管理历史)
+      - [15.10.4 使用 pushState() 管理历史](#15104-使用-pushstate-管理历史)
+    - [15.11 网络](#1511-网络)
+      - [15.11.1 fetch()](#15111-fetch)
 
 <!-- /code_chunk_output -->
 
@@ -11974,3 +11980,238 @@ let numResults = parseInt(url.searchParams.get('n') || 10);
 ```
 
 除了可以通过 `window.location` 和 `document.location` 引用的 Location 对象，以及前面使用的 URL() 构造函数，浏览器也定义了 document.URL 属性。奇怪的是，这个属性的值并非 URL 对象，而只是一个字符串，也就是当前文档的 URL。
+
+#### 15.10.1 加载新文档
+
+如果给 `window.location` 或 `document.location` 赋值一个字符串，则该字符串将被解释为一个 URL，且浏览器会加载它，从而用新文档替换当前文档：
+
+```js
+window.location = 'http://www.oreilly.com';
+```
+
+也可以给 location 属性赋值相对 URL，浏览器会相对于当前 URL 解析它：
+
+```js
+document.location = 'page2.html'; // 加载下一页
+```
+
+简单的片段标识符也是一种特殊的 URL，但它不会导致浏览器加载新文档，只会把文档中 `id` 或 `name` 匹配该片段的元素滚动到浏览器窗口顶部。作为一个特例，片段标识符 `#top` 会让浏览器跳到文档顶部（假设没有元素有 id="top" 属性）：
+
+```js
+location = '#top'; // 跳到文档顶部
+```
+
+location 对象的个别属性是可写的，设置它们会改变 URL，也会导致浏览器加载新文档（或者如何设置的是 hash 属性，则会在当前文档中导航）
+
+```js
+document.location.path = 'pages/3.html'; // 加载一个新页面
+document.location.hash = 'TOC'; // 滚动到目录
+location.search = '?page=' + (page + 1); // 以新查询字符串重新加载文档
+```
+
+给 Location 对象的 `assign()` 方法传入一个新字符串也可以加载新页面。这样做的效果与给 location 属性赋值字符串相同，因此没有太大的意思。
+
+相对而言，Location 对象的 `replace()` 方法倒是非常有用。在给 `replace()` 传入一个字符串时，字符串会被当作 URL 解析，并导致浏览器加载新页面，跟使用 `assign()` 样。区别在于 `replace()` 会在浏览器的历史记录中替换当前文档。如果文档 A 中的脚本通过设置 `location` 属性或调用 `assign()` 加载了文档 B，然后用户单击了浏览器的 “后退” 按钮，浏览器会返回到文档 A。如果使用的是 `replace()`，则文档 A 会从浏览器历史中擦除。当用户单击 “后退” 按钮时，浏览器会返回显示文档 A 之前显示的文档。
+
+**在脚本无条件加载一个新文档时，相比 assign()，最好还是使用 replace()**。否则，“后退” 按钮会把浏览器带回最初的文档，而同一个脚本会再次触发加载新文档。假设页面有两个版本：一个使用 JS 增强的版本和一个不使用 JS 的静态版本。如果确定用户浏览器不支持想使用的 Web 平台 API，就可以使用 `location.replace()` 加载静态版本：
+
+```js
+// 如果浏览器不支持依赖的 JS API，则重定向到不使用 JS 的静态页面
+if (!isBrowserSupported()) location.replace('staticpage.html');
+```
+
+> **注意**：传给 replace() 的 URL 是相对 URL。相对 URL 是相对于它们所在的页面来解析的，就像在超链接中使用一样。
+
+除了 `assign()` 和 `replace()` 方法，Location 对象也定义了 `reload()` 方法，调用该方法会让浏览器重新加载当前文档。
+
+#### 15.10.2 浏览历史
+
+Window 对象的 `history` 属性引用的是窗口的 History 对象。History 对象将窗口的浏览历史建模为文档和文档状态的列表。History 对象的 `length` 属性是浏览历史列表中元素的数量。但出于安全考虑，脚本不能访问存储的 URL（如果可以访问，任何脚本都将可以窥探你的浏览历史）。
+
+History 对象的 `back()` 和 `forward()` 方法就像浏览器的 “后退” 和 “前进” 按钮，可以让浏览器在浏览历史中后退或前进一步。另一个方法 `go()` 接收一个整数参数，可以在历史列表中前进（正整数）或后退（负整数）任意个页面：
+
+```js
+history.go(-2); // 后退2步，如同单击两次后退按钮
+history.go(); // 重新加载当前页面的另一种方式
+```
+
+> 如果窗口包含子窗口（如 `<iframe>` 元素），子窗口的浏览历史会按时间顺序与主窗口历史交替。这意味着在主窗口中调用 `history.back()`，可能导致某个子窗口后退到前一个显示的文档，而主窗口则维持当前状态不变。
+
+History 对象可以追溯到 Web 早期，当时文档都是被动的，所有计算都在服务器中执行。今天，Web 应用经常动态生成或加载内容，显示新应用状态而并不真正加载新文档。这样的应用必须自己管理历史记录，才能让用户直观地使用 “后退” 和 “前进” 按钮（或等价手势），从应用的一个状态导航到另一个状态。有两种方式实现这个任务，接下来两节将分别介绍。
+
+#### 15.10.3 使用 hashchange 事件管理历史
+
+第一种管理浏览历史的技术是使用 `location.hash` 和 “hashchange” 事件。要理解这个技术需要明确以下关键事实：
+
+- `location.hash` 属性用于设置 URL 的片段标识符，通常用于指定要滚动到的文档区域的 ID。但 `location.hash` 不一定必须是元素 ID，也可以将它设置为任意字符串只要不是某个元素碰巧有该字符串 ID，浏览器就不会在设置 `hash` 属性时滚动。
+
+- 设置 `location.hash` 属性会更新地址栏中显示的 URL，而且更重要的是，还会在浏览器历史列表中添加一条记录。
+
+- 只要文档的片段标识符改变，浏览器就会在 Window 对象上触发 “hashchange” 事件。显式设置 `location.hash` 也会触发 “hashchange” 事件。而且，如前所述，对 Location 对象的这个修改会在浏览器的浏览历史中创建一条新记录。因此如果用户单击了 “后退” 按钮，浏览器会返回设置 `location.hash` 之前的 URL。但这意味着片段标识符又改变了，因此又会触发另一个 “hashchange” 事件。换句话说，只要可以为应用的每个可能的状态创建唯一的片段标识符，“hashchange” 事件就能够在用户向后或向前导航浏览历史时发送通知。
+
+要使用这种历史管理机制，需要把渲染应用 “页面” 必需的状态信息编码为一个可以作为片段标识符的短字符串。为此需要写一个函数把页面状态转换为一个字符串，再写个函数来解析该字符串并重建其代表的页面状态。
+
+写完这两个函数之后，剩下的事情就简单了。定义一个 `window.onhashchange` 监听函数（或使用 addEventlistener() 注册 “hashchange” 监听器），读取 `location.hash`，并将该字符串转换为应用的状态的表示，再采取必要步骤显示该应用的新状态。
+
+如果用户的交互会导致应用进入新状态，不要直接渲染新状态。而要先把新状态编码为一个字符串，并将 `location.hash` 设置为该字符串。这样就会触发 “hashchange” 事件，而为该事件注册的事件处理程序将会显示该新状态。使用这种迂回技术可以保证新状态被插入浏览历史，因而 “后退” 和 “前进” 按钮继续有效。
+
+#### 15.10.4 使用 pushState() 管理历史
+
+管理历史的第二种技术稍微有点复杂，但却没有 “hashchange” 事件那么绕。这种更可靠的历史管理技术是建立在 `history.pushState()` 方法和 “popstate” 事件基础上的。
+
+当 Web 应用进入一个新状态时，它会调用 `history.pushState()`，向浏览器历史中添加一个表示该状态的对象。如果用户单击 “后退” 按钮，浏览器会触发携带该保存的状态对象的 “popstate” 事件，应用使用该对象重建其之前的状态。除了保存的状态对象，应用也可以为每个状态都保存一个 URL，这样可以方便用户将 URL 加入书签和分享应用内部状态的链接。
+
+`pushState()` 的参数：
+
+- **第一个参数是一个对象，包含恢复当前文档状态所需的全部状态信息**。这个对象使用 HTML 的结构化克隆算法保存，该算法相比 `JSON.stringify()` 适用范围更广，而且支持 Map、Set 和 Date 对象，以及定型数组和 ArrayBuffer。
+
+- **第二个参数应该是与状态对应的标题字符串，但多数浏览器都不支持这个参数，所以应该只传一个空字符串**。
+
+- **第三个参数是一个可选的 URL**，该 URL 会立即在地址栏显示出来或者也会在用户通过 “后退” “前进” 按钮返回这个状态时在地址栏显示出来。相对 URL 会基于文档的当前地址解析。给每个状态都关联一个 URL 可以让用户收藏应用的内部状态。不过要记住，如果用户保存了这样一个书签，第二天又打开这个书签，不会收到这次访问的 “popstate” 事件，而是必须通过解析 URL 来恢复应用状态。
+
+除了 `pushState()` 方法，History 对象也定义了 `replaceState()`，它接收相同的参数，但会替换当前历史状态，而不是向浏览历史中添加新状态。当应用使用 `pushState()` 的首次加载时，一般最好调用 `replaceState()` 为应用的初始状态定义一个状态对象。
+
+在用户使用 “后退” 或 “前进” 按钮导航到保存的历史状态时，浏览器会在 Window 对象上触发 “popstate” 事件。与之关联的事件对象有一个名为 `state` 的属性，其中包含通过 `pushState()` 传入的状态对象的副本（又一次结构化克隆）。
+
+**结构化克隆算法**
+`history.pushState()` 方法不使用 `JSON.stringify()` 来序列化状态数据，而是使用一种更可靠的序列化技术叫作 “结构化克隆算法”。这个算法由 HTML 标准定义，后面介绍的其他一些浏览器 API 也会用到。
+
+结构化克隆算法可以涵盖 `JSON.stringify()` 能够序列化的一切值，除此之外，它还支持很多其他 JS 类型的序列化。比如 Map、Set、Date、 RegExp 和定型数组。而且，它还能处理包含循环引用的数据结构。不过结构化克隆算法不能序列化函数和类。在克隆对象时，它不会复制原型对象、获取函数和设置函数，也不会复制不可枚举的属性。尽管结构化克隆算法可以克隆大多数内置 JS 类型，但不能复制宿主环境定义的类型，例如文档的 Element 对象。
+
+这意味着传给 history.pushState() 的状态对象不必局限于能够被 `JSON.stringify()` 序列化的对象、数组和原始值。
+
+> **注意**：如果传入自己定义的某个类的实例，则该实例被当作普通 JS 对象被序列化，因此会丢掉其原型。
+
+如下图示，示例 15-9 是一个简单的猜数 Web 应用。这个应用使用 pushState() 保存自己的历史，允许用户 “后退” 查看或撤销自己的猜测。
+
+![猜数游戏](./image/猜数游戏.png)
+
+示例 15-9：使用 pushState() 管理历史状态 [pushState.html](./examples/pushState.html)
+
+### 15.11 网络
+
+每次打开一个网页时，浏览器都会（使用 HTTP 或 HTTPS 协议）发送网络请求，请求 HTML 文档，也请求该文档依赖的图片、字体、脚本和样式表。除了根据用户操作发送网络请求，浏览器也暴露了相关的 JS API。
+
+本节介绍 3 个网络 API：
+
+- 基于期约的 `fetch()` 方法可以发送 HTTP 和 HTTPS 请求。`fetch()` API 让发送基本的 GET 请求变得很简单，同时也支持全套的特性，能够满足几乎所有 HTTP 用例。
+
+- SSE（Server-Send Event，服务器发送事件）API 是为 HTTP “轮询” 技术提供的基于事件的便利接口，让 Web 服务器可以一直保持连接打开，以便随时向客户端发送数据。
+
+- WebSocket 是一个网络协议，不是 HTTP 但设计时考虑了与 HTTP 互操作。它定义了一个异步消息传递 API，即客户端和服务器可以通过与 TCP 网络套接口类似的方式相互发送和接收消息。
+
+#### 15.11.1 fetch()
+
+要发送简单的 HTTP 请求，使用 `fetch()` 只需三步：
+
+1. 调用 `fetch()`，传入要获取内容的 URL;
+
+2. 在 HTTP 响应开始到达时取得第 1 步异步返回的响应对象，然后调用这个响应对象的某个方法，读取响应体
+
+3. 取得第 2 步异步返回的响应体，按需要处理它
+
+> `fetch()` API 完全是基于期约的，因为涉及两个异步环节，所以使用 `fetch()` 时通常要写两个 then() 或两个 await 表达式。
+
+下面这个例子使用了 fetch() 发送请求，并使用 then() 获取服务器返回的 JSON 响应：
+
+```js
+// 发送 HTTP（或 HTTPS）请求
+fetch('/api/users/current')
+  .then(response => response.json()) // 把响应体解析为 JSON 对象
+  .then(currentUser => {
+    // 然后处理解析得到的对象
+    displayUserInfo(currentUser);
+  });
+```
+
+下面是一个类似的例子，但使用了 async 和 await 关键字，而且 API 返回的是纯文本，不是 JSON 对象：
+
+```js
+async function isServiceReady() {
+  let response = await fetch('/api/service/status');
+  let body = await response.text();
+  return body === 'ready';
+}
+```
+
+**HTTP 状态码、响应头和网络错误**
+上面展示的三步流程没有包含任何错误处理代码。下面是一个更接近实际的版本：
+
+```js
+fetch('/api/users/current') // 发送 HTTP（或 HTTPS）请求
+  .then(response => {
+    // 得到响应后，首先检查响应对象的成功码和预期类型
+    if (response.ok && response.headers.get('Content-Type') === 'application/json') {
+      return response.json(); // 返回包含响应体的期约
+    } else {
+      //或者抛出错误
+      throw new Error(`Unexpected response status ${response.status} or content type`);
+    }
+  })
+  // 当 response.json() 返回的期约解决后
+  .then(currentUser => {
+    displayUserInfo(currentUser); // 对解析得到的对象进行处理
+  })
+  // 或者，如果发生了什么问题，直接把错误打印出来
+  .catch(error => {
+    // 如果用户的浏览器离线了，fetch() 本身会拒绝期约，如果服务器返回了意料之外的响应，上面则会抛出错误
+    console.log('Error while fetching current user: ', error);
+  });
+```
+
+`fetch()` 返回的期约解决为一个 Response 对象。这个对象的 `status` 属性是 HTTP 状态码，如表示成功的 200 或表示 “Not Found” 的 404（`statusText` 中则是与数值状态码对应的标准英文描述）。更方便的是 Response 对象的 `ok` 属性，它在 `status` 为 200 或在 200 和 299 之间时是 true，在其他情况下是 false。
+
+当服务器开始发送响应时，`fetch()` 只要一收到 HTTP 状态码和响应头就会解决它的期约，但此时通常还没收到完整的响应体。虽然响应体尚不完整，但已经可以在流程的第二步检查头部了。Response 对象的 `headers` 属性是一个 Headers 对象。使用它的 `has()` 方法可以测试某个头部是否存在，使用它的 `get()` 方法可以取得某个头部的值。HTTP 头部的名字是不区分大小写的，因此可以给这两个方法传入小写甚至混合大小写形式的头部名。
+
+Headers 对象也是一个可迭代对象，需要时也可以这样用：
+
+```js
+fetch(url).then(response => {
+  for (let [name, value] of response.headers) {
+    console.log(`${name}: ${value}`);
+  }
+});
+```
+
+如果浏览器响应了 fetch() 请求，那么返回的期约就会以一个 Response 对象兑现，包括响应 404 Not Found 和 500 Internal Server Error。**fetch() 只在自己根本联系不到服务器时才会拒绝自己返回的期约**。如果用户的计算机断网了、服务器不响应了，或者 URL 指定的主机不存在，才会发生这种情况。因为这些情况对任何网络请求都可能发生，所以最好在任何 fetch() 调用后面都包含一个 catch() 子句。
+
+**设置请求参数**
+有时候，除了 URL 还需要在发送请求时传递额外的参数。此时可以在 URL 后面加个 `?`，然后以名/值对形式传递参数。[URL 和 URLSearchParams 类](#119-url-api)可以让构建这种形式的 URL 更方便，而 fetch() 函数也接收 URL 对象作为其第一个参数，因此可以像下面这样在 fetch() 请求中包含请求参数：
+
+```js
+async function search(term) {
+  let url = new URL('/api/search');
+  url.searchParams.set('q', term);
+  let response = await fetch(url);
+  if (!response.ok) throw new Error(response.statusText);
+  let resultsArray = await response.json();
+  return resultsArray;
+}
+```
+
+**设置请求头部**
+有时候，还需要为 fetch() 请求设置一些头部。比如，如果要请求的 API 校验凭据，可能需要包含 Authorization 头部，在其中附上相应的凭据。为此，可以使用两个参数版的 fetch()。与以前一样，第一个参数还是一个用于指定 URL 的字符串或 URL 对象。第二个参数用于提供额外选项，包括请求头部：
+
+```js
+let authHeaders = new Headers();
+// 除非建立的是 HTTPS 连接，否则不要使用 Basic 认证。
+authHeaders.set('Authorization', `Basic ${btoa(`${username}:${password}`)}`);
+fetch('/api/users/', { headers: authHeaders })
+  .then(response => response.json()) // 省略错误处理代码
+  .then(usersList => displayAllUsers(usersList));
+```
+
+可以在 fetch() 的第二个参数中指定很多其他选项。另一种替代给 fetch() 传两个参数的方法是把同样的两个参数传给 Request() 构造函数，然后再将创建的 Request 对象传给 fetch()：
+
+```js
+let request = new Request(url, { headers });
+fetch(request).then(response => response.json());
+```
+
+**解析响应体**
+在前面演示的发送 fetch() 请求的三步流程中，第二步结束时调用了 Response 对象的 `json()` 或 `text()` 方法，并返回它们返回的期约对象。然后第三步从期约解决开始，直接拿到了响应体解析后的 JSON 对象或文本字符串。
+
+这应该是两种最常见的情况，但并不是获取服务器响应体的全部方式。除了 `json()` 和 `text()`，Response 对象还有以下几个方法：
+
+arrayBuffer()
+: 这个方法返回一个期约，解决为一个 ArrayBuffer。在响应包含二进制数据时可以使用这个方法，基于得到的 ArrayBuffer 创建一个[定型数组](#112-定型数组与二进制数据)或一个 [DataView 对象](#1125-date-view-与字节序)，然后再读取二进制数据。

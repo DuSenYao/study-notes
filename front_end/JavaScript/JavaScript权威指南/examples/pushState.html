@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pushState</title>
+    <style lang="css">
+      body {
+        height: 250px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-evenly;
+      }
+      #heading {
+        font: bold 36px sans-serif;
+        margin: 0;
+      }
+      #container {
+        border: solid black 1px;
+        height: 1em;
+        width: 80%;
+      }
+      #range {
+        background-color: green;
+        margin-left: 0%;
+        height: 1em;
+        width: 100%;
+      }
+      #input {
+        display: block;
+        font-size: 24px;
+        width: 60%;
+        padding: 5px;
+      }
+      #playagain {
+        font-size: 24px;
+        padding: 10px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="heading">猜数字</h1>
+    <!-- 对尚未被排除的数字可视化表示 -->
+    <div id="container"><div id="range"></div></div>
+    <!-- 用户在这里输入自己猜测的数字 -->
+    <input id="input" type="text" />
+    <!-- 这个按钮不加搜索字符串重载。隐藏到游戏结束。 -->
+    <button id="playagain" hidden onclick="location.search='';">重玩</button>
+
+    <script>
+      /**
+       * GameState 类的实例表示猜数游戏的一个内部状态
+       * 这个类定义了静态工厂方法，用于从不同来源初始化游戏状态，还定义了一个方法基于新猜测更新状态，以及另一个方法基于当前状态修改文档
+       */
+      class GameState {
+        // 这是用于创建新游戏的工厂函数
+        static newGame() {
+          let s = new GameState();
+          s.secret = s.randomInt(0, 100); // 整数：0 < n < 100
+          s.low = 0; // 猜测必须大于它
+          s.high = 100; // 猜测必须小于它
+          s.numGuesses = 0; // 已经猜了多少次
+          s.guess = null; // 上一次猜的是什么
+          return s;
+        }
+
+        // 在通过 history.pushState() 保存游戏状态时，保存的只是一个简单的 JS 对象而不是 GameState 的实例
+        // 因此这个工厂函数会基于从 popstate 事件获得的对象重建 GameState 对象
+        static fromStateobject(stateObject) {
+          let s = new GameState();
+          for (let key of Object.keys(stateObject)) {
+            s[key] = stateObject[key];
+            return s;
+          }
+        }
+
+        // 为支持收藏书签，需要将任意游戏状态编码为 URL
+        // 使用 URLSearchParams 很容易做到
+        toURL() {
+          let url = new URL(window.location);
+          url.searchParams.set('l', this.low);
+          url.searchParams.set('h', this.high);
+          url.searchParams.set('n', this.numGuesses);
+          url.searchParams.set('g', this.guess);
+          // 注意，不能在 URL 中编码秘密数值，否则会泄露秘密
+          // 如果用户收藏了包含这些参数的书签然后再打开它，会重新从最低值和最高值之间取一个随机数
+          return url.href;
+        }
+
+        // 这个工厂函数创建一个新 Gamestate 对象，并使用指定的URL初始化它。
+        // 如果URL不包含预期的参数，或者如果参数被改动过，则返回 null
+        static fromURL(url) {
+          let s = new GameState();
+          let params = new URL(url).searchParams;
+          s.low = parseInt(params.get('l'));
+          s.high = parseInt(params.get('h'));
+          s.numGuesses = parseInt(params.get('n'));
+          s.guess = parseInt(params.get('g'));
+
+          // 如果 URL 缺少任何必需的参数或者解析后不是整数，那么就返回 null
+          if (isNaN(s.low) || isNaN(s.high) || isNaN(s.numGuesses) || isNaN(s.guess)) {
+            return null;
+          }
+          // 每次从 URL 恢复游戏时，都在正确的范围内选择一个新的秘密数值
+          s.secret = s.randomInt(s.low, s.high);
+          return s;
+        }
+
+        // 返回一个整数 n：min < n < m
+        randomInt(min, max) {
+          return min + Math.ceil(Math.random() * (max - min - 1));
+        }
+
+        // 修改文档显示游戏的当前状态
+        render() {
+          let heading = document.querySelector('#heading'); // 顶部的 <h1>
+          let range = document.querySelector('#range'); // 显示猜测范围
+          let input = document.querySelector('#input'); // 猜测输入字段
+          let playagain = document.querySelector('#playagain');
+
+          // 更新游戏和页面的标题
+          heading.textContent =
+            document.title = `答案在 ${this.low} 和 ${this.high} 之间`;
+
+          //更新数值的可视化范围
+          range.style.marginLeft = `${this.low}%`;
+          range.style.width = `${this.high - this.low}%`;
+
+          // 保证输入字段为空且获得焦点
+          input.value = '';
+          input.focus();
+
+          // 根据用户最后一次猜测显示反馈
+          // 因为输入字段为空，所以应该显示占位符
+          if (this.guess === null) {
+            input.placeholder = '输入猜测值，按 Enter';
+          } else if (this.guess < this.secret) {
+            input.placeholder = `${this.guess} 太低了。再猜猜看`;
+          } else if (this.guess > this.secret) {
+            input.placeholder = `${this.guess} 太高了。再猜猜看`;
+          } else {
+            input.placeholder = document.title = `${this.guess} 是正确的!`;
+            heading.textContent = `猜了 ${this.numGuesses} 次!`;
+            playagain.hidden = false;
+          }
+        }
+
+        // 基于用户的猜测更新游戏状态
+        // 如果状态更新成功返回 true，否则返回 false
+        updateForGuess(guess) {
+          // 如果是数值且在正确范围内
+          if (guess > this.low && guess < this.high) {
+            // 基于这次猜测的数值更新状态对象
+            if (guess < this.secret) this.low = guess;
+            else if (guess > this.secret) this.high = guess;
+            this.guess = guess;
+            this.numGuesses++;
+            return true;
+          } else {
+            // 本次猜测无效：通知用户但不更新状态
+            alert(`请输入一个大于 ${this.low} 并且小于 ${this.high} 的整数`);
+            return false;
+          }
+        }
+      }
+
+      // 有了 GameState 类的定义，只需在适当的时机初始化、更新、保存和渲染状态对象即可启动游戏
+      // 首次加载时，尝试从 URL 取得游戏状态，如果失败则开始新游戏
+
+      // 如果用户收藏过游戏，则可以通过 URL 恢复该游戏。但如果加载的页面没有查询参数，则直接启动新游戏
+      let gamestate = GameState.fromURL(window.location) || GameState.newGame();
+
+      // 把游戏的初始状态保存到浏览器历史，但在这个初始页面中使用 replaceState() 而不是 pushState()
+      history.replaceState(gamestate, '', gamestate.toURL());
+
+      // 显示初始状态
+      gamestate.render();
+
+      // 当用户输入猜测时，根据他们猜测的数值更新游戏状态
+      // 然后把新状态保存到浏览器历史，并渲染新状态
+      document.querySelector('#input').onchange = event => {
+        if (gamestate.updateForGuess(parseInt(event.target.value))) {
+          history.pushState(gamestate, '', gamestate.toURL());
+        }
+        gamestate.render();
+      };
+
+      // 如果用户在历史中后退或前进，则可以在 window 对象上收到 popstate 事件
+      // 并在事件处理程序中收到当初通过 pushState() 保存的状态对象的副本，每当此时，就渲染新状态 state
+      window.onpopstate = event => {
+        gamestate = Gamestate.fromStateObject(event.state); // 恢复状态
+        gamestate.render(); // 并显示它
+      };
+    </script>
+  </body>
+</html>
