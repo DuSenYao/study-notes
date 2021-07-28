@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>未剪切的描边和剪切的填充</title>
+  </head>
+  <body>
+    <canvas height="400" width="400"></canvas>
+
+    <script>
+      window.onload = () => {
+        // 假设只有一个画布，获得其上下文对象以便画图
+        let c = document.querySelector('canvas').getContext('2d');
+        // 定义一些绘制属性
+        c.font = 'bold 60pt sans-serif'; // 大字体
+        c.lineWidth = 2; // 细线条
+        c.strokeStyle = '#000'; // 黑描边
+
+        // 描绘一个矩形和一些文本
+        c.strokeRect(175, 25, 50, 325); // 在中间画一个垂直竖条
+        c.strokeText('<canvas>', 15, 330); // 注意是 strokeText()，不是 fillText()
+
+        // 定义一个复杂的路径，其内部在外面
+        polygon(c, 3, 200, 225, 200); // 大三角形
+        polygon(c, 3, 200, 225, 100, 0, true); // 内部反向绘制的小三角形
+
+        // 把这个路径定义为剪切区域
+        c.clip();
+
+        // 用5像素的线描绘这条路径，完全位于剪切区域内
+        c.lineWidth = 10; // 10 像素中有一半将被剪切掉
+        c.stroke();
+
+        // 填充矩形和文本位于剪切区域内部的部分
+        c.fillStyle = '#aaa';
+        c.fillRect(175, 25, 50, 325);
+        c.fillStyle = '#888';
+        c.fillText('<canvas>', 15, 330); //填充文本
+      };
+
+      /*
+       * 示例 15-5：使用 moveTo()、lineTo() 和 closePath() 绘制普通多边形
+       * 定义 n 边的普通多边形，以(x, y) 为中心，r 为半径
+       * 顶点沿圆形周长间隔相同的距离
+       *第一个顶点放在正上方，或者放在指定的角度上顺时针旋转，除非最后一个参数为 true
+       */
+      function polygon(c, n, x, y, r, angle = 0, counterclockwise = false) {
+        c.moveTo(
+          x + r * Math.sin(angle), // 从第一个顶点开始一条新子路径
+          y - r * Math.cos(angle)
+        ); // 使用三角函数计算位置
+        let delta = (2 * Math.PI) / n; // 顶点间的角度距离
+        for (let i = 1; i < n; i++) {
+          // 对剩下的每个顶点
+          angle += counterclockwise ? -delta : delta; // 调整角度
+          c.lineTo(
+            x + r * Math.sin(angle), // 添加到下一个顶点的线
+            y - r * Math.cos(angle)
+          );
+        }
+        c.closePath(); // 把最后一个顶点连接到第一个顶点
+      }
+    </script>
+  </body>
+</html>

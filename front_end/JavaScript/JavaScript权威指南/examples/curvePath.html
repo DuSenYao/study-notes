@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>curvePath</title>
+  </head>
+  <body>
+    <canvas width="900" height="200"></canvas>
+    <script>
+      // 将角度转换为弧度的辅助函数
+      function rads(x) {
+        return (Math.PI * x) / 180;
+      }
+
+      window.onload = () => {
+        // 取得文档画布元素的上下文对象
+        let c = document.querySelector('canvas').getContext('2d');
+
+        // 定义一些图形属性以绘制曲线
+        c.fillStyle = '#aaa'; // 填充灰色
+        c.lineWidth = 2; // 2 像素宽的黑（默认）线
+
+        // 画一个圆形，没有当前点，因此只绘制圆形，没有从当前点到圆形起点的直线
+        c.beginPath();
+        // 圆心位于 (75，100)，半径 50
+        c.arc(75, 100, 50, 0, rads(360), false); // 顺时针从 0 到 360 度
+        c.fill(); // 填充这个圆形
+        c.stroke(); // 描绘出其轮廓
+
+        // 接着以相同方式画一个椭圆形
+        c.beginPath(); // 开启一段新路径，不跟圆形连接
+        // 圆心、半径和旋转度数、起始角度、终止角度、方向
+        c.ellipse(200, 100, 50, 35, rads(15), 0, rads(360), false);
+
+        // 画一个扇形。角度按顺时针从 x 轴正向度量
+        // 注意 arc() 会从当前点向弧形起点添加一条线
+        c.moveTo(325, 100); // 从圆形的圆心开始
+        // 圆心和半径、从 -60 度开始，转到 0 度、逆时针
+        c.arc(325, 100, 50, rads(-60), rads(0), true);
+        c.closePath(); // 再向圆心添加一条线
+
+        // 类似的扇形，稍微有点偏移，方向相反
+        c.moveTo(340, 92);
+        c.arc(340, 92, 42, rads(-60), rads(0), false);
+        c.closePath();
+
+        // 使用 arcTo() 来画圆角。这里绘制一个方形其左上角点位于 (400, 50)，各圆角半径不同
+        c.moveTo(450, 50); // 从顶边中间开始
+        c.arcTo(500, 50, 500, 150, 30); // 添加部分顶边和右上角
+        c.arcTo(500, 150, 400, 150, 20); // 添加右边和右下角
+        c.arcTo(400, 150, 400, 50, 10); // 添加底边和左下角
+        c.arcTo(400, 50, 500, 50, 0); // 添加左边和左上角
+        c.closePath(); // 关闭路径添加剩下的顶边
+
+        // 二次贝塞尔曲线：一个控制点
+        c.moveTo(525, 125); // 从这里开始
+        c.quadraticCurveTo(550, 75, 625, 125); // 绘制曲线到(625, 125)
+        c.fillRect(550 - 3, 75 - 3, 6, 6); // 标记控制点(550, 75)
+
+        // 三次贝塞尔曲线
+        c.moveTo(625, 100); // 起点为 (625, 100)
+        c.bezierCurveTo(645, 70, 705, 130, 725, 100); // 画曲线到 (725, 100)
+        c.fillRect(645 - 3, 70 - 3, 6, 6); // 标记控制点
+        c.fillRect(705 - 3, 130 - 3, 6, 6);
+
+        // 最后，填充曲线并描绘其轮廓
+        c.fill();
+        c.stroke();
+      };
+    </script>
+  </body>
+</html>

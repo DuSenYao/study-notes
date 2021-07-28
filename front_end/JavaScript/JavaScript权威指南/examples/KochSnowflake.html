@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Koch Snowflake</title>
+  </head>
+  <body>
+    <canvas width="600" height="200"></canvas>
+
+    <script>
+      // 示例 15-7：通过变换绘制科赫雪花
+      let deg = Math.PI / 180; // 用于将角度转换为弧度
+      // 在上下文 c 上绘制 n 级科赫雪花分形
+      // 左下角位于点(x,y)，边长为 len
+      function snowflake(c, n, x, y, len) {
+        c.save(); // 保存当前变换
+        c.translate(x, y); //平移原点到起点
+        c.moveTo(0, 0); // 在新原点开始一条新子路径
+        leg(n); // 绘制雪花的第一条边
+        c.rotate(-120 * deg); // 逆时针旋转120度
+        leg(n); // 绘制第二条边
+        c.rotate(-120 * deg); // 再旋转一次
+        leg(n); // 绘制后一条边
+        c.closePath(); // 关闭子路径
+        c.restore(); // 恢复原始变换
+
+        // 绘制 n 级科赫雪花的一条边
+        // 这个函数把自己绘制的这条边的终点作为当前点并变换坐标系，以便当前点位于坐标 (0,0) 点
+        // 这样绘制一条边之后，就可以调用 rotate()
+        function leg(n) {
+          c.save(); // 保存当前变换
+          // 非递归的情形
+          if (n === 0) {
+            c.lineTo(len, 0); // 只画一条水平线
+          } else {
+            // 递归的情形：给4条边
+            c.scale(1 / 3, 1 / 3); // 子边是当前边的 1/3
+            leg(n - 1); // 递归绘制第一条子边
+            c.rotate(60 * deg); // 顺时针旋转 60 度
+            leg(n - 1); // 绘制第二条子边
+            c.rotate(-120 * deg); // 反向旋转120度
+            leg(n - 1); // 绘制第三条子边
+            c.rotate(60 * deg); // 再转回原始方向
+            leg(n - 1); // 最后一条子边
+          }
+          c.restore(); // 恢复变换
+          c.translate(len, 0); // 但平移让边的终点变成(0,0)
+        }
+      }
+
+      window.onload = () => {
+        let c = document.querySelector('canvas').getContext('2d');
+        snowflake(c, 0, 25, 125, 125); // 0 级雪花是一个三角形
+        snowflake(c, 1, 175, 125, 125); // 1 级雪花是一个六角星
+        snowflake(c, 2, 325, 125, 125);
+        snowflake(c, 3, 475, 125, 125);
+        snowflake(c, 4, 625, 125, 125); // 4 级雪花看起来已经非常像雪花了
+        c.stroke(); // 描绘出这个复杂图形的路径
+      };
+    </script>
+  </body>
+</html>
