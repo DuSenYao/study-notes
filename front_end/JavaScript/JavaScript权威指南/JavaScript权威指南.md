@@ -12215,3 +12215,232 @@ fetch(request).then(response => response.json());
 
 arrayBuffer()
 : 这个方法返回一个期约，解决为一个 ArrayBuffer。在响应包含二进制数据时可以使用这个方法，基于得到的 ArrayBuffer 创建一个[定型数组](#112-定型数组与二进制数据)或一个 [DataView 对象](#1125-date-view-与字节序)，然后再读取二进制数据。
+
+blob()
+: 这个方法返回一个期约，解决为一个 Blob 对象。Blob，它是 “Binary Large Object”（二进制大对象）的意思，在需要处理大量二进制数据的时候会用到。把响应体转换为 Blob 时，浏览器实现可能会将响应数据流式写入一个临时文件，然后返回一个表示该临时文件的 Blob 对象。因此，Blob 对象不允许像 ArrayBuffer 那样随机访问响应体。拿到一个 Blob 后，可以通过 `URL.createObjectURL()` 创建个引用它的 URL，或者使用基于事件的 FileReader API 以字符串或 ArrayBuffer 的形式异步获取它的内容。有些浏览器也定义了基于期约的 `text()` 和 `arrayBuffer()` 方法，为获取 Blob 的内容提供了直接的手段。
+
+formData()
+: 这个方法返回一个期约，解决为一个 FormData 对象。如果 Response 响应体是以 “multipart/form-data” 格式编码的，应该使用这个方法。这种编码格式常见于向服务器发送的 POST 请求中，在服务器响应中并不常见，所以这个方法不太常用。
+
+**流式访问响应体**
+除了分别以某种形式返回完整响应体的 5 个异步响应方法，还可以流式访问响应体。在需要分块处理通过网络接收到的响应时可以采取这种方式。不过，流式访问响应体也可以用于显示进度条，以便用户看到下载进度。
+
+Response 对象的 `body` 属性是一个 ReadableStream 对象。如果已经调用了 `text()` 或 `json()` 等读取、解析和返回响应体的方法，那么 `bodyUsed` 属性会变成 true，表示 body 流已经读完了。如果 `bodyUsed` 属性是 false，那就意味着该流尚未被读取。此时，可以在 `response.body` 上调用 `getReader()` 获取流读取器对象，然后通过这个读取器对象的 `read()` 方法异步从流中读取文本块。这个 `read()` 方法返回一个期约，解决为一个带有 `done` 和 `value` 属性的对象。如果响应体整个都读完了或者流被关闭了，`done` 会变成 true。而 `value` 要么是下一个 Uint8Array 块，要么会在没有更多块时变成 undefined。如果使用 async 和 await，流式 API 还算简单直观。如果以原始期约形式使用它，可能会复杂得吓人。
+
+示例 15-10 通过定义一个 streamBody() 函数演示了这个 API。假设想下载一个大 JSON 文件，并向用户报告下载进度。此时不能使用 Response 对象的 json() 方法，但可以使用这个 steamBody() 函数，如下所示（假设已经定义了一个 `updateProgress()` 函数，可以用它设置 HTML `<progress>` 元素的 value 属性）：
+
+```js
+fetch('big.json')
+  .then(response => streamBody(response, updateProgress))
+  .then(bodyText => JSON.parse(bodyText))
+  .then(handleBigJSONObject);
+```
+
+这个 streamBody() 函数可以像示例 15-10 所示的那样实现。
+
+```js
+/**
+ * 示例 15-10：流式访问 fetch() 请求的响应体
+ * 一个流式读取 fetch() 请求返回 Response 对象的异步函数，以 Response 对象作为第一个参数，后面是两个可选的回调。
+ *
+ * 如果指定了一个函数作为第二个参数，则 reportProgres 回调对于接收到的每个块都会被调用一次。
+ * 调用时传入的第一个参数是已经接收到的总字节数。第二个参数是一个介于 0 和 1 之间的值，用于说明下载进度如何。
+ * 如果 Response 对象没有 “Content-Length” 头部，那么这第二个参数将始终是 NaN
+ *
+ * 如果想在接收到块时处理其中的数据，可以指定一个函数作为第三个参数。每个块都会以 Unit8Array 对象形式传给这个名为 processChunk 的回调
+ * streamBody() 返回一个期约，解决为一个字符串。如果提供了 processChunk 回调，则这个字符串将是拼接该回调返回值得到的结果。
+ * 否则，这个字符串就是将每个块转换为 UTF-8 字符串后拼接起来得到的结果
+ */
+async function streamBody(response, reportProgress, processChunk) {
+  // 期待接收多少字节，或者如果没有头部就是 NaN
+  let expectedBytes = parseInt(response.headers.get('Content-Length'));
+  let bytesRead = 0; // 已经接收了多少字节
+  let reader = response.body.getReader(); // 通过这个函数读取字节
+  let decoder = new TextDecoder('utf-8'); // 用于将字节转换为文本
+  let body = ''; // 已经读取的文本
+  // 循环直到在下面退出
+  while (true) {
+    let { done, value } = await reader.read(); // 读取一块数据
+    // 如果得到一个字节数组：
+    if (value) {
+      // 如果传了这个回调
+      if (processChunk) {
+        let processed = processChunk(value); // 则用回调处理数据
+        if (processed) {
+          body += processed;
+        }
+      } else {
+        // 否则，把字节转换
+        body += decoder.decode(value, { stream: true }); // 为文本
+      }
+
+      // 如果传了进度回调
+      if (reportProgress) {
+        bytesRead += value.length; // 则调用它报告进度
+        reportProgress(bytesRead, bytesRead / expectedBytes);
+      }
+    }
+    // 如果这是最后一个块
+    if (done) {
+      break; // 则退出循环
+    }
+  }
+  return body; // 返回累积的响应文本
+}
+```
+
+> 流式 API 还有可能会改进。比如，有计划要将 ReadableStream 对象变成异步可迭代对象，以便在 for/await 循环中使用。
+
+**指定请求方法和请求体**
+如果想使用不同的请求方法（如 POST、PUT 或 DELETE），可以直接使用两个参数版的 fetch()，传入带 `method` 参数的选项对象：
+
+```js
+fetch(url, { method: 'POST' })
+  .then(r => r.json())
+  .then(handleResponse);
+```
+
+POST 和 PUT 请求通常都有一个请求体，该请求体包含要发给服务器的数据。只要 method 方法不是 GET 或 HEAD（这两个方法不支持请求体），都可以在选项对象中设置 `body` 属性指定请求体：
+
+```js
+fetch(url, {
+  method: 'POST',
+  body: 'hello world'
+});
+```
+
+在指定请求体时，浏览器会自动添加合适的 “Content-Length” 请求头。如果请求体中是字符串，浏览器默认的 “Content-Type” 头部是“textplain;charset=UTF-8”。如果也指定一个字符串请求体，那可能需要覆盖这个头部值为它指定 “text/html” 或 “application/json” 等更具体的类型：
+
+```js
+fetch(url, {
+  method: 'POST',
+  headers: new Headers({ 'Content-Type': 'application/json' }),
+  body: JSON.stringify(requestBody)
+});
+```
+
+传给 fetch() 的选项对象的 `body` 属性不一定是字符串值。如果有保存在定型数组或 DataView 对象或 ArrayBuffer 中的二进制数据，也可以将 `body` 属性设置为相应的值，并指定恰当的 “Content-Type” 头部。如果是 Blob 中的二进制数据，可以简单地将 `body` 设置为该 Blob。Blob 自身有一个 `type` 属性，用于标明自己的上下文类型，而这个属性的值会用作 “Content-Type” 头部的默认值。
+
+对于 POST 请求，常见的做法是在请求体中传入一组名/值参数（而不是将它们编码后作为查询参数附在 URL 后面）。为此有两种做法：
+
+- 可以通过 URLSearchParams（[示例](#119-url-api)）指定参数的名和值，然后把这个 URLSearchParams 对象作为 `body` 属性的值。这样做，请求体将被设置为一个类似 URL 查询参数的字符串，而 “Content-Type” 头部也会自动被设置为 “application/x-www-form-urlencode;charset=UTF8”。
+
+- 如果使用 FormData 对象指定参数的名和值，则请求体将使用更冗余的多部分编码格式，而 “Content-Type” 也将被设置为 “multipart/form-data;boundary==···”，省略号代表与请求体匹配的边界字符串。FormData 对象特别适合上传长内容，或者 File、Blob 这样可能分别有自己特定 “Content-Type” 的对象。可以通过把一个 `<from>` 元素传给 FormData() 构造函数来创建 FormData 对象，并通过其中的值初始化 FormData 对象。但是也可以调用 FormData() 构造函数而不传参数，来创建 “multipart/form-data” 请求体，然后再使用 `set()` 和 `append()` 方法来初始化它所表示的名/值对。
+
+**通过 fetch() 上传文件**
+从用户计算机向服务器上传文件是一个常见的任务，可以通过将 FormData 对象作为请求体来实现。获得 File 对象的一个常用方式是在网页上显示<input type="file"> 元素，然后监听该元素的 “change” 事件。当 “change” 事件发生时，这个输入元素的 files 数组应该至少包含一个 File 对象。File 对象也可以通过 HTML 的拖放 API 获取。也可以从传递给事件监听器（作用于 “drop” 事件）的事件对象的 `dataTransfer.files` 数组获取文件。
+
+另外也要记住，File 对象是 Blob 的一种，有时候上传 Blob 比较有用。假设要写一个 Web 应用，允许用户在一个 `<canvas>` 元素上画画，那么可以使用类似以下代码把用户画的画以 PNG 文件形式上传：
+
+```js
+// canvas.toBlob() 函数是基于回调的
+// 而这是对该方法基于期约的一个封装
+async function getCanvasBlob(canvas) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(resolve);
+  });
+}
+
+// 这个函数可以基于画布上传 PNG 文件
+async function uploadCanvasImage(canvas) {
+  let pngBlob = await getCanvasBlob(canvas);
+  let formdata = new FormData();
+  formdata.set('canvasimage', pngBlob);
+  let response = await fetch('/upload', { method: 'POST', body: formdata });
+  let body = await response.json();
+}
+```
+
+**跨源请求**
+多数情况下，在 Web 应用中都是使用 fetch() 从自己的服务器请求数据。这种请求也被称为同源请求，因为传给 fetch() 的 URL 与包含发送请求脚本的文档是同源的（协议、主机名及端口都相同）。
+
+出于安全考虑，浏览器通常不允许跨源网络请求（跨源请求图片和脚本是例外）。不过，利用 CORS（Cross-Origin Resource Sharing，跨源资源共享）可以实现安全的跨源请求。在通过 fetch() 请求跨源 URL 时，浏览器会为请求添加一个 “Origin” 头部（且不允许通过 `headers` 属性覆盖它的值）以告知服务器这个请求来自不同源的文档。如果服务器对这个请求的响应中包含恰当的 “Access-Control-Allow-Origin” 头部，则请求可以继续。否则，如果服务器没有明确允许请求，则 fetch() 返回的期约会被拒绝。
+
+**中断请求**
+有时候可能想中断已经发出的 fetch() 请求，比如用户单击了取消按钮或者请求时间过长。此时，fetch API 支持使用 AbortController 和 AbortSignal 类来中断请求（这两个类定义了通用的中断机制，也能在其他 API 中使用）。
+
+如果知道可能要中断某个 fetch() 请求，那在创建请求前要先创建一个 AbortController 对象。这个控制器对象的 `signal` 属性是一个 AbortSignal 对象。在传给 fetch() 的第二个选项对象中，可以把这个信号对象以 `signal` 属性的值传进去。然后，可以在想中断请求的时候调用控制器对象的 `abort()` 方法，这样会导致与该请求相关的任何期约对象以一个异常被拒绝。
+
+下面的例子展示了通过 AbortController 机制对 fetch() 请求超时进行强制中断：
+
+```js
+// 这个函数与 fetch() 类似，但增加了对超时的支持
+// 即支持在 options 对象上设置 timeout 属性，如果在该属性指定的时间内没有完成，则会中断请求
+function fetchwithTimeout(url, options = {}) {
+  if (options.timeout) {
+    // 如果有 timeout 属性且值不是
+    let controller = new AbortController(); // 创建中断控制器
+    options.signal = controller.signal; // 设置 signal 属性
+    // 启动计时器，在经过指定毫秒后发送中断信号
+    // 注意，这里并未考虑取消这个计时器。在请求完成后调用 abort() 没有影响
+    setTimeout(() => {
+      controller.abort();
+    }, options.timeout);
+  }
+  // 现在开始正常发送请求
+  return fetch(url, options);
+}
+```
+
+**其他请求选项**
+可以给 fetch()（或者 Request() 构造函数）传第二个参数，也就是选项对象，用于指定请求方法、请求头或请求体。这个选项对象还支持其他一些选项：
+
+cache
+: 这个属性可以用来覆盖浏览器默认的缓存行为。HTTP 缓存这个话题非常复杂。可以使用下列值来控制缓存行为：
+
+- "default"
+  这个值指定默认缓存行为。如果缓存中的响应还 “新鲜”（fresh），就直接从缓存提供响应；如果缓存中的响应已 “腐败”（stale），则在提供前先重新校验。
+
+- "no-store"
+  这个值会让浏览器忽略其缓存。发送请求时不会查看缓存，响应回来时也不更新缓存。
+
+- "reload"
+  这个值告诉浏览器始终要正常发送网络请求，忽略缓存。但是，响应回来以后，要把响应存在缓存里
+
+- "no-cache"
+  这个（名字有点误导性的）值告诉浏览器不要提供缓存中新鲜的值。无论缓存中的值新鲜还是腐败，都必须先重新校验再返回。
+
+- "force-cache"
+  这个值告诉浏览器即使缓存的值已腐败也要用缓存的值作为响应。
+
+redirect
+: 这个属性控制浏览器如何处理服务器的重定向响应。有 3 个合法的值：
+
+- "follow"
+  这是默认值，它让浏览器自动跟随重定向。如果使用这个默认值，则通过 fetch() 获取的 Response 对象的 `status` 属性应该不会是 300 到 399。
+
+- "error"
+  这个值会让 fetch() 在服务器返回重定向响应时拒绝其返回的期约。
+
+- "manual"
+  这个值表示开发者想手工处理重定向响应，而 fetch() 返回的期约可能会被解决为一个 status 在 300 到 399 之间的 Response 对象。这种情况下，必须使用 Response 的 “Location” 头部手工跟进重定向。
+
+referrer
+: 这个属性是一个包含相对 URL 的字符串，用于指定 HTTP 的 “Referer” 头部（由于历史原因，这个头部一直被错拼成包含 3 个 r 的版本）的值。如果把这个属性设置为空字符串，那么请求就会省略 “Referer” 头部。
+
+#### 15.11.2 服务器发送事件
+
+**HTTP 协议的一个让 Web 得以构建于其上的特性，就是客户端发起请求，服务器响应该请求**。不过，某些 Web 应用却需要在服务器发生事件时，接收来自服务器发送的通知。
+
+HTTP 天生并不具备这个特性，但随着技术的发展，客户端向服务器发送请求之后，两端都可以不关闭连接。此时一旦服务器有事情要通知客户端，就可以把数据写入这个连接并保持其打开。效果就如同客户端发送了一次网络请求，服务器以缓慢而突发的方式响应，每次响应之间都会经历比较长的暂停。像这样的网络连接通常并不会永远打开，但如果客户端检测到连接已关闭，可以再发一次请求，重新打开一个新连接。
+
+这种让服务器向客户端发送消息的技术效率非常高（尽管服务器端的成本可能较高，因为服务器必须对它的所有客户端都维护一个活动连接）。由于这是一个有用的编程模式，客户端 JS 以 EventSource API 的形式对其给予支持。要创建与服务器间的这种长时间存在的请求连接只要向 EventSource() 构造函数传一个 URL即可。当服务器将（适当格式化的）数据写入这个连接时， EventSource 对象会将它们转换为客户端能够监听到的事件：
+
+```js
+Let ticker new EventSource("stockprices. php");
+ticker. addEventListener ("bid"，(event )=> t
+displayNewBid(event data)
+```
+
+与消息事件关联的事件对象有一个 data 属性，保存着服务器针对这次事件发送过来的字符串。与其他事件对象一样，这个事件对象也有一个 type 属性，指定了这个事件的名字。服务器确定生成的事件的类型。如果服务器在写入的数据中省略了事件名，那么默认的事件类型就是“ message"。
+
+这个 SSE( Server-Sent Event，服务器发送事件)协议很好理解。客户端(在它创建 EventSource 对象时)发起对服务器的连接，服务器保持连接打开。一旦有事件发生，服务器就向连接中写入几行文本。通过网络传送的消息大概类似如下所示(不包含注释)
+
+```js
+event:btd//设置事件对象的类型
+data: GOOG
+∥/设置data属性
+data: 999
+//附加一个换行符和更多数据
+/空行表示事件结束
+```
