@@ -12424,23 +12424,258 @@ referrer
 
 HTTP 天生并不具备这个特性，但随着技术的发展，客户端向服务器发送请求之后，两端都可以不关闭连接。此时一旦服务器有事情要通知客户端，就可以把数据写入这个连接并保持其打开。效果就如同客户端发送了一次网络请求，服务器以缓慢而突发的方式响应，每次响应之间都会经历比较长的暂停。像这样的网络连接通常并不会永远打开，但如果客户端检测到连接已关闭，可以再发一次请求，重新打开一个新连接。
 
-这种让服务器向客户端发送消息的技术效率非常高（尽管服务器端的成本可能较高，因为服务器必须对它的所有客户端都维护一个活动连接）。由于这是一个有用的编程模式，客户端 JS 以 EventSource API 的形式对其给予支持。要创建与服务器间的这种长时间存在的请求连接只要向 EventSource() 构造函数传一个 URL即可。当服务器将（适当格式化的）数据写入这个连接时， EventSource 对象会将它们转换为客户端能够监听到的事件：
+这种让服务器向客户端发送消息的技术效率非常高（尽管服务器端的成本可能较高，因为服务器必须对它的所有客户端都维护一个活动连接）。由于这是一个有用的编程模式，客户端 JS 以 EventSource API 的形式对其给予支持。要创建与服务器间的这种长时间存在的请求连接只要向 EventSource() 构造函数传一个 URL 即可。当服务器将（适当格式化的）数据写入这个连接时，EventSource 对象会将它们转换为客户端能够监听到的事件：
 
 ```js
-Let ticker new EventSource("stockprices. php");
-ticker. addEventListener ("bid"，(event )=> t
-displayNewBid(event data)
+let ticker = new EventSource("stockprices.php");
+ticker.addEventListener("bid"，(event)=> {
+  displayNewBid(event.data)
+}
 ```
 
-与消息事件关联的事件对象有一个 data 属性，保存着服务器针对这次事件发送过来的字符串。与其他事件对象一样，这个事件对象也有一个 type 属性，指定了这个事件的名字。服务器确定生成的事件的类型。如果服务器在写入的数据中省略了事件名，那么默认的事件类型就是“ message"。
+与消息事件关联的事件对象有一个 `data` 属性，保存着服务器针对这次事件发送过来的字符串。与其他事件对象一样，这个事件对象也有一个 `type` 属性，指定了这个事件的名字。服务器确定生成的事件的类型。如果服务器在写入的数据中省略了事件名，那么默认的事件类型就是 “message"。
 
-这个 SSE( Server-Sent Event，服务器发送事件)协议很好理解。客户端(在它创建 EventSource 对象时)发起对服务器的连接，服务器保持连接打开。一旦有事件发生，服务器就向连接中写入几行文本。通过网络传送的消息大概类似如下所示(不包含注释)
+这个 SSE（Server-Sent Event，服务器发送事件）协议很好理解。客户端（在它创建 EventSource 对象时）发起对服务器的连接，服务器保持连接打开。一旦有事件发生，服务器就向连接中写入几行文本。通过网络传送的消息大概类似如下所示（不包含注释）：
 
 ```js
-event:btd//设置事件对象的类型
-data: GOOG
-∥/设置data属性
-data: 999
-//附加一个换行符和更多数据
-/空行表示事件结束
+event: btd; // 设置事件对象的类型
+data: GOOG; // 设置data属性
+data: 999; // 附加一个换行符和更多数据
+// 空行表示事件结束
 ```
+
+这个协议还允许为事件指定一个 ID，以便客户端重新建立连接时告诉服务器它上一次接收到的事件 ID 是什么，而服务器可以重新发送它错过的事件。不过，像这样的细节对客户端并不可见。
+
+SSE 的一个典型应用是类似在线聊天一样的多用户协作。聊天客户端可以使用 fetch() 把消息发送到聊天室，通过 Eventsource 对象订阅聊天信息流。示例 15-11 展示了通过 EventSource 写这么一个聊天客户有多简单。
+
+```html
+// 示例 15-11：使用 EventSource 实现简单的聊天客户端
+<html>
+  <head>
+    <title>SSE Chat</title>
+  </head>
+  <body>
+    <!-- 聊天室的 UI 只有一个文本输入字段 -->
+    <!-- 新聊天消息会插入这个输入字段前面 -->
+    <input id="input" style="width: 100%; padding: 10px; border: solid black 2px" />
+    <script>
+      // 注重一些UI的细节
+      let nick= prompt("Enter your nickname"); // 取得用户昵称
+      let input= document.getElementById("input"); // 找到输入字段
+      input.focus() // 设置键盘焦点
+
+      // 使用 EventSource 注册新消息通知
+      let chat = new EventSource("/chat");
+      chat.addEventListener("chat", event=>{ // 收到聊天消息时
+        let div= document.createElement("div");// 创建 <div> 元素
+        div.append(event.data); // 添加消息的文本
+        input.before(div) // 添加到输入字段前
+        input.scrollIntoView(); // 确保输入元素可见
+      })
+
+      // 使用 fetch()把用户消息发送到服务器
+      input.addEventListener("change",()=>{// 当用户按回车时
+        // 发送HTTP请求
+        fetch("/chat", {
+          method :"POST", // 带主体的POST
+          body:nick+": "+ input.value// 包含用户昵称和输入
+        });
+        .catch( e => console.error); // 忽略响应，但打印错误
+        input.value= ""; // 清除输入框
+      })
+    </script>
+  </body>
+</html>
+```
+
+聊天程序的服务器端代码并不比客户端代码复杂多少。示例 15-12 是一个简单的 Node HTTP 服务器。当客户端请求根 URL “/” 时，这个服务器会发送示例 15-11 所示的客户端代码。当客户端向 URL “/chat” 发送 GET 请求时，它会保存响应对象并保持连接打开。而当客户端向 URL “/chat” 发送 POST 请求时，它会把请求体作为聊天消息并对每个保存的响应对象使用 “text/event-stream” 格式。服务器代码监听端口 8080，因此在通过 Node 运行后，在浏览器中访问 `http://localhost:8080` 即可连接到服务器，然后就可以跟自己聊天了。
+
+```js
+// 示例 15-12：SSE 聊天服务器
+
+// 这是服务器端 JS，需要在 Node.js 环境下执行
+// 这里实现了一个非常简单、完全匿名的聊天室
+// POST 新消息到 /chat，或 GET 同一个 URL 得到 text/event-stream 格式的消息，GET请求返回包含客户端聊天 UI 的简单 HTML 文件
+const http = require('http');
+const fs = require('fs');
+const url = require('url');
+
+// 聊天客户端的HTML文件。在下面使用
+const clientHTML = fs.readFileSync('chatClient.html');
+// 要向其中发送事件的 ServerResponse 对象的数组
+let clients = [];
+// 创建一个新服务器，监听端口 8080，连接 http://localhost:8080/ 使用它
+let server = new http.Server();
+server.listen(8080);
+
+// 服务器在收到新请求时，就运行这个函数
+server.on('request', (request, response) => {
+  // 解析请求的URL
+  let pathname = url.parse(request.url).pathname;
+  // 如果请求的是 "/"，发送客户端聊天 UI
+  if (pathname === '/') {
+    // 请求聊天UI
+    response.writeHead(200, { 'Content-Type': 'text/html' }).end(clientHTML);
+  }
+  // 否则对于任何非 "/chat" 路径或任何非 "GET" 和 "POST" 方法，都发送 404 错误
+  else if (pathname !== '/chat' || (request.method !== 'GET' && request.method !== 'POST')) {
+    response.writeHead(404).end();
+  }
+  // 如果 /chat 请求方法是 GET，则说明有客户端连接
+  else if (request.method === 'GET') {
+    acceptNewClient(request, response);
+  }
+  // 否则 /chat 请求是 POST 的一条新消息
+  else {
+    broadcastNewMessage(request, response);
+  }
+});
+
+// 这里处理对 /chat 端点的 GET 请求，该请求在客户端创建新 EventSource 对象（或者 EventSource 对象自动重连）时生成
+function acceptNewClient(request, response) {
+  // 记住这个响应对象，以便后面可以向它发送消息
+  clients.push(response);
+  // 如果客户端关闭了连接，就从活动客户端数组中删除相应的响应对象
+  request.connection.on('end', () => {
+    clients.splice(clients.indexOf(response), 1);
+    response.end();
+  });
+
+  // 设置头部且只向这一个客户端发送初始的聊天事件
+  response.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    Connection: 'keep-alive',
+    'Cache-Control': 'no-cache'
+  });
+  response.write('event: chat\ndata: Connected\n\n');
+
+  // 注意，这里有意没有调用 response.end() 保持连接打开是 SSR 运行的关键
+}
+
+// 这个函数在响应对 /chat 端点的 POST 请求时调用
+// 每当用户输入新消息时客户端都会发送这个请求
+async function broadcastNewMessage(request, response) {
+  // 首先，读取请求体获取用户消息
+  request.setEncoding('utf8');
+  let body = '';
+  for await (let chunk of request) {
+    body += chunk;
+  }
+  // 读取完响应体后，发送一个空响应并关闭连接
+  response.whiteHead(200).end();
+
+  // 以 text/event-stream 形式来格式化消息，每行前面都加上 "data: "
+  let message = 'data: ' + body.replace('\n', '\ndata: ');
+
+  // 为消息数据添加一个前缀，将其定义为 "chat" 事件，并在后面附加两个换行符，标记该事件的结尾
+  let event = `event: chat\n${message}\n\n`;
+
+  // 下面把这个事件发送给所有监听的客户端
+  clients.forEach(client => client.write(event));
+}
+```
+
+#### 15.11.3 Web Socket
+
+WebSocket API 是一个复杂、强大的网络协议对外暴露的简单接口。WebSocket 允许 JS 代码在浏览器中与服务器方便地交换文本和二进制消息。与服务器发送事件（SSE）类似，客户端必须建立连接，而连接一旦建立，服务器就可以异步向客户端发送消息。与 SSE 不同，WebSocket 支持二进制消息，而且消息可以双向发送，而不仅仅是从服务器向客户端发消息。
+
+支撑 WebSocket 的网络协议是对 HTTP 的扩展。虽然 WebSocket API 是传统的低级网络套接口，但标识连接端点的并不是 IP 地址和端口。在使用 WebSocket 协议连接服务时，要通过 URL 指定该服务，就像使用 Web 服务一样。 WebSocket URL 以 `ws://` 而不是 `https://` 开头（浏览器通常会限制只能在安全的 https:// 连接加载的页面中使用 WebSocket）。
+
+要建立 WebSocket 连接，浏览器首先要建立一个 HTTP 连接，并向服务器发送 `Upgrade:websocket` 请求头，请求把连接从 HTTP 协议切换为 WebSocket 协议。这意味着，要在客户端 JS 中使用 WebSocket，服务器必须遵循 WebSocket 协议，按照该协议发送和接收数据。
+
+**创建、连接及断开连接**
+如果想与支持 WebSocket 的服务器通信，需要创建一个 WebSocket 对象，指定表示服务器的 `wss://URL` 和要使用的服务
+
+```js
+let socket = new WebSocket('wss://example.com/stockticker');
+```
+
+创建 WebSocket 时，连接过程会自动开始。但新创建的 WebSocket 在第一次返回时不会建立连接。
+
+这个套接口对象的 `readyState` 属性表明了当前的连接状态。这个属性可能包含下列值：
+
+WebSocket.CONNECTING
+: WebSocket 正在连接。
+
+WebSocket.OPEN
+: WebSocket 已经连接，可以通信了。
+
+Websocket.CLOSING
+: WebSocket 正在关闭。
+
+WebSocket.CLOSED
+: WebSocket 已经关闭，不能再通信了。初始连接失败时也是这个状态。
+
+当 WebSocket 的状态从 CONNECTING 转变为 OPEN 时，它会触发 “open” 事件。可以通过设置 WebSocket 对象的 `onopen` 属性或调用该对象的 addEventlistener() 来监听这个事件。
+
+如果 WebSocket 连接发生了协议错误或其他错误，WebSocket 对象会触发 “error” 事件。可以通过设置 `onerror` 来定义事件处理程序，也可以使用 addEventListener()。
+
+在使用完 WebSocket 之后，可以调用 WebSocket 对象的 `close()` 方法关闭连接。当连接状态变成 CLOSED 时，WebSocket 对象会触发 “close” 事件，可以设置 `onclose` 属性来监听这个事件。
+
+**通过 WebSocket 发送消息**
+要向位于 WebSocket 连接另一端的服务器发送消息，调用 WebSocket 对象的 `send()` 方法。`send()` 方法接收一个消息参数，可以是字符串、Blob、 ArrayBuffer，定型数组或 DataView 对象。
+
+send() 方法会把要发送的消息保存在缓冲区，并在实际发送前返回。WebSocket 对象的 bufferedAmount 属性保存着还在缓冲区未发送的字节数（奇怪的是，当这个值变成 0 时 WebSocket 居然不触发任何事件）。
+
+**通过 WebSocket 接收消息**
+要通过 WebSocket 从服务器接收消息，注册 “message” 事件处理程序，可以设置 WebSocket 对象的 `onmessage` 属性，也可以调用 addEventlistener()。与 “message” 事件关联的事件对象是 MessageEvent 的实例，其 `data` 属性包含服务器的消息。如果服务器发送了 UTF-8 编码的文本，`event.data` 就是保存该文本的字符串。如果服务器发送了二进制格式的消息，则 `data` 属性（默认）是表示该数据的 Blob 对象。如果希望接收 ArrayBuffer 而不是 Blob，可以把 WebSocket 对象的 `binaryType` 属性设置为 `arraybuffer`。
+
+还有其他一些 Web API 也使用 MessageEvent 对象交换消息。其中有的使用[结构化克隆算法](#15104-使用-pushstate-管理历史)通过消息传输复杂数据结构。WebSocket 不在其列：通过 WebSocket 交换的消息要么是 Unicode 字符的字符串，要么是字节的字符串（表现为 Blob 或 ArrayBuffer）。
+
+**协议协商**
+WebSocket 协议支持文本和二进制消息交换，但并未规定这些消息的结构或含义。使用 WebSocket 的应用必须在其提供的简单消息交换机制基础上自行协商通信协议。使用 `wss://URL` 可以为此提供方便，每个 URL 通常都有自己如何交换消息的规则。
+
+不过，协议自身也会不断改进。如果一个假想的股票报价协议更新了，可以定义一个新 URL 并连接到更新版服务，如 `wss://example.con/stockticker/v2`。但基于 URL 来区分版本还不够。对于已经随时间变化的复杂协议，最终可能出现多个版本的线上服务并存的局面，而客户端也分别支持不同版本的协议。
+
+基于这个问题，WebSocket 协议和 API 提供了应用级消息协商功能。在调用 WebSocket() 构造函数时，`wss://URL` 是第一个参数，但也可以传一个字符串数组作为第二个参数。传入这个参数后，就相当于把客户端能够处理的应用协议提供给服务器，由服务器从中选择一个协议（如果服务器不支持其中任何一个子协议，也可以报错）。连接建立以后，WebSocket 对象的 `protocol` 属性将保存服务器选择的子协议。
+
+### 15.12 存储
+
+Web 应用可以使用浏览器 API 在用户计算机上本地存储数据。客户端存储的目的是让浏览器能够记住一些信息。比如，Web 应用可以存储用户偏好，或者存储他们的完成状态，以便恢复上次离开时的情境。客户端存储是按照来源隔离的，因此来自一个站点的页面不能读取来自另一个站点的页面存储的数据。但来自同一站点的两个页面可以共享存储的数据，并将其作为一种通信机制。比如，在一个网页的表单中输入的数据可以在另个页面中以表格形式显示出来。Web 应用可以选择它们存储数据的生命期。可以临时存储，只保留到窗口关闭或浏览器退出；也可以保存在用户计算机上，持久化存储数月甚至数年。
+
+客户端存储分为如下几种形式：
+
+_Web Storage_
+Web Storage API 包含 `localStorage` 和 `sessionStorage` 对象，本质上是映射字符串键和值的持久化对象。Web Storage 很容易使用，适合存储大量（不是巨量）数据。
+
+_Cookie_
+: Cookie 是一种古老的客户端存储机制，是专门为服务端脚本使用而设计的。浏览器也提供了一种笨拙的 JS AP，可以在客户端操作 cookie。但这个 API 很难用，而且只适合保存少量数据。另外，保存在 cookie 中的数据也会随 HTTP 请求发送给服务器，哪怕这些数据只对客户端有用。
+
+_IndexedDB_
+: IndexedDB 是一种异步 API，可以访问支持索引的对象数据库。
+
+#### 15.12.1 localStorage 和 sessionStorage
+
+Window 对象的 `localStorage` 和 `sessionStorage` 属性引用的是 storage 对象。Storage 对象与普通 JS 对象非常类似，只不过：
+
+- Storage 对象的属性值必须是字符串;
+
+- Storage 对象中存储的属性是持久化的。如果设置了 localStorage 对象的一个属性，然后用户刷新了页面，的程序仍然可以访问在该属性中保存的值。
+
+例如，可以像下面这样使用 localStorage 对象：
+
+```js
+let name = localStorage.username; // 查询存储的值
+if (!name) {
+  name = prompt('What is your name?'); // 问用户一个问题
+  localStorage.username = name; // 存储用户的回答
+}
+```
+
+可以使用 delete 操作符删除 localStorage 和 sessionStorage 的属性，可以使用 for/in 循环或 Object.keys() 枚举 Storage 对象的属性。如果想删除 Storage 对象的所有属性，可以调用 `clear()` 方法。
+
+Storage 对象也定义了 `getItem()`、`setItem()` 和 `deleteItem()` 方法，可以用来代替直接读写属性和 delete 操作符。
+
+> Storage 对象的属性只能存储字符串。如果想存取其他类型的数据，必须自己编码和解码。
+
+**存储的生命期和作用域**
+localStorage 和 sessionStorage 的差异主要体现在生命期和作用域上。通过 localStorage存储的数据是永久性的，除非 Web 应用或用户通过浏览器（特定的界面）删除，否则数据会永远保存在用户设备上。
+
+localStorage 的作用域为文档来源。文档来源由协议、域名和端口共同定义。所有同源文档都共享相同的 localStorage 数据（与实际访间 localStorage 的脚本的来源无关）。同源文档可以相互读取对方的数据，可以重写对方的数据。但非同源文档的数据相互之间是完全隔离的，既读不到也不能重写（即便它们运行的脚本来自同一台第三方服务器）。
+
+通过 sessionStorage 保存的数据与通过 localStorage 保存的数据的生命期不同。sessionStorage 数据的生命期与存储它的脚本所属的顶级窗口或浏览器标签页相同。窗口或标签页永远关闭后，通过 sessionStorage 存储的所有数据都会被删除（不过要注意，现代浏览器有能力再次打开最近关闭的标签页并恢复用户上次浏览的会话，因此这些标签页以及与之关联的 session Storage 的生命期有可能比看起来更长）。
+
+sessionStorage 的作用域与 localStorage 类似，都是文档来源。换句话说，不同来源的文档永远不会共享 sessionStorage。但是，sessionStorage 的作用域也在窗口间隔离。如果用户在两个浏览器标签页中打开了同一来源的文档，这两个标签页的 sessionStorage 数据也是隔离的。一个标签页中运行的脚本不能读取或重写另一个标签页中的脚本写入的数据。即便两个标签页打开的是完全相同的页面，而且运行的脚本完全相同。
+
+**存储事件**
+存储在 localStorage 中的数据每次发生变化时，浏览器都会在该数据可见的其他 Window 对象（不包括导致该变化的窗口）上触发 “storage” 事件。如果浏览器打开了两个标签页，加载了两个同源页面，其中一个页面在 localStorage 中存储了一个值则另一个标签页会收到 “storage” 事件。
