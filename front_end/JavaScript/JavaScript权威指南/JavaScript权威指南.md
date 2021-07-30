@@ -12669,13 +12669,89 @@ Storage 对象也定义了 `getItem()`、`setItem()` 和 `deleteItem()` 方法�
 > Storage 对象的属性只能存储字符串。如果想存取其他类型的数据，必须自己编码和解码。
 
 **存储的生命期和作用域**
-localStorage 和 sessionStorage 的差异主要体现在生命期和作用域上。通过 localStorage存储的数据是永久性的，除非 Web 应用或用户通过浏览器（特定的界面）删除，否则数据会永远保存在用户设备上。
+**localStorage 和 sessionStorage 的差异主要体现在生命期和作用域上**。通过 localStorage 存储的数据是永久性的，除非 Web 应用或用户通过浏览器（特定的界面）删除，否则数据会永远保存在用户设备上。
 
 localStorage 的作用域为文档来源。文档来源由协议、域名和端口共同定义。所有同源文档都共享相同的 localStorage 数据（与实际访间 localStorage 的脚本的来源无关）。同源文档可以相互读取对方的数据，可以重写对方的数据。但非同源文档的数据相互之间是完全隔离的，既读不到也不能重写（即便它们运行的脚本来自同一台第三方服务器）。
 
-通过 sessionStorage 保存的数据与通过 localStorage 保存的数据的生命期不同。sessionStorage 数据的生命期与存储它的脚本所属的顶级窗口或浏览器标签页相同。窗口或标签页永远关闭后，通过 sessionStorage 存储的所有数据都会被删除（不过要注意，现代浏览器有能力再次打开最近关闭的标签页并恢复用户上次浏览的会话，因此这些标签页以及与之关联的 session Storage 的生命期有可能比看起来更长）。
+通过 sessionStorage 保存的数据与通过 localStorage 保存的数据的生命期不同。sessionStorage 数据的生命期与存储它的脚本所属的顶级窗口或浏览器标签页相同。窗口或标签页永远关闭后，通过 sessionStorage 存储的所有数据都会被删除（不过要注意，现代浏览器有能力再次打开最近关闭的标签页并恢复用户上次浏览的会话，因此这些标签页以及与之关联的 sessionStorage 的生命期有可能比看起来更长）。
 
 sessionStorage 的作用域与 localStorage 类似，都是文档来源。换句话说，不同来源的文档永远不会共享 sessionStorage。但是，sessionStorage 的作用域也在窗口间隔离。如果用户在两个浏览器标签页中打开了同一来源的文档，这两个标签页的 sessionStorage 数据也是隔离的。一个标签页中运行的脚本不能读取或重写另一个标签页中的脚本写入的数据。即便两个标签页打开的是完全相同的页面，而且运行的脚本完全相同。
 
 **存储事件**
 存储在 localStorage 中的数据每次发生变化时，浏览器都会在该数据可见的其他 Window 对象（不包括导致该变化的窗口）上触发 “storage” 事件。如果浏览器打开了两个标签页，加载了两个同源页面，其中一个页面在 localStorage 中存储了一个值则另一个标签页会收到 “storage” 事件。
+
+要注册 “storage” 事件，可以使用 window.onstorage 事件属性，或者调用 window.addEventListener() 并传入 “storage"。
+
+与 “storage” 事件关联的事件对象有如下一些重要属性：
+
+key
+: 写入或删除项的键或名字。如果调用了 `clear()` 方法，这个属性的值为 null。
+
+newValue
+: 保存变化项的新值（如果有）。如果调用了 `removeItem()`，这个属性不存在。
+
+oldValue
+: 保存变化的或被删除的已有项的旧值。如果添加了一个新属性（没有旧值），这个属性不存在。
+
+storageArea
+: 变化的 Storage 对象。通常是 localStorage 对象。
+
+urL
+: 导致这次存储变化的脚本所在文档的 URL（字符串）。
+
+> **注意**：localStorage 和 “storage” 事件可以作为一种广播机制，即浏览器向所有当前浏览同一网站的窗口发送消息。比如，如果用户要求网站停止执行动画，网站可以把该偏好保存在 localStorage 中，以便未来访问时遵行。通过存储这个偏好，它会生成个事件，让其他显示相同网站的窗口也能遵守这个要求。
+
+还有一个例子，在一个 Web 版图片编辑应用中，工具面板会显示在一个分离的窗口中。当用户选择某种工具时，应用可以使用 localStorage 保存当前状态并生成一个通知告诉其他窗口用户选择了新工具。
+
+#### 15.12.2 cookie
+
+cookie 是浏览器为特定网页或网站保存的少量命名数据。cookie 是为服务端编程而设计的，在最低的层级上作为 HTTP 协议的扩展实现。cookie 数据会自动在浏览器与 Web 服务器之间传输，因此服务器端脚本可以读写存储在客户端的 cookie 值。本节演示客户端脚本如何使用 Document 对象的 cookie 属性操作 cookie 数据。
+
+**为什么叫 cookie?**
+cookie 这个名字并没有什么深意，而且也是有先例的。在计算的历史长河中 “cookie”或 “magic cookie” 曾被用于指代一小段数据，特别是某种特殊或保密的数据（类似于密码），可以证明身份或授权访问。在 JS 中，cookie 用于保存状态并且可以作为浏览器的某种标识。但 JS 中的 cookie 并不以任何形式进行加密，无论怎么说都是不安全的（尽管通过 HTTPS 连接发送 cookie 会安全一些）。
+
+操作 cookie 的 API 很古老也很难用，因为没有涉及方法。查询、设置和删除 cookie，都是通过读写 Document 对象的 cookie 属性实现的，而且要使用特定格式的字符串。每个 cookie 的生命期和作用域可以通过 cookie 属性来个别指定。这些属性同样也以特定格式的字符串在同一个 cookie 属性上面设置。
+
+接下来几个小节会讲解如何查询和设置 cookie 值以及相应的属性。
+
+**读取 cookie**
+`document.cookie` 属性返回一个包含与当前文档有关的所有 cookie 的字符串。这个字符串是一个分号和空格分隔的名/值对。cookie 的值就是名/值对中的值，不包含任何与该 cookie 关联的属性。为了使用 `document.cookie` 属性，通常必须调用 `split()` 方法把整个字符串拆分成个别的名/值对。
+
+从 cookie 属性中提取出某个 cookie 的值之后，必须根据 cookie 创建者的格式或编码来解释该值。例如，可能需要先把 cookie 值传给 `decodeURIComponent()`，然后再传给 `JSON.parse()`。
+
+下面的代码定义了一个 getCookie()函数，可以解析 document.cookie 属性并返回一个对象。这个对象的属性中包含文档的 cookie 的名字和值：
+
+```js
+// 返回一个包含文档 cookie 的 Map 对象
+// 假设 cookie 的值是以 encodeURIComponent() 编码的
+function getCookies() {
+  let cookies = new Map(); // 要返回的对象
+  let all = document.cookie; // 取得包含所有 cookie 的大字符串
+  let list = all.split(';'); // 将字符串拆分成一个个的名/值对
+  // 对于列表中的每个 cookie
+  for (let cookie of list) {
+    if (cookie.includes('=')) continue; // 如果没有 = 号就跳过
+    let p = cookie.indexOf('='); // 找到第一个 = 号
+    let name = cookie.substring(0, p); // 取得 cookie 的名字
+    let value = cookie.substring(p + 1); // 取得 cookie 的值
+    value = decodeURIComponent(value); // 对值进行解码
+    cookies.set(name, value); // 记住 cookie 的名字和值
+  }
+  return cookies;
+}
+```
+
+**cookie 的属性：生命期与作用域**
+除了名字和值，每个 cookie 还有可选的属性，用于控制其生命期和作用域。在介绍如何使用 JS 设置 cookie 之前，必须先解释 cookie 的属性。
+
+cookie 默认的生命期很短，它们存储的值只在浏览器会话期间存在，用户退出浏览器后就会丢失。如果想让 cookie 的生命期超过单个浏览会话，必须告诉浏览器希望保存它们多长时间（以秒为单位）。为此要指定 cookie 的 `max-age` 属性。如果指定了这样一个生命期，浏览器将把 cookie 存储在一个文件中，等时间到了再把它们删除。
+
+与 localStorage 和 sessionStorage 类似，cookie 的可见性由文档来源决定，但也由文档路径决定。换句话说，cookie 的作用域通过 `path` 和 `domain` 属性来配置。默认情况下，cookie 关联着创建它的网页，以及与该网页位于相同目录和子目录下的其他网页，这些网页都可以访问它。比如，如果网页 *example.com/catalog/index.html* 创建了一个 cookie，则该 cookie 对 *example.com/catalog/order.html* 和 *example.com/catalog/widgets/index.html* 同样可见，但对 *example.com/about.html* 不可见。
+
+这个默认的作用域通常也是想要的。但有时候，可能希望让 cookie 对整个网站可见，无论它是哪个页面创建的。例如，用户在某个页面的表单中输入自己的收件地址，希望保存这个地址并在用户下次再回来时将其作为默认地址，同时也将其作为另一个页面中完全无关的要求用户填写账单地址的表单的默认值。为此，可以为 cookie 指定 `path` 属性。然后来自同一服务器的任何网页，只要其 `URL` 以指定的路径前缀开头就可以共享该 cookie。例如，如果 *example.com/catalog/widgets/index.html* 设置的 cookie 将路径设置为 “/catalog”，则该 cookie 也对 *example.com/catalog/order.html* 可见。或者，如果将路径设置为 “/”，那么该 cookie 将对 *example.com* 域中的任何页面都可见，此时这个 cookie 的作用域就跟 localStorage 一样。
+
+默认情况下，cookie 的作用域按照文档来源区分。不过大网站可能需要跨子域名共享 cookie。例如，*order.example.com* 对应的服务器可能需要读取 *catalog.example.com* 设置的 cookie 值。这时候就要用到 `domain` 属性了。如果 cookie 是由 *catalog.example.com* 上的页面设置的，且 `path` 属性被设置为 “/”、`domain` 属性被设置为 “.example.com”，则该 cookie 将对 *catalog.example.com*、*order.example.com*，以及任何 *example.com* 域名下的服务器有效。
+
+> **注意**：不能将 cookie 的域设置为服务器父域名之外的其他域名。
+
+最后一个 cookie 属性是 `secure`，一个布尔值，用于指定如何通过网络传输 cookie 值。默认情况下，cookie 是不安全的。换句话说，它们会在普通的不安全的 HTTP 连接上传输。如果把 cookie 设置为安全的，那么就只能在浏览器与服务器通过 HTTPS 或其他安全协议连接时传输 cookie。
