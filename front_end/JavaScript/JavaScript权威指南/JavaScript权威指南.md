@@ -12746,12 +12746,81 @@ function getCookies() {
 
 cookie 默认的生命期很短，它们存储的值只在浏览器会话期间存在，用户退出浏览器后就会丢失。如果想让 cookie 的生命期超过单个浏览会话，必须告诉浏览器希望保存它们多长时间（以秒为单位）。为此要指定 cookie 的 `max-age` 属性。如果指定了这样一个生命期，浏览器将把 cookie 存储在一个文件中，等时间到了再把它们删除。
 
-与 localStorage 和 sessionStorage 类似，cookie 的可见性由文档来源决定，但也由文档路径决定。换句话说，cookie 的作用域通过 `path` 和 `domain` 属性来配置。默认情况下，cookie 关联着创建它的网页，以及与该网页位于相同目录和子目录下的其他网页，这些网页都可以访问它。比如，如果网页 *example.com/catalog/index.html* 创建了一个 cookie，则该 cookie 对 *example.com/catalog/order.html* 和 *example.com/catalog/widgets/index.html* 同样可见，但对 *example.com/about.html* 不可见。
+与 localStorage 和 sessionStorage 类似，cookie 的可见性由文档来源决定，但也由文档路径决定。换句话说，cookie 的作用域通过 `path` 和 `domain` 属性来配置。默认情况下，cookie 关联着创建它的网页，以及与该网页位于相同目录和子目录下的其他网页，这些网页都可以访问它。比如，如果网页 _example.com/catalog/index.html_ 创建了一个 cookie，则该 cookie 对 _example.com/catalog/order.html_ 和 _example.com/catalog/widgets/index.html_ 同样可见，但对 _example.com/about.html_ 不可见。
 
-这个默认的作用域通常也是想要的。但有时候，可能希望让 cookie 对整个网站可见，无论它是哪个页面创建的。例如，用户在某个页面的表单中输入自己的收件地址，希望保存这个地址并在用户下次再回来时将其作为默认地址，同时也将其作为另一个页面中完全无关的要求用户填写账单地址的表单的默认值。为此，可以为 cookie 指定 `path` 属性。然后来自同一服务器的任何网页，只要其 `URL` 以指定的路径前缀开头就可以共享该 cookie。例如，如果 *example.com/catalog/widgets/index.html* 设置的 cookie 将路径设置为 “/catalog”，则该 cookie 也对 *example.com/catalog/order.html* 可见。或者，如果将路径设置为 “/”，那么该 cookie 将对 *example.com* 域中的任何页面都可见，此时这个 cookie 的作用域就跟 localStorage 一样。
+这个默认的作用域通常也是想要的。但有时候，可能希望让 cookie 对整个网站可见，无论它是哪个页面创建的。例如，用户在某个页面的表单中输入自己的收件地址，希望保存这个地址并在用户下次再回来时将其作为默认地址，同时也将其作为另一个页面中完全无关的要求用户填写账单地址的表单的默认值。为此，可以为 cookie 指定 `path` 属性。然后来自同一服务器的任何网页，只要其 `URL` 以指定的路径前缀开头就可以共享该 cookie。例如，如果 _example.com/catalog/widgets/index.html_ 设置的 cookie 将路径设置为 “/catalog”，则该 cookie 也对 _example.com/catalog/order.html_ 可见。或者，如果将路径设置为 “/”，那么该 cookie 将对 _example.com_ 域中的任何页面都可见，此时这个 cookie 的作用域就跟 localStorage 一样。
 
-默认情况下，cookie 的作用域按照文档来源区分。不过大网站可能需要跨子域名共享 cookie。例如，*order.example.com* 对应的服务器可能需要读取 *catalog.example.com* 设置的 cookie 值。这时候就要用到 `domain` 属性了。如果 cookie 是由 *catalog.example.com* 上的页面设置的，且 `path` 属性被设置为 “/”、`domain` 属性被设置为 “.example.com”，则该 cookie 将对 *catalog.example.com*、*order.example.com*，以及任何 *example.com* 域名下的服务器有效。
+默认情况下，cookie 的作用域按照文档来源区分。不过大网站可能需要跨子域名共享 cookie。例如，_order.example.com_ 对应的服务器可能需要读取 _catalog.example.com_ 设置的 cookie 值。这时候就要用到 `domain` 属性了。如果 cookie 是由 _catalog.example.com_ 上的页面设置的，且 `path` 属性被设置为 “/”、`domain` 属性被设置为 “.example.com”，则该 cookie 将对 _catalog.example.com_、_order.example.com_，以及任何 _example.com_ 域名下的服务器有效。
 
 > **注意**：不能将 cookie 的域设置为服务器父域名之外的其他域名。
 
 最后一个 cookie 属性是 `secure`，一个布尔值，用于指定如何通过网络传输 cookie 值。默认情况下，cookie 是不安全的。换句话说，它们会在普通的不安全的 HTTP 连接上传输。如果把 cookie 设置为安全的，那么就只能在浏览器与服务器通过 HTTPS 或其他安全协议连接时传输 cookie。
+
+**Cookie 的限制**
+Cookie 主要用于为服务器端脚本存储少量数据，而且该数据在每次请求相关 URL 时都会发送给服务器。定义 cookie 的标准建议浏览器厂商不限制 cookie 的数量和大小，但没有要求浏览器保留总共 300 个以上的 cookie、每个服务器 20 个 cookie 或每个 cookie 大小为 4KB（名字和值都包含在这 4KB 之内）。实践中，浏览器通常允许大大超过 300 个 cookie，但某些浏览器仍然限制 4KB 大小。
+
+**存储 cookie**
+要给当前文档关联一个短暂的 cookie，只要把 document.cookie 设置为 `name=value` 形式的字符串即可：
+
+```js
+document.cookie = `version=${encodeURIComponent(document.lastModified)}`;
+```
+
+下次在读取这个 cookie 属性时，保存的这个名/值对就会包含在文档的 cookie 列表中。cookie 值不能包含分号、逗号或空格。为此，可能需要使用核心 JS 的全局函数 `encodeURIComponent()` 先对值进行编码，然后再把它保存到 cookie 中。如果进行了编码，那么在将来读取 cookie 值时还必须使用对应的 `decodeURIComponent()` 函数来解码
+
+简单名/值对形式的 cookie 只在当前会话期间存在，用户关闭浏览器就会丢失。要创建可以跨会话存在的 cookie，则要通过 `max-age` 属性指定其生命期（单位为秒）。此时保存在 cookie 属性中的字符串形式为 `name=value; max-age=seconds` 下面这个函数在设置 cookie 时能够可选地添加 `max-age` 属性：
+
+```js
+// 把 name/value 对存储为 cookie，使用 encodeURIComponent() 编码值，以转义
+// 分号、逗号和窗格。如果 daysToLive 是个数值，则设置 max-age 属性，从而让 cookie在指定的天数之后过期。传入 0 删除 cookie
+function setCookie(name, value, daysToLive = null) {
+  let cookie = `${name}=${encodeURIComponent(value)}`;
+  if (daysToLive !== null) {
+    cookie += `; max-age=${daysToLive * 60 * 60 * 24}`;
+  }
+  document.cookie = cookie;
+}
+```
+
+类似地，可以向 `document.cookie` 属性上追加 `;path=value` 或 `;domain=value` 这样的字符串来设置 cookie 的 `path` 和 `domain` 属性。要设置 `secure` 属性，只要追加 `;secure` 即可。
+
+要修改 cookie 的值，需要以相同的名字、路径和域再设置一次它的值。在修改 cookie 值时，可以通过指定一个新的 `max-age` 属性修改 cookie 的值时，可以修改 cookie 的生命期。
+
+要删除 cookie，需要以相同的名字、路径和域名再设置一次，指定一个任意值（或空值），并将 `max-age` 属性指定为 0。
+
+#### 15.12.3 IndexedDB
+
+IndexedDB 是一个对象数据库，不是关系型数据库，比支持 SQL 查询的数据库更简单。而且比 localStorage 提供的键/值对存储机制更强大、高效和可靠。与 localStorage 类似，IndexedDB 数据库的作用域限定为包含文档的来源。换句话说，两个同源的网页可以互相访问对方的数据，但不同源的网页则不能相互访问。
+
+每个来源可以有任意数量的 IndexedDB 数据库。每个数据库的名字必须在当前来源下唯。在 IndexedDB API 中，数据库就是一个名为对象存储的集合。顾名思义，对象存储中存储的是对象。对象会使用[结构化克隆算法](#15104-使用-pushstate-管理历史)序列化为对象存储。这意味着存储的对象可以拥有 Map、Set 或定型数组作为属性值。每个对象必须有一个键，可以用于排序和从存储中检索。键必须唯一（相同存储中的两个对象不能使用相同的键），而且必须有自然顺序以便排序。JS 字符串、数值和 Date 对象都是有效的键。IndexedDB 数据库可以自动为插入数据库中的每个对象生成一个唯一的键。不过，通常插入对象存储中的对象都会有一个属性适合作为键。在这种情况下，可以在创建对象存储时为该属性指定一个 “键路径”。从概念上讲，键路径是一个值，它告诉数据库如何从对象中提取对象的键。
+
+除了从对象存储中按照主键值检索对象，有时候也需要按照对象其他属性的值来搜索。为此，可以在对象存储上定义任意数量的索引（索引对象存储的能力正是 IndexedDB 名字的由来）。每个索引为存储的对象定义了一个次键。这些索引一般并不是唯一的，因此多个对象可能匹配一个键值。
+
+IndexedDB 提供了原子保证，即查询和更新数据库会按照事务进行分组，要么全部成功，要么全部失败，永远不会让数据库处于未定义、部分更新的状态。IndexedDB 中的事务比很多数据库 API 都简单。
+
+从概念上讲，IndexedDB API 非常简单。要查询或更新数据库，首先要打开对应的数据库（通过名字）。然后，创建一个事务对象并使用该对象查找数据库中相应的对象存储（同样通过名字）。最后，通过调用该对象存储的 `get()` 方法查询对象，或通过调用 `put()` 方法存储新对象（或者如果想避免重写已有对象，可以调用 `add()` 方法）。
+
+如果想查询键在某个范围内的对象，需要创建一个 IDBRange 对象并指定范围的上、下边界，然后把它传给对象存储的 `getAll()` 或 `openCursor()` 方法。
+
+如果想使用次键来查询，可以先查找对象存储的命名索引，然后调用该索引对象的 `get()`、`getAll()` 或 `openCursor()` 方法，传入一个键或一个 IDBRange 对象。
+
+不过，由于 IndexedDB AP 是异步的(因此 Web 应用可以使用它而不阻塞浏览器的主 U 线程)，所以这种概念上的简化并不容易理解。1 IndexedDB 是在期约得到广泛支持之前定义的，因此这个 AP 是基于事件而非基于期约的。这意味着不能对它使用 async 和 await。
+
+创建事务和查找对象存储及索引是同步操作。但打开数据库、更新对象存储和查询存储或索引全都是异步操作。这些异步方法都会立即返回一个请求对象。浏览器会在请求成功或失败时在这个请求对象上触发成功或失败事件，你在代码中可以通过 onsuccess 和 onerror 属性定义处理程序。在 onsuccess 处理程序中，操作的结果可以通过请求对象的 result 属性得到。另一个有用的事件是“ complete”，它会在事务成功完成时在事务对象上派发。
+
+这个异步 API 有个方便的特性，就是它简化了事务管理。 IndexedDB API 强制你创建事务对象，然后才能取得对象存储并进行查询和更新。如果是同步 API，可能调用一个 commit(()方法就知道事务完成了。但在 IndexedDB 中，事务是在所有 onsuccess 处理程序运行且没有引用该事务的更多异步请求时自动提交的(只要不显式地中断它)
+
+IndexedDB API 还有一个重要的事件。在第一次打开一个数据库时，或者在增大一个已有数据库的版本号时， IndexedDB 会在调用 indexedDB.open()返回的请求对象上触发 upgradeneeded”事件。这个“ upgradeneeded”事件的处理程序要负责定义或更新这个新数据库的模式(或已有数据库的新版本)。对于 IndexedDB 数据库，这意味着创建对象存储和在这些对象存储上定义索引。而且事实上， IndexedDB API 唯一一次让你创建对象存储或索引，就是在响应“ upgradeneeded”事件的时候。
+
+在了解了 IndexedDB 的概况之后，应该可以理解示例 15-13。这个示例使用 IndexedDB 创建和査询了一个数据库，这个数据库将美国邮政编码映射到美国的城市。示例演示了很多(但不是全部) IndexedDB 的基本功能，代码有点长，但注释很多。
+
+```js
+示例15-13:美国邮政编码的 IndexedDB数据库
+∥这个辅助函数异步获取数据库对象，(必要
+∥时创建并初始化数据库)并将它传给回调
+function withDB(calLback)
+let request indexedDB open("zipcodes", 1);
+);//请求数据库的v1版
+request onerror consoLe errori
+//记录错误
+```
