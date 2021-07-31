@@ -12804,23 +12804,155 @@ IndexedDB 提供了原子保证，即查询和更新数据库会按照事务进�
 
 如果想使用次键来查询，可以先查找对象存储的命名索引，然后调用该索引对象的 `get()`、`getAll()` 或 `openCursor()` 方法，传入一个键或一个 IDBRange 对象。
 
-不过，由于 IndexedDB AP 是异步的(因此 Web 应用可以使用它而不阻塞浏览器的主 U 线程)，所以这种概念上的简化并不容易理解。1 IndexedDB 是在期约得到广泛支持之前定义的，因此这个 AP 是基于事件而非基于期约的。这意味着不能对它使用 async 和 await。
+不过，由于 IndexedDB API 是异步的（因此 Web 应用可以使用它而不阻塞浏览器的主 UI 线程），所以这种概念上的简化并不容易理解。IndexedDB 是在期约得到广泛支持之前定义的，因此这个 API 是基于事件而非基于期约的。这意味着不能对它使用 `async` 和 `await`。
 
-创建事务和查找对象存储及索引是同步操作。但打开数据库、更新对象存储和查询存储或索引全都是异步操作。这些异步方法都会立即返回一个请求对象。浏览器会在请求成功或失败时在这个请求对象上触发成功或失败事件，你在代码中可以通过 onsuccess 和 onerror 属性定义处理程序。在 onsuccess 处理程序中，操作的结果可以通过请求对象的 result 属性得到。另一个有用的事件是“ complete”，它会在事务成功完成时在事务对象上派发。
+创建事务和查找对象存储及索引是同步操作。但打开数据库、更新对象存储和查询存储或索引全都是异步操作。这些异步方法都会立即返回一个请求对象。浏览器会在请求成功或失败时在这个请求对象上触发成功或失败事件，在代码中可以通过 `onsuccess` 和 `onerror` 属性定义处理程序。在 `onsuccess` 处理程序中，操作的结果可以通过请求对象的 `result` 属性得到。另一个有用的事件是 “complete”，它会在事务成功完成时在事务对象上派发。
 
-这个异步 API 有个方便的特性，就是它简化了事务管理。 IndexedDB API 强制你创建事务对象，然后才能取得对象存储并进行查询和更新。如果是同步 API，可能调用一个 commit(()方法就知道事务完成了。但在 IndexedDB 中，事务是在所有 onsuccess 处理程序运行且没有引用该事务的更多异步请求时自动提交的(只要不显式地中断它)
+这个异步 API 有个方便的特性，就是它简化了事务管理。IndexedDB API 强制创建事务对象，然后才能取得对象存储并进行查询和更新。如果是同步 API，可能调用一个 `commit()` 方法就知道事务完成了。但在 IndexedDB 中，事务是在所有 `onsuccess` 处理程序运行且没有引用该事务的更多异步请求时自动提交的（只要不显式地中断它）。
 
-IndexedDB API 还有一个重要的事件。在第一次打开一个数据库时，或者在增大一个已有数据库的版本号时， IndexedDB 会在调用 indexedDB.open()返回的请求对象上触发 upgradeneeded”事件。这个“ upgradeneeded”事件的处理程序要负责定义或更新这个新数据库的模式(或已有数据库的新版本)。对于 IndexedDB 数据库，这意味着创建对象存储和在这些对象存储上定义索引。而且事实上， IndexedDB API 唯一一次让你创建对象存储或索引，就是在响应“ upgradeneeded”事件的时候。
+IndexedDB API 还有一个重要的事件。在第一次打开一个数据库时，或者在增大一个已有数据库的版本号时，IndexedDB 会在调用 `indexedDB.open()` 返回的请求对象上触发 “u ad eneed ed ” 事件。这个.“upgradeneeded” = 事件的处理程序要负责定义或更新这个新数据库的模式（或已有数据库的新版本）。le.IndexedD; 数据 库，这意味着创建对象存储和在这些对象存储上定义索引。而且事实上，IndexedDB API 唯一一次创建对象存储或索引，就是在响应 “upgradeneeded” 事件的时候。
 
-在了解了 IndexedDB 的概况之后，应该可以理解示例 15-13。这个示例使用 IndexedDB 创建和査询了一个数据库，这个数据库将美国邮政编码映射到美国的城市。示例演示了很多(但不是全部) IndexedDB 的基本功能，代码有点长，但注释很多。
+在了解了 IndexedDB 的概况之后，应该可以理解示例 15-13。这个示例使用 IndexedDB 创建和査询了一个数据库，这个数据库将美国邮政编码映射到美国的城市。示例演示了很多（但不是全部） IndexedDB 的基本功能，代码有点长，但注释很多：
 
 ```js
-示例15-13:美国邮政编码的 IndexedDB数据库
-∥这个辅助函数异步获取数据库对象，(必要
-∥时创建并初始化数据库)并将它传给回调
-function withDB(calLback)
-let request indexedDB open("zipcodes", 1);
-);//请求数据库的v1版
-request onerror consoLe errori
-//记录错误
+// 示例 15-13：美国邮政编码的 IndexedDB 数据库
+// 这个辅助函数异步获取数据库对象，(必要时创建并初始化数据库）并将它传给回调
+function withDB(calLback) {
+  let request = indexedDB.open('zipcodes', 1); // 请求数据库的 v1 版
+  request.onerror = console.error; // 记录错误
+
+  // 或者在完成时调用这个函数
+  request.onsuccess = () => {
+    let db = request.result; // 请求的结果是数据库
+    callback(db); // 调用回调并传入数据库
+  };
+
+  // 如果数据库的 v1 版不存在，则会触发这个事件处理程序。
+  // 这个处理程序会初次创建数据库时创建并初始化对象存储，或者在数据库模式切换时修改它们
+  request.onupgradeneeded = () => {
+    initdb(request.result, calLback);
+  };
+}
+
+// withDB() 在数据库尚未初始化时会调用这个函数
+// 这个函数会创建数据库并为它填充数据，然后把数据库传给回调函数
+//
+// 邮编数据库包含一个对象存储，对象格式为:
+//
+// {
+// zipcode: "02134",
+// city: "Allston",
+// state: "MA",
+// }
+//
+// 这里使用 zipcode 属性作为数据库键，并为城市名创建了一个索引
+function initdb(db, callback) {
+  // 创建对象存储，指定存储的名字和一个选项对象
+  // 选项对象包含 “键路径”（key Path），指定的是这个存储的键字段的属性名
+  let store = db.createObjectStore(
+    'zipcodes', // store name
+    { keyPath: 'zipcode' }
+  );
+
+  // 除了通过邮政编码，还通过城市名来索引这个对象存储
+  // 调用这个方法时，键路径以必需的字符串参数形式直接传入，而不是通过一个选项对象来传入
+  store.createIndex('cities', 'city');
+
+  // 现在取得要用来初始化数据库的数据
+  // 这个 zipcodes.json 数据文件是 CC 许可的数据,来源为 www.geonames.org:https://download.geonames.org/export/zip/US.zip
+  fetch('zipcodes.json') // 发送 Http Get请求
+    .then(response => response.json()) // 解析]50N响应体
+    .then(zipcodes => {
+      // 取得4万条邮编记录
+      //  为了向数据库中插入邮政编码，需要一个事务对象。
+      // 而要创建事务对象，需要指定使用哪个对象存储（只有一个），且告诉它要写入数据库，不仅是读数据
+      let transaction = db.transaction(['zipcodes'], 'readwrite');
+      transaction.onerror = console.error;
+
+      // 从事务中取得对象存储
+      let store = transaction.objectStore('zipcodes');
+
+      // IndexedDB API最大的优点就是对象存储，下面就是添加（或更新）记录：
+      for (let record of zipcodes) {
+        store.put(record);
+      }
+
+      // 当事务成功完成，数据库就初始化完毕可以使用了
+      // 此时可以调用最初传给 withDB() 的回调函数
+      transaction.oncomplete = () => {
+        callback(db);
+      };
+    });
+}
+
+// 给一个邮政编码，使用 IndexedDB API 异步查询对应的城市
+// 然后将结果传给指定的回调，如果没有找，则传 null
+function lookupCity(zip, callback) {
+  withDB(db => {
+    // 创建一个只读的事务对象用于查询
+    // 参数是要使用的对象存储的数组
+    let transaction = db.transaction(['zipcodes']);
+
+    // 从事务中取得对象存储
+    let zipcodes = transaction.objectStore('zipcodes');
+
+    // 现在查找与指定邮政编码键匹配的对象，上面的代码是同步的，但这里是异步的
+    let request = zipcodes.get(zip);
+    request.onerror = console.error; // 记录错误
+    // 或者在成功时调用这个函数
+    request.onsuccess = () => {
+      let record = request.result; // 这是查询的结果
+      if (record) {
+        // 如果找到了匹配结果，把它传给回调
+        callback(`${record.city}, ${record.state}`);
+      } else {
+        // 否则,告诉回调查询失败了
+        callback(null);
+      }
+    };
+  });
+}
+
+// 给一个城市的名字，使用 IndexedDB API 异步查询
+// （所有美国州的）所有名字相同的城市（区分大小写）对应的所有邮政编码。
+function lookupZipcodes(city, callback) {
+  withDB(db => {
+    // 跟上面一样，先创建事务再取得对象存储
+    let transaction = db.transaction(['zipcodes']);
+    let store = transaction.objectStore('zipcodes');
+
+    // 这一次也取得对象存储的城市索引
+    let index = store.index('cities');
+
+    // 从索引中查询与指定城市名匹配的所有记录，找到以后，把它们传给回调函数。
+    // 如果想得到更多结果，可能要使用 openCursor()
+    let request = index.getAll(city);
+    request.onerror = console.error;
+    request.onsuccess = () => {
+      callback(request.result);
+    };
+  });
+}
 ```
+
+### 15.13 工作线程与消息传递
+
+单线程是 JS 的一个基本特性，因此浏览器绝不会同时运行两个事件处理程序，也不会在一个事件处理程序运行的时候触发其他计时器。这样就无法并发更新应用或文档状态，而前端开发者就无须思考甚至理解并发编程。一个必然的结果就是 JS 函数不能运行太长时间，否则它们就会阻塞事件循环，而浏览器也会变得不能响应用户输入。事实上这也是 `fetch()` 被设计为异步函数的原因。
+
+浏览器通过 Worker 类非常谨慎地放松了这种单线程的限制。这个类的实例代表与主线程和事件循环同时运行的线程。Worker 运行于独立的运行环境，有着完全独立的全局对象，不能访问 Window 或 Document 对象。 Worker 与主线程只能通过异步消息机制通信。这意味着并发修改 DOM 仍然是不可能的，但也意味可以写长时间运行的函数，而不会阻塞事件循环、卡死浏览器。创建新工作线程（worker）并不会像打开新浏览器窗口那么 “重量线”，但也并非 “轻于鸿毛”。为了执行简单的操作而创建新工作线程是完全没有必要的。复杂 Web 应用可能会创建几十个工作线程，但要创建几百或者几千个工作线程也是不切实际的。
+
+工作线程适合执行计算密集型任务，比如图像处理。使用工作线程把这类任务从主线程转移走可以避免浏览器卡顿。而工作线程也提供了把任务分给多个线程的可能。除此之外，工作线程也适合频繁执行较密集的计算。例如，在实现一个网页版代码编辑器，想加入代码高亮功能。为了正确地高亮代码，需要毎次敲击键盘都解析一次代码。但如果在主线程做这件事，很可能会因为解析代码而导致键盘输入的事件处理程序不能迅速响应用户的击键操作，让用户输入体验变迟滞。
+
+与任何线程 API 一样， Worker API 也有两部分。一部分是 Worker 对象，另一部分是 WorkerGlobalScope。前者是这个线程的外在部分，后者则是线程的内在部分。
+
+接下来几小节将介绍 Worker 和 Worker GlobalScope，也会讲解允许工作线程与主线程通信的消息传递 API。同样的通信 API 也用于文档与其包含的 `<iframe>` 元素之间的消息交换，相关内容也将在后面的小节介绍。
+
+#### 15.13.1 Worker 对象
+
+要创建新的工作线程，调用 Worker() 构造函数，传入一个 URL，这个 URL 用于指定线程要执行的 JS 代码：
+
+```js
+let dataCruncher = new Worker('utils/cruncher.js');
+```
+
+如果传入的是相对 URL，则会按照调用 Worker() 构造函数的脚本所在文档的位置进行
