@@ -12955,4 +12955,33 @@ function lookupZipcodes(city, callback) {
 let dataCruncher = new Worker('utils/cruncher.js');
 ```
 
-如果传入的是相对 URL，则会按照调用 Worker() 构造函数的脚本所在文档的位置进行
+如果传入的是相对 URL，则会按照调用 Worker() 构造函数的脚本所在文档的位置进行解析。如果传入的是绝对 URL，则必须与包含文档同源(协议、主机和端口都相同)。
+
+创建 Worker 对象后，可以使用 `postMessage()` 方法向工作线程发送数据。传给 `postMessage()` 的值会使用[结构化克隆算法](#15104-使用-pushstate-管理历史)被复制，得到的副本会通过消息事件发送给工作线程：
+
+```js
+dataCruncher.postMessage('/api/data/to/crunch');
+```
+
+这里只发送了一个字符串消息，也可以发送对象、数组、定型数组、映射等。通过监听 Worker 对象的 “message” 事件，可以从工作线程接收消息：
+
+```js
+dataCruncher.onmessage = function (e) {
+  let stats = e.data; // 消息保存在事件对象的 data 属性中
+  console.log(`Average: ${stats.mean}`);
+};
+```
+
+与所有事件目标一样，Worker 对象定义了标准的 `addEventlistener()` 和 `removeEventListener()` 方法，可以用它们代替 `onmessage`。
+
+除了 `postMessage()`，Worker 对象只有另外一个方法 `terminate()`，用于强制停止工作线程。
+
+#### 15.13.2 工作线程中的全局对象
+
+在通过 Worker() 构造函数创建新工作线程时，传入的 URL 指定的是一个 JS 代码文件。其中的代码会在一个新的、干净的 JS 执行环境中执行，与创建工作线程的脚本完全隔离。这个新执行环境中的全局对象是一个 WorkerGlobalScope 对象。WorkerGlobalScope 比核心 JS 全局对象多一些东西，但又比客户端中完整的 Window 对象少一些东西。
+
+WorkerGlobalScope 对象也有 `postMessage()` 方法和 `onmessage` 事件处理程序，只是方向与 Worker 对象上的恰好相反。在工作线程内部调用 `postMessage()` 会在外部生成消息事件，而在工作线程外部发送的消息会转换为事件并发送给内部的 `onmessage` 事件处理程序。因为 WorkerGlobalScope 是工作线程的全局对象，`postMessage()` 和 `onmessage` 在工作线程的代码中看起来就像一个全局函数和一个全局变量。
+
+如果给 Worker() 构造函数传入对象作为第二个参数，而该对象有一个 `name` 属性，则这个属性的值就会成为工作线程中全局对象的 `name` 属性的值。在通过 console.warn() 或 console.error() 打印的任何消息中，工作线程都包含这个名字（name）。
+
+而 `close()` 函数可以让工作线程终止自己，效果与调用 Worker 对象的 `terminate()` 方法一样。
