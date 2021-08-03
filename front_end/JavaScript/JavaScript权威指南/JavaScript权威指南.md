@@ -322,6 +322,15 @@ title: JavaScript权威指南
       - [15.10.4 使用 pushState() 管理历史](#15104-使用-pushstate-管理历史)
     - [15.11 网络](#1511-网络)
       - [15.11.1 fetch()](#15111-fetch)
+      - [15.11.2 服务器发送事件](#15112-服务器发送事件)
+      - [15.11.3 Web Socket](#15113-web-socket)
+    - [15.12 存储](#1512-存储)
+      - [15.12.1 localStorage 和 sessionStorage](#15121-localstorage-和-sessionstorage)
+      - [15.12.2 cookie](#15122-cookie)
+      - [15.12.3 IndexedDB](#15123-indexeddb)
+    - [15.13 工作线程与消息传递](#1513-工作线程与消息传递)
+      - [15.13.1 Worker 对象](#15131-worker-对象)
+      - [15.13.2 工作线程中的全局对象](#15132-工作线程中的全局对象)
 
 <!-- /code_chunk_output -->
 
@@ -2647,7 +2656,7 @@ table[5][7]; // 35
   a.every(x => x % 2 === 0); // false：并非所有值都是偶数
   ```
 
-  `some()` 方法类似于数学上的 “存在” 量词，只要数组元素中有一个让断言函数 true 它就返回 true，但必须数组的所有元素对断言函数都返回 false 才返回 false:
+  `some()` 方法类似于数学上的 “存在” 量词，只要数组元素中有一个让断言函数 true 它就返回 true，但必须数组的所有元素对断言函数都返回 false 才返回 false：
 
   ```js
   let a = [1, 2, 3, 4, 5];
@@ -2655,7 +2664,7 @@ table[5][7]; // 35
   a.some(isNaN); // false，a 没有非数值
   ```
 
-  > **注意**：如果在空数组上调用它们，按照数学的传统，`every()` 返回 true，`sone()` 返回 false。
+  > **注意**：如果在空数组上调用它们，按照数学的传统，`every()` 返回 true，`some()` 返回 false。
 
 - `reduce()` 与 `reduceRight()`
 
@@ -12696,7 +12705,7 @@ oldValue
 storageArea
 : 变化的 Storage 对象。通常是 localStorage 对象。
 
-urL
+url
 : 导致这次存储变化的脚本所在文档的 URL（字符串）。
 
 > **注意**：localStorage 和 “storage” 事件可以作为一种广播机制，即浏览器向所有当前浏览同一网站的窗口发送消息。比如，如果用户要求网站停止执行动画，网站可以把该偏好保存在 localStorage 中，以便未来访问时遵行。通过存储这个偏好，它会生成个事件，让其他显示相同网站的窗口也能遵守这个要求。
@@ -12945,7 +12954,7 @@ function lookupZipcodes(city, callback) {
 
 与任何线程 API 一样， Worker API 也有两部分。一部分是 Worker 对象，另一部分是 WorkerGlobalScope。前者是这个线程的外在部分，后者则是线程的内在部分。
 
-接下来几小节将介绍 Worker 和 Worker GlobalScope，也会讲解允许工作线程与主线程通信的消息传递 API。同样的通信 API 也用于文档与其包含的 `<iframe>` 元素之间的消息交换，相关内容也将在后面的小节介绍。
+接下来几小节将介绍 Worker 和 WorkerGlobalScope，也会讲解允许工作线程与主线程通信的消息传递 API。同样的通信 API 也用于文档与其包含的 `<iframe>` 元素之间的消息交换，相关内容也将在后面的小节介绍。
 
 #### 15.13.1 Worker 对象
 
@@ -12985,3 +12994,86 @@ WorkerGlobalScope 对象也有 `postMessage()` 方法和 `onmessage` 事件处�
 如果给 Worker() 构造函数传入对象作为第二个参数，而该对象有一个 `name` 属性，则这个属性的值就会成为工作线程中全局对象的 `name` 属性的值。在通过 console.warn() 或 console.error() 打印的任何消息中，工作线程都包含这个名字（name）。
 
 而 `close()` 函数可以让工作线程终止自己，效果与调用 Worker 对象的 `terminate()` 方法一样。
+
+由于 WorkerGlobalScope 是工作线程的全局对象，因此它拥有核心 JS 全局对象的所有属性，如 JSON 对象、isNaN() 函数、Date() 函数。不过，除此之外，WorkerGlobalScope 也拥有下列客户端 Window 对象的属性：
+
+- `self` 是对全局对象自身的引用。WorkerGlobalScope 不是 Window 对象，没有定义 `window` 属性。
+
+- setTimeout()、clearTimeout()、setInterval()、clearInterval() 等定时器方法。
+
+- `location` 属性描述传给 Worker() 构造函数的 URL。这个属性引用一个 Location 对象，就像 Window 对象上的 location 属性一样。 Location 对象有 `href`、`protocolhost`、`hostname`、`port`、`pathname`、`search` 和 `hash` 属性。但在工作线程中，这些属性**都是只读的**。
+
+- `navigator` 属性引用的是一个类似 Window 的 Navigator 对象。工作线程的 Navigator 对象拥有 `appName`、`appVersion`、`platform`、`userAgent` 和 `onLine` 属性。
+
+- 常用的事件目标方法 addEventlistener() 和 removeEventlistener()。
+
+最后，WorkerGlobalScope 对象还包含重要的客户端 JS API，比如 Console 对象、fetch()函数和 IndexedDB API。WorkerGlobalScope 也包含 Worker() 构造函数，这意味着工作线程也可以创建自己的工作线程。
+
+#### 15.13.3 在工作线程中导入代码
+
+浏览器支持 Worker 的时候 JS 还不支持模块系统，因此工作线程有自己一套独特的系统用于导入外部代码。WorkerGlobalScope 定义了 `importScripts()` 全局函数，所有工作线程都可以使用：
+
+```js
+// 在开始之前，加载需要的类和辅助程序
+importScripts('utils/Histogram.js', 'utils/BitSet.js');
+```
+
+`importScripts()` 接收一个或多个 URL 参数，每个 URL 引用一个 JS 代码文件。相对 URL 的解析相对于传给 Worker() 构造函数的 URL（而不是相对于包含文档）。importScripts() 按照传入顺序一个接一个地同步加载并执行这些文件。如果加载某个脚本时出现网络错误，或者如果执行某个脚本时抛出了任何错误，则后续脚本都不会再加载或执行。通过 importScripts() 加载的脚本自身也可以调用 importScripts() 加载自己的依赖文件。
+
+> **注意**：`importScripts()` 不会跟踪已经下载了哪些脚本，也不会阻止循环依赖。
+
+`importScripts()` 是同步函数，即它会在所有脚本都加载并执行完毕后返回。`importScripts()` 返回后，就可以立即使用它所加载的脚本，不需要回调、事件处理程序、then() 方法或 await。一旦习惯了客户端 js 的异步特性，再碰到简单的同步代码反而会让人觉得有点怪。但这正是线程的优点，工作线程中的任何阻塞函数都不会影响主线程的事件循环，也不会影响其他工作线程中的并行计算。
+
+**在工作线程中使用模块**
+为了在工作线程中使用模块，必须给 Worker() 构造函数传入第二个参数。这个参数必须是一个有 `type` 属性且值为 `module` 的对象。给 Worker() 构造函数传入 `type:"module"` 选项与在 HTML `<script>` 标签中添加 `type="module"` 类似，都是表示应该将当前代码作为模块来解释，并允许使用 `import` 声明。
+
+如果工作线程加载的是模块而非常规脚本，WorkerGlobalScope 上不会再定义 importScripts() 函数。
+
+> **注意**：截止到 2020 年初，Chrome 是唯一真正在工作线程中支持模块和 import 声明的浏览器。
+
+#### 15.13.4 工作线程执行模型
+
+工作线程自上而下地同步运行自己的代码（和所有导入的脚本及模块），之后就进入了异步阶段，准备对事件和定时器作出响应。如果注册了 “message” 事件处理程序，只要有收到消息事件的可能，则工作线程就不会退出。而如果工作线程没有监听消息事件，它会运行直到没有其他待决的任务（如 fetch() 期约和定时器），且所有任务相关的回调都被调用。在所有注册的回调都被调用后，工作线程已经不可能再启动新任务了，此时线程可以安全退出，而且是自动的。工作线程也可以调用全局的 `close()` 函数显式将自己终止。
+
+> **注意**：Worker 对象上没有任何属性或方法可以告诉工作线程是否还在运行，因此除非与父线程协商一致，否则工作线程不应该主动终止自己。
+
+**工作线程中的错误**
+如果工作线程中出现了异常，而且没有被 catch 子句捕获，则会在全局对象上触发 “error” 事件。如果这个事件有处理程序，而且处理程序调用了事件对象的 `preventDefault()` 则错误会停止传播。否则，“error” 事件会在 Worker 对象上触发。如果这里调用了 preventDefault()，则传播停止。否则，开发者控制台会打印出错误消息，并调用 Window 对象的 [onerror 处理程序](#1517-程序错误)。
+
+```js
+// 在工作线程内处理未被捕的错误
+self.onerror = function (e) {
+  console.log(`Error in worker at ${e.filename}:${e.lineno}: ${e.message}`);
+  e.preventDefault();
+};
+
+// 否则，就要在工作线程外处理未被捕获的错误。
+worker.onerror = function (e) {
+  console.log(`Error in worker at ${e.filename}:${e.lineno}: ${e.message}`);
+  e.preventDefault();
+};
+```
+
+与在 window 上类似，工作线程也可以注册一个事件处理程序，以便期约被拒绝又没有 `catch()` 函数处理它时调用。为此，可以在工作线程内定义一个 self.onunhandledrejection 函数，或者使用 addEventlistener() 为全局事件 “unhandledrejection” 注册一个全局处理程序。传给这个处理程序的事件对象有一个 `promise` 属性，值为被拒绝的期约对象，还有一个 `reason` 属性，值为传给 `catch()` 函数的值。
+
+#### 15.13.5 postMessage()、MessagePort 和 MessageChannel
+
+Worker 对象的 `postMessage()` 方法和工作线程内部的全局 `postMessage()` 函数，都是通过调用在创建工作线程时一起创建的一对 MessagePort(消息端口)对象的 postMessage()方法来实现通信的。客户端 Javascript 无法直接访问这两个自动创建的 MessagePort 对象，但可以通过 Message Channe1()构造函数创建一对新的关联端口:
+
+```js
+Let channel new Message Channel
+Let myPort channel pe
+/创建新信道
+//它有两个相互
+Let your Port= channel port2;
+/连接的端口
+Port postMessage( "Can you hear me? )
+//在一个端口上发送消息
+your Port. onmessage=(e)= console.log(e.data);//可以在另一个端口收到
+```
+
+Message Channel 是一个对象，有两个属性 port1 和 port2，引用一对关联的 MessagePort 对象。 MessagePort 对象有一个 posmEssage()方法和一个 message 事件处理程序属性。在一个消息端口上调用 I postMessage()2 会触发关联消息端口的“ message 事件。通过设置 onmessage 属性或调用 addEventlistener()为“ message”事件注册监听器可以收到这些“ message”事件。
+
+发送到一个端口的消息在该端口定义 onmessage 属性或调用 start()方法之前会被放在一个队列中。这样可以防止信道一端发送的消息被另一端错过。如果调用了 MessagePort 的 addEventlistener()，不要忘了调用 start()，否则可能永远看不到发过来的消息。
+
+前面看到的 postMessage()调用都接收一个消息参数。实际上这个方法还接收可选的第二个参数，该参数是一个数组，数组的元素不是被复制到信道另一端，而是被转移到信道另一端。像这样可以转移而非复制的值包括 MessagePort 和 Array Buffer(有些浏览器
