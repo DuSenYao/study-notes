@@ -13058,22 +13058,164 @@ worker.onerror = function (e) {
 
 #### 15.13.5 postMessage()、MessagePort 和 MessageChannel
 
-Worker 对象的 `postMessage()` 方法和工作线程内部的全局 `postMessage()` 函数，都是通过调用在创建工作线程时一起创建的一对 MessagePort(消息端口)对象的 postMessage()方法来实现通信的。客户端 Javascript 无法直接访问这两个自动创建的 MessagePort 对象，但可以通过 Message Channe1()构造函数创建一对新的关联端口:
+Worker 对象的 `postMessage()` 方法和工作线程内部的全局 `postMessage()` 函数，都是通过调用在创建工作线程时一起创建的一对 MessagePort（消息端口）对象的 `postMessage()` 方法来实现通信的。客户端 JS 无法直接访问这两个自动创建的 MessagePort 对象，但可以通过 `MessageChannel()` 构造函数创建一对新的关联端口：
 
 ```js
-Let channel new Message Channel
-Let myPort channel pe
-/创建新信道
-//它有两个相互
-Let your Port= channel port2;
-/连接的端口
-Port postMessage( "Can you hear me? )
-//在一个端口上发送消息
-your Port. onmessage=(e)= console.log(e.data);//可以在另一个端口收到
+let channel = new MessageChannel(); // 创建新信道
+let myPort = channel.port1; // 它有两个相互
+let yourPort = channel.port2; // 连接的端口
+
+myPort.postMessage('Can you hear me?'); // 在一个端口上发送消息
+yourPort.onmessage = e => console.log(e.data); // 可以在另一个端口收到
 ```
 
-Message Channel 是一个对象，有两个属性 port1 和 port2，引用一对关联的 MessagePort 对象。 MessagePort 对象有一个 posmEssage()方法和一个 message 事件处理程序属性。在一个消息端口上调用 I postMessage()2 会触发关联消息端口的“ message 事件。通过设置 onmessage 属性或调用 addEventlistener()为“ message”事件注册监听器可以收到这些“ message”事件。
+MessageChannel 是一个对象，有两个属性 port1 和 port2，引用一对关联的 MessagePort 对象。MessagePort 对象有一个 `postMessage()` 方法和一个 `onmessage` 事件处理程序属性。在一个消息端口上调用 postMessage()，会触发关联消息端口的 “message” 事件。通过设置 `onmessage` 属性或调用 `addEventlistener()` 为 “message” 事件注册监听器可以收到这些 “message” 事件。
 
-发送到一个端口的消息在该端口定义 onmessage 属性或调用 start()方法之前会被放在一个队列中。这样可以防止信道一端发送的消息被另一端错过。如果调用了 MessagePort 的 addEventlistener()，不要忘了调用 start()，否则可能永远看不到发过来的消息。
+发送到一个端口的消息在该端口定义 `onmessage` 属性或调用 `start()` 方法之前会被放在一个队列中。这样可以防止信道一端发送的消息被另一端错过。如果调用了 MessagePort 的 addEventlistener()，不要忘了调用 start()，否则可能永远看不到发过来的消息。
 
-前面看到的 postMessage()调用都接收一个消息参数。实际上这个方法还接收可选的第二个参数，该参数是一个数组，数组的元素不是被复制到信道另一端，而是被转移到信道另一端。像这样可以转移而非复制的值包括 MessagePort 和 Array Buffer(有些浏览器
+前面看到的 postMessage() 调用都接收一个消息参数。实际上这个方法还接收可选的第二个参数，该参数是一个数组，数组的元素不是被复制到信道另一端，而是被转移到信道另一端。像这样可以转移而非复制的值包括 MessagePort 和 ArrayBuffer（有些浏览器也实现了其他可转移类型，如 ImageBitmap 和 OffscreenCanvas。但这些类型并未得到普遍支持）。如果 postMessage() 的第一个参数包含一个 MessagePort（嵌套在消息对象中某个地方），那么该 MessagePort 也必须出现在第二个参数中。这样来，这个 MessagePort 将被转移到另一个线程，并在当前线程立即失效。
+
+假设已经创建了一个工作线程，但希望有两个信道能够与之通信：一个信道用于交换普通数据，另一个信道用于交换高优先级消息。那么可以在主线程中创建一个 MessageChannel，然后调用 Worker 对象的 postMessage() 方法，把其中一个 MessagePort 传给工作线程：
+
+```js
+let worker = new Worker('worker.js');
+let urgentchannel = new MessageChannel();
+let urgentPort = urgentChannel.port1;
+worker.postMessage({ command: 'setUrgentPort', value: urgentChanne.port2 }, [urgentChannel.port2]);
+
+// 现在可以像这样接收工作线程发过来的紧急消息
+urgentPort.addEventListener('message', handleUrgentMessage);
+urgentPort.start(); // 开始接收消息
+// 像这样发送紧急消息
+urgentPort.postMessage('test');
+```
+
+使用 MessageChannel 也可以实现两个工作线程间直接通信，从而避免通过主线程代为转发消息。
+
+postMessage() 的第二个参数还可以用来在工作线程间转移而非复制 ArrayBuffer 对于较大的 ArrayBuffer，比如保存图像数据的 ArrayBuffer 而言，这样可以在很大程度上提升性能。当 ArrayBuffer 被 MessagePort 转移到另一端之后，原始线程就无法再使用该 ArrayBuffer 了，因而不存在并发访问其内容的可能。如果 postMessage() 的第一个参数中包含一个 ArrayBuffer，则该 ArrayBuffer 可以作为数组元素出现在 postMessage() 的第二个参数中。如果确实出现了，那么它会被转移而非复制。如果没有出现，那么这个 ArrayBuffer 就会被复制而不会被转移。示例 15-14 将展示通过这种技术转移 ArrayBuffer。
+
+#### 15.13.6 通过 postMessage() 跨源发送消息
+
+在客户端 JS 中，postMessage() 方法还有另一个使用场景。这个场景涉及窗口而不是工作线程，但两个场景有很多类似之处，只不过接下来要介绍的是 Window 对象上的 postMessage() 方法。
+
+如果文档中包含一个 `<iframe>` 元素，则该元素就像一个嵌入但独立的窗口。表示 `<iframe>` 的 Element 对象有一个 `contentWindow` 属性，也就是那个嵌套文档的 Window 对象。对于在这个嵌入窗格（iframe）中运行的脚本，`window.parent` 属性引用包含文档的 Window 对象。当两个窗口显示的文档具有相同来源时，两个窗口中的脚本都拥有访问另一个窗口中内容的权限。但是如果两个文档的来源不同，浏览器的同源策略将阻止两个窗口中的 JS 相互访问对方的内容。
+
+对于工作线程，postMessage() 为两个独立的线程提供了无须共享内存就能通信的安全机制。对于窗口，postMessage() 也为两个独立的来源提供了安全交换消息的受控机制。即便同源策略阻止脚本访问另一个窗口的内容，仍然可以调用另一个窗口的 postMessage()，这样会触发该窗口的 “message” 事件，从而让该窗口脚本中的事件处理程序接收到。
+
+不过，Window 对象上的 postMessage() 方法与工作线程的 postMessage() 方法有一点不同。第一个参数仍然是可以通过结构化克隆算法复制的任意消息。但包含要转移而非复制对象的第二个可选参数变成了可选的第三个参数。窗口的 postMessage() 方法以个字符串作为其必需的第二个参数。这第二个参数应该是一个源（协议、主机名和可选的端口号），用于指定希望谁接收这条消息。如果传入 `“https://good.example.com”` 作为第二个参数，但把消息发送到了一个内容来源为 `“https://malware.example.com”` 的窗口，那么发送的消息将不会被派送。如果想把消息发送给任意来源的窗口，可以传 `x` 通配符作为第二个参数。
+
+在一个窗口或 `<iframe>` 中运行的 JS 代码可以通过定义窗口的 `onmessage` 属性或通过调用 addEventlistener() 为 “message” 事件注册处理程序，接收发送到该窗口或窗格的消息。与工作线程类似，在接收到窗口的 “message” 事件时，事件对象的 `data` 属性是发送过来的消息。不过，除此之外，派送到窗口的 “message” 事件也定义了 `source` 和 `origin` 属性。`source` 属性是发送事件的 Window 对象，因此可以使用 `event.source.postMessage()` 发送回信。`origin` 属性则是该窗口中内容的源。这个源是消息发送方无法伪造的，因此在收到 “message” 事件时，通常应该先验证发送消息的源的合法性。
+
+### 15.14 示例：曼德布洛特集合
+
+本示例演示了使用工作线程和消息机制并行完成计算密集型任务。不过，因为示例本身是一个交互式的真实 Web 应用，所以其中也涉及本章介绍的很多其他 API，包括历史管理，基于 `<canvas>` 使用 ImageData 类，以及键盘光标和缩放事件等。此外这个示例也演示了重要的核心 JS 特性，比如生成器，以及对期约的深度应用。
+
+如图 15-16 所示，这个示例程序用于显示和探索曼德布洛特集合，即一种包含漂亮图案的复数分形。
+
+![曼德布洛特集合的一部分](./image/曼德布洛特集合的一部分.jpg)
+
+图 15-16: 曼德布洛特集合的一部分
+
+这里的曼德布洛特集合是通过一组复平面上的点来定义的。在反复完成一系列复数乘法和加法计算后，这个复平面会产生一个大小在一定范围内的值。这个集合的轮廓极其复杂，计算哪些点在这个集合中，哪些点不在这个集合中，属于计算密集型任务。要产生 500×500 大小的曼德布洛特集合图像，必须计算 25 万个像素中的每个像素，判断它们是否属于该集合。而要验证与每个像素关联的值没有超出既定范围，必须重复完成 1000 甚至更多次复数乘法（迭代次数越多，得到的集合边界也越清晰。迭代次数越少，边界越模糊）。想到生成一幅高质量的曼德布洛特集合图片需要高达 2.5 亿次复数运算，就不难理解为什么工作线程是个得力的帮手了。示例 15-14 展示了使用的工作线程代码。这个文件相对简洁，其中只包含了大型程序所需的原始算力。不过，有两件事需要说明下。
+
+- 这个工作线程创建了一个 ImageData 对象，用于表示矩形的像素网格，针对这个网格会计算曼德布洛特集合的成员。但它并没有在 ImageData 中存储实际的像素值，而是使用了一个自定义的定型数组，将每个像素当成一个 32 位整数。工作线程在这个数组中存储了每个像素必需的迭代次数。如果针对每个像素计算得到的复数大小超过了 4，从数学上可以保证它不会受限制，称其为 “逃逸了”。因此这个工作线程针对每个像素返回的值都是在该值逃逸前的迭代次数。告诉工作线程对于每个值它应该尝试的最大迭代次数，以及到达最大值就可以认为是集合成员的像素。
+
+- 这个工作线程把 ImageData 关联的 ArrayBuffer 发送回主线程，因此无须复制与之关联的内存。
+
+```js
+// 示例15-14：用于计算曼德布洛特集合区域的工作线程代码
+// 这是一个简单的工作线程，它从父线程接收消息执行消息所描述的计算，然后再把计算结果发送回父线程
+onmessage = function (message) {
+  // 首先，分拆接收到的消息
+  // - tile是具有 width 和 height 属性的对象，表示需要计算其中包含的曼德布洛特集合成员的像素矩形的大小
+  // - (x0, y0) 是复平面上的一个点，对应切片（tile）的左上角位置的像素
+  // - perPixel 是实数轴和虚数轴上的像素大小
+  // - maxIterations 指定在判定某个像素在集合中之前要执行的最大迭代次数
+  const { tile, x0, y0, perPixel, maxIterations } = message.data;
+  const { width, height } = tile;
+  // 接下来，创建 ImageData 对象，用以表示像素的矩形数组，取得其内部 ArrayBuffer,并创建该缓冲的定型数组视图这样就可以将每个像素当作 1 个整数而非 4 个字节。
+  // 会在这个 iterations 数组中保存每个像素的迭代次数（父线程再把迭代次数转换为像素颜色）
+  const imageData = new ImageData(width, height);
+  const iterations = new Uint32Array(imageData.data.buffer);
+  // 现在开始计算。这里有 3 个嵌套的 for 循环
+  // 外面两个循环像素的行和列，内部的循环迭代每个像素，检查这是否 “逃逸了”
+  // 以下是几个循环变量：
+  // - row 和 column 是整数，表示像素坐标
+  // - x 和 y 表示每个像素的复数点: x + yi
+  // - index 是数组 iterations 中当前像素的索引
+  // - n 记录每个像素的迭代次数
+  // - max 和 min 记录当前矩形中已经检查过的像素的最大和最小迭代次数
+  let index = 0,
+    max = 0,
+    min = maxIterations;
+  for (let row = 0, y = y0; row < height; row++, y += perPixel) {
+    for (let column = 0, x = X0; column < width; column++, x += perPixel) {
+      // 对每个像素，都从复数 c = x + yi 开始
+      // 然后按照如下递归公式，重复计算复数 z(n+1):
+      //   z(0) = c
+      //   z(n+1) = z(n)^2 + c
+      // 如果 |z(n)|（z(n)的大小）大于2，则像素不属于集合，在 ∩ 次迭代后停止
+      let n; // 目前为止迭代的次数
+      let r = x,
+        i = y; // 从把 z(0) 设置为 c 开始
+      for (n = 0; n < maxIterations; n++) {
+        let rr = r * r,
+          ii = i * i; // 计算 z(n) 两部分的平方
+        if (rr + ii > 4) {
+          // 如果 |z(n)|^2 大于4,
+          break; // 就是逃逸了，停止迭代
+        }
+        i = 2 * r * i + y; // 计算 z(n+1) 的虚数部分
+        r = rr - ii + x; // 及 z(n+1) 的实数部分
+      }
+      iterations[index++] = n; // 记录每个像素的迭代次数
+      if (n > max) max = n; // 记录目前为目的最大值
+      if (n < min) min = n; // 同时记录最小值
+    }
+  }
+  // 计算完成后，把结果发送回父线程。此时会复制 imageData 对象，但它包含的巨大的 ArrayBuffer 只会转移出去，从而提升性能
+  postMessage({ tile, imageData, min, max }, [imageData.data.buffer]);
+};
+```
+
+例 15-15 展示了使用以上工作线程代码的曼德布洛特集合查看程序。这个长示例，其中集合了很多重要的核心和客户端 JS 特性及 API。代码中的注释非常完整。
+
+```js
+// 示例15-15: 显示和探索曼德布洛特集合的 Web 应用
+// 这个切片类表示一张画布或图片上的小矩形，切片可以把画布切成可以由工作线程独立处理的区块
+class Tile {
+  constructor(x, y, width, height) {
+    this.x = x; // 这里 Tile 对象的
+    this.y = y; // 属性表示大矩形
+    this.width = width; // 中切片的位置及
+    this.height = height; // 大小
+  }
+
+  // 这个静态方法是一个生成器，用于将指定宽度和高度的矩形切分成指定的行数和列数
+  // 回送 numRows * numCols 个覆盖该矩形的 Tile 对象
+  static *tiles(width, height, numRows, numCols) {
+    let columnWidth = Math.ceil(width / numCols);
+    let rowHeight = Math.ceil(height / numRows);
+    for (let row = 0; row < numRows; row++) {
+      let tileHeight =
+        row < numRows - 1
+          ? rowHeight // 大多数行的高度
+          : height - rowHeight * (numRows - 1); //最后一行的高度
+
+      for (let col = 0; col < numCols; col++) {
+        let tileWidth =
+          col < numCols - 1
+            ? columnWidth // 大多数列的宽度
+            : width - columnWidth * (numCols - 1); // 最后一列的宽度
+
+        yield new Tile(col * columnWidth, row * rowHeight, tileWidth, tileHeight);
+      }
+    }
+  }
+}
+
+/**
+ * 这个类表示一个工作线程池，所有工作线程运行的代码都一样
+ * 工作线程的代码必须可以按照接收到的消息执行某些计算，并发送回一条包含该计算结果的消息
+ */
+```
