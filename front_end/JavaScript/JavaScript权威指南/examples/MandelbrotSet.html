@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+    // 示例15-15: 显示和探索曼德布洛特集合的 Web 应用
+    // 这个切片类表示一张画布或图片上的小矩形，切片可以把画布切成可以由工作线程独立处理的区块
+    class Tile {
+      constructor(x, y, width, height) {
+        this.x = x; // 这里 Tile 对象的
+        this.y = y; // 属性表示大矩形
+        this.width = width; // 中切片的位置及
+        this.height = height; // 大小
+      }
+
+      // 这个静态方法是一个生成器，用于将指定宽度和高度的矩形切分成指定的行数和列数
+      // 回送 numRows * numCols 个覆盖该矩形的 Tile 对象
+      static *tiles(width, height, numRows, numCols) {
+        let columnWidth = Math.ceil(width / numCols);
+        let rowHeight = Math.ceil(height / numRows);
+        for (let row = 0; row < numRows; row++) {
+          let tileHeight =
+            row < numRows - 1
+              ? rowHeight // 大多数行的高度
+              : height - rowHeight * (numRows - 1); //最后一行的高度
+
+          for (let col = 0; col < numCols; col++) {
+            let tileWidth =
+              col < numCols - 1
+                ? columnWidth // 大多数列的宽度
+                : width - columnWidth * (numCols - 1); // 最后一列的宽度
+
+            yield new Tile(col * columnWidth, row * rowHeight, tileWidth, tileHeight);
+          }
+        }
+      }
+    }
+
+    /**
+     * 这个类表示一个工作线程池，所有工作线程运行的代码都一样
+     * 工作线程的代码必须可以按照接收到的消息执行某些计算，并发送回一条包含该计算结果的消息
+     *
+     * 有了 WorkerPool 和表示要完成任务的消息，只需在调用 addWork() 时传入该消息作为参数。
+     * 如果某个 Worker 对象空闲了，则消息就会立即发送给该工作线程。如果没有空闲的 Worker 对象，消息就会被放到队列中，等有 Worker 空闲时再发送
+     *
+     * addWork() 返回一个期约，该期约将以任务完成后发送回来的消息解决，如果工作线程抛出未处理的错误，期约将会被拒绝
+     */
+    class WorkerPool {
+      constructor(numWorkers, workerSource) {
+        this.idleWorkers = []; // 当前空间的工作线程
+        this.workQueue = []; // 当前未处理的任务
+        this.workerMap = new Map(); // 将工作线程映射到解决和拒绝函数
+
+        // 创建指定数量的工作线程，添加消息及错误处理程序，然后将它们保存在 idleWorkers 数组中
+        for (let i = 0; i < numWorkers; i++) {
+          let worker = new Worker(workerSource);
+          worker.onmessage = message => {
+            this._workerDone(worker, null, message.data);
+          };
+          worker.onerror = error => {
+            this.workerDone(worker, error, null);
+          };
+          this.idleWorkers[i] = worker;
+        }
+      }
+
+      // 工作线程完成任务时会调用这个方法，可能发回消息，也可能抛出错误
+      _workerDone(worker, error, response) {
+        // 找到这个工作线程的 resolve() 和 reject() 函数
+        // 然后从映射中删除这个工作线程的条目
+        let [resolver, rejector] = this.workerMap.get(worker);
+        this.workerMap.delete(worker);
+        // 如果队列中没有任务，把这个工作线程放回空闲线程数组
+        // 否则，从队列中取出任务，把任务发送给这个工作线程
+        if (this.workQueue.length === 0) {
+          this.idleWorkers.push(worker);
+        } else {
+          let [work, resolver, rejector] = this.workQueue.shift();
+          this.workerMap.set(worker, [resolver, rejector]);
+          worker.postMessage(work);
+        }
+        // 最后，解决或拒绝与这个工作线程关联的期约
+        error === null ? resolver(response) : rejector(error);
+      }
+
+      // 这个方法把任务添加到工作线程池并返回一个期约
+      // 该期约会在任务完成时解决为工作线程的响应。
+      // 任务是一个通过 postMessage() 发送给工作线程的值
+      // 如果有空闲的工作线程，则会立即发送任务消息。否则，任务会被放到队列中，等待空闲的工作线程
+      addWork(work) {
+        return new Promise((resolve, reject) => {
+          if (this.idleWorkers.length > 0) {
+            let worker = this.idleWorkers.pop();
+            this.workerMap.set(worker, [resolve, reject]);
+            worker.postMessage(work);
+          } else {
+            this.workQueue.push([work, resolve, reject]);
+          }
+        });
+      }
+    }
+
+    /**
+     * 这个类保存渲染曼德布洛特集合必需的状态信息
+     * 其中，cx 和 cy 属性是图片中心在复平面中的点
+     * 而 perPixel 属性指定图片中一个像素对应复数中多少实数和虚数部分的变化。
+     * maxIterations 属性指定计算这个集合的工作难度。这个数越大，计算量越大，但产生的图片越锐利。注意画布的大小没有保存在这个状态信息中。
+     * 有了cx、cy 和 perPixel，可以按照当前大小在画布上面渲染曼德布洛特集合的任意部分
+     *
+     * 这个类的对象用于 history.pushState()，也用于从收藏夹和共享 URL 中读取预期的状态
+     */
+    class PageState {
+      // 这个工厂方法返回用于显示整个集合的初始状态
+      static initialState() {
+        let s = new PageState();
+        s.cx = -0.5;
+        s.cy = 0;
+        s.perPixel = 3 / window.innerHeight;
+        s.maxIterations = 500;
+        return s;
+      }
+
+      // 这个工厂方法从 URL 中获取状态，如果无法从 URL 中读取有效的状态就返回 null
+      static fromURL(url) {
+        let s = new PageState();
+        let u = new URL(url); // 根据 URL 的搜索参数初始化状态
+        s.cx = parseFloat(u.searchParams.get('cx'));
+        s.cy = parseFloat(u.searchParams.get('cy'));
+        s.perPixel = parseFloat(u.searchParams.get('pp'));
+        s.maxIterations = parseInt(u.searchParams.get('it'));
+        // 如果取得了有效的值，返回 PageState 对象；否则返回 null
+        return isNaN(s.cx) || isNaN(s.cy) || isNaN(s.perPixel) || isNaN(s.maxIterations) ? null : s;
+      }
+
+      // 这个实例方法把当前状态编码为浏览器当前位置的搜索参数
+      toURL() {
+        let u = new URL(window.location);
+        u.searchParams.set('cx', this.cx);
+        u.searchParams.set('cy', this.cy);
+        u.searchParams.set('pp', this.perPixel);
+        u.searchParams.set('it', this.maxIterations);
+        return u.href;
+      }
+    }
+
+    // 这几个常量控制同时运行多少曼德布洛特集合计算，可以根据计算机的配置调整，以获得最佳性能
+    const ROWS = 3,
+      COLS = 4,
+      NUMWORKERS = navigator.hardwareConcurrency || 2;
+
+    // 这是曼德布洛特集合的主类
+    // 直接用要渲染的 <canvas> 元素调用构造函数即可，程序假设这个 <canvas> 元素的样式始终让它保持与浏览器窗口一样大。
+    class MandelbrotCanvas {
+      constructor(canvas) {
+        // 存储画布，取得其上下文对象，并初始化 WorkerPool
+        this.canvas = canvas;
+        this.context = canvas.getContext('2d');
+        this.workerPool = new WorkerPool(NUMWORKERS, 'mandelbrotWorker.js');
+
+        // 定义几个后面要用到的属性
+        this.tiles = null; // 画布的某个区域
+        this.pendingRender = null; // 当前并未渲染
+        this.wantsRerender = false; // 当前不需要渲染
+        this.resizeTimer = null; // 防止过于频繁的缩放
+        this.colorTable = null; // 用于把原始数据转换为像素值
+
+        // 设置事件处理程序
+        this.canvas.addEventListener('pointerdown', e => this.handlePointer(e));
+        window.addEventListener('keydown', e => this.handleKey(e));
+        window.addEventListener('resize', e => this.handleResize(e));
+        window.addEventListener('popstate', e => this.setState(e.state, false));
+
+        // 根据 URL 初始化状态，或者获取初始状态
+        this.state = PageState.fromURL(window.location) || PageState.initialState();
+
+        // 通过历史机制保存状态
+        history.replaceState(this.state, '', this.state.toURL());
+        // 设置画布大小并取得覆盖它的切片数组
+        this.setSize();
+        // 把曼德布洛特集合渲染到画布上
+        this.render();
+      }
+
+      // 设置画布大小并初始化 Tile 对象的数组
+      // 这个方法会在构造函数中调用，也会在浏览器窗口缩放时被 handleResize() 方法调用
+      setSize() {
+        this.width = this.canvas.width = window.innerWidth;
+        this.height = this.canvas.height = window.innerHeight;
+        this.tiles = [...Tile.tiles(this.width, this.height, ROWS, COLS)];
+      }
+
+      // 这个函数修改 Pagestate，然后用新状态重新渲染曼德布洛特集合，也通过 history.pushState() 保存新状态。
+      // 如果第一个参数是一个函数则会调用该函数并传入状态对象，调用后应该修改状态对象
+      // 如果第一个参数是对象，则直接把该对象的属性复制到状态对象中。
+      // 如果可选的第二个参数是 false，则不保存新状态（会在响应 popstate 事件调用 setState 时会这么做）
+      setState(f, save = true) {
+        // 如果第一个参数是函数，调用它更新状态。否则，把它的属性复制到当前状态
+        if (typeof f === 'function') {
+          f(this.state);
+        } else {
+          for (let property in f) {
+            this.state[property] = f[property];
+          }
+        }
+
+        // 无论如何，都尽快渲染新状态
+        this.render();
+
+        // 正常情况下会保存新状态。除非被调用时第二个参数是 false，这表示在响应 popstate 事件
+        if (save) {
+          history.pushState(this.state, '', this.state.toURL());
+        }
+      }
+
+      // 这个方法异步将 Pagestate 对象指定的曼德布洛特集合的一部分绘制到画布上。
+      // 构造函数会调用它，setState() 在状态变化时会调用它，画布大小变化时缩放处理程序也会调用它
+      render() {
+        // 有时候用户会使用键盘或鼠标触发渲染，但有可能比计算速度快。
+        // 不希望把所有渲染请求发送给工作线程池。如果正在渲染中，那么只做一个标记，表明需要重新渲染。
+        // 在当前渲染完成后，才会渲染当前状态，可能会跳过多个中间状态
+        if (this.pendingRender) {
+          // 如果已经在渲染中了
+          this.wantsRerender = true; // 做个标记表明稍后需要重新渲染
+          return; // 现在则什么也不做
+        }
+
+        // 取得状态变量并计算画布左上角位置的复数
+        let { cx, cy, perPixel, maxIterations } = this.state;
+
+        let x0 = cx - (perPixel * this.width) / 2;
+        let y0 = cy - (perPixel * this.height) / 2;
+
+        // 对每个 ROWS * COLS 切片，调用 addWork() 并发送消息给 mandelbrotWorker.js中的代码。
+        // 把得到的期约对象收集到一个数组中
+        let promises = this.tiles.map(tile =>
+          this.workerPool.addWork({
+            tile: tile,
+            x0: x0 + tile.x * perPixel,
+            y0: y0 + tile.y * perPixel,
+            perPixel: perPixel,
+            maxIterations: maxIterations
+          })
+        );
+
+        // 使用 Promise.all() 从期约数组中取得响应的数组，每个响应对应其中一个切片的计算结果。
+        // 回想一下在 mandelbrotWorker.js 中，每个响应都包含着 Tile 对象、包含迭代数而非像素值的 ImageData对象以及该切片的最小和最大迭代次数
+        this.pendingRender = Promise.all(promises)
+          .then(responses => {
+            // 首先，找到所有切片总体上最大和最小的迭代数，知道这些数值才可以为像素分配颜色
+            let min = maxIterations,
+              max = 0;
+            for (let r of responses) {
+              if (r.min < min) min = r.min;
+              if (r.max > max) max = r.max;
+            }
+
+            // 现在需要一种方式把工作线程的原始迭代数转换为在画布中可见的像素颜色值。
+            // 知道所有像素都在最小和最大迭代之间，因此可以预先计算好每个迭代数对应的颜色值，保存在 colorTable 数组中
+            // 如果还没有分配颜色表，或者颜色表的大小已经不对了就再分配一个新的
+            if (!this.colorTable || this.colorTable.length !== maxIterations + 1) {
+              this.colorTable = new Uint32Array(maxIterations + 1);
+            }
+
+            // 有了最大和最小值，就可以计算颜色表中对应的值了
+            // 集合中的像素会渲染为完全不透明的黑色，集合外的像素则会渲染为半透明的黑色，且迭代次数越多，越不透明。
+            // 迭代次数最小的像素就是透明的，因此会露出白色背景，从而形成了灰阶图像
+            if (min === max) {
+              // 如果所有像素都一样
+              if ((min = maxIterations)) {
+                // 则全部渲染为黑色
+                this.colorTable[min] = 0xff000000;
+              } else {
+                //  或者全部渲染为白色
+                this.colorTable[min] = 0;
+              }
+            } else {
+              // 在正常情况下，min 和 max 不相等，那么就使用对数比例将每个可能的迭代次数对应到 0 到 255 间的不透明度
+              // 然后使用左移操作符将其转换为像素值
+              let maxlog = Math.log(1 + max - min);
+              for (let i = min; i <= max; i++) {
+                this.colorTable[i] = Math.ceil((Math.log(1 + i - min) / maxlog) * 255) << 24;
+              }
+            }
+
+            // 现在把每个响应的 ImageData 中的迭代数转换为 colorTable 中的颜色值
+            for (let r of responses) {
+              let iterations = new Uint32Array(r.imageData.data.buffer);
+              for (let i = 0; i < iterations.length; i++) {
+                iterations[i] = this.colorTable[iterations[i]];
+              }
+            }
+            // 最后，使用 putImageData() 方法把所有 imageData 对象渲染为画布中对应的切片
+            // （不过，首先要删除可能被 pointerdown 事件处理程序设置的画布中的 CSS 变换）
+            this.canvas.style.transform = '';
+            for (let r of responses) {
+              this.context.putImageData(r.imageData, r.tile.x, r.tile.y);
+            }
+          })
+          .catch(reason => {
+            // 只要有任何期约出错，都会在这里把错误记录下来
+            // 这是不应该发生的，但万一发生了可以排错
+            console.error('Promise rejected in render():', reason);
+          })
+          .finally(() => {
+            // 在完成渲染后，清除 pendingrender 标记
+            this.pendingRender = null;
+            // 如果在渲染时有重新渲染的请求，则重新渲染
+            if (this.wantsRerender) {
+              this.wantsRerender = false;
+              this.render();
+            }
+          });
+      }
+
+      // 如果用户缩放了窗口，就会不断调用这个函数缩放画布并渲染曼德布洛特集合是非常耗时的做不到每秒中多次重新渲染
+      // 因此要使用计时器在缩放事件发生 200 毫秒之后再处理
+      handleResize(event) {
+        // 如果已经推迟了一次，则先清除计时器
+        if (this.resizeTime) clearTimeout(this.resizeTimer);
+        // 并推迟此调整
+        this.resizeTimer = setTimeout(() => {
+          this.resizeTimer = null; // 标记已经处理过了
+          this.setSize(); // 缩放画布及切片
+          this.render(); // 重新在新尺寸上渲染
+        }, 200);
+      }
+
+      // 如果用户按了一个键，就会触发这个事件处理程序对不同的键
+      // 会调用 setState()，而这个方法会渲染新状态、更新 URL 并在浏览器历史中保存状态
+      handleKey(event) {
+        switch (event.key) {
+        case 'Escape': // 按 Esc 回到初始状态
+          this.setState(PageState.initialState());
+          break;
+        case '+': // 按 + 增大迭代数
+          this.setState(s => {
+            s.maxIterations = Math.round(s.maxIterations * 1.5);
+          });
+          break;
+        case '-': // 按 - 减少迭代数
+          this.setState(s => {
+            s.maxIterations = Math.round(s.maxIterations / 1.5);
+            if (s.maxIterations < 1) s.maxIterations = 1;
+          });
+          break;
+        case 'o': // 按 o 放大
+          this.setState(s => (s.perPixel *= 2));
+          break;
+        case 'ArrowUp': // 向上箭头，向上滚动
+          this.setState(s => (s.cy -= (this.height / 10) * s.perPixel));
+          break;
+        case 'ArrowDown': // 向下箭头，向下滚动
+          this.setState(s => (s.cy += (this.height / 10) * s.perPixel));
+          break;
+        case 'ArrowLeft': // 向左箭头，向左滚动
+          this.setState(s => (s.cx -= (this.width / 10) * s.perPixel));
+          break;
+        case 'ArrowRight': // 向右箭头，向右滚动
+          this.setState(s => (s.cx += (this.width / 10) * s.perPixel));
+          break;
+        }
+      }
+
+      // 在画布上发生 pointerdown 事件时会调用这个方法
+      // 这个 pointerdown 事件可能是缩放手势（单击或点按）或平移（拖动）的开始。
+      // 这个处理程序为 countermove 和 pointer 事件注册处理程序，以响应后续的手势
+      // （这两个额外的处理程序会在 pointer 结束手势时被删除）
+      handlePointer(event) {
+        // 初始指针按下的像素坐标及时间，因为画布跟窗口一样大，这些坐标也就是画布上的坐标
+        const x0 = event.clientX,
+          y0 = event.clientY,
+          t0 = Date.now();
+
+        // 这是移动事件的处理程序
+        const pointerMoveHandler = event => {
+          // 已经移动了多少，已经过了多少时间
+          let dx = event.clientX - x0,
+            dy = event.clientY - y0,
+            dt = Date.now() - t0;
+          // 如果指针移动的距离已经够远或时间够长，则说明不是普通的单击，那就要使用 CSS 来平移
+          // （会在 pointerup 事件发生时真地重新渲染）
+          if (dx > 10 || dy > 10 || dt > 500) {
+            this.canvas.style.transform = `translate(${dx}px, ${dy}px)`;
+          }
+        };
+
+        // 这是 pointer 事件的处理程序
+        const pointerUpHandler = event => {
+          // 在指针抬起来时，手势结束，此时删除移动和抬起处理程序，等待下次手势
+          this.canvas.removeEventListener('pointermove', pointerMoveHandler);
+          this.canvas.removeEventListener('pointerup', pointerUpHandler);
+
+          // 指针移动了多远，过了多长时间
+          const dx = event.clientX - x0,
+            dy = event.clientY - y0,
+            dt = Date.now() - t0;
+          // 把状态对象分解为个别的常量值
+          const { cx, cy, perPixel } = this.state;
+
+          // 如果指针移动的距离已经够远或时间够长，则是一个平移手势，需要修改状态以修改中心点
+          // 否则，用户是在某个点上单击或点按，要在该点上居中和放大
+          if (dx > 10 || dy > 10 || dt > 500) {
+            // 用户平移图片 (dx,dy) 像素，把这些值转换为复平面的偏移
+            this.setState({ cx: cx - dx * perPixel, cy: cy - dy * perPixel });
+          } else {
+            // 用户单击。计算中心点要移动多少像素
+            let cdx = x0 - this.width / 2;
+            let cdy = y0 - this.height / 2;
+
+            // 使用 CSS 快速、临时地放大。
+            this.canvas.style.transform = `translate(${-cdx * 2}px, ${-cdy * 2}px) scale(2)`;
+
+            // 把复平面坐标设置为新的中心点，同时也把图片放大两倍
+            this.setState(s => {
+              s.cx += cdx * s.perPixel;
+              s.cy += cdy * s.perPixel;
+              s.perPixel /= 2;
+            });
+          }
+        };
+
+        // 在用户手势开始时，为后面紧跟着要发生的 pointermove 和 pointer 事件注册处理程序
+        this.canvas.addEventListener('pointermove', pointerMoveHandler);
+        this.canvas.addEventListener('pointerup', pointerUpHandler);
+      }
+    }
+
+    // 最后，这里是创建以及设置画布的代码。
+    // 注意这个 JS 文件可以自给自足。换句话说，HTML 文件只要用 <script> 包含它即可
+    let canvas = document.createElement('canvas'); // 创建画布元素
+    document.body.append(canvas); // 把它插入到文档中
+    document.body.style = 'margin:0'; // <body> 没有外边距
+    canvas.style.width = '100%'; // 让画布与页面一样宽
+    canvas.style.height = '100%'; // 同时也与页面一样高
+    new MandelbrotCanvas(canvas); // 开始渲染画布
+  </script>
+</html>

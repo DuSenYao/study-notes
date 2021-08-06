@@ -331,6 +331,11 @@ title: JavaScript权威指南
     - [15.13 工作线程与消息传递](#1513-工作线程与消息传递)
       - [15.13.1 Worker 对象](#15131-worker-对象)
       - [15.13.2 工作线程中的全局对象](#15132-工作线程中的全局对象)
+      - [15.13.3 在工作线程中导入代码](#15133-在工作线程中导入代码)
+      - [15.13.4 工作线程执行模型](#15134-工作线程执行模型)
+      - [15.13.5 postMessage()、MessagePort 和 MessageChannel](#15135-postmessage-messageport-和-messagechannel)
+      - [15.13.6 通过 postMessage() 跨源发送消息](#15136-通过-postmessage-跨源发送消息)
+    - [15.14 示例：曼德布洛特集合](#1514-示例曼德布洛特集合)
 
 <!-- /code_chunk_output -->
 
@@ -9119,7 +9124,7 @@ AsyncQueue.EOS = Symbol('end-of-stream');
 // 把指定文档元素上指定类型的事件推入一个 AsyncQueue 对象，然后返回这个队列，以便将其作为事件流来使用
 function eventStream(elt, type) {
   const q = new AsyncQueue(); // 创建一个队列
-  elt.addEventlistener(type, e => q.enqueue(e)); // 入队事件
+  elt.addEventListener(type, e => q.enqueue(e)); // 入队事件
   return q;
 }
 
@@ -10258,7 +10263,7 @@ JS 程序会从脚本执行阶段开始，然后过渡到事件处理阶段。�
 
 如果想定义一个终极错误处理程序，希望在出现这种未捕获异常时调用，那可以把 Window 对象的 `onerror` 属性设置为一个错误处理函数。当未捕获异常沿调用栈一路向上传播，错误消息即将显示在开发者控制台中时，`window.onerror` 函数将会以三个字符串参数被调用。`window.onerror` 收到的第一个参数是描述错误的消息。第二个参数是一个字符串，包含导致错误的 JS 代码的 URL。第三个参数是文档中发生错误的行号。如果 onerror 处理程序返回 true，意味着通知浏览器它已经处理了错误，不需要进一步行动了，换句话说，也就是浏览器不应该再显示自己的错误消息了。
 
-如果期约被拒绝而没有 catch() 函数处理它，那么这种情况非常类似未处理异常，也就是程序中意料之外的错误或逻辑错误。可以通过定义 `window.onunhandledrejection` 函数或者使用 window.addEventlistener() 为 “unhandledrejection” 事件注册一个处理程序来发现它。传给这个处理程序的事件对象会有一个 `promise` 属性，其值为被拒绝的 Promise 对象，还有一个 `reason` 属性，其值为本来要传 catch() 函数的拒绝理由。与前面介绍的错误处理程序类似，如果在这个未处理拒绝事件对象上调用 `preventDefault()`，浏览器就会认为错误已经处理，而不会在开发者控制台中显示错误消息了。
+如果期约被拒绝而没有 catch() 函数处理它，那么这种情况非常类似未处理异常，也就是程序中意料之外的错误或逻辑错误。可以通过定义 `window.onunhandledrejection` 函数或者使用 window.addEventListener() 为 “unhandledrejection” 事件注册一个处理程序来发现它。传给这个处理程序的事件对象会有一个 `promise` 属性，其值为被拒绝的 Promise 对象，还有一个 `reason` 属性，其值为本来要传 catch() 函数的拒绝理由。与前面介绍的错误处理程序类似，如果在这个未处理拒绝事件对象上调用 `preventDefault()`，浏览器就会认为错误已经处理，而不会在开发者控制台中显示错误消息了。
 
 > 虽然定义 `onerror` 和 `onunhandledrejection` 处理程序经常不是必需的，但如果想知道用户浏览器中发生了哪些意外错误，则作为一种 “遥感” 机制，可以利用它们把客户端错误上报给服务器（比如使用 fetch()函数发送 HTTP POST 请求）。
 
@@ -10388,7 +10393,7 @@ _API 特定事件_
 
 > **注意**：这些属性名是区分大小写的，必须全部小写，即便事件类型包含多个单词。
 
-使用事件处理程序属性有一个缺点，即这种方式假设事件目标对每种事件最多只有一个处理程序。一般来说，**使用 addEventlistener() 注册事件处理程序更好，因为该技术不会重写之前注册的处理程序**。
+使用事件处理程序属性有一个缺点，即这种方式假设事件目标对每种事件最多只有一个处理程序。一般来说，**使用 addEventListener() 注册事件处理程序更好，因为该技术不会重写之前注册的处理程序**。
 
 **设置事件处理程序属性：HTML**
 文档元素的事件处理程序属性也可以直接在 HTML 文件中作为对应 HTML 标签的属性来定义（在 JS 中注册在 Window 元素上的处理程序在 HTML 中可以定义为 `<body>` 标签的属性）。现代 Web 开发中通常不提倡使用这种技术，但它是可能的。
@@ -10426,13 +10431,13 @@ function (event) {
 
 - 可选的第三个参数是一个布尔值或对象。
 
-> **可以多次调用 `addEventlistener()` 在同一个对象上为同一事件类型注册多个处理程序**。当对象上发生该事件时，所有为这个事件而注册的处理程序都会按照注册它们的顺序被调用。在同一个对象上以相同的参数多次调用 `addEventlistener()` 没有作用，同一个处理程序只能注册一次，重复调用不会改变处理程序被调用的顺序。
+> **可以多次调用 `addEventListener()` 在同一个对象上为同一事件类型注册多个处理程序**。当对象上发生该事件时，所有为这个事件而注册的处理程序都会按照注册它们的顺序被调用。在同一个对象上以相同的参数多次调用 `addEventListener()` 没有作用，同一个处理程序只能注册一次，重复调用不会改变处理程序被调用的顺序。
 
-**与 `addEventlistener()` 对应的是 `removeEventListener()` 方法，它们的前两个参数是一样的（第三个参数也是可选的），只不过是用来从同一个对象上移除而不是添加事件处理程序**。
+**与 `addEventListener()` 对应的是 `removeEventListener()` 方法，它们的前两个参数是一样的（第三个参数也是可选的），只不过是用来从同一个对象上移除而不是添加事件处理程序**。
 
-`addEventlistener()` 可选的第三个参数是一个布尔值或对象。如果传入 true，函数就会被注册为捕获事件处理程序，从而在事件派发的另一个阶段调用它。15.2.4 节<!--TODO-->将介绍事件捕获。如果在注册事件监听器时给第三个参数传了 true，那么要移除该事件处理程序，必须在调用 `removeEventListener()` 时也传入 true 作为第三个参数。
+`addEventListener()` 可选的第三个参数是一个布尔值或对象。如果传入 true，函数就会被注册为捕获事件处理程序，从而在事件派发的另一个阶段调用它。15.2.4 节<!--TODO-->将介绍事件捕获。如果在注册事件监听器时给第三个参数传了 true，那么要移除该事件处理程序，必须在调用 `removeEventListener()` 时也传入 true 作为第三个参数。
 
-注册捕获事件处理程序只是 `addEventlistener()` 支持的 3 个选项之一。如果要传入其他选项，可以给第三个参数传一个对象，显式指定这些选项：
+注册捕获事件处理程序只是 `addEventListener()` 支持的 3 个选项之一。如果要传入其他选项，可以给第三个参数传一个对象，显式指定这些选项：
 
 ```js
 document.addEventListener('click', handleClick, {
@@ -10481,7 +10486,7 @@ target.onclick = function () {
 
 因此，没有意外，这个事件处理程序将作为它所在对象的方法被调用。换句话说，在事件处理程序的函数体中，this 关键字引用的是注册事件处理程序的对象。
 
-> 即便使用 `addEventlistener()` 注册，处理程序在被调用时也会以目标作为其 this 值。不过，这不适用于箭头函数形式的处理程序。箭头函数中 this 的值始终等于定义它的作用域的 this 值。
+> 即便使用 `addEventListener()` 注册，处理程序在被调用时也会以目标作为其 this 值。不过，这不适用于箭头函数形式的处理程序。箭头函数中 this 的值始终等于定义它的作用域的 this 值。
 
 **处理程序的返回值**
 **在现代 JS 中，事件处理程序不应该返回值**。在比较老的代码中，还可以看到返回值的事件处理程序，而且返回的值通常用于告诉浏览器不要执行与事件相关的默认动作。比如，如果一个表单 Submit 按钮的 onclick 处理程序返回 false，浏览器将不会提交表单。
@@ -10499,7 +10504,7 @@ target.onclick = function () {
 
 多数在文档元素上发生的事件都会冒泡。明显的例外是 “focus” “blur” 和 “scroll” 事件。文档元素的 “load” 事件冒泡，但到 Document 对象就会停止冒泡，不会传播到 Window 对象（Window 对象的 “load”事件处理程序只会在整个文档加载完毕后才被触发）。
 
-事件冒泡是事件传播的第三个 “阶段”。调用目标对象本身的事件处理程序是第二个阶段。第一阶段，也就是在目标处理程序被调用之前的阶段，叫作 “捕获” 阶段。如果 addEventlistener() 接收的第三个可选参数是 true 或 `{capture:true}`，那么就表明该事件处理程序会注册为捕获事件处理程序，将在事件传播的第一阶段被调用。事件传播的捕获阶段差不多与冒泡阶段正好相反。最先调用的是 Window 对象上注册的捕获处理程序，然后才调用 Document 对象的捕获处理程序，接着才是 `<body>` 元素。然后沿 DOM 树一直向下，直到事件目标父元素的捕获事件处理程序被调用。注册在事件目标本身的捕获事件处理程序不会在这个阶段被调用。
+事件冒泡是事件传播的第三个 “阶段”。调用目标对象本身的事件处理程序是第二个阶段。第一阶段，也就是在目标处理程序被调用之前的阶段，叫作 “捕获” 阶段。如果 addEventListener() 接收的第三个可选参数是 true 或 `{capture:true}`，那么就表明该事件处理程序会注册为捕获事件处理程序，将在事件传播的第一阶段被调用。事件传播的捕获阶段差不多与冒泡阶段正好相反。最先调用的是 Window 对象上注册的捕获处理程序，然后才调用 Document 对象的捕获处理程序，接着才是 `<body>` 元素。然后沿 DOM 树一直向下，直到事件目标父元素的捕获事件处理程序被调用。注册在事件目标本身的捕获事件处理程序不会在这个阶段被调用。
 
 **事件捕获提供了把事件发送到目标之前先行处理的机会**。捕获事件处理程序可用于调试，或者使用下一节介绍的事件取消技术过滤事件，让目标事件处理程序永远不会被调用。事件捕获最常见的用途是处理鼠标拖动，因为鼠标运动事件需要被拖动的对象来处理，而不是让位于其上的文档元素来处理。
 
@@ -10517,7 +10522,7 @@ target.onclick = function () {
 
 客户端 JS 事件 API 相对比较强大，可以使用它定义和派发自己的事件。比如，程序需要周期性地执行耗时计算或者发送网络请求，而在执行此操作期间，不能执行其他操作。想在此时显示一个转轮图标，告诉用户应用程序正忙。但忙碌的模块不需要知道应该在哪里显示转轮图标，它只需要派发一个事件，宣布自己正忙，然后在自己不忙的时候再派发另一个事件即可。UI 模块可以为这两个事件注册处理程序，然后以适当的方式在 UI 上告知用户即可。
 
-如果一个 JS 对象有 `addEventlistener()` 方法，那它就是一个 “事件目标”。这意味着该对象也有一个 `dispatchEvent()` 方法。可以通过 `CustomEvent()` 构造函数创建自定义事件对象，然后再把它传给 `dispatchEvent()`。`CustomEvent()` 的第一个参数是一个字符串，表示事件类型；第二个参数是一个对象，用于指定事件对象的属性。可以将这个对象的 `detail` 属性设置为一个字符串、对象或其他值，表示事件的上下文。如果想在一个文档元素上派发自己的事件，并希望它沿文档树向上冒泡，则要在第二个参数中添加 `bubbles:true`。下面看一个例子：
+如果一个 JS 对象有 `addEventListener()` 方法，那它就是一个 “事件目标”。这意味着该对象也有一个 `dispatchEvent()` 方法。可以通过 `CustomEvent()` 构造函数创建自定义事件对象，然后再把它传给 `dispatchEvent()`。`CustomEvent()` 的第一个参数是一个字符串，表示事件类型；第二个参数是一个对象，用于指定事件对象的属性。可以将这个对象的 `detail` 属性设置为一个字符串、对象或其他值，表示事件的上下文。如果想在一个文档元素上派发自己的事件，并希望它沿文档树向上冒泡，则要在第二个参数中添加 `bubbles:true`。下面看一个例子：
 
 ```js
 // 派发一个自定义事件，通知 UI 自已正忙
@@ -11316,7 +11321,7 @@ customELements.define(
  *
  * 事件的处理程序没有调用 preventDefault()，则这个元素会在事件派发完成时清除用户的输入
  *
- * 注意，HTML 和 JS 都没有 onsearch 和 onclear 属性。“search” 和 “clear” 事件的处理程序只能通过 addEventlistener() 来注册
+ * 注意，HTML 和 JS 都没有 onsearch 和 onclear 属性。“search” 和 “clear” 事件的处理程序只能通过 addEventListener() 来注册
  */
 class SearchBox extends HTMLElement {
   constructor() {
@@ -12060,7 +12065,7 @@ History 对象可以追溯到 Web 早期，当时文档都是被动的，所有�
 
 要使用这种历史管理机制，需要把渲染应用 “页面” 必需的状态信息编码为一个可以作为片段标识符的短字符串。为此需要写一个函数把页面状态转换为一个字符串，再写个函数来解析该字符串并重建其代表的页面状态。
 
-写完这两个函数之后，剩下的事情就简单了。定义一个 `window.onhashchange` 监听函数（或使用 addEventlistener() 注册 “hashchange” 监听器），读取 `location.hash`，并将该字符串转换为应用的状态的表示，再采取必要步骤显示该应用的新状态。
+写完这两个函数之后，剩下的事情就简单了。定义一个 `window.onhashchange` 监听函数（或使用 addEventListener() 注册 “hashchange” 监听器），读取 `location.hash`，并将该字符串转换为应用的状态的表示，再采取必要步骤显示该应用的新状态。
 
 如果用户的交互会导致应用进入新状态，不要直接渲染新状态。而要先把新状态编码为一个字符串，并将 `location.hash` 设置为该字符串。这样就会触发 “hashchange” 事件，而为该事件注册的事件处理程序将会显示该新状态。使用这种迂回技术可以保证新状态被插入浏览历史，因而 “后退” 和 “前进” 按钮继续有效。
 
@@ -12615,7 +12620,7 @@ Websocket.CLOSING
 WebSocket.CLOSED
 : WebSocket 已经关闭，不能再通信了。初始连接失败时也是这个状态。
 
-当 WebSocket 的状态从 CONNECTING 转变为 OPEN 时，它会触发 “open” 事件。可以通过设置 WebSocket 对象的 `onopen` 属性或调用该对象的 addEventlistener() 来监听这个事件。
+当 WebSocket 的状态从 CONNECTING 转变为 OPEN 时，它会触发 “open” 事件。可以通过设置 WebSocket 对象的 `onopen` 属性或调用该对象的 addEventListener() 来监听这个事件。
 
 如果 WebSocket 连接发生了协议错误或其他错误，WebSocket 对象会触发 “error” 事件。可以通过设置 `onerror` 来定义事件处理程序，也可以使用 addEventListener()。
 
@@ -12627,7 +12632,7 @@ WebSocket.CLOSED
 send() 方法会把要发送的消息保存在缓冲区，并在实际发送前返回。WebSocket 对象的 bufferedAmount 属性保存着还在缓冲区未发送的字节数（奇怪的是，当这个值变成 0 时 WebSocket 居然不触发任何事件）。
 
 **通过 WebSocket 接收消息**
-要通过 WebSocket 从服务器接收消息，注册 “message” 事件处理程序，可以设置 WebSocket 对象的 `onmessage` 属性，也可以调用 addEventlistener()。与 “message” 事件关联的事件对象是 MessageEvent 的实例，其 `data` 属性包含服务器的消息。如果服务器发送了 UTF-8 编码的文本，`event.data` 就是保存该文本的字符串。如果服务器发送了二进制格式的消息，则 `data` 属性（默认）是表示该数据的 Blob 对象。如果希望接收 ArrayBuffer 而不是 Blob，可以把 WebSocket 对象的 `binaryType` 属性设置为 `arraybuffer`。
+要通过 WebSocket 从服务器接收消息，注册 “message” 事件处理程序，可以设置 WebSocket 对象的 `onmessage` 属性，也可以调用 addEventListener()。与 “message” 事件关联的事件对象是 MessageEvent 的实例，其 `data` 属性包含服务器的消息。如果服务器发送了 UTF-8 编码的文本，`event.data` 就是保存该文本的字符串。如果服务器发送了二进制格式的消息，则 `data` 属性（默认）是表示该数据的 Blob 对象。如果希望接收 ArrayBuffer 而不是 Blob，可以把 WebSocket 对象的 `binaryType` 属性设置为 `arraybuffer`。
 
 还有其他一些 Web API 也使用 MessageEvent 对象交换消息。其中有的使用[结构化克隆算法](#15104-使用-pushstate-管理历史)通过消息传输复杂数据结构。WebSocket 不在其列：通过 WebSocket 交换的消息要么是 Unicode 字符的字符串，要么是字节的字符串（表现为 Blob 或 ArrayBuffer）。
 
@@ -12981,7 +12986,7 @@ dataCruncher.onmessage = function (e) {
 };
 ```
 
-与所有事件目标一样，Worker 对象定义了标准的 `addEventlistener()` 和 `removeEventListener()` 方法，可以用它们代替 `onmessage`。
+与所有事件目标一样，Worker 对象定义了标准的 `addEventListener()` 和 `removeEventListener()` 方法，可以用它们代替 `onmessage`。
 
 除了 `postMessage()`，Worker 对象只有另外一个方法 `terminate()`，用于强制停止工作线程。
 
@@ -13005,7 +13010,7 @@ WorkerGlobalScope 对象也有 `postMessage()` 方法和 `onmessage` 事件处�
 
 - `navigator` 属性引用的是一个类似 Window 的 Navigator 对象。工作线程的 Navigator 对象拥有 `appName`、`appVersion`、`platform`、`userAgent` 和 `onLine` 属性。
 
-- 常用的事件目标方法 addEventlistener() 和 removeEventlistener()。
+- 常用的事件目标方法 addEventListener() 和 removeEventlistener()。
 
 最后，WorkerGlobalScope 对象还包含重要的客户端 JS API，比如 Console 对象、fetch()函数和 IndexedDB API。WorkerGlobalScope 也包含 Worker() 构造函数，这意味着工作线程也可以创建自己的工作线程。
 
@@ -13054,7 +13059,7 @@ worker.onerror = function (e) {
 };
 ```
 
-与在 window 上类似，工作线程也可以注册一个事件处理程序，以便期约被拒绝又没有 `catch()` 函数处理它时调用。为此，可以在工作线程内定义一个 self.onunhandledrejection 函数，或者使用 addEventlistener() 为全局事件 “unhandledrejection” 注册一个全局处理程序。传给这个处理程序的事件对象有一个 `promise` 属性，值为被拒绝的期约对象，还有一个 `reason` 属性，值为传给 `catch()` 函数的值。
+与在 window 上类似，工作线程也可以注册一个事件处理程序，以便期约被拒绝又没有 `catch()` 函数处理它时调用。为此，可以在工作线程内定义一个 self.onunhandledrejection 函数，或者使用 addEventListener() 为全局事件 “unhandledrejection” 注册一个全局处理程序。传给这个处理程序的事件对象有一个 `promise` 属性，值为被拒绝的期约对象，还有一个 `reason` 属性，值为传给 `catch()` 函数的值。
 
 #### 15.13.5 postMessage()、MessagePort 和 MessageChannel
 
@@ -13069,9 +13074,9 @@ myPort.postMessage('Can you hear me?'); // 在一个端口上发送消息
 yourPort.onmessage = e => console.log(e.data); // 可以在另一个端口收到
 ```
 
-MessageChannel 是一个对象，有两个属性 port1 和 port2，引用一对关联的 MessagePort 对象。MessagePort 对象有一个 `postMessage()` 方法和一个 `onmessage` 事件处理程序属性。在一个消息端口上调用 postMessage()，会触发关联消息端口的 “message” 事件。通过设置 `onmessage` 属性或调用 `addEventlistener()` 为 “message” 事件注册监听器可以收到这些 “message” 事件。
+MessageChannel 是一个对象，有两个属性 port1 和 port2，引用一对关联的 MessagePort 对象。MessagePort 对象有一个 `postMessage()` 方法和一个 `onmessage` 事件处理程序属性。在一个消息端口上调用 postMessage()，会触发关联消息端口的 “message” 事件。通过设置 `onmessage` 属性或调用 `addEventListener()` 为 “message” 事件注册监听器可以收到这些 “message” 事件。
 
-发送到一个端口的消息在该端口定义 `onmessage` 属性或调用 `start()` 方法之前会被放在一个队列中。这样可以防止信道一端发送的消息被另一端错过。如果调用了 MessagePort 的 addEventlistener()，不要忘了调用 start()，否则可能永远看不到发过来的消息。
+发送到一个端口的消息在该端口定义 `onmessage` 属性或调用 `start()` 方法之前会被放在一个队列中。这样可以防止信道一端发送的消息被另一端错过。如果调用了 MessagePort 的 addEventListener()，不要忘了调用 start()，否则可能永远看不到发过来的消息。
 
 前面看到的 postMessage() 调用都接收一个消息参数。实际上这个方法还接收可选的第二个参数，该参数是一个数组，数组的元素不是被复制到信道另一端，而是被转移到信道另一端。像这样可以转移而非复制的值包括 MessagePort 和 ArrayBuffer（有些浏览器也实现了其他可转移类型，如 ImageBitmap 和 OffscreenCanvas。但这些类型并未得到普遍支持）。如果 postMessage() 的第一个参数包含一个 MessagePort（嵌套在消息对象中某个地方），那么该 MessagePort 也必须出现在第二个参数中。这样来，这个 MessagePort 将被转移到另一个线程，并在当前线程立即失效。
 
@@ -13104,7 +13109,7 @@ postMessage() 的第二个参数还可以用来在工作线程间转移而非复
 
 不过，Window 对象上的 postMessage() 方法与工作线程的 postMessage() 方法有一点不同。第一个参数仍然是可以通过结构化克隆算法复制的任意消息。但包含要转移而非复制对象的第二个可选参数变成了可选的第三个参数。窗口的 postMessage() 方法以个字符串作为其必需的第二个参数。这第二个参数应该是一个源（协议、主机名和可选的端口号），用于指定希望谁接收这条消息。如果传入 `“https://good.example.com”` 作为第二个参数，但把消息发送到了一个内容来源为 `“https://malware.example.com”` 的窗口，那么发送的消息将不会被派送。如果想把消息发送给任意来源的窗口，可以传 `x` 通配符作为第二个参数。
 
-在一个窗口或 `<iframe>` 中运行的 JS 代码可以通过定义窗口的 `onmessage` 属性或通过调用 addEventlistener() 为 “message” 事件注册处理程序，接收发送到该窗口或窗格的消息。与工作线程类似，在接收到窗口的 “message” 事件时，事件对象的 `data` 属性是发送过来的消息。不过，除此之外，派送到窗口的 “message” 事件也定义了 `source` 和 `origin` 属性。`source` 属性是发送事件的 Window 对象，因此可以使用 `event.source.postMessage()` 发送回信。`origin` 属性则是该窗口中内容的源。这个源是消息发送方无法伪造的，因此在收到 “message” 事件时，通常应该先验证发送消息的源的合法性。
+在一个窗口或 `<iframe>` 中运行的 JS 代码可以通过定义窗口的 `onmessage` 属性或通过调用 addEventListener() 为 “message” 事件注册处理程序，接收发送到该窗口或窗格的消息。与工作线程类似，在接收到窗口的 “message” 事件时，事件对象的 `data` 属性是发送过来的消息。不过，除此之外，派送到窗口的 “message” 事件也定义了 `source` 和 `origin` 属性。`source` 属性是发送事件的 Window 对象，因此可以使用 `event.source.postMessage()` 发送回信。`origin` 属性则是该窗口中内容的源。这个源是消息发送方无法伪造的，因此在收到 “message” 事件时，通常应该先验证发送消息的源的合法性。
 
 ### 15.14 示例：曼德布洛特集合
 
@@ -13112,110 +13117,24 @@ postMessage() 的第二个参数还可以用来在工作线程间转移而非复
 
 如图 15-16 所示，这个示例程序用于显示和探索曼德布洛特集合，即一种包含漂亮图案的复数分形。
 
-![曼德布洛特集合的一部分](./image/曼德布洛特集合的一部分.jpg)
+![曼德布洛特集合](./image/曼德布洛特集合.png)
 
-图 15-16: 曼德布洛特集合的一部分
+图 15-16: 曼德布洛特集合
 
-这里的曼德布洛特集合是通过一组复平面上的点来定义的。在反复完成一系列复数乘法和加法计算后，这个复平面会产生一个大小在一定范围内的值。这个集合的轮廓极其复杂，计算哪些点在这个集合中，哪些点不在这个集合中，属于计算密集型任务。要产生 500×500 大小的曼德布洛特集合图像，必须计算 25 万个像素中的每个像素，判断它们是否属于该集合。而要验证与每个像素关联的值没有超出既定范围，必须重复完成 1000 甚至更多次复数乘法（迭代次数越多，得到的集合边界也越清晰。迭代次数越少，边界越模糊）。想到生成一幅高质量的曼德布洛特集合图片需要高达 2.5 亿次复数运算，就不难理解为什么工作线程是个得力的帮手了。示例 15-14 展示了使用的工作线程代码。这个文件相对简洁，其中只包含了大型程序所需的原始算力。不过，有两件事需要说明下。
+这里的曼德布洛特集合是通过一组复平面上的点来定义的。在反复完成一系列复数乘法和加法计算后，这个复平面会产生一个大小在一定范围内的值。这个集合的轮廓极其复杂，计算哪些点在这个集合中，哪些点不在这个集合中，属于计算密集型任务。要产生 500×500 大小的曼德布洛特集合图像，必须计算 25 万个像素中的每个像素，判断它们是否属于该集合。而要验证与每个像素关联的值没有超出既定范围，必须重复完成 1000 甚至更多次复数乘法（迭代次数越多，得到的集合边界也越清晰。迭代次数越少，边界越模糊）。想到生成一幅高质量的曼德布洛特集合图片需要高达 2.5 亿次复数运算，就不难理解为什么工作线程是个得力的帮手了。示例 15-14 展示了使用的工作线程代码。这个文件相对简洁，其中只包含了大型程序所需的原始算力。不过，有两件事需要说明下：
 
 - 这个工作线程创建了一个 ImageData 对象，用于表示矩形的像素网格，针对这个网格会计算曼德布洛特集合的成员。但它并没有在 ImageData 中存储实际的像素值，而是使用了一个自定义的定型数组，将每个像素当成一个 32 位整数。工作线程在这个数组中存储了每个像素必需的迭代次数。如果针对每个像素计算得到的复数大小超过了 4，从数学上可以保证它不会受限制，称其为 “逃逸了”。因此这个工作线程针对每个像素返回的值都是在该值逃逸前的迭代次数。告诉工作线程对于每个值它应该尝试的最大迭代次数，以及到达最大值就可以认为是集合成员的像素。
 
 - 这个工作线程把 ImageData 关联的 ArrayBuffer 发送回主线程，因此无须复制与之关联的内存。
 
-```js
-// 示例15-14：用于计算曼德布洛特集合区域的工作线程代码
-// 这是一个简单的工作线程，它从父线程接收消息执行消息所描述的计算，然后再把计算结果发送回父线程
-onmessage = function (message) {
-  // 首先，分拆接收到的消息
-  // - tile是具有 width 和 height 属性的对象，表示需要计算其中包含的曼德布洛特集合成员的像素矩形的大小
-  // - (x0, y0) 是复平面上的一个点，对应切片（tile）的左上角位置的像素
-  // - perPixel 是实数轴和虚数轴上的像素大小
-  // - maxIterations 指定在判定某个像素在集合中之前要执行的最大迭代次数
-  const { tile, x0, y0, perPixel, maxIterations } = message.data;
-  const { width, height } = tile;
-  // 接下来，创建 ImageData 对象，用以表示像素的矩形数组，取得其内部 ArrayBuffer,并创建该缓冲的定型数组视图这样就可以将每个像素当作 1 个整数而非 4 个字节。
-  // 会在这个 iterations 数组中保存每个像素的迭代次数（父线程再把迭代次数转换为像素颜色）
-  const imageData = new ImageData(width, height);
-  const iterations = new Uint32Array(imageData.data.buffer);
-  // 现在开始计算。这里有 3 个嵌套的 for 循环
-  // 外面两个循环像素的行和列，内部的循环迭代每个像素，检查这是否 “逃逸了”
-  // 以下是几个循环变量：
-  // - row 和 column 是整数，表示像素坐标
-  // - x 和 y 表示每个像素的复数点: x + yi
-  // - index 是数组 iterations 中当前像素的索引
-  // - n 记录每个像素的迭代次数
-  // - max 和 min 记录当前矩形中已经检查过的像素的最大和最小迭代次数
-  let index = 0,
-    max = 0,
-    min = maxIterations;
-  for (let row = 0, y = y0; row < height; row++, y += perPixel) {
-    for (let column = 0, x = X0; column < width; column++, x += perPixel) {
-      // 对每个像素，都从复数 c = x + yi 开始
-      // 然后按照如下递归公式，重复计算复数 z(n+1):
-      //   z(0) = c
-      //   z(n+1) = z(n)^2 + c
-      // 如果 |z(n)|（z(n)的大小）大于2，则像素不属于集合，在 ∩ 次迭代后停止
-      let n; // 目前为止迭代的次数
-      let r = x,
-        i = y; // 从把 z(0) 设置为 c 开始
-      for (n = 0; n < maxIterations; n++) {
-        let rr = r * r,
-          ii = i * i; // 计算 z(n) 两部分的平方
-        if (rr + ii > 4) {
-          // 如果 |z(n)|^2 大于4,
-          break; // 就是逃逸了，停止迭代
-        }
-        i = 2 * r * i + y; // 计算 z(n+1) 的虚数部分
-        r = rr - ii + x; // 及 z(n+1) 的实数部分
-      }
-      iterations[index++] = n; // 记录每个像素的迭代次数
-      if (n > max) max = n; // 记录目前为目的最大值
-      if (n < min) min = n; // 同时记录最小值
-    }
-  }
-  // 计算完成后，把结果发送回父线程。此时会复制 imageData 对象，但它包含的巨大的 ArrayBuffer 只会转移出去，从而提升性能
-  postMessage({ tile, imageData, min, max }, [imageData.data.buffer]);
-};
-```
+示例 15-14：用于计算曼德布洛特集合区域的工作线程代码
+
+[mandelbrotWorker.js](./examples/mandelbrotWorker.js)
 
 例 15-15 展示了使用以上工作线程代码的曼德布洛特集合查看程序。这个长示例，其中集合了很多重要的核心和客户端 JS 特性及 API。代码中的注释非常完整。
 
-```js
-// 示例15-15: 显示和探索曼德布洛特集合的 Web 应用
-// 这个切片类表示一张画布或图片上的小矩形，切片可以把画布切成可以由工作线程独立处理的区块
-class Tile {
-  constructor(x, y, width, height) {
-    this.x = x; // 这里 Tile 对象的
-    this.y = y; // 属性表示大矩形
-    this.width = width; // 中切片的位置及
-    this.height = height; // 大小
-  }
+示例 15-15：显示和探索曼德布洛特集合的 Web 应用
 
-  // 这个静态方法是一个生成器，用于将指定宽度和高度的矩形切分成指定的行数和列数
-  // 回送 numRows * numCols 个覆盖该矩形的 Tile 对象
-  static *tiles(width, height, numRows, numCols) {
-    let columnWidth = Math.ceil(width / numCols);
-    let rowHeight = Math.ceil(height / numRows);
-    for (let row = 0; row < numRows; row++) {
-      let tileHeight =
-        row < numRows - 1
-          ? rowHeight // 大多数行的高度
-          : height - rowHeight * (numRows - 1); //最后一行的高度
+[MandelbrotSet.html](./examples/MandelbrotSet.html)
 
-      for (let col = 0; col < numCols; col++) {
-        let tileWidth =
-          col < numCols - 1
-            ? columnWidth // 大多数列的宽度
-            : width - columnWidth * (numCols - 1); // 最后一列的宽度
-
-        yield new Tile(col * columnWidth, row * rowHeight, tileWidth, tileHeight);
-      }
-    }
-  }
-}
-
-/**
- * 这个类表示一个工作线程池，所有工作线程运行的代码都一样
- * 工作线程的代码必须可以按照接收到的消息执行某些计算，并发送回一条包含该计算结果的消息
- */
-```
+## 十六. Node
