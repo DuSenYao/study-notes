@@ -336,6 +336,18 @@ title: JavaScript权威指南
       - [15.13.5 postMessage()、MessagePort 和 MessageChannel](#15135-postmessage-messageport-和-messagechannel)
       - [15.13.6 通过 postMessage() 跨源发送消息](#15136-通过-postmessage-跨源发送消息)
     - [15.14 示例：曼德布洛特集合](#1514-示例曼德布洛特集合)
+    - [15.15 未来阅读建议](#1515-未来阅读建议)
+      - [15.15.1 HTML 与 CSS](#15151-html-与-css)
+      - [15.15.2 性能](#15152-性能)
+      - [15.15.3 安全](#15153-安全)
+      - [15.15.4 WebAssembly](#15154-webassembly)
+      - [15.15.5 更多 Document 和 Window 特性](#15155-更多-document-和-window-特性)
+      - [15.15.6 事件](#15156-事件)
+      - [15.15.7 PWA 与 Service Worker](#15157-pwa-与-service-worker)
+      - [15.15.8 移动设备 API](#15158-移动设备-api)
+      - [15.15.9 二进制 API](#15159-二进制-api)
+      - [15.15.10 媒体 API](#151510-媒体-api)
+      - [15.15.11 加密及相关 API](#151511-加密及相关-api)
 
 <!-- /code_chunk_output -->
 
@@ -13137,4 +13149,104 @@ postMessage() 的第二个参数还可以用来在工作线程间转移而非复
 
 [MandelbrotSet.html](./examples/MandelbrotSet.html)
 
-## 十六. Node
+### 15.15 未来阅读建议
+
+#### 15.15.1 HTML 与 CSS
+
+Web 构建于 3 个关键技术之上：HTML、CSS 和 JS。HTML 表单和输入元素有很丰富的功能需要深入理解。CSS 的 flexbox 和网格布局模式也是极其强大的另外两个有必要格外关注的领域是无障碍（包括 `ARIA` 属性）和国际化（包括对从右往左书写方向的支持）。
+
+#### 15.15.2 性能
+
+如果写了一个 Web 应用并且已上线，那么想方设法让它变得更快的日子就开始了。然而，没有度量就无法优化。因此有必要熟悉一下 Performace API。Window 对象的 `performance` 属性是这个 API 的主入口。其中包含高分辨率的时间源 `performance.now()`，以及在代码中打点的 `performance.mark()` 和度量断点之间运行时间的 `performance.measure()` 方法。调用这几个方法会创建 PerformanceEntry 对象，可以通过 `performance.genTries()` 访问它们。浏览器会在加载新页面或通过网络抓取到文件时添加自己的 PerformanceEntry 对象。而这些自动创建的 PerformanceEntry 对象包含应用的网络性能相关的细粒度时间信息。相关的 PerformanceObserver 类则允许指定一个函数，在新 PerformanceEntry 对象创建时调用。
+
+#### 15.15.3 安全
+
+本章介绍了如何防御 XSS（Cross-Site Scripting，跨站点脚本）安全漏洞的一般策略，但没有太深入讲解细节。Web 安全本身是一个重要的主题，大家也应该花点时间去研究。除了 XSS，还应该掌握 `Content-Security- Policy` Http 头部，以及理解 CSP 怎么要求浏览器限制它赋予 JS 代码的能力。理解 CORS（Cross-Origin ResourceSharing，跨源资源共享）也很重要。
+
+#### 15.15.4 WebAssembly
+
+WebAssembly（简称 WASM）是一种低级虚拟机字节码格式，专门用于在浏览器中与 JS 解释器配合使用。有些编译器可以将 C、C++ 和 Rust 程序编译为 WebAssembly 字节码，并在不破坏浏览器沙箱或安全模型的前提下，在浏览器中以接近原生的速度运行这些程序。WebAssembly 可以导出供 JS 程序调用的函数。WebAssembly 的典型应用场景是编译标准 C 语言 zlib 压缩库，以便 JS 代码可以使用高速压缩和解压缩算法。
+
+#### 15.15.5 更多 Document 和 Window 特性
+
+Document 和 Window 对象还有一些并未介绍的特性：
+
+- Window 对象定义了 alert()、confirm() 和 prompt() 方法，用于向用户显示简单的模态对话框。这些方法都会阻塞主线程。confirm() 方法同步返回一个布尔值，prompt() 同步返回一个用户输入的字符串。这些方法不适合在线上产品中使用，但在简单的项目和原型中可以使用。
+
+- Window 对象的 `navigator` 和 `screen` 属性在本章前面提到过，但它们引用的 Navigator 和 Screen 对象还有一些未介绍但可能有用的特性。
+
+- 任何 Element 对象的 `requestFullscreen()` 方法会要求浏览器以全屏模式显示该元素（比如 `<video>` 或 `<canvas>` 元素）。Document 的 `exitFullscreen()` 方法返回正常显示模式。
+
+- Window 对象的 `requestAnimationFrame()` 方法以一个函数作为参数，并会在浏览器准备渲染下一帧时执行该函数。在涉及视觉变化（特别是重复的视觉变化动画相关的视觉变化）的功能时，在代码中调用 `requestAnimationFrame()` 可以保证变化被浏览器按照最优的方式平滑渲染。
+
+- 如果用户选择了文档中的文本，可以通过 Window 对象的 `getSelection()` 方法获得选区的详细信息，并通过 `getSelection().toString()` 取得选中的文本。在有的浏览器中，`navigator.clipboard` 是一个具有异步 API 的对象，可以读取和设置系统剪贴板的内容，以支持浏览器外部应用的复制及粘贴操作。
+
+- 浏览器有一个鲜为人知的特性，就是 HTML 元素的 `contenteditable="true"` 属性可以让元素内容变得可以编辑。而 `document.execCommand()` 方法则支持对可编辑内容应用富文本编辑特性。
+
+- MutationObserver 对象允许 JS 监控文档中指定元素（或下方元素）的变化。通过 `MutationObserver()` 构造函数可以创建 MutationObserver 对象，传入的回调函数会在变化发生时被调用。然后再调用 MutationObserver 的 `observe()` 方法指定要监控哪个元素的哪个部分。
+
+- IntersectionObserver 对象允许 JS 确定哪个文档元素当前在屏幕上，哪个元素接近屏幕。对于随着用户滚动按需动态加载内容的应用，IntersectionObserver 非常有用。
+
+#### 15.15.6 事件
+
+已经介绍了很多种事件类型，但下面这些也很有用：
+
+- 浏览器会在获得和失去互联网连接时在 Window 对象上分别触发 “online” 和 “offline” 事件。
+
+- 浏览器会在文档（通常是因为用户切换标签页而）变得可见或不可见时在 Document 对象上触发 “visibilitychange” 事件。JS 可以检查 `document.visibilityState` 确定其文档当前是 “visible”（可见）还是 “hidden”（隐藏）。
+
+- 浏览器支持一套复杂的 API，以支持拖放 UI 和与浏览器外部应用程序的数据交换。这个 API 涉及很多事件，包括 “dragstart” “dragover” “dragend” 和 “drop”。虽然正确使用这个 API 比较麻烦，但必要时还是很有用的。如果希望支持用户从桌面向 Web 应用中拖放文件，那这个 API 就非常重要了。
+
+- Pointer Lock API 可以让 JS 隐藏鼠标指针，获得与鼠标指针在屏幕上的相对移动量而非绝对位置相关的原始鼠标事件。这通用对编写游戏很有用。首先在需要接收鼠标事件的元素上调用 `requestPointerLock()`，然后该元素就可以收到 “mousemove” 事件，事件对象上就会有 `movementX` 和 `movementY` 属性。
+
+- Gamepad API 增加了对游戏手柄（控制器）的支持。使用 `navigator.getGamepads()` 取得已连接的 Gamepad 对象，并监听 Window 对象上的 “gamepadconnected” 事件，可以在新手柄插入时收到通知。Gamepad 对象定义了一个 API，可以查询手柄按键的当前状态。
+
+#### 15.15.7 PWA 与 Service Worker
+
+PWA（Progressive Web App）指的是使用几种关键技术构建的一种 Web 应用形式。如果要详细讲解相关技术，差不多需要一本书的篇幅。但是，应该了解与之相关的所有 API。不过，像这样强大的现代 API 通常都只能在安全的 Https 连接下工作。使用 http 的网站则无法使用这些新技术。
+
+- Service Worker（服务线程）是一种工作线程，但具有在它 “服务” 的 Web 应用中拦截、检査和响应网络请求的能力。当 Web 应用注册了一个服务线程时，该线程的代码会在浏览器本地持久存储，而当用户再次访问关联的网站时，该服务线程会被重新激活。服务线程可以缓存网络响应（包括文件和 JS 代码)，这意味着使用服务线程的 Web 应用实际上可以把自己安装在用户的计算机上，从而实现快速启动和离线使用。要深入学习服务线程及相关技术，推荐阅读 [Service WorkerCookbook](https://serviceworke.rs/)。
+
+· Cache API 就是设计由服务线程来使用的（不过在工作线程外部的普通 JS 代码中也可以使用）。这个 API 要使用 fetch() API 定义的 Request 和 Response 对象，实现对 Request/Response 对的缓存。Cache API 可以让服务线程缓存脚本以及它所服务的 Web 应用的其他资源，也可以辅助实现 Web 应用的离线使用（对于移动设备而言尤其重要）。
+
+- Web Manifest 是 JSON 格式的文件，描述 Web 应用，包含名字、URL 和指向各种尺寸图标的链接。如果 Web 应用注册了服务线程，而且包含引用一个 .webmanifest 文件的 `<link rel="manifest">` 标签，则浏览器（特别是移动设备上的浏览器）可能会把该 Web 应用的图标添加到桌面或主屏幕上。
+
+- Notifications API 可以让 Web 应用在移动和桌面设备上使用原生 OS 的通知机制显示通知。通知可以包含图片和文本。如果用户单击了通知，代码可以收到事件。由于使用这个 API 涉及向用户请求显示通知的权限，所以还是有点复杂的。
+
+- Push API 可以让关联了服务线程（且已获得用户许可）的 Web 应用订阅服务器的通知，并能够在应用本身没有运行的情况下显示这些通知。推送通知在移动设备上很常见，而 Push API 让 Web 应用在移动设备上向原生应用又迈进了一步。
+
+#### 15.15.8 移动设备 API
+
+有不少 Web API 主要用于在移动设备上运行的 Web 应用（可惜的是，这些 API 中有很多只能在 Android 设备上使用，不能在 IOS 设备上使用）：
+
+- Geolocation API 可以让 JS（在用户许可的情况下）确定用户的地理位置。桌面和移动设备都支持这个 API，包括 IOS 设备。调用 `navigator.geolocation.getCurrentPosition()` 请求用户当前位置，调用 `navigator.geolocation.watchPosition()` 注册一个回调，当用户位置变化时可以调用它。
+
+- `navigator.vibrate()` 方法可以让移动设备（不包含 ISO 设备）震动。通常只能在响应用户某个手势时使用。调用这个方法可以让应用在识别出某个手势时给出无声的反馈。
+
+- ScreenOrientation API 让 Web 应用可以查询移动设备屏幕的当前朝向，也可以把自己锁定为横屏或竖屏模式。
+
+- Window 对象上的 “devicemotion” 和 “deviceorientation” 事件会报告设备的加速感应器和磁力感应器数据，从而确定设备加速的方式，以及用户在空间中的朝向（IOS 也支持这些事件）。
+
+- 除 Android 设备上的 Chrome 之外，Sensor API 还没有得到广泛支持。它可以让 JS 访问移动设备上的所有传感器，包括加速感应器、陀螺仪、磁力感应器和环境光传感器。这些传感器可以让 JS 确定用户面对哪个方向，或者确定用户什么时候晃动了自己的手机。
+
+#### 15.15.9 二进制 API
+
+定型数组、ArrayBuffer 和 DataView 类可以让 JS 操作二进制数据。fetch() API 让 JS 程序可以通过网络接收二进制数据。另一个二进制数据的来源是用户的本地文件系统。出于安全考虑，JS 不能读取用户本地文件。但如果用户选择了某个文件并上传（使用 `<input type="file">` 表单元素），或者用户把一个文件拖放到了 Web 应用中，那么 JS 可以通过 File 对象来访问这个文件。
+
+File 是 Blob 的子类，因此它也是一个数据块的不透明表示。可以使用 FileReader 类以 ArrayBuffer 或字符串形式异步获取文件的内容（在某些浏览器中，可以不用 FileReader，而直接使用 Blob 类定义的基于期约的 text() 和 arrayBuffer() 方法获取文件的内容，或者使用 stream() 方法通过流 API 访问文件内容）。
+
+在操作二进制数据，特别是使用流 API 访问二进制数据时，可能需要把字节解码为文本，或者把文本编码为字节。此时可以使用 TextEncoder 和 TextDecoder 类。
+
+#### 15.15.10 媒体 API
+
+JS 代码可以通过 `navigator.mediaDevices.getUserMedia()` 方法请求访问用户的麦克风或摄像头。请求成功会返回一个 MediaStream 对象。视频流可以显示在一个 `<video>`。标签中（通过把 `srcObject` 属性设置为视频流）。可以使用画布的 `drawImage()` 函数把视频的静态帧捕获到屏外的 `<canvas>` 元素上，得到一张低分辨率的图片。`getUserMedia()` 返回的音频流和视频流可以通过 Mediarecorder 录制并编码为 Blob 对象。
+
+更复杂的 WebRTC API 支持通过网络发送和接收 MediaStream，可以实现点对点的视频会议。
+
+#### 15.15.11 加密及相关 API
+
+Window 对象的 `crypto` 属性暴露了一个 `getRandomValues()` 方法，用于产生密码学意义上安全的伪随机数。与加密、解密、密钥生成、数字签名等相关的其他方法则暴露在 `crypto.subtle` 上。这个属性的名字（ subtle，难以捉摸）意在警告使用这些方法的所有人：正确使用加密算法是很难的，除非真的知道自己在干什么，否则不要使用这些方法。同样，`crypto.subtle` 的方法只能由通过安全的 Https 连接加载的文档中的 JS 代码使用。
+
+Credential Management API 和 Web Authentication API 可以让 JS 生成、存储和取得公钥（及其他类型的）凭据，从而实现免密创建账号和登录。这个 JS API 主要涉及函数 `navigator.credentials.create()` 和 `navigator.credentials.get()`，但为了让这两个方法起作用，服务端必须有对应的基础设施。这些 API 尚未得到普遍支持，但有希望颠覆现在登录网站的方式。
+
+Payment Request API 为浏览器增加了在网页上通过信用卡支付的能力。用户通过它可以把自己的支付信息存储在浏览器上，这样就不必每次购物时都输入一遍自己的信用卡号了。需要请求用户支付的 Web 应用要创建一个 PaymentRequest 对象，并调用它的 `show()` 方法向用户显示支付请求。
