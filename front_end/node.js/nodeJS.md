@@ -956,7 +956,271 @@ sha256(process.argv[2], (err, hash) => {
 
 ### 3.6 进程、CPU 和操作系统细节
 
-全局 Process 对象有很多有用的属性和函数，通常与当前运行的 Node 进程的状态相关。Node 文档中有这些属性和函数的详细说明，不过下面这些是需要注意的：
+**全局 Process 对象有很多有用的属性和函数，通常与当前运行的 Node 进程的状态相关**。Node 文档中有这些属性和函数的详细说明，不过下面这些是需要注意的：
+
+```js
+process.argv; // 包含命令行参数的数组
+process.arch; // CPU 架构：如 x64
+process.cwd(); // 返回当前工作目录
+process.chdir(); // 设置当前工作目录
+process.cpuUsage(); // 报告 CPU 使用情况
+process.env; // 环境变量对象
+process.execPath; // Node 可执行文件的绝对路径
+process.exit(); // 终止当前程序
+process.exitCode; // 程序退出时报告的整数编码
+process.getuid(); // 返回当前用户的 Unix 用户 ID
+process.hrtime.bigint(); // 返回 “高分辨率” 纳秒级时间戳
+process.kill(); // 向另一个进程发送信号
+process.memoryUsage(); // 返回一个包含内存占用细节的对象
+process.nextTick(); // 类似于 setImmediate()，立刻调用一个函数
+process.pid; // 当前进程的进程 ID
+process.ppid; // 父进程 ID
+process.platform; // 操作系统:如 Linux、Darwin 或 Win 32
+process.resourceUsage(); // 返回包含资源占用细节的对象
+process.setuid(); // 通过 ID 或名字设置当前用户
+process.title; // 出现在 ps 列表中的进程名
+process.umask(); // 设置或返回新文件的默认权限
+process.uptime(); // 返回 Node 正常运行的时间（秒）
+process.version; // Node 的版本字符串
+process.versions; // Node 依赖库的版本字符串
+```
+
+**os 模块（与 process 不同，需要通过 `require()` 显式加载）提供对 Node 所在计算机和操作系统的类似的低级细节**。尽管可能永远用不到这些特性，但应该知道 Node 暴露了这些信息：
+
+```js
+const os = require('os');
+os.arc(); // 返回 CPU 架构：如 x64 或 arm
+os.constants; // 有用的常量，如 os.constants.signals.SIGINT
+os.cpus(); // 关于系统 CPU 核心的数据，包括使用时间
+os.endianness(); // CPU 的原生字节序：BE 或 LE
+os.EOL; // 操作系统原生的行终止符：\n 或 \r\n
+os.freemem(); // 返回自由 RAM 数量（字节）
+os.getPriority(); // 返回操作系统调度进程的优先级
+os.homedir(); // 返回当前用户的主目录
+os.hostname(); // 返回计算机的主机名
+os.loadavg(); // 返回 1、5 和 15 分钟的平均负载
+os.networkInterfaces(); // 返回可用网络连接的细节
+os.platform(); // 返回操作系统：例如 Linux、Darwin 或 win32
+os.release(); // 返回操作系统的版本号
+os.setPriority(); // 尝试设置进程的调度优先级
+os.tmpdir(); // 返回默认的临时目录
+os.totalmem(); // 返回 RAM 的总数（字节）
+os.type(); // 返回操作系统：Linux、Darwin 或 Windows_NT 等
+os.uptime(); // 返回系统正常运行的时间（秒）
+os.userInfo(); // 返回当前用户的 uid、username、home 和 shell 程序
+```
+
+### 3.7 操作文件
+
+Node 的 fs 模块是用于操作文件和目录的综合性 APl。path 模块是 fs 模块的补充，定义了操作文件和目录名的常用函数。fs 模块包含很多高级函数，可以方便读、写和复制文件。但该模块中的大多数函数都是对 Unix 系统调用（及其 Windows 对应操作）的低级绑定。如果之前（在 C 或其他语言中）使用过低级文件系统调用，那么对 Node API 不会感到陌生。如果没有，可能会发现 fs 中的有些 API 过于简洁、不够直观。例如，删除文件的函数叫 `unlink()`。
+
+**fs 模块定义了大量 API，主要是因为每种基本操作都有很多变体**。正如本章一开始所说的，其中大多数函数都像 `fs.readFile()` 一样是非阻塞、基于回调的、异步的。不过，通常每个这样的函数都会有一个同步阻塞的变体，如 `fs.readFileSync()`。在 Node 10 及之后，很多这样的函数也有一个基于期约的异步变体，比如 `fs.promises.readFile()`。多数 fs 中的函数都以一个字符串作为第一个参数，用于指定要操作的文件的路径（文件名加上可选的目录名）。但其中某些函数也有变体支持以一个整数 “文件描述符” 而非字符串路径作为第一个参数。这样的变体会以字母 “f” 开头。例如，`fs.truncate()` 截取通过路径指定的文件，而 `fs.truncate()` 则截取通过文件描述符指定的文件。有一个基于期约的 `fs.promises.truncate()` 接收一个路径，还有一个基于期约的版本实现为 FileHandle 对象的一个方法（Filehandle 类在基于期约的 API 中等价于文件描述符）。最后，fs 模块中还有少量函数有名字前面加 “1” 的变量。这个带 “1” 的变体与基本函数类似，但不会跟踪文件系统中的符号链接，而是直接操作符号链接本身。
+
+#### 3.7.1 路径、文件描述符和 FileHandle
+
+为了使用 fs 模块操作文件，首先需要给要操作的文件命名。文件通常都是通过路径来指定的，也就是文件本身的名字再加上文件所在的目录层次。如果是绝对路径，那么路径就是从文件系统的根目录开始的。否则，就是相对路径，也就是该路径只有相对于其他某个路径（通常是当前工作路径）才有意义。由于不同操作系统使用不同的字符来分隔目录名，因此处理路径可能会有点棘手，很容易在拼接路径时意外造成这些分隔符重复，另外 `../` 父目录部分也需要特殊处理。Node 的 path 模块及其他一些重要的 Node 特性可以帮助处理路径：
+
+```js
+// 一些重要的路径
+process.cwd(); // 当前工作目录的绝对路径
+__filename; // 保存当前代码的文件的绝对路径
+__dirname; // 保存 __filename 的目录的绝对路径
+os.homedir(); // 用户的主目录
+const path = require('path');
+path.sep; // / 或者 \ ，取决于操作系统
+
+// path 模块提供了简单的解析函数
+let p = 'src/pkg/test.js'; // 示例路径
+path.basename(p); // "test.js"
+path.extname(p); // ".js"
+path.dirname(p); // "src/pkg"
+path.basename(path.dirname(p)); // "pkg"
+path.dirname(path.dirname(p)); // "src"
+
+// normalize() 清理路径:
+path.normalize('a/b/c/../d/'); // "a/b/d/"：处理 ../ 部分
+path.normalize('a/./b'); // "a/b"：去掉 ./ 部分
+path.normalize('//a//b//'); // "/a/b/"：去除重复的 /
+
+// join() 组合路径片段、添加分隔符，然后规范化
+path.join('src', 'pkg', 't.js'); // "src/pkg/t.js"
+// resolve() 接收一个或多个路径片段，返回一个绝对路径
+// 从最后一个参数开始，反向处理，直到构建起绝对路径或者相对于 process.cwd() 解析得到绝对路径
+path.resolve(); // process.cwd()
+path.resolve('t.js'); // path.join(process.cwd(), "t.js")
+path.resolve('/tmp', 't.js'); // "/tmp/t.js"
+path.resolve('/a', '/b', 't.js'); // "/b/t.js"
+```
+
+> **注意**：`path.normalize()` 只是一个简单的字符串操作函数，并不实际访问文件系统。`fs.realpath()` 和 `fs.realpathSync()` 函数执行基于文件系统的规范化，它们会解析符号链接并相对于当前工作目录解释相对路径名。
+
+在前面的例子中，假设代码运行在一个基于 Unix 的操作系统中，且 `path.sep` 是 “/”。如果想在 Windows 系统上也使用 Unix 风格的路径，可以使用 `path.posix` 代替 path。相应地，如果想在 Unix 系统中使用 Windows 路径，可以使用 `path.win32`。`path.posix` 和 `path.win32` 定义了与 path 相同的属性和函数。
+
+接下来几节将要介绍的一些函数接收文件描述符，而不是文件名。文件描述符是操作系统级的整数引用，可以用来 “打开” 文件。调用 `fs.pen()`（或 `fs.openSync()` 函数可以得到一个指定文件的描述符。进程一次只能打开有限个数的文件，因此在完成操作后，一定要在文件描述符上调用 `fs.close()`。如果想使用低级的 `fs.read()` 和 `fs.write()` 函数，那么就需要打开文件，然后才能在文件中跳转，读取或写入内容。fs 模块中还有另外些函数也使用文件描述符，但这些函数都有基于名字的版本，而且只有在想打开文件再读或写的情况下，这些基于描述符的函数才有意义。
+
+最后，在 `fs.promises` 定义的基于期约的 API 中，与 `fs.open()` 对应的是 `fs.promises.open()`。`fs.promises.open()` 返回一个期约，该期约会解决为一个 FileHandle 对象。这个 FileHandle 对象与文件描述符的作用相同。不过，除非需要使用 FileHandle 低级的 `read()` 和 `write()` 方法，否则没有必要去创建它。如果创建了 FileHandle，那应该记着完成操作后调用它的 `close()` 方法。
+
+#### 3.7.2 读文件
+
+Node 允许一次性读取文件的内容，可以通过流，也可以通过低级 API。
+
+如果文件很小，或者内存占用或性能并非主要考虑的因素，那么通过一次调用读取文件的全部内容是最简单的。这时，可以使用同步方法加回调，也可以使用期约。默认情况下，读取的文件内容是缓冲区中的字节。不过，通过指定编码则可以得到解码后的字符串。
+
+```js
+const fs = require('fs');
+let buffer = fs.readFileSync('test.data'); // 同步，返回缓冲区
+let text = fs.readFileSync('data.csv', 'utf8'); // 同步，返回字符串
+
+// 异步读取文件的字节
+fs.readFile('test.data', (err, buffer) => {
+  if (err) {
+    // 在这里处理错误
+  } else {
+    // 在这里处理文件的字节
+  }
+});
+
+// 基于期约的异步读取
+fs.promises.readFile('data.csv', 'utf8').then(processFileText).catch(handleReadError);
+
+// 或者在 async 函数中使用 await 和期约 API
+async function processText(filename, encoding = 'utf8') {
+  let text = await fs.promises.readFile(filename, encoding);
+  // 在这里处理文本
+}
+```
+
+如果可以顺序地处理文件内容，同时不需要把文件内容全都放到内存中，那通过流来读取文件可能是最有效的方式。下面这个函数展示了如何使用流和 pipe() 方法将一个文件内容写入标准输出：
+
+```js
+function printFile(filename, encoding = 'utf8') {
+  fs.createReadStream(filename, encoding).pipe(process.stdout);
+}
+```
+
+如果需要在更低层次上控制要读取文件的哪些字节，可以打开文件取得文件描述符，然后再使用 `fs.read()`、`f.readSync()` 或 `fs.promises.read()`，从文件中指定的来源位置将指定数量的字节读取到指定目标位置的指定缓冲区：
+
+```js
+const fs = require('fs');
+
+// 读取数据文件的特定部分
+fs.open('data', (err, fd) => {
+  if (err) {
+    return; // 报告错误
+  }
+  try {
+    // 把字节 20 到 420 读到新分配的缓冲区
+    fs.read(fd, Buffer.alloc(400), 0, 400, 20, (err, n, b) => {
+      // 如果有的话，err 是错误，n 是实际读取的字节数，b 是读入字节的缓冲区
+    });
+  } finally {
+    // 使用 finally 子句，以便任何情况下
+    fs.close(fd); // 都可以关闭文件描述符
+  }
+});
+```
+
+如果要从文件中读取多个数据块，这个基于回调的 `read()` API 使用起来会很麻烦。如果可以使用同步 API（或基于期约的 AP 及 await），那从一个文件中读取多个数据块就简单了：
+
+```js
+const fs = require('fs');
+function readData(filename) {
+  let fd = fs.openSync(filename);
+  try {
+    //读取文件头部
+    let header = Buffer.alloc(12); // 12 字节的缓冲区
+    fs.readSync(fd, header, 0, 12, 0);
+
+    // 验证文件的魔法数值
+    let magic = header.readInt32LE(0);
+    if (magic !== '0xDADAFEED') {
+      throw new Error('File is of wrong type');
+    }
+
+    // 现在从头部取得数据的偏移和长度
+    let offset = header.readInt32LE(4);
+    let length = header.readInt32LE(8);
+
+    // 并从文件中读取相应长度的字节
+    let data = Buffer.alloc(length);
+    fs.readSync(fd, data, 0, length, offset);
+    return data;
+  } finally {
+    // 即使上面抛出异常，也要关闭文件
+    fs.closeSync(fd);
+  }
+}
+```
+
+#### 3.7.3 写文件
+
+在 Node 中写文件与读文件很相似，但需要了解一些额外的细节。其中之一就是通过写入一个并不存在的文件名，可以创建一个新文件。
+
+与读文件一样，Node 中有 3 种写文件的基本方式。如果有字符串或缓冲区中全部的文件内容，可以调用 `fs.writeFile()`（基于回调）、`fs.writeFileSync()`（同步）或 `fs.promises.writeFile()`（基于期约）一次性写入全部内容：
+
+```js
+fs.writeFileSync(path.resolve(__dirname, 'settings.json'), JSON.stringify(settings));
+```
+
+如果要写入文件的数据是一个字符串，而且想使用非 “utf8” 编码，那么需要将该编码作为第三个参数传入。
+
+相关函数 `fs.appendFile()`、`fs.appendFileSync()` 和 `fs.promises.appendFile()` 也类似，只不过它们会在指定文件存在时，把数据追加到已有数据的末尾，而不会重写已有的文件内容。
+
+如果要写入文件的数据并不全在一个块中，或者如果在同一时刻并不全都在内存中，那么使用可写流是个好办法。假设想从头到尾写入数据，中间不会在文件内跳转：
+
+```js
+const fs = require('fs');
+let output = fs.createWriteStream('numbers.txt');
+for (let i = 0; i < 100; i++) {
+  output.write(`${i}\n`);
+  output.end();
+}
+```
+
+如果想以多个块的形式将数据写入文件，并且想控制把每个块都写入文件中的确切位置，那么可以使用 `fs.open()`、`fs.openSync()` 或 `fs.promises.open()` 打开文件，然后把生成的文件描述符再传给 `fs.write()` 或 `fs.writeSync()` 函数。这两个函数对字符串和缓冲区有不同的变体。字符串变体接收一个文件描述符、字符串和文件中写入该字符串的位置（以及可选的编码作为第 4 个参数）。缓冲区变体接收一个文件描述符、缓冲区、偏移量、缓冲区中数据块的长度，以及在文件中写入该数据块字节的位置。如果有一个要写入的 Buffer 对象的数组，可以调用一次 `fs.writev()` 或 `fs.writevSync()` 完成操作。类似地，用 `fs.promises.open()` 及其产生的 FileHandle 对象也可以在更低层次写入缓冲区和字符串。
+
+---
+
+**文件模式字符串**
+在前面使用低级 API 读取文件时，看到了 `fs.open()` 和 `fs.openSync()`。在那个用例中，只传入文件名就可以了。然而，在要写文件时，必须同时传入第二个字符串参数，用于指定准备如何使用这个文件描述符。可用的几个标志字符串如下：
+
+**w**
+: 为写入打开。
+
+**w+**
+: 为写入和读取打开
+
+**wx**
+: 为创建新文件打开。如果指定的文件存在则失败。
+
+**wx+**
+: 为创建文件打开，也允许读取。如果指定的文件存在则失败
+
+**a**
+: 为追加数据打开。原有内容不会被重写。
+
+**a+**
+: 为追加数据打开，但也允许读取。
+
+如果没有给 `fs.open()` 或 `fs.openSync()· 传以上任何标志字符串，那它们会使用默认的 “r” 标志，返回只读文件描述符。
+
+> **注意**：把这些标志传给其他文件写入方法同样有效。
+
+```js
+// 通过一次调用写入文件，但在原有内容基础上追加
+// 这就像是调用 fs.appendFileSync()
+fs.writeFileSync('messages.log', 'hello', { flag: 'a' });
+
+// 打开一个写入流，如果文件存在则抛出错误，不想意外重写任何文件
+// 注意：上面的选项是 “flag”，这里是 “flags”
+fs.createWriteStream('messages.log', { flags: 'wx' });
+```
+
+---
+
+可以通过 `fs.truncate()`、`fs.truncateSync()` 或 `fs.promises.truncate()` 截掉文件后面的内容。这几个函数以一个路径作为第一个参数，以一个长度作为第二个参数，将文件修改为指定的长度。如果省略长度参数，则使用默认值 0，结果文件会变空。不用管这些函数的名字，通过它们还可以扩展文件。如果指定的长度超出了当前文件大小，则文件会以 0 字节扩展到新大小。如果已经打开了要修改的文件，可以对文件描述符或 FileHandle 使用 `truncate()` 或 `ftruncateSync()`。
+
+这里介绍的各种文件写入函数在数据已经 “写入” 时（对 Node 而言就是把数据交给了操作系统），会返回或调用它们的回调或解决它们的期约。但这不一定意味着数据已经事实上写入了持久存储系统。至少其中有些数据仍然缓存在操作系统或设备驱动的某个地方，等待写入磁盘。如果你调用了 `fs.writeSync()` 同步向文件中写入某些数据，刚
 
 ### 2.2 使用 Node.js
 
