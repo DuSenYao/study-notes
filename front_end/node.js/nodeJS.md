@@ -40,6 +40,14 @@ author: dsy
       - [3.5.3 写入流及背压处理](#353-写入流及背压处理)
       - [3.5.4 通过事件读取流](#354-通过事件读取流)
     - [3.6 进程、CPU 和操作系统细节](#36-进程-cpu-和操作系统细节)
+    - [3.7 操作文件](#37-操作文件)
+      - [3.7.1 路径、文件描述符和 FileHandle](#371-路径-文件描述符和-filehandle)
+      - [3.7.2 读文件](#372-读文件)
+      - [3.7.3 写文件](#373-写文件)
+      - [3.7.4 文件操作](#374-文件操作)
+      - [3.7.5 文件元数据](#375-文件元数据)
+    - [3.7.6 操作目录](#376-操作目录)
+    - [3.8 HTTP 客户端与服务器](#38-http-客户端与服务器)
     - [2.2 使用 Node.js](#22-使用-nodejs)
       - [2.2.1 CommonJS 规范](#221-commonjs-规范)
       - [2.2.2 创建一个最简单的 HTTP 服务](#222-创建一个最简单的-http-服务)
@@ -1220,7 +1228,162 @@ fs.createWriteStream('messages.log', { flags: 'wx' });
 
 可以通过 `fs.truncate()`、`fs.truncateSync()` 或 `fs.promises.truncate()` 截掉文件后面的内容。这几个函数以一个路径作为第一个参数，以一个长度作为第二个参数，将文件修改为指定的长度。如果省略长度参数，则使用默认值 0，结果文件会变空。不用管这些函数的名字，通过它们还可以扩展文件。如果指定的长度超出了当前文件大小，则文件会以 0 字节扩展到新大小。如果已经打开了要修改的文件，可以对文件描述符或 FileHandle 使用 `truncate()` 或 `ftruncateSync()`。
 
-这里介绍的各种文件写入函数在数据已经 “写入” 时（对 Node 而言就是把数据交给了操作系统），会返回或调用它们的回调或解决它们的期约。但这不一定意味着数据已经事实上写入了持久存储系统。至少其中有些数据仍然缓存在操作系统或设备驱动的某个地方，等待写入磁盘。如果你调用了 `fs.writeSync()` 同步向文件中写入某些数据，刚
+这里介绍的各种文件写入函数在数据已经 “写入” 时（对 Node 而言就是把数据交给了操作系统），会返回或调用它们的回调或解决它们的期约。但这不一定意味着数据已经事实上写入了持久存储系统。至少其中有些数据仍然缓存在操作系统或设备驱动的某个地方，等待写入磁盘。如果你调用了 `fs.writeSync()` 同步向文件中写入某些数据，刚好在这个函数返回时掉电了，那可能会丢失数据。如果想把数据强制写入磁盘，保证数据得到安全存储，可以使用 `fs.fsync()` 或 `fs.fsyncSync()`。这两个函数只接收文件描述符，没有接收路径的版本。
+
+#### 3.7.4 文件操作
+
+前面在讨论 Node 流相关的类时，提到了两个 copyFile() 函数的例子。在实际开发中应该不会使用它们，因为 fs 模块定义了自己的 `fs.copyFile()` 方法（当然还有 `fs.copyFileSync()` 和 `fs.promises.copyFile()`）。
+
+这几个函数都接收原始文件的名字和副本的名字作为前两个参数。这两个参数可以是字符串、URL 或 Buffer 对象。它们还可以接收可选的第三个参数（即一个整数），该整数的位用于指定标志，以控制复制操作的细节。对于基于回调的 `fs.copyFile()`，最后个参数是一个回调函数，将在复制完成时被无参数调用或在复制出错时以错误参数调用。下面是两个例子：
+
+```js
+// 基本的同步文件复制
+fs.copyFileSync('ch15.txt', 'h15.bak');
+
+// COPYFILE_EXCL 参数表示只在新文件不存在时复制
+// 这个参数可以防止复制操作重写已有的文件
+fs.copyFile('ch15.txt', 'ch16.txt', fs.constants.COPYFILE_EXCL, err => {
+  // 这个回调将在复制完成时被调用。如果出错，err 将为非空值
+});
+
+// 以下代码演示了 copyFile 函数基于期约的版本
+// 两个标志以按位或操作符 | 组合。这个标志意味着已有的文件不会被重写
+// 而且如果文件系统支持副本将是原始文件的一个 “写时复制” 的副本
+// 这意味着如果原始内容或复本未被修改，则不需要占用额外的存储空间
+fs.promises
+  .copyFile(
+    'Important data',
+    `Important data ${new Date().toISOString()}`,
+    fs.constants.COPYFILE_EXCL | fs.constants.COPYFILE_FICLONE
+  )
+  .then(() => {
+    console.log('Backup complete');
+  })
+  .catch(err => {
+    console.error('Backup failed', err);
+  });
+```
+
+`fs.rename()` 函数（以及相应的同步和基于期约的变体）可以移动或重命名文件。调用它要传人当前文件路径和期望的新文件路径。没有标志参数，但基于回调的版本接收回调作为第三个参数：
+
+```js
+fs.renameSync('ch15.bak', 'backups/ch15.bak');
+```
+
+> **注意**：没有标志可以防止重命名的同时重写已有的文件。另外也要记住，文件只能在文件系统中被重命名。
+
+函数 `fs.link()` 和 `fs.symlink()` 及其变体与 `fs.rename` 有相同的签名，行为则类似于 `fs.copyFile`()，只是它们将分别创建硬链接和符号链接，而非创建一个副本。
+
+`fs.unlink()`、`fs.unlinkSync()` 和 `fs.promises.unlink()` 是 Node 用来删除文件的函数（这些不直观的名字继承于 Unix。在 Unix 中，删除文件基本上是为文件创建硬链接的反操作）。调用这些函数时可以传入字符串、缓冲区或要删除文件的 URL 路径，如果使用基于回调的版本，还要传入一个回调：
+
+```js
+fs.unlinkSync('backups/ch15.bak');
+```
+
+#### 3.7.5 文件元数据
+
+`fs.stat()`、`fs.statSync()` 和 `fs.promises.stat()` 函数可以取得指定文件或目录的元数据。例如：
+
+```js
+const fs = require('fs');
+let stats = fs.statSync('book/ch15.md');
+stats.isFile(); // true：这是一个普通文件
+stats.isDirectory(); // false：它不是一个目录
+stats.size; // 文件大小（字节）
+stats.atime; // 访问时间：最后读取的日期
+stats.mtime; // 修改时间：最后写入的日期
+stats.uid; // 文件所有者的用户 ID
+stats.gid; // 文件所有者的组 ID
+stats.mode.toString(8); // 八进制字符串形式的文件权限
+```
+
+返回的 Stats 对象还包含其他不那么直观的属性和方法，以上代码展示了其中最可能用到的。
+
+`fs.lstat()` 及其变体与 `fs.stat()` 类似，只是在指定文件为符号链接时，Node 会返回链接本身的元数据，而不会跟踪链接。
+
+如果已经打开一个文件并得到其文件描述符或 FileHandle 对象，那么可以使用 `fs.fstat()` 或其变体取得这个打开文件的元数据，而不必再指定文件名。
+
+除了通过 `fs.stat()` 及其所有变体查询元数据，还有其他函数可以修改元数据。
+
+`fs.chmod()`、`fs.lchmod()` 和 `fs.fchmod()`（以及相应的同步和基于期约的版本）用于设置文件或目录的 “模式” 或权限。模式值是整数，其中每一位都有特定的含义，而八进制表示方式最容易理解。例如，要让一个文件对其所有者只读且所有人都无权访问，可以使用 0o400：
+
+```js
+fs.chmodSync('ch15.md', 0o400); // 别意外删除了
+```
+
+`fs.chown()`、`fs.lchown()` 和 `fs.fchown()`（以及相应的同步和基于期约的版本）用于为文件或目录设置所有者和组（以 ID 形式）（这几个方法与通过 `fs.chmod()` 设置文件的权限有关系）。
+
+可以使用 `fs.utimes()` 和 `fs.futimes()` 及其变体设置文件或目录的访问时间和修改时间。
+
+### 3.7.6 操作目录
+
+在 Node 中要创建新目录，可以使用 `fs.mkdir()`、`fs.mkdirSync()` 或 `fs.promise.mkdir()`。第一个参数是要创建的目录的路径。第二可参数是可选的，是一个整数，表示新目录的模式（权限位），或者也可以传入一个包含可选 `mode` 和 `recursive` 属性的对象。如果 `recursive` 为 true，则这个函数会创建路径中所有不存在的目录：
+
+```js
+// 确保 dist/ 和 dist/lib/ 都会存在
+fs.mkdirSync('dist/lib', { recursive: true });
+```
+
+`fs.mkdtemp()` 及其变体接收一个传入的路径前缀，然后在后面追加一些随机字符（对于安全很重要），并以该名字创建一个目录，最后返回（或传给回调）这个目录的路径。要删除一个目录，使用 `fs.rmdir()` 或它的变体。注意，必须是空目录才能删除：
+
+```js
+// 创建一个随机临时目录并取得其路径
+// 创建完成后再删除它
+let tempDirPath;
+try {
+  tempDirPath = fs.mkdtempSync(path.join(os.tmpdir(), 'd'));
+  // 在这里对这个目录执行某些操作
+} finally {
+  // 执行完操作之后删除这个临时目录
+  fs.rmdirSync(tempDirPath);
+}
+```
+
+fs 模块提供了两组不同的 API 用于列出目录的内容。首先，`fs.readdir()`、`fs.readdirSync()` 和 `fs.promises.readdir()` 一次性读取整个目录，然后返回一个字符串数组或个指定了名字和类型（文件或目录）的 Dirent 对象的数组。这些函数返回的文件名就是这些文件的本地名，而非完整路径。下面是例子：
+
+```js
+let tempFiles = fs.readdirSync('/tmp'); // 返回字符串数组
+
+// 使用基于期约的 API 取得 Dirent 数组，然后打印出子目录的路径
+fs.promises
+  .readdir('/tmp', { withFileTypes: true })
+  .then(entries => {
+    entries
+      .filter(entry => entry.isDirectory())
+      .map(entry => entry.name)
+      .forEach(name => console.log(path, join('/tmp/', name)));
+  })
+  .catch(console.error);
+```
+
+如果预计要列出可能会包含数千个条目的目录，可以使用基于流的 `fs.opendir()` 及其变体。这些函数返回一个 Dir 对象，表示指定的目录。可以使用这个 Dir 对象的 `read()` 或 `readSync()` 方法每次读取一个 Dirent 对象。如果给 `read()` 传了回调，那它会调用这个回调。如果省略了回调，那它会返回一个期约。在没有更多目录条目时，会得到 null 而不是一个 Dirent 对象。
+
+使用 Dir 对象最简单的方式是将其作为异步迭代器，配合 for/await 循环。例如，下面这个函数会使用以上流 API 列出目录条目，调用每个条目的 `stat()` 方法，然后打印出文件和目录的名字及大小：
+
+```js
+const fs = require('fs');
+const path = require('path');
+async function listDirectory(dirpath) {
+  let dir = await fs.promises.opendir(dirpath);
+  for await (let entry of dir) {
+    let name = entry.name;
+    if (entry.isDirectory()) {
+      name += '/'; // 在子目录末尾添加一个斜杠
+    }
+    let stats = await fs.promises.stat(path.join(dirpath, name));
+    let size = stats.size;
+    console.log(String(size).padStart(10), name);
+  }
+}
+```
+
+### 3.8 HTTP 客户端与服务器
+
+Node 的 http、https 和 http2 模块是功能完整但相对低级的 HTTP 协议实现。这些模块定义了实现 HTTP 客户端和服务器的所有 API。因为这些 API 相对低级，本章没有那么多篇幅介绍所有相关特性。但接下来的例子将演示如何编写简单的客户端和服务器。
+
+发送 HTTP GET 请求的最简单方式是使用 http.get() 或 https.get() 这两个函数的第一个参数是要获取的 URL（如果是一个 http://URL，必须使用 http 模块；如果是个 https://URL 必须使用 https 模块）。第二个参数是一个回调，当服务器响应开始到达时这个回调会以一个 IncomingMessage 对象被调用。调用回调时，HTTP 状态和头部已经可以读取，但响应体尚未就绪。IncomingMessage 对象是一个可读流，因此可以使用本章前面演示的技术从中读取响应体。
+
+[getJSON() 函数](/front_end/JavaScript/JavaScript权威指南/JavaScript权威指南.md#1326-创建期约)在 Promise() 构造函数中使用了 http.get() 在了解了 Node 流以及更普遍的 Node 编程模型之后，有必要再回顾一下那个例子，看看它是如何使用 http.get() 的。
 
 ### 2.2 使用 Node.js
 
