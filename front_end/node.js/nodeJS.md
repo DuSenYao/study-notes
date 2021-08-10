@@ -1385,6 +1385,111 @@ Node 的 http、https 和 http2 模块是功能完整但相对低级的 HTTP 协
 
 [getJSON() 函数](/front_end/JavaScript/JavaScript权威指南/JavaScript权威指南.md#1326-创建期约)在 Promise() 构造函数中使用了 http.get() 在了解了 Node 流以及更普遍的 Node 编程模型之后，有必要再回顾一下那个例子，看看它是如何使用 http.get() 的。
 
+`http.get()` 和 `https.get()` 是更通用的 `http.request()` 和 `https.request()` 函数的稍微简化的变体。下面这个 postJSON() 函数演示了如何使用 `https.request()` 发送一个包含 JSON 请求体的 HTTPS POST 请求。这个函数也期待一个 JSON 响应并返回一个期约，该期约将兑现为解析后的响应：
+
+```js
+const https = require('https');
+
+/**
+ * 将 body 对象转换为 JSON 字符串，然后通过 HTTPS POST 发送到指定 host 的 指定 API 终端。
+ * 当响应到达时，将响应体作为J50N解析，然后以解析后的值解决返回的期约
+ */
+function postJSON(host, endpoint, body, port, username, password) {
+  // 立即返回期约对象，当 HTTPS 请求成功或失败时，再调用 resolve 或 reject
+  return new Promise((resolve, reject) => {
+    // 把 body 对象转换为字符串
+    let bodyText = JSON.stringify(body);
+
+    // 配置 HTTPS 请求
+    let requestOptions = {
+      method: 'POST', // 或 "GET" "PUT" "DELETE" 等
+      host: host, // 要连接的主机
+      path: endpoint, // URL 路径
+      headers: {
+        // 请求的 HTTP 头部
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(bodyText)
+      }
+    };
+
+    if (port) {
+      // 如果指定了端口,
+      requestOptions.port = port; // 在请求中使用端口
+    }
+
+    // 如果指定了凭据，则增加一个 Authorization 头部
+    if (username & password) {
+      requestOptions.auth = `${username}:${password}`;
+    }
+
+    // 现在根据配置对象创建请求
+    let request = https.request(requestOptions);
+
+    // 写入 POST 请求体并结束请求
+    request.write(bodyText);
+    request.end();
+
+    // 请求出错时失败（如没有网络连接）
+    request.on('error', e => reject(e));
+
+    // 当响应到达时处理响应
+    request.on('response', response => {
+      if (response.statusCode !== 200) {
+        reject(new Error(`HTTP status ${response.statusCode}`));
+
+        // 这里我们并不关心响应体，但不希望它逗留在缓冲区里
+        // 因此把流切换为流动模式，但不注册 “data” 处理程序，因此响应体会被丢弃
+        response.resume();
+        return;
+      }
+
+      // 想要文本，而非字节。假设文本是 JSON 格式，因此就不检查 Content-Type 头部了
+      response.setEncoding('utf8');
+
+      // Node 没有流式 JSON 解析器，因此这里要把整个响应体都读取到一个字符串中
+      let body = '';
+      response.on('data', chunk => {
+        body + chunk;
+      });
+
+      // 接收完响应体再处理响应
+      response.on('end', () => {
+        // 接收完响应体
+        try {
+          // 尝试将其作为 JSON 来解析
+          resolve(JSON.parse(body)); // 解决得到的结果
+        } catch (e) {
+          // 否则，如果出错
+          reject(e); // 以错误拒绝
+        }
+      });
+    });
+  });
+}
+```
+
+除了发送 HTTP 和 HTTPS 请求，http 和 https 模块也允许编写响应这些请求的服务器。基本流程如下：
+
+- 创建一个新 Server 对象。
+
+- 调用它的 listen() 方法，开始监听指定端口的请求。
+
+- 为 “request” 事件注册处理程序，通过这个处理程序读取客户端请求（特别是 `url` 属性），然后写入响应。
+
+下面的代码将创建一个简单的 HTTP 服务器，可以发送本地文件系统的静态文件，同时也实现了一个调试终端，可以将客户端请求再发送给客户端：
+
+```js
+// 这是一个简单的静态HTP服务器，从一个指定目录发送文件
+// 另外，它也实现了一个特殊的测试终端：/test/mirror
+// 该终端可以反传收到的请求，对客户端调试是有用的
+const http = require('http'); // 如果有证书可以使用 https
+const url = require('url'); // 用来解析 URL
+const path = require('path'); // 用来操作文件系统路径
+const fs = require('fs');
+// 用来读取文件
+// 通过监听指定端口的 HTTP 服务器
+```
+
 ### 2.2 使用 Node.js
 
 > `node fileName.js` 可以直接运行 js 文件，在 JS 文件里，建议使用严格模式，如: [test.js](./sampleFolder/test.js)
