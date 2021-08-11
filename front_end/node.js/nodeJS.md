@@ -1381,7 +1381,7 @@ async function listDirectory(dirpath) {
 
 Node 的 http、https 和 http2 模块是功能完整但相对低级的 HTTP 协议实现。这些模块定义了实现 HTTP 客户端和服务器的所有 API。因为这些 API 相对低级，本章没有那么多篇幅介绍所有相关特性。但接下来的例子将演示如何编写简单的客户端和服务器。
 
-发送 HTTP GET 请求的最简单方式是使用 http.get() 或 https.get() 这两个函数的第一个参数是要获取的 URL（如果是一个 http://URL，必须使用 http 模块；如果是个 https://URL 必须使用 https 模块）。第二个参数是一个回调，当服务器响应开始到达时这个回调会以一个 IncomingMessage 对象被调用。调用回调时，HTTP 状态和头部已经可以读取，但响应体尚未就绪。IncomingMessage 对象是一个可读流，因此可以使用本章前面演示的技术从中读取响应体。
+发送 HTTP GET 请求的最简单方式是使用 http.get() 或 https.get() 这两个函数的第一个参数是要获取的 URL（如果是一个 `http://URL`，必须使用 http 模块；如果是个 `https://URL` 必须使用 https 模块）。第二个参数是一个回调，当服务器响应开始到达时这个回调会以一个 IncomingMessage 对象被调用。调用回调时，HTTP 状态和头部已经可以读取，但响应体尚未就绪。IncomingMessage 对象是一个可读流，因此可以使用本章前面演示的技术从中读取响应体。
 
 [getJSON() 函数](/front_end/JavaScript/JavaScript权威指南/JavaScript权威指南.md#1326-创建期约)在 Promise() 构造函数中使用了 http.get() 在了解了 Node 流以及更普遍的 Node 编程模型之后，有必要再回顾一下那个例子，看看它是如何使用 http.get() 的。
 
