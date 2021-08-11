@@ -1824,7 +1824,220 @@ process.on('message', message => {
 
 ### 3.11 工作线程
 
-正如本章开头所解释的，Node 的并发模型是单线程、基于事件的。但 Node 从第 10 版
+正如本章开头所解释的，Node 的并发模型是单线程、基于事件的。但 Node 从第 10 版开始支持真正的多线程编程，提供了由浏览器定义的 Web Workers API 非常相似的一套 API。**多线程编程素来以困难著称。主要原因是需要仔细地同步线程对共享内存的访问**。但 JS 线程（包括 Node 和浏览器中的线程）默认不共享内存，因此使用多线程的风险和困难对这些 JS 中的 “工作线程” 并不适用。
+
+没有共享内存，JS 的工作线程只能通过消息传递来通信。主线程可以调用代表工作线程的 Worker 对象的 `postMessage()` 方法向工作线程发送消息。工作线程可以通过监听 “message” 事件，从父线程接收消息。而且，工作线程可以使用自己的 `postMessage()` 方法向主线程发送消息，而主线程可以通过自己的 “message” 事件处理程序接收该消息。
+
+在 Node 应用中使用工作线程主要有 3 个理由：
+
+- 应用需要执行的计算量超过一个 CPU 核心的能力，而线程可以把任务分配给多个核心，多核心今天已经是计算机的标配。如果要通过 Node 做科学计算或机器学习或图形处理，那么可能需要使用多线程把更多计算力投向问题。
+
+- 即使应用不会用到一个 CPU 的全部能力，也可能需要多线程来维护主线程的快速响应能力。比如，服务器需要处理大型但相对不频繁的请求。假设服务器每秒只收到 1 个请求，但需要花费大约半秒钟（阻塞 CPU）计算来处理每个请求。平均来看，有 50% 的时间空闲。但是如果在几毫秒内连续收到 2 个请求，服务器在响应完第一个请求后才能处理第二个请求。假如服务器使用工作线程执行计算，那么它可以很快响应两个请求，为客户端带来更好的体验。假设服务器运行在多核机器上那它也可以并行计算两个响应的响应体。但即使只有一个核，使用工作线程仍然可以提升响应能力。
+
+- 通常，工作线程可以把阻塞的同步操作转换为非阻塞的异步操作。如果写的程序依赖遗留的代码，而该代码的同步操作无法避免，那在需要调用该遗留代码时也可以使用工作线程来避免阻塞。
+
+> **注意**：工作线程不像子进程那么重，但也不轻。除非真的有很多工作需要它去完成，否则也不值得创建工作进程。而且，**一般来说，如果程序不是 CPU 密集型的，没有响应性问题，那可能就不需要考虑工作线程**。
+
+#### 3.11.1 创建工作线程及传递消息
+
+定义工作线程的 Node 模块叫 worker_threads，本节将使用标识符 `threads` 来指代它。这个模块定义了 Worker 类来表示工作线程，可以使用 `threads.Worker()` 这个构造函数创建新线程。下面的代码演示了使用这个构造函数创建一个工作线程，也展示了主线程和工作线程间的消息传递。另外，这个例子也演示了一个技巧，即可以把主线程和工作线程的代码放在同一个文件中：
+
+```js
+const threads = require('worker_threads');
+// worker_threads 模块会导出一个布尔值属性 isMainThread
+// 这个属性在 Node 运行于主线程时为 true，而在 Node 运行于工作线程时为 false。
+// 可以利用这个事实来实现主线程和工作线程的代码共存于同一个文件
+if (threads.isMainThread) {
+  // 如果是在主线程中运行，那要做的就是导出一个函数
+  // 不在主线程执行密集的计算，因此这个函数会把任务传给工作线程并返回一个期约
+  // 这个期约在工作线程完成任务时会解决
+  module.exports = function reticulateSplines(splines) {
+    return new Promise((resolve, reject) => {
+      // 创建一个工作线程，加载并运行同一个代码文件
+      // 注意，这里使用了特殊变量 __filename
+      let reticulator = new threads.Worker(__filename);
+      // 把样条函数数组 splines 传给工作线程
+      reticulator.postMessage(splines);
+      // 在接收到工作线程的消息或错误时，解决或拒绝期约
+      reticulator.on('message', resolve);
+      reticulator.on('error', reject);
+    });
+  };
+} else {
+  // 如果执行到这里，意味着是在工作线程中，因此注册一个处理程序从主线程接收消息。
+  // 这个工作线程只接收一个消息，因此使用 once() 而非 on() 来注册这个事件处理程序。这样工作线程在完成工作后就会自然地退出
+  threads.parentPort.once('message', splines => {
+    // 从父线程取得样条函数后，遍历数组并将它们全部编织起来
+    for (let spline of splines) {
+      // 为了本例的需要，假设 spline 对象通常有一个需要大量计算的 reticulate() 方法
+      spline.reticulate ? spline.reticulate() : (spline.reticulated = true);
+    }
+    // 当所有样条函数都（最终）编织完成后，把一个副本传回主线程
+    threads.parentPort.postMessage(splines);
+  });
+}
+```
+
+Worker() 构造函数的第一个参数是要在线程中运行的 JS 代码文件的路径。在前面的代码中，使用预定义的 `__filename` 标识符创建了一个工作线程，该线程会像主线程一样加载和运行同一个文件。不过，一般来说，这里应该传一个文件路径。
+
+> **注意**：如果传入的是相对路径，则它相对的是 `process.cwd()`，而非相对于当前运行的模块。如果想让它相对于当前模块，可以使用类似这样的方式：`path.resolve(__dirname, 'workers/reticulator.js')`
+
+Worker() 构造函数还可以接收一个对象作为第二个参数，这个对象的属性为要创建的工作线程提供可选的配置。稍后会介绍其中一些选项，当前要知道如果传入 `{eval:true}` 作为第二个参数，那 Worker() 的第一个参数将被作为要进行求值的 JS 代码字符串而非一个文件名来解释：
+
+```js
+new threads.Worker(
+  `const threads = require("worker_threads");
+  threads.parentPort.postMessage(threads.isMainThread);`,
+  { evaL: true }
+).on('message', console.log); // 这里会打印 “false”
+```
+
+Node 会将传给 `postMessage()` 的对象制作一个副本，而不是直接将它与工作线程共享。这样可以防止工作线程和主线程共享内存。这里的副本是通过**结构化克隆算法**制作的。
+
+结构化克隆算法是序列化多数 JS 类型所使用的算法，包括 Map，Set、Date 和 RegExp 对象以及定型数组。但这个算法通常不能复制 Node 宿主环境定义的类型，例如套接口和流。不过要注意，它部分支持 Buffer 对象。如果给 `postMessage()` 传个 Buffer，那它会被作为 Uint8Array 接收，而且可以通过 `Buffer.from()` 再转换回 Buffer。
+
+#### 3.11.2 工作线程的执行环境
+
+很大程度上，Node 工作线程中的 JS 代码在执行时与在主线程中一样。当然也有些需要注意的区别，而其中一些区别与 Worker() 构造函数可选的第二个参数的属性有关：
+
+- 如前所见，`threads.isMainthread` 在主线程中是 true，但在任何工作线程中都是 false。
+
+- 在工作线程中，可以使用 `theads.parentPort.postMessage()` 向父线程发送消息，使用 `threads.parentPor.on` 为来自父线程的消息注册事件处理程序。在主线程中，`threads.parentPort` 始终是 null。
+
+- 在工作线程中，`threads.workerData` 被设置为 Worker() 构造函数第二个参数 `workerData` 属性的一个副本。在主线程中，这个属性始终是 null。可以使用这个 `workerData` 属性向工作线程传一条最初的消息，让工作线程一启动就能收到，这样它在开始工作前就不必等待 “message” 事件了。
+
+- 默认情况下，`process.env` 在工作线程中是父线程中 `process.env` 的一个副本。但父线程可以通过设置 Worker() 构造函数第二个参数的 `env` 属性指定一组自定义的环境变量。在特殊（也可能危险）的情况下，父线程可以将这个 `env` 属性设置为 `threads.SHARE_ENY`，这会导致两个线程共享一组环境变量，因此一个线程中的修改在另一个线程中是可见的。
+
+- 默认情况下，`process.stdin` 流在工作线程中永远不会有任何可读数据。可以通过给 Worker() 构造函数的第二个参数传 `stdin:true` 来改变这个默认设置。如此，这个 Worker 对象的 `stdin` 属性就是一个可写的流。父线程写入 `worker.stdin` 的任何数据在工作线程中的 `process.stdin` 中都会变成可读的。
+
+- 默认情况下，`process.stdout` 和 `process.stderr` 在工作线程中都会简单地被引流到父线程中对应的流。这意味着，工作线程中的 console.log() 和 console.error() 可以像在主线程中一样产生输出。要重写这个默认设置，可以在 Worker() 构造函数的第二个参数中传入 `stdout:true` 或 `stderr:true`。如此，工作线程中写入这些流的任何输出在父线程中的 `worker.stdout` 和 `worker.stderr` 上都会变成可读的（这里没有令人困惑的流方向反转，在本章前面讨论子进程时也看到了同样的情况：工作线程的输出流对父线程而言是输入流，而工作线程的输入流对父线程而言是输出流）。
+
+- 如果工作线程调用 `process.exit()`，只有当前线程会退出，而不是整个进程都退出。
+
+- 工作线程不能改变它们所属进程的共享状态。在工作线程中调用 `process.chdir()` 和 `process.setuid()` 等函数会抛出异常。
+
+- 操作系统信号（如 SIGINT 和 SIGTERM）只发送到主线程，工作线程不能接收和处理它们。
+
+#### 3.11.3 通信信道与 MessagePort
+
+创建一个新工作线程时，也会随之创建一个通信信道，以便在工作线程和父线程之间来回传递消息。如前所见，工作线程使用 `threads.parentPort` 发送和接收来自父线程的消息，而父线程使用 Worker 对象与工作线程交换消息。
+
+工作线程的 API 允许使用浏览器定义的 MessageChannel API 创建自定义通信信道。
+
+假设一个工作线程需要处理两种不同的消息，信息来自主线程的两个不同模块。这两个不同的模块可以共享默认的信道，并通过 `worker.postMessage()` 发送消息。但如果每个模块都拥有一个自己的私有信道，向工作线程发消息则会更清晰。还有一种情况，就是主线程创建了两个独立的工作线程。这时候，自定义通信信道可以让两个工作线程直接通信，而不是所有消息都通过它们的父线程转发。
+
+使用 MessageChannel() 构造函数可以创建一个新消息信道。MessageChannel 对象有两个属性 `port1` 和 `port2`。这两个属性分别引用不同的 MessagePort 对象。在其中一个端口上调用 `postMessage()` 会导致另一个端口生成 “message” 事件，并接收到一个 Message 对象的结构化克隆的副本：
+
+```js
+const threads = require('worker_threads');
+let channel = new threads.MessageChannel();
+channel.port2.on('message', console.log); // 打印出接收到的消息
+channel.port1.postMessage('hello'); // 会导致 “hello” 被打印出来
+```
+
+在任何一个端口上调用 `close()` 都可以断开这两个端口之间的连接，表明不需要再交换任何数据。在任何一个端口上调用 `close()`，“close” 事件都会发送到两个端口。
+
+> **注意**：上面的示例代码创建了一对 MessagePort 对象，然后通过该对象在主线程中传输了条消息。要让工作线程使用自定义通信信道，必须把其中一个端口从创建它们的线程转移到要使用它们的线程。
+
+#### 3.11.4 转移 MessagePort 和定型数组
+
+postMessage() 函数使用结构化克隆算法，但如前所述，它不能复制 Socket 对象和 Stream 对象。它可以处理 MessagePort 对象，但只作为特例且需要使用特殊技巧。postMessage() 方法（无论是 Worker 对象 `threads.parentPort` 还是任何 MessagePort 对象的）接收可选的第二个参数。这个参数（名为 `transferList`），是一个对象数组，其中的对象会在线程间转移而非复制。
+
+MessagePort 对象不能通过结构化克隆算法复制，但它可以被转移。如果 postMessage() 的第一个参数已经包含了一个或多个 MessagePort()（在 Message 对象中嵌套任意深度），那么这些 MessagePort 对象必须也出现在作为第二个参数的数组中。这样做会告诉 Node，它不需要制作 MessagePort 的副本，而是可以将已有的对象交给另一个线程。不过，要理解在线程间转移值，关键是要知道一个值一旦转移，那在调用 postMessage() 的线程里就不能再使用它了。
+
+以下代码演示了如何创建一个新 MessageChannel，并将它的一个 MessagePort 转移到一个工作线程：
+
+```js
+// 创建自定义的通信信道
+const threads = require('worker_threads');
+let channel = new threads.MessageChannel();
+
+// 使用工作线程的默认信道把这个新建信道的一端转移给工作线程。
+// 假设工作线程在接收到这条消息后会立即开始监听新信道的消息
+worker.postMessage({ command: 'changeChannel', data: channel.port1 }, [channel.port1]);
+
+// 使用自定义信道的另一端向工作线程发一条消息
+channel.port2.postMessage('Can you hear me now?');
+
+// 同时也监听来自工作线程的回应
+channel.port2.on('message', handleMessagesFromWorker);
+```
+
+MessagePort 对象并不是唯一可以转移的对象。如果调用 `postMessage()` 时以定型数组作为消息（或者消息中包含定型数组，无论嵌套层次多深），则定型数组会简单地以结构化克隆算法被复制。但定型数组有可能很大，比如，使用工作线程处理有数百万像素的图片。此时为了提高效率，`postMessage()` 也允许转移定型数组而不是复制它们（线程默认共享内存。JS 中的工作线程通常避免共享内存，但如果允许这种控制转移，那可以很高效地完成）。但是，定型数组转移给另一个线程后，当前线程就不能再使用它了，而这也是保证这种转移安全的原因。在处理图片的场景中，主线程可以把图片的像素转移到工作线程，工作线程可以把处理之后的像素转移回主线程。这样就不必复制内存，只不过两个线程永远不可能同时访问一块内存。
+
+要转移而不是复制定型数组，可以在 `postMessage()` 的第二个参数中包含该数组的 ArrayBuffer：
+
+```js
+let pixels = new Uint32Array(1024 * 1024); // 4 MB 内存
+// 假设把某些数据读到这个定型数组中，然后把这些像素转移给一个工作线程，而不是复制它。
+// 注意，转移列表中包含的不是数组本身，而是数组的 Buffer 对象
+worker.postMessage(pixels, [pixels.buffer]);
+```
+
+与转移的 MessagePort 一样，转移的定型数组在转移后也会变得不可用。但在尝试使用转移后的 MessagePort 或定型数组时，并不会抛出异常。这些对象只是在操作它们时什么也不做。
+
+#### 3.11.5 在线程间共享定型数组
+
+除了可以在线程间转移定型数组，也可以在线程间共享它们。只要创建一个自定义大小的 SharedArrayBuffer，然后使用该缓冲区创建一个定型数组即可。在把基于 ShareArrayBuffer 的定型数组传给 `postMessage()` 时，底层的内存会在线程间共享。此时，不应该再在 `postMessage()` 的第二个参数中包含这个共享缓冲区。不过，真的不应该这么做，因为 JS 设计时并未考虑线程安全，而多线程编程真的很难不出问题。就连简单的 ++ 操作符都不是线程安全的，因为它需要读取值、递增它，然后再把结果写回去。如果两个线程同时都递增一个值，那么通常只会递增一次，如下面的代码所示：
+
+```js
+const threads = require('worker_threads');
+if (threads.isMainThread) {
+  // 在主线程中，使用一个元素创建一个共享定型数组。让两个线程可以同时读写 sharedArray[0]
+  let sharedBuffer = new SharedArrayBuffer(4);
+  let sharedArray = new Int32Array(sharedBuffer);
+
+  // 接下来创建工作线程，把共享数组作为其初始化时 workerData 的值传给它，这样就不用发送和接收消息了
+  let worker = new threads.Worker(__filename, { workerData: sharedArray });
+  // 等待工作线程启动运行，递增共享整数 1000 万次
+  worker.on('online', () => {
+    for (let i = 0; i < 10_000_000; i++) sharedArray[0]++;
+    // 完成递增后，开始监听消息，以便知道工作线程何时完工
+    worker.on('message', () => {
+      // 虽然共享整数被递增了 2000 万次，但实际值通常会小得多
+      console.log(sharedArray[0]);
+    });
+  });
+} else {
+  // 在工作线程中，从 workderData 取得共享数组，然后递增 1000 万次
+  let sharedArray = threads.workerData;
+  for (let i = 0; i < 10_000_000; i++) sharedArray[0]++;
+  // 递增完成后，让主线程知道
+  threads.parentPort.postMessage('done');
+}
+```
+
+一个可能适合使用 SharedArrayBuffer 的场景，是两个线程分别操作共享内存中完全独立的区域。为此，可以创建两个定型数组，作为共享缓冲区中不重叠的两个视图。然后让两个线程分别使用这两个独立的定型数组。比如，可以用这个思路来实现并行合并排序，让一个线程排序数组的后半部分，另一个线程排序数组的前半部分。有些图像处理算法也适合这种方式，比如让多个线程分别处理图像中不相邻的区域。
+
+如果必须允许多线程同时访问共享数组的同一区域，为保证线程安全，可以使用 Atomics 对象定义的函数。Atomics 是在 SharedArrayBuffer 需要对共享数组的元素定义原子操作时添加到 JS 中的。例如，`Atomics.add()` 函数读取共享数组中指定的元素，给它加上指定的值，然后把和写回数组。三个操作是原子性的，就像一个操作一样，从而确保在操作期间其他线程都不能读或写同一个值。可以使用 `Atomics.add()` 重写刚才看到的并行递增代码，并实现对一个共享数组元素进行 2000 万次递增，得到正确结果：
+
+```js
+const threads = require('worker_threads');
+if (threads.isMainThread) {
+  let sharedBuffer = new SharedArrayBuffer(4);
+  let sharedArray = new Int32Array(sharedBuffer);
+  let worker = new threads.Worker(__filename, { workerData: sharedArray });
+
+  worker.on('online', () => {
+    for (let i = 0; i < 10_000_000; i++) {
+      Atomics.add(sharedArray, 0, 1); // 线程安全的原子递增
+    }
+
+    // 两个线程都完成后，使用线程安全的函数读取共享数组，确认其中包含了期待的 20 000 000。
+    worker.on('message', message => {
+      console.log(Atomics.load(sharedArray, 0));
+    });
+  });
+} else {
+  let sharedArray = threads.workerData;
+  for (let i = 0; i < 10_000_000; i++) {
+    Atomics.add(sharedArray, 0, 1); // 线程安全的原子递增
+  }
+  threads.parentPort.postMessage('done');
+}
+```
+
+这个新版本的代码正确打印出数值 20 000 000 大约比之前不正确的代码慢了 9 倍。反倒是只在一个线程中完成全部 2000 万次递增更简单也更快。不过，对于数组元素之间完全无关的图像处理算法而言，原子操作是可以确保线程安全的。但对多数现实中的程序来说，数组元素之间往往是相关的，因此需要某种形式的高级线程同步。低级的 `Atomics.wait()` 和 `Atomics.notify()` 函数对这种场景有帮助。
 
 ### 2.2 使用 Node.js
 
