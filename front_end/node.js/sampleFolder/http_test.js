@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 // 引用了Node.js SDK 内置的http模块
-const http = require("http");
+const http = require('http');
 
 // 用Node.js建立一个最简单的HTTP服务
 // 通过http.createServer创建了一个HTTP服务
@@ -9,10 +9,10 @@ http
   .createServer((req, res) => {
     // 设置返回状态码为200，设置HTTP头字段里的Content-Type类型为text/plain类型，最后向浏览器返回文本，由浏览器解析并渲染
     let status = 200;
-    res.writeHead(status, { "Content-Type": "text/plain" });
-    res.end("hello Node.js\n");
+    res.writeHead(status, { 'Content-Type': 'text/plain' });
+    res.end('hello Node.js\n');
   })
   // 通过 listen 方法指定端口和IP地址，启动服务
-  .listen(3000, "127.0.0.1");
+  .listen(3000, '127.0.0.1');
 
-console.log('Server running at http://127.0.0.1:3000/')
+console.log('Server running at http://127.0.0.1:3000/');

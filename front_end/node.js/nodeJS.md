@@ -1487,8 +1487,344 @@ const url = require('url'); // 用来解析 URL
 const path = require('path'); // 用来操作文件系统路径
 const fs = require('fs');
 // 用来读取文件
-// 通过监听指定端口的 HTTP 服务器
+// 通过监听指定端口的 HTTP 服务器，发送指定根目录下的文件
+function serve(rootDirectory, port) {
+  let server = new http.Server(); // 创建一个新的 HTTP 服务器
+  server.listen(port); // 监听指定的端口
+  console.log('Listening on port', port);
+
+  // 当请求到来时，使用这个函数处理它们
+  server.on('request', (request, response) => {
+    // 取得请求URL的路径部分，忽略后跟的任何查询参数
+    let endpoint = url.parse(request.url).pathname;
+
+    // 如果请求路径是 “/test/mirror”，则把请求原封不动地发回去。在需要看到请求头和请求体时有用
+    if (endpoint === '/test/mirror') {
+      // 设置响应头
+      response.setHeader('Content-Type', 'text/plain; charset=UTF-8');
+
+      // 指定响应状态码
+      response.writeHead(200); // 200 OK
+
+      // 用请求设置响应体的开头
+      response.write(`${request.method} ${request.url} Http/${request.httpVersion}\r\n`);
+
+      // 输出请求头
+      let headers = request.rawHeaders;
+      for (let i = 0; i < headers.length; i += 2) {
+        response.write(`${headers[i]}: ${headers[i + 1]}\r\n`);
+      }
+      // 以空行终止头部
+      response.write('\r\n');
+
+      // 现在需要把请求体复制到响应体，因为它们都是流，可以使用管道
+      request.pipe(response);
+    }
+    // 否则，从本地目录发送一个文件
+    else {
+      // 将终端映射为一个本地文件系统的文件
+      let filename = endpoint.substring(1); // 去掉开头的 /
+      // 不允许路径出现 “../”，因为发送根目录外部的文件是一个安全漏洞
+      filename = filename.replace(/\.\.\//g, '');
+      // 接着把相对路径转换为绝对路径
+      filename = path.resolve(rootDirectory, filename);
+
+      // 现在根据扩展名猜测请求文件的类型
+      let type;
+      switch (path.extname(filename)) {
+        case '.html':
+        case '.htm':
+          type = 'text/html';
+          break;
+        case '.js':
+          type = 'text/javascript';
+          break;
+        case '.css':
+          type = 'text/css';
+          break;
+        case '.png':
+          type = 'image/png';
+          break;
+        case '.txt':
+          type = 'text/plain';
+          break;
+        default:
+          type = 'application/octet-steam';
+          break;
+      }
+
+      let stream = fs.createReadStream(filename);
+      stream.once('readable', () => {
+        // 如果流变成可读了，则将 Content-Type 头部设置为 “200 OK” 状态。
+        // 然后通过管道将文件读取器流引入响应流。这个管道将在流结束时自动调用 response.end()
+        response.setHeader('Content-Type', type);
+        response.whiteHead(200);
+        stream.pipe(response);
+      });
+
+      stream.on('error', err => {
+        // 如果在打开流时出错了，说明文件可能不存在
+        // 或者没有读取权限。此时发送一个 “404 Not Found” 的纯文本响应并在响应中带上错误消息
+        response.setHeader('Content-Type', 'text/plain; charset=UTF-8');
+        response.whiteHead(404);
+        response.end(err.message);
+      });
+    }
+  });
+}
+
+// 在命令行中中调用 serve() 函数
+serve(process.argv[2] || '/tmp', parseInt(process.argv[3]) || 8000);
 ```
+
+Node 的内置模块可以用来编写简单的 HTTP 和 HTTPS 服务器。不过，产品级服务器通常并不直接构建于这些模块之上。多数常用的服务器都是使用外部库（如 Express 框架）实现的，这些外部库提供 “中间件” 及其他后端 Web 开发者期待的高级实用特性。
+
+### 3.9 非 HTTP 网络服务器及客户端
+
+Web 服务器和客户端的无所不在很容易让人忘记还可以写不使用 HTTP 的客户端和服务器。即便 Node 在编写 Web 服务器方面获得了美誉，但它也完全支持其他类型的网络服务器和客户端。
+
+如果熟悉流的操作，那么网络这一块会相对简单，因为网络套接口就是一种双工流。net 模块定义了 Server 和 Socket 类。要创建服务器，调用 `net.createServer()`，然后调用返回对象的 `listen()` 方法告诉服务器监听哪个端口的连接。Server 对象会在客户端连接到该端口时生成 “connection” 事件，而传给事件监听器的值就是一个 Socket 对象。这个 Socket 对象是一个双工流，可以使用它从客户端读取数据和向客户端写入数据。在这个 Socket 对象上调用 `end()` 可以断开链接。
+
+写客户端甚至更容易，只要给 `net.createConnection()` 传一个端口号和主机名，就可以创建一个套接口，与该主机上监听相应端口的服务器通信。然后使用这个套接口就可以从服务器读取数据或者向服务器写入数据了。
+
+下面的代码演示了如何使用 net 模块写一个服务器。当客户端连接时，服务器会给它讲个 knock-knock 笑话：
+
+```js
+// 一个会讲 knock-knock 笑话的 TCP 服务器，监听端口 6789
+const net = require('net');
+const readline = require('readline');
+
+// 创建 Server 对象，并开始监听连接
+let server = net.create.Server();
+server.listen(6789, () => console.log('Delivering Laughs on port 6789'));
+
+// 当客户端连接时，给它讲一个 knock-knock 笑话
+server.on('connection', socket => {
+  tellJoke(socket)
+    .then(() => socket.end()) // 讲完笑话，关闭套接口
+    .catch(err => {
+      console.error(err); // 打印发生的错误
+      socket.end(); // 但还是要关闭套接口
+    });
+});
+
+// 这些是讲的所有笑话
+const jokes = {
+  Boo: "Don't cry... it's only a joke!",
+  Lettuce: "Let us in! It's freezing out here!",
+  'A little old lady': "Wow, I didn't know you could yodel!"
+};
+
+// 通过套接口交互式表演 knock-knock 笑话，不阻塞
+async function tellJoke(socket) {
+  // 随机选一个笑话
+  let randomELement = a => a[Math.floor(Math.randon() * a.length)];
+  let who = randomELement(object.keys(jokes));
+  let punchline = jokes[who];
+
+  // 使用 readline 模块一次读取用户的一行输入
+  let lineReader = readline.createInterface({
+    input: socket,
+    output: socket,
+    prompt: '>>'
+  });
+
+  // 辅助函数，用于向客户端输出行文本，然后（默认）显示一个提示符
+  function output(text, prompt = true) {
+    socket.write(`${text}\r\n`);
+    if (prompt) lineReader.prompt();
+  }
+
+  // knock-knock 笑话是一种呼叫回应式结构
+  // 希望用户在不同阶段输入不同的内容，然后在不同阶段获取输入后执行不同的动作
+  let stage = 0;
+
+  // 以传统方式开始 knock-knock 笑话
+  output('Knock knock!');
+
+  // 现在异步从客户端读取行，直到讲完笑话
+  for await (let inputLine of lineReader) {
+    if (stage === 0) {
+      if (inputLine.toLowerCase() === "who's there?") {
+        // 如果用户在 stage 0 给出了正确的回应
+        // 把笑话的第一部分讲出来，进 stage 1
+        output(who);
+        stage = 1;
+      } else {
+        // 否则，教用户如何回应 knock-knock 笑话
+        output('Please type "Who\'s there?".');
+      }
+    } else if (stage === 1) {
+      // 如果用户在 stage 1 的给出了正确的回应，发送双关语并返回，因为笑话已经讲完了
+      if (inputLine.toLowerCase() === `${who.toLowerCase()} who?`) {
+        output(`${punchline}`, false);
+        return;
+      } else {
+        // 告诉用户应该怎么玩下去
+        output(`Please type "${who} who?".`);
+      }
+    }
+  }
+}
+```
+
+像这样基于文本的简单服务器通常不需要再写一个自定义客户端。如果系统安装了 nc（即 netcat）程序，可以使用它像这样与服务器通信：
+
+```txt
+$ nc localhost 6789
+Knock knock!
+>> Who's there?
+A little old lad
+>> A little old lady who?
+Wow, I didn't know you could yodel!
+```
+
+当然，用 Node 为这个笑话服务器写一个自定义客户端也很容易。只要连接到服务器，然后通过管道把服务器的输出引流至标准输出，把标准输入引流至服务器的输入即可：
+
+```js
+// 连接到命令行输入的服务器的笑话端口（6789）
+let socket = require('net').createConnection(6789, process.argv[2]);
+socket.pipe(process.stdout); // 把数据从套接口引流到标准输出
+process.stdin.pipe(socket); // 把数据从标准输入引流至套接口
+socket.on('close', () => process.exit()); // 套接口关闭时退出。
+```
+
+除了支持基于 TCP 的服务器，Node 的 net 模块也支持通过 “Unix 域套接口”（Unix domainsocket）的进程间通信，这种套接口使用文件系统路径而非端口号来标识。本章不会介绍这种套接口，但 Node 文档中有详细说明。其他本章不会涵盖的 Node 特性还有用于开发 UDP 客户端和服务器的 dgram 模块和 tls 模块。tls 模块相对于 net 模块，就像 https 模块相对于 http 模块。使用 tls Server 和 tls.TLSSocket 类可以创建像 HTTPS 服务器那样使用 SSL 加密连接的 TCP 服务器（比如 knock-knock 笑话服务器）。
+
+### 3.10 操作子进程
+
+除了编写高并发服务器，Node 也非常适合编写执行其他程序的脚本。Node 中的 chidprocess 模块定义了一些函数，用于在子进程中运行其他程序。本节展示其中一些函数，先从最简单的开始，之后再介绍较为复杂的。
+
+#### 3.10.1 execSync() 与 execFileSync()
+
+运行其他程序的最简单方式是使用 `child_process.execSync()`。这个函数的第一个参数是要运行的命令，它会创建一个子进程，并在该进程中运行一个命令行解释器（shell），并使用该解释器执行传入的命令。执行命令期间会阻塞，直到命令（及命令行解释器）退出。如果命令中存在错误，则 `execSync()` 会抛出异常。否则，`execSync()` 将返回该命令写入其标准输出流的任何内容。默认情况下，这个返回值是个缓冲区，但可以在可选的第二个参数中设置一个编码，从而得到一个字符串。如果命令向标准错误写入了任何输出，则该输出只会传给父进程的标准错误流。
+
+因此，如果写了一个脚本，且性能不用考虑，那么可以使用 `child_process.execSync()` 运行一个熟悉的 Unix 命令行程序列出某个目录下的内容，而不是使用 `fs.readdirSync()` 函数：
+
+```js
+const child_process = require('child_process');
+let listing = child_process.execSync('ls -l web/*.html', { encoding: 'utf8' });
+```
+
+可以通过 `execSync()` 调用 Unix 命令行解释器，这意味着传给它的字符串可以包含多个分号分隔的命令，而且可以利用命令行的其他特性，比如文件名通配符、管道和输出重定向。同样，这也意味着必须小心，不要给 `execSync()` 传入来自用户输入或类似不可信源的命令。命令行的复杂语法很容易被攻击者利用，运行任意代码。
+
+如果不需要命令行的特性，可以使用 `child_process.execFileSync()` 来避免启动命令行的开销。这个函数直接执行程序，不调用命令行。不过由于不涉及命令行，因此也无法解析命令行，必须在它的第一个参数传入可执行文件，并在第二个参数传入命令行参数的数组：
+
+```js
+let listing = child_process.execFileSync('ls', ['-l', 'web/'], { encoding: 'utf8' });
+```
+
+**子进程选项**
+`execSync()` 和其他很多 child_process 函数都有第二或第三个可选参数对象，用于指定子进程如何运行。前面使用了这个对象的 `encoding` 属性，指定希望命令的输出以字符串而非缓冲区形式发送。下面列出了其他可能使用的比较重要的属性：
+
+> **注意**：并非所有选项都适用于所有子进程函数。
+
+cwd
+: 指定子进程的当前工作目录。如果省略这个选项，那么子进程会继承 `process.cwd()` 的值。
+
+enν
+: 指定子进程有权访问的环境变量。默认情况下，子进程简单地继承 `process.env`，但可以指定一个不同的对象。
+
+input
+: 指定应该作为子进程标准输入的输入数据的字符串或缓冲区。这个选项只能用于不返回 ChildProcess 对象的同步函数。
+
+maxBuffer
+: 指定 exec 函数可以收集的最大输出字节数（不适用于 `spawn()` 和 `fork()`，它们使用流）。如果子进程产生的输出超过这个值，那它会被杀死并以错误退出。
+
+shell
+: 指定命令行解释器可执行文件的路径或 true。对正常执行命令行程序的子进程函数，这个选项允许指定使用哪个命令行。对正常不使用命令行的函数，这个选项允许指定可以使用命令行（通过把这个属性设置为 true）或指定具体使用哪个命令行。
+
+timeout
+: 指定允许子进程运行的最长毫秒数。如果到了这个时间它没有退出，它会被杀死并以错误退出（这个选项适用于 `exec()` 函数，但不适用于 `spawn()` 或 `fork()`）。
+
+uid
+: 指定以哪个用户 ID（数值）来运行程序，如果父进程在一个特权账号下运行，可以可以使用这个选项以较低权限运行子进程。
+
+#### 3.10.2 exec() 与 execFile()
+
+顾名思义，`execSync()` 和 `execFileSync()` 函数都是同步执行的，它们会阻塞直到子进程退出才会返回。使用这两个函数非常像在终端窗口中输入 Unix 命令，每次只能运行个命令。但是，如果程序需要完成多个任务，而这些任务之间没有依赖关系，那可能希望它们可以并行运行，即同时运行多个命令。这时候可以使用异步函数 `child_process.exec()` 和 `child_process.execFile()`。
+
+`exec()` 和 `execFile()` 与它们的同步变体相似，只不过会立即返回一个 ChildProcess 对象，表示正在运行的子进程，而且接收一个错误在先的回调作为最后的参数。这个回调会在子进程退出时被调用，调用时实际上会传 3 个参数。如果发生了错误，第一个参数就是错误；否则如果子进程正常终止，第一个参数就是 null。第二个参数是子进程收集的发送到子进程标准输出流的输出。而第三个参数是发送到子进程标准错误流的输出。
+
+`exec()` 和 `execFile()` 返回的 ChildProcess 对象允许终止子进程，向它写入数据（进而可以从其标准输入读取）。
+
+如果想同时执行多个子进程，那么最简单的方式可能就是使用 `exec()` 的期约版，它返回一个期约对象。如果子进程无错误退出，这个期约对象会解决为一个包含 stdout 和 stderr 属性的对象。例如，下面这个函数接收一个命令行程序的数组作为输入，返回一个解决为所有这些命令执行结果的期约：
+
+```js
+const child_process = require('child_process');
+const util = require('util');
+const execP = util.promisify(child_process.exec);
+function parallelExec(commands) {
+  // 使用命令数组创建一个期约数组
+  let promises = commands.map(command => execP(command, { encoding: 'utf8' }));
+  // 返回一个期约，将兑现为一个数组，包含每个期约的兑现值（不返回包含 stdout 和 stderr 属性的对象，只返回 stdout 属性的值）
+  return Promise.all(promises).then(outputs => outputs.map(out => out.stdout));
+}
+
+module.exports = parallelExec;
+```
+
+#### 3.10.3 spawn()
+
+此前介绍的各种 exec 函数，包括同步和异步函数，都是设计用来在子进程中执行简单且不产生太多输出的任务。即使异步的 `exec()` 和 `execFile()` 也不是流式的它们都在进程退出之后一次性返回进程输出。
+
+`child_process.spawn()` 函数允许在子进程运行期间流式访问子进程的输出。同时，它也允许向子进程写入数据（子进程将该数据作为自己标准输入流的输入）。这意味着可以动态与子进程交互，基于它的输出向它发送输入。
+
+`spawn()` 默认不使用命令行解释器，因此必须像 `execFile()` 一样传入可执行文件及要传给它的命令行参数数组来调用它。`spawn()` 与 `execFile()` 一样，也返回一个 ChildProcess 对象，但它不接收回调参数。虽然不使用回调，但可以监听这个 Childprocess 对象或它的流发出的事件。
+
+`spawn()` 返回的 ChildProcess 对象是一个事件发送器（event emitter），可以监听子进程退出时发出的 “exit” 事件。ChildProcess 对象也有 3 个流属性。`stdout` 和 `stderr` 是可读流：当子进程写入自己的标准输出和标准错误流时，相应的输出通过 ChildProcess 流变成可读的。
+
+> **注意**：这里命名的反转。在子进程中，“标准输出” 是可写的输出流，但在父进程中，ChildProcess 对象的 `stdout` 属性则是可读的输入流。
+
+类似地，ChildProcess 对象的 `stdin` 属性是可写的流：写入这个流的任何数据都将进入子进程的标准输入。
+
+ChildProcess 对象也定义了一个 `pid` 属性，用于指定子进程的进程 ID。另外，它还定义了 `kill()` 方法，用于终止子进程。
+
+#### 3.10.4 fork()
+
+`child_process.for()` 是一个特殊的函数，用于在一个 Node 子进程中运行一段 JS 代码。`fork()` 接收与 `spawn()` 相同的参数，但第一个参数应该是 JS 代码文件的路径而非可执行二进制文件的路径。
+
+如前所述，使用 `fork()` 创建的子进程可以通过子进程的标准输入流和标准输出流与父进程通信。另外，`fork()` 还在父进程和子进程之间提供了一种更简单的通信方式。
+
+在使用 `fork()` 创建子进程后，可以使用它返回的 ChildProcess 对象的 `send()` 方法向子进程发送一个对象的副本。可以监听这个 ChildProcess 的 “message” 事件，从子进程中接收消息。在子进程中运行的代码可以使用 `process.send()` 向父进程发送消息，也可以监听 process 的 “message” 事件，从父进程接收消息。
+
+例如，下面的代码使用 `fork()` 创建了一个子进程，然后向子进程发送了一条消息并等待子进程回应：
+
+```js
+const child_process = require('child_process');
+
+// 启用一个新的 Node 进程，运行目录中的 child.js
+let child = child_process.fork(`${__dirname}/child.js`);
+
+// 向子进程发送消息
+child.send({ x: 4, y: 3 });
+
+// 收到子进程回应后把它打印出来
+child.on('message', message => {
+  console.log(message.hypotenuse); // 这里应该打印 “5”
+  // 因为只发送了一条消息，所以只期待一个回应
+  // 收到回应后，调用 disconnect() 终止父进程与子进程的连接。这样两个进程都可以明确退出
+  child.disconnect();
+});
+```
+
+下面是子进程中运行的代码：
+
+```js
+// 等待父进程发来消息
+process.on('message', message => {
+  // 收到消息后，计算一个值，把结果发回父进程
+  process.send({ hypotenuse: Math.hypot(message.x, message.y) });
+});
+```
+
+启动子进程的代价是相当大的，如果子进程不能完成几个大数量级的计算，那么就不值得像这样使用 `fork()` 和进行进程间通信。如果程序需要保证对到来的事件快速响应，也需要执行耗时计算，那可以考虑使用一个独立的子进程去执行计算，从而不阻塞事件循环，也不影响父进程的响应速度（不过，在这种情况下，可能使用线程比使用进程更好，参见 16.11<!--TODO--> 节）。
+
+`send()` 的第一个参数会被 `JSON.stringify()` 序列化，而在子进程中会被 `JSON.parse()` 反序列化。因此，传参的时候只要包含 JSON 格式的值就可以了。`send()` 有个特殊的第二个参数，通过这个参数可以把 Socket 和 Server 对象（来自 net 模块）转移给子进程。网络服务器一般是 IO 密集型而非计算密集型，但如果写的服务器需要做更多计算，一个 CPU 忙不过来，并且是在一个多核的机器上运行该服务器，那可以使用 `fork()` 创建多个子进程来处理请求。在父进程中，可以监听 Server 对象的 “connection” 事件，然后从这个事件中取得 Socket 对象并通过 `send()`（使用这个特殊的第二个参数）发送给其中一个子进程去处理（注意，这是一个罕见场景下的不靠谱方案。与其写一个服务器，再分出多个子进程，不如保持服务器单线程，然后在线上部署它的多个实例来分担负载）。
+
+### 3.11 工作线程
+
+正如本章开头所解释的，Node 的并发模型是单线程、基于事件的。但 Node 从第 10 版
 
 ### 2.2 使用 Node.js
 
