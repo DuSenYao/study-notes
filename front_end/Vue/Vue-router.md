@@ -562,7 +562,7 @@ const router = new VueRouter({
 <!-- UserSettings.vue -->
 <div>
   <h1>User Settings</h1>
-  <NavBar />
+  <nav-bar />
   <router-view />
   <router-view name="helper" />
 </div>

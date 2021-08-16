@@ -5558,7 +5558,7 @@ render: function (createElement) {
 
 ##### 4.3.4.1 `v-if` 和 `v-for`
 
-只要在原生的 JavaScript 中可以轻松完成的操作，Vue 的渲染函数就不会提供专有的替代方法。比如，在模板中使用的 `v-if` 和 `v-for`：
+只要在原生的 js 中可以轻松完成的操作，Vue 的渲染函数就不会提供专有的替代方法。比如，在模板中使用的 `v-if` 和 `v-for`：
 
 ```html
 <ul v-if="items.length">
@@ -5567,9 +5567,9 @@ render: function (createElement) {
 <p v-else>No items found.</p>
 ```
 
-这些都可以在渲染函数中用 JavaScript 的 `if/else` 和 `map` 来重写：
+这些都可以在渲染函数中用 js 的 `if/else` 和 `map` 来重写：
 
-```JavaScript
+```js
 props: ['items'],
 render: function (createElement) {
   if (this.items.length) {
