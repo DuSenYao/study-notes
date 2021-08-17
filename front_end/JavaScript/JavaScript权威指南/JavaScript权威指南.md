@@ -1646,7 +1646,7 @@ delete globalThis.f; // false: 不能删除这个属性
 
 ### 6.5 测试属性
 
-JS 对象可以被想象成一组属性，实际开发中经常需要测试这组属性的成员关系，即检查对象是否有一个给定名字的属性。为此，可以使用:
+JS 对象可以被想象成一组属性，实际开发中经常需要测试这组属性的成员关系，即检查对象是否有一个给定名字的属性。为此，可以使用：
 
 - `in` 操作符
 - `hasOwnProperty()`
@@ -1754,7 +1754,7 @@ ES6 正式定义了枚举对象自有属性的顺序。`Object.keys()`、`Object
 
 ### 6.7 扩展对象
 
-在 JS 程序中，把一个对象的属性复制到另一个对象上是很常见的。使用下面的代码很容易做到:
+在 JS 程序中，把一个对象的属性复制到另一个对象上是很常见的。使用下面的代码很容易做到：
 
 ```js
 let target = { x: 1 },
@@ -4574,6 +4574,129 @@ f();
 // 等同于
 g(3);
 ```
+
+上面的代码中，如果函数 g 不是尾调用，函数 f 就需要保存内部变量 m 和 n 的值、g 的调用位置等信息。但由于调用 g 之后，函数 f 就结束了，完全可以删除 f(x) 的调用帧，只保留 g(3) 的调用帧。
+
+这就叫作 **“尾调用优化”（Tail Call Optimization），即只保留内层函数的调用帧**。如果所有函数都是尾调用，那么完全可以做到每次执行时调用帧只有一项，这将**大大节省内存。这就是 “尾调用优化” 的意义**。
+
+> **注意**：只有不再用到外层函数的内部变量，内层函数的调用帧才会取代外层函数的调用帧，否则就无法进行 “尾调用优化”。
+
+#### 8.8.6 尾递归
+
+**函数调用自身称为递归。如果尾调用自身就称为尾递归**。递归非常耗费内存，因为需要同时保存成百上千个调用帧，很容易发生 “栈溢出” 错误（stack overflow）。但对于尾递归来说，由于只存在一个调用帧，所以永远不会发生 “栈溢出” 错误。
+
+```js
+function factorial(n) {
+  if (n === 1) return 1;
+  return n * factorial(n - 1);
+}
+
+factorial(5);
+// 120
+```
+
+上面的代码是一个阶乘函数，计算 n 的阶乘，最多需要保存 n 个调用记录，复杂度为 O(n) 如果改写成尾递归，只保留一个调用记录，则复杂度为 O(1)：
+
+```js
+function factorial(n, total) {
+  if (n === 1) return total;
+  return factorial(n - 1, n * total);
+}
+
+factorial(5, 1); // 120
+```
+
+还有一个比较著名的例子计算 Fibonacci 数列，也能充分说明尾递归优化的重要性。非尾递归的 Fibonacci 数列实现如下：
+
+```js
+function Fibonacci(n) {
+  if (n <= 1) return 1;
+
+  return Fibonacci(n - 1) + Fibonacci(n - 2);
+}
+
+Fibonacci(10); // 89
+Fibonacci(100); // 堆栈溢出
+Fibonacci(500); // 堆栈溢出
+
+// 尾递归优化的 Fibonacci 数列实现如下
+function Fibonacci2(n, ac1 = 1, ac2 = 1) {
+  if (n <= 1) return ac2;
+  return Fibonacci2(n - 1, ac2, ac1 + ac2);
+}
+
+Fibonacci2(100); // 573147844013817200000
+Fibonacci2(1000); // 7.0330367711422765e+208
+Fibonacci2(10000); // Infinity
+```
+
+由此可见，“尾调用优化” 对递归操作意义重大，所以一些函数式编程语言将其写入了语言规格。ES6 也是如此，第一次明确规定，所有 ECMAScript 的实现都必须部署 “尾调用优化” 这就是说，在 ES6 中，只要使用尾递归，就不会发生栈溢出，相对节省内存。
+
+ES6 的尾调用优化只在严格模式下开启，正常模式下是无效的。因为，在正常模式下函数内部有两个变量，可以跟踪函数的调用栈：
+
+- func.arguments：返回调用时函数的参数。
+- func.caller：返回调用当前函数的那个函数
+
+尾调用优化发生时，函数的调用栈会改写，因此上面两个变量就会失真。严格模式禁用这两个变量，所以尾调用模式仅在严格模式下生效。
+
+**递归函数的改写**
+尾递归的实现往往需要改写递归函数，确保最后一步只调用自身。做到这一点的方法，就是把所有用到的内部变量改写成函数的参数。比如上面的例子，阶乘函数 factoria1 需要用到一个中间变量 total，那就把这个中间变量改写成函数的参数。这样做的缺点是不太直观，第一眼很难看出来。
+
+有两个方法可以解决这个问题：
+
+- 在尾递归函数之外再提供一个正常形式的函数：
+
+  ```js
+  function tailFactorial(n, total) {
+    if (n === 1) return total;
+    return tailFactorial(n - 1, n * total);
+  }
+
+  function factorial(n) {
+    return tailFactorial(n, 1);
+  }
+
+  factorial(5); // 120
+  ```
+
+  上面的代码通过一个正常形式的阶乘函数 factoria1 调用尾递归函数 tailFactoria1，看起来就正常多了。
+
+  函数式编程有一个概念，叫作**柯里化（currying），意思是将多参数的函数转换成单参数的形式**。这里也可以使用柯里化：
+
+  ```js
+  function currying(fn, n) {
+    return function (m) {
+      return fn.call(this, m, n);
+    };
+  }
+
+  function tailFactorial(n, total) {
+    if (n == 1) return total;
+    return tailFactorial(n - 1, n * total);
+  }
+
+  const factorial = currying(tailFactorial, 1);
+
+  factorial(5); //120
+  ```
+
+  上面的代码通过柯里化将尾递归函数 tailfactoria1 变为只接受 1 个参数的 factorial。
+
+- 第二种方法就简单多了，那就是采用 ES6 的函数默认值：
+
+  ```js
+  function factorial(n, total = 1) {
+    if (n === 1) return total;
+    return factorial(n - 1, n * total);
+  }
+
+  factorial(5); // 120
+  ```
+
+  上面的代码中，参数 total 有默认值 1，所以调用时不用提供这个值。
+
+**总结**
+递归本质上是一种循环操作。纯粹的函数式编程语言没有循环操作命令，所有的循环都用递归实现，这就是为什么尾递归对这些语言极其重要。对于其他支持 “尾调用优化” 的语言（比如 Lua），只需要知道循环可以用递归代替，而一旦使用递归，就最好使用尾递归。
 
 ## 九. 类
 
