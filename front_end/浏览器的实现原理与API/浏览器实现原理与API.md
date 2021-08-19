@@ -671,7 +671,7 @@ var range = document.getSelection().getRangeAt(0);
 
 ```js
 var fragment = range.extractContents();
-range.insertNode(document.createTextNode("aaaa"));
+range.insertNode(document.createTextNode('aaaa'));
 ```
 
 #### 2.1.6 命名空间
@@ -730,7 +730,7 @@ document 的 `styleSheets` 属性表示文档中的所有样式表，这是一�
 - insertRule: 在当前 CSS 样式表中插入新的 CSS 规则
 
   ```js
-  document.styleSheets[0].insertRule("#blanc { color: white; }", 0); // 后面的index是可选的
+  document.styleSheets[0].insertRule('#blanc { color: white; }', 0); // 后面的index是可选的
   ```
 
 - addRule: 方法已过时，不建议使用，随时可能被删除
@@ -767,13 +767,13 @@ document.styleSheets[0].cssRule;
   - CSSStyleDeclaration.getPropertyValue: 返回给定属性的值
 
     ```js
-    document.styleSheets[0].cssRules[0].style.getPropertyValue("margin"); // "1px 2px"
+    document.styleSheets[0].cssRules[0].style.getPropertyValue('margin'); // "1px 2px"
     ```
 
   - CSSStyleDeclaration.removeProperty: 从 CSS 属性块中删除属性
 
     ```js
-    document.styleSheets[0].rules[0].style.removeProperty("margin");
+    document.styleSheets[0].rules[0].style.removeProperty('margin');
     ```
 
   - CSSStyleDeclaration.setProperty: 在 CSS 声明块中修改或设置属性
@@ -787,7 +787,7 @@ document.styleSheets[0].cssRule;
 CSSOM 还提供了一个非常重要的方法，来获取一个元素最终经过 CSS 计算得到的属性：
 
 ```js
-window.getComputedStyle(document.getElementById("elemId"), null);
+window.getComputedStyle(document.getElementById('elemId'), null);
 ```
 
 第一个参数是要获取属性的元素，第二个参数可选，用于选择伪元素(比如, ::after, ::before, ::marker, ::line-marker)。
@@ -810,7 +810,7 @@ CSSOM View 这一部分的 API，可以视为 DOM API 的扩展，它在原本�
 此外，窗口 API 还规定了 `window.open()` 的第三个参数：
 
 ```js
-window.open("about:blank", "_blank", "width=100,height=100,left=100,right=100");
+window.open('about:blank', '_blank', 'width=100,height=100,left=100,right=100');
 ```
 
 > 注意：一些浏览器出于安全考虑没有实现，也不适用于移动端浏览器，不建议使用。
@@ -901,7 +901,8 @@ window.open("about:blank", "_blank", "width=100,height=100,left=100,right=100");
    如果要获取相对坐标，或者包含滚动区域的坐标，需要一点小技巧：
 
    ```js
-   var offsetX = document.documentElement.getBoundingClientRect().x - element.getBoundingClientRect().x;
+   var offsetX =
+     document.documentElement.getBoundingClientRect().x - element.getBoundingClientRect().x;
    ```
 
    > 这两个 API 的兼容性非常好，定义又非常清晰，如果是用 JS 实现视觉效果时，尽量使用这两个 API。
@@ -940,15 +941,15 @@ window.open("about:blank", "_blank", "width=100,height=100,left=100,right=100");
 // 事件触发顺序 1 2 4 3
 // 一个事件发生时，总是先捕获过程再冒泡过程，跟是否监听无关
 document.body.addEventListener(
-  "mousedown",
+  'mousedown',
   () => {
     console.log(1);
   },
   true
 );
 
-document.getElementById("i").addEventListener(
-  "mousedown",
+document.getElementById('i').addEventListener(
+  'mousedown',
   () => {
     console.log(2);
   },
@@ -956,15 +957,15 @@ document.getElementById("i").addEventListener(
 );
 
 document.body.addEventListener(
-  "mousedown",
+  'mousedown',
   () => {
     console.log(3);
   },
   false
 );
 
-document.getElementById("i").addEventListener(
-  "mousedown",
+document.getElementById('i').addEventListener(
+  'mousedown',
   () => {
     console.log(4);
   },
@@ -982,12 +983,12 @@ document.getElementById("i").addEventListener(
   // addEventListener()方法将指定的监听器注册到 EventTarget 上，当该对象触发指定的事件时，指定的回调函数就会被执行。
   // addEventListener()的工作原理是将实现 EventListener 的函数或对象添加到调用它的 EventTarget 上的指定事件类型的事件侦听器列表中。
   document.body.addEventListener(
-    "mousedown",
+    'mousedown',
     {
       // 第二个参数可以是具有一个 handleEvent 方法的对象
       handleEvent: function (e) {
         console.log(e);
-      },
+      }
     },
     true
   );
@@ -1003,10 +1004,10 @@ document.getElementById("i").addEventListener(
     // true 表示 listener 在添加后最多调用一次，之后自动移除
     once: true,
     // 设置为true时，表示 listener 永远不会调用 preventDefault()。如果 listener 仍然调用了这个函数，客户端将会忽略它并抛出一个控制台警告。preventDefault() 取消事件的默认行为
-    passive: true,
+    passive: true
   };
-  document.getElementById("t").addEventListener(
-    "click",
+  document.getElementById('t').addEventListener(
+    'click',
     function (e) {
       console.log(5);
     },
@@ -1036,7 +1037,7 @@ document.getElementById("i").addEventListener(
 除了来自输入设备的事件，还可以自定义事件，实际上事件也是一种非常好的代码架构，但是 DOM API 中的事件并不能用于普通对象，所以只能在 DOM 元素上使用自定义事件。
 
 ```js
-var evt = new Event("look", { bubbles: true, cancelable: false });
+var evt = new Event('look', { bubbles: true, cancelable: false });
 document.dispatchEvent(evt);
 ```
 
