@@ -5704,6 +5704,464 @@ BitSet.bits = new Uint8Array([1, 2, 4, 8, 16, 32, 64, 128]);
 BitSet.masks = new Uint8Array([~1, ~2, ~4, ~8, ~16, ~32, ~64, ~1281]);
 ```
 
+### 9.6 类的修饰器
+
+**修饰器（Decorator）是一个函数，用来修改类的行为**。ES2017 引入了这项功能，目前 Babel 转码器已经支持。在 Vue TypeScript 和 React redux 经常用到。
+
+```js
+@testable
+class MyTestableClass {
+  // ...
+}
+
+function testable(target) {
+  target.isTestable = true;
+}
+
+MyTestableClass.isTestable; // true
+```
+
+上面的代码中，testable 就是一个修饰器。它修改了 MyTestableClass 这个类的行为，为它加上了静态属性 isTestable。
+
+```js
+// 修饰器的行为基本如下
+@decorator
+class A {}
+
+// 等同于
+class A {}
+A = decorator(A) || A;
+```
+
+> **注意**：修饰器对类的行为的改变是在代码编译时发生的，而不是在运行时。这意味着，修饰器能在编译阶段运行代码。也就是说，修饰器本质就是编译时执行的函数。
+
+修饰器函数的第一个参数就是所要修饰的目标类：
+
+```js
+function testable(target) {}
+```
+
+上面的代码中，testable 函数的参数 target 就是会被修饰的类。如果觉得一个参数不够用，可以在修饰器外面再封装一层函数：
+
+```js
+function testable(isTestable) {
+  return function (target) {
+    target.isTestable = isTestable;
+  };
+}
+
+@testable(true)
+class MyTestableClass {}
+MyTestableClass.isTestable; // true
+```
+
+上面的代码中，修饰器 testable 可以接受参数，这就等于可以修改修饰器的行为。前面的例子是为类添加一个静态属性，如果想添加实例属性，可以通过目标类的 prototype 对象进行操作：
+
+```js
+function testable(target) {
+  target.prototype.isTestable = true;
+}
+
+@testable
+class MyTestableClass {}
+let obj = new MyTestableClass();
+obj.isTestable; // true
+```
+
+上面的代码中，修饰器函数 testable 是在目标类的 prototype 对象上添加属性的，因此可以在实例上调用：
+
+```js
+// mixins.js
+export function mixins(...list) {
+  return function (target) {
+    Object.assign(target.prototype, ...list);
+  };
+}
+
+// main.js
+import { mixins } from './mixins';
+const Foo = {
+  foo() {
+    console.log('foo');
+  }
+};
+
+@mixins(Foo)
+class MyClass {}
+
+let obj = new MyClass();
+obj.foo(); // 'foo'
+```
+
+#### 9.6.1 方法的修饰
+
+修饰器不仅可以修饰类，还可以修饰类的属性。
+
+```js
+class Person {
+  @readonly
+  name() {
+    return `${this.first} ${this.last}`;
+  }
+}
+```
+
+上面的代码中，修饰器 readonly 用来修饰 “类” 的 name 方法。此时，修饰器函数一共可以接受 3 个参数：
+
+- 第一个参数：所要修饰的目标对象
+- 第二个参数：所要修饰的属性名
+- 第三个参数：该属性的描述对象
+
+```js
+function readonly(target, name, descriptor) {
+  // descriptor对象原来的值如下
+  // {
+  //   value: specifiedFunction,
+  //   enumerable: false,
+  //   configurable: true,
+  //   writable: true,
+  // }
+  descriptor.writable = false;
+  return descriptor;
+}
+
+readonly(Person.prototype, 'name', descriptor);
+// 类似于
+Object.defineProperty(Person.prototype, 'name', descriptor);
+```
+
+上面的代码说明，@readonly 会修改属性的描述对象（descriptor），然后被修改的描述对象可以再用来定义属性。
+
+下面的 @log 修饰器可以起到输出日志的作用：
+
+```js
+class Math {
+  @log
+  ddd(a, b) {
+    return a + b;
+  }
+}
+
+function log(target, name, descriptor) {
+  let oldvalue = descriptor.value;
+
+  descriptor.value = function () {
+    console.log(`Calling "${name}" with`, arguments);
+    return oldvalue.apply(null, arguments);
+  };
+  return descriptor;
+}
+
+const math = new Math();
+// 现在应该记录传递的参数
+math.add(2, 4);
+```
+
+上面的代码中，@log 修饰器的作用就是在执行原始的操作之前执行一次 console.log，从而达到输出日志的目的。
+
+**如果同一个方法有多个修饰器，那么该方法会先从外到内进入修饰器，然后由内向外执行**。
+
+```js
+function dec(id) {
+  console.log('evaluated', id);
+  return (target, property, descriptor) => console.log('executed', id);
+}
+
+class Example {
+  @dec(1)
+  @dec(2)
+  method() {}
+}
+
+// evaluated 1
+// evaluated 2
+// executed 2
+// executed 1
+```
+
+上面的代码中，外层修饰器 @dec(1) 先进入，但是内层修饰器 @dec(2) 先执行。除了注释，修饰器还能用来进行类型检查。所以，对于类来说，这项功能相当有用，它将是 JS 代码静态分析的重要工具。
+
+> **注意**：修饰器只能用于类和类的方法，不能用于函数，因为存在函数提升。
+
+#### 9.6.2 使用修饰器实现自动发布事件
+
+可以使用修饰器使得对象的方法被调用时自动发出一个事件：
+
+```js
+import postal from 'postal/lib/postal.lodash';
+
+export default function publish(topic, channel) {
+  return function(target, name, descriptor) {
+    const fn = descriptor.value;
+
+    descriptor.value = function() {
+      let value = fn.apply(this, arguments);
+      postal.channel(channel || target.channel, || '/').publish(topic, value)
+    }
+  }
+}
+```
+
+上面的代码定义了一个名为 publish 的修饰器，它通过改写 descriptor.value 使得原方法被调用时自动发出一个事件。它使用的事件 “发布/订阅” 库是 [Postal.js](https://github.com/postaljs/postal.js)：
+
+```js
+import publish from "path/to/decorators/publish"；
+
+class FooComponent {
+  @publish("foo.some.message","component")
+  someMethod() {
+    return {
+      my: 'data'
+    }
+  }
+  @publish("foo.some.other")
+  anotherMethod() {
+    // ...
+  }
+}
+```
+
+只要调用 someMethod 或 anotherMethod 就会自动发出一个事件：
+
+```js
+let foo = new FooComponent();
+foo.someMethod();
+// 在 "component" 频道发布 "foo.some.message" 事件，附带的数据是 {my:"data"}{}
+foo.anotherMethod();
+// 在 "/" 频道发布 "foo.some.other" 事件，不附带数据
+```
+
+#### 9.6.3 Mixin
+
+在修饰器的基础上可以实现 Mixin 模式。所谓 Mixin 模式，就是对象继承的一种替代方案，中文译为 “混入”（mix in），意为在一个对象中混入另外一个对象的方法：
+
+```js
+const Foo = {
+  foo() {
+    console.log('foo');
+  }
+};
+
+class MyClass {}
+
+Object.assign(MyClass.prototype, Foo);
+
+let obj = new MyClass();
+obj.foo(); // 'foo'
+```
+
+上面的代码中，对象 Foo 有一个 foo 方法，通过 Object.assign 方法可以将 foo 方法 “混入” MyClass 类，导致 MyClass 的实例对象 obj 都具有 foo 方法。这就是 “混入” 模式的一个简单实现。下面，部署一个通用脚本 mixins.jS，将 Mixin 写成一个修饰器：
+
+```js
+export function mixins(...list) {
+  return function (target) {
+    Object.assign(target.prototype, ...list);
+  };
+}
+```
+
+然后，就可以使用上面这个修饰器为类 “混入” 各种方法：
+
+```js
+import { mixins } from './mixins';
+
+const Foo = {
+  foo() {
+    console.log('foo');
+  }
+};
+
+@mixins(Foo)
+class MyClass {}
+
+let obj = new MyClass();
+obj.foo(); // "foo"
+```
+
+通过 mixins 修饰器，实现了在 MyClass 类上 “混入” Foo 对象的 foo 方法。不过，上面的方法会改写 MyClass 类的 prototype 对象，如果不喜欢这一点，也可以通过类的继承实现：
+
+```js
+class MyClass extends MyBaseClass {
+  // ...
+}
+```
+
+上面的代码中，MyClass 继承了 MyBaseClass。如果想在 MyClass 里面 “混入” 一个 foo 方法，其中一个办法是在 MyClass 和 MyBaseClass 之间插入一个混入类，这个类具有 foo 方法，并且继承了 MyBaseClass 的所有方法，然后 MyClass 再继承这个类：
+
+```js
+// MyMixin 是一个混入类生成器，接受 superclass 作为参数，然后返回个继承 superclass 的子类，该子类包含一个 foo 方法
+let MyMixin = superclass =>
+  class extends superclass {
+    foo() {
+      console.log('foo from MyMixin');
+    }
+  };
+
+// 目标类再去继承这个混入类就达到了 “混入” foo 方法的目的
+class MyClass extends MyMixin(MyBaseClass) {
+  // ...
+}
+
+let c = new MyClass();
+c.foo(); // "foo from MyMixin"
+
+// 如果需要 “混入” 多个方法，就生成多个混入类
+class MyClass extends Mixin1(Mixin2(MyBaseClass)) {
+  // ...
+}
+```
+
+这种写法的一个好处是可以调用 super，避免在 “混入” 过程中覆盖父类的同名方法：
+
+```js
+let Mixin1 = superclass =>
+  class extends superclass {
+    foo() {
+      console.log('foo from Mixin1');
+      if (super.foo) super.foo();
+    }
+  };
+
+let Mixin2 = superclass =>
+  class extends superclass {
+    foo() {
+      console.log('foo from Mixin2');
+      if (super.foo) super.foo();
+    }
+  };
+
+class S {
+  foo() {
+    console.log('foo from S');
+  }
+}
+
+class C extends Mixin1(Mixin2(S)) {
+  foo() {
+    console.log('foo from C');
+    super.foo();
+  }
+}
+
+new C().foo();
+// foo from C
+// foo from Mixin1
+// foo from Mixin2
+// foo from S
+```
+
+上面的代码中，每一次混入发生时都调用了父类的 supeer.foo 方法，导致父类的同名方法没有被覆盖，行为被保留了下来。
+
+#### 9.6.4 Trait
+
+Trait 也是一种修饰器，效果与 Mixin 类似，但是提供了更多功能，比如防止同名方法的冲突、排除混入某些方法、为混入的方法起别名等。
+
+下面以 [traits-decorator](https://github.com/CocktailJS/traits-decorator) 这个第三方模块为例进行说明。这个模块提供的 traits 修饰器不仅可以接受对象，还可以接受 ES6 类作为参数。
+
+```js
+import traits from 'traits-decorator';
+
+class TFoo {
+  foo() {
+    console.log('foo');
+  }
+}
+
+const TBar = {
+  bar() {
+    console.log('bar');
+  }
+};
+
+@traits(TFoo, TBar)
+class MyClass {}
+
+let obj = new MyClass();
+obj.foo(); // foo
+obj.bar(); // bar
+```
+
+上面的代码中，通过 traits 修饰器在 MyClass 类上 “混入”了 TFoo 类的 foo 方法和 TBar 类的 bar 方法。Trait 不允许 “混入” 同名方法：
+
+```js
+import traits from 'traits-decorator'
+class TFoo {
+  foo(){ console.log('foo')}
+}
+
+const TBar {
+bar() {console.log('bar') }
+foo() {console.log('foo')}
+}
+
+@traits(TFoo, TBar)
+class MyClass {} // 报错
+```
+
+上面的代码中，TFoo 和 TBar 都有 foo 方法，结果 traits 修饰器报错。解决方法：
+
+- 排除 TBar 的 foo 方法：
+
+  ```js
+  import { traits, excludes } from 'traits-decorator';
+
+  @traits(TFoo, TBar::excludes('foo'))
+  class MyClass {}
+  ```
+
+  上面的代码使用绑定运算符（`::`）在 TBar 上排除了 foo 方法，混入时就不会报错了。
+
+- 另一种方法是为 TBar 的 foo 方法起一个别名：
+
+  ```js
+  import { traits, alias } from 'traits-decorator';
+
+  @traits(TFoo, TBar::alias({ foo: 'aliasFoo' }))
+  class MyClass {}
+  ```
+
+  上面的代码为 TBar 的 foo 方法起了别名 aliasFoo，于是 MyClass 也可以混入 TBar 的 foo 方法了。
+
+alias 和 excludes 方法可以结合起来使用。
+
+```js
+traits(TExample::excludes('foo'，'bar')::alias({baz: 'exampleBaz'}))
+class MyClass{}
+```
+
+上面的代码排除了 TExample 的 foo 方法和 bar 方法，为 baz 方法起了别名 exampleBaz。
+
+as 方法则为上面的代码提供了另一种写法：
+
+```js
+traits(TExample::as({ excludes: ['foo', 'bar'], alias: { baz: 'exampleBaz' } }));
+class MyClass {}
+```
+
+#### 9.6.5 Babel 转码器的支持
+
+目前，Babel 转码器已经支持修饰器
+
+1. 首先，安装 babel-core 和 babel-plugin-transform-decorators 由于后者包括在 babel-preset-stage-0 之中，所以改为安装 babel-preset-stage-0 亦可。
+
+   ```sh
+   npm install babel-core babel-plugin-transform-decorators
+   ```
+
+2. 设置配置文件 .babelrc。
+
+   ```json
+   {
+     "plugins": ["transform-decorators"]
+   }
+   ```
+
+这时，Babel 就可以对修饰器进行转码了。脚本中打开的命令如下：
+
+```sh
+babel.transform('code', { plugins: ['transform-decorators'] });
+```
+
 ## 十. 模块
 
 模块化编程的目标是能够用不同作者和来源的代码模块组装成大型程序，即使不同模块的作者无法预知如何使用，代码仍然可以正确运行。**实践中，模块化的作用主要体现在封装和隐藏私有实现细节，以及保证全局命名空间清洁上，因而模块之间不会意外修改各自定义的变量、函数和类**。
@@ -8453,11 +8911,233 @@ f(x + 5);
 
   ```js
   f(x + 5);
-    //传名调用时，等同于
+  //传名调用时，等同于
   (x + 5) * 2;
   ```
 
 这两种方法各有利弊。传值调用比较简单，但是对参数求值的时候，实际上还没有用到这个参数，有可能造成性能损失。
+
+#### 12.5.2 Thunk 函数的含义
+
+**编译器的 “传名调用” 的实现往往是将参数放到一个临时函数之中，再将这个临时函数传入函数体。这个临时函数就称为 Thunk 函数**。
+
+```js
+function f(m) {
+  return m * 2;
+}
+f(x + 5);
+
+// 等同于
+let thunk = function () {
+  return x + 5;
+};
+
+function f(thunk) {
+  return thunk() * 2;
+}
+```
+
+上面的代码中，函数 f 的参数 x + 5 被一个函数替换了。凡是用到原参数的地方，对 Thunk 函数求值即可。这就是 Thunk 函数的定义，它是 “传名调用” 的一种实现策略，可以用来替换某个表达式。
+
+#### 12.5.3 JS 的 Thunk 函数
+
+JS 是传值调用，它的 Thunk 函数含义有所不同。在 JS 中，Thunk 函数替换的不是表达式，而是多参数函数，将其替换成一个只接受回调函数作为参数的单参数函数。
+
+```js
+// 正常版本的 readFile（多参数版本）
+fs.readFile(fileName, callback);
+
+// Thunk 版本的 readFi1e（单参数版本）
+let Thunk = function (fileName) {
+  return function (callback) {
+    return fs.readFile(fileName, callback);
+  };
+};
+
+let readFileThunk = Thunk(fileName);
+readFileThunk(callback);
+```
+
+上面的代码中，fs 模块的 readFile 方法是一个多参数函数，两个参数分别为文件名和回调函数。经过转换器处理，它变成了一个单参数函数，只接受回调函数作为参数。这个单参数版本就叫作 Thunk 函数。任何函数，只要参数有回调函数，就能写成 Thunk 函数的形式。下面是一个简单的 Thunk 函数转换器的例子：
+
+```js
+// ES6 版本
+const Thunk = function (fn) {
+  return function (...args) {
+    return function (callback) {
+      return fn.call(this, ...args, callback);
+    };
+  };
+};
+
+// 使用上面的转换器，生成 fs.readFile 的 Thunk 函数。
+let readFileThunk = Thunk(fs.readFile);
+readFileThunk(fileA)(callback);
+```
+
+#### 12.5.4 Thunkify 模块
+
+生产环境中的转换器建议使用 Thunkify 模块。
+
+```sh
+npm install thunkify
+```
+
+使用方式如下:
+
+```js
+let thunkify = require('thunkify');
+let fs = require(fs);
+
+let read = thunkify(fs.readFile);
+read('package.json')(function (err, str) {
+  // ...
+});
+```
+
+Thunkify 的源码与上一节中的简单转换器非常像：
+
+```js
+function thunkify(fn) {
+  return function () {
+    var args = new Array(arguments.length);
+    var ctx = this;
+
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+
+    return function (done) {
+      var called;
+      args.push(function () {
+        if (called) return;
+        called = true;
+        done.apply(null, arguments);
+      });
+
+      try {
+        fn.apply(ctx, args);
+      } catch (err) {
+        done(err);
+      }
+    };
+  };
+}
+```
+
+区别在于多了一个检查机制，变量 called 确保回调函数只运行一次。这样的设计与生成器函数相关：
+
+```js
+function f(a, b, callback) {
+  let sum = a + b;
+  callback(sum);
+  callback(sum);
+}
+
+let ft = thunkify(f);
+let print = console.log.bind(console);
+ft(1, 2)(print); // 3
+```
+
+上面的代码中，由于 thunkify 只允许回调函数执行一次，所以只输出一行结果。
+
+#### 12.5.5 生成器函数的流程管理
+
+Thunk 函数以前没什么用，但是 ES6 中有了生成器函数，Thunk 函数可以用于生成器函数的自动流程管理。
+
+```js
+// 生成器函数可以自动执行
+function* gen() {
+  // ...
+}
+
+let g = gen();
+let res = g.next();
+
+while (!res.done) {
+  console.log(res.value);
+  res = g.next();
+}
+```
+
+上面的代码中，生成器函数 gen 会自动执行完所有步骤。但是，这不适合异步操作。如果必须保证前一步执行完才能执行后一步，上面的自动执行就不可行。这时，Thunk 函数就能派上用处。以读取文件为例，下面的生成器函数封装了两个异步操作：
+
+```js
+let fs = require('fs');
+let thunkify = require('thunkify');
+let readFileThunk = thunkify(fs.readFile);
+
+let gen = function* () {
+  let r1 = yield readFileThunk('/etc/fstab');
+  console.log(r1.toString());
+  let r2 = yield readFileThunk('/etc/shells');
+  console.log(r2.toString());
+};
+```
+
+上面的代码中，`yield` 用于将程序的执行权移出生成器函数，那么就需要一种方法将执行权再交还给生成器函数。这种方法就是使用 Thunk 函数，因为它可以在回调函数里将执行权交还。先来看一下如何手动执行上面的生成器函数：
+
+```js
+// 生成器函数的内部指针，标明目前执行到哪一步
+let g = gen();
+
+// 返回该步的信息
+let r1 = g.next();
+r1.value(function (err, data) {
+  if (err) throw err;
+  let r2 = g.next(data);
+  r2.value(function (err, data) {
+    if (err) throw err;
+    g.next(data);
+  });
+});
+```
+
+上面生成器函数的执行过程其实是将同一个回调函数反复传入 next() 方法的 value 属性。这使得可以用递归来自动完成这个过程。
+
+#### 12.5.6 Thunk 函数的自动流程管理
+
+Thunk 函数真正的威力在于可以自动执行生成器函数。下面是一个基于 Thunk 函数的 Generator 执行器的例子：
+
+```js
+function run(fn) {
+  let gen = fn();
+
+  function next(err, data) {
+    // 将指针移到生成器函数的下一步
+    let result = gen.next(data);
+    // 判断生成器函数是否结束
+    if (result.done) return;
+    // 如果没结束，就将 next 函数再传入 Thunk 函数
+    result.value(next);
+  }
+
+  next();
+}
+
+function* g() {
+  // ...
+}
+
+run(g);
+```
+
+有了这个执行器，执行生成器函数就方便多了。不管内部有多少个异步操作，直接把生成器函数传入 run 函数即可。当然，前提是每一个异步操作都要是 Thunk 函数，也就是说，跟在 yield 命令后面的必须是 Thunk 函数。
+
+```js
+let g = function* () {
+  let f1 = yield readFile('fileA');
+  let f2 = yield readFile('fileB');
+  // ...
+  let fn = yield readFile('fileN');
+};
+
+run(g);
+```
+
+上面的代码中，函数 q 封装了 n 个异步的读取文件操作，只要执行 run 函数，这些操作就会自动完成。这样一来，异步操作不仅可以写得像同步操作，而且只需要一行代码就可以执行。
+
+Thunk 函数并不是生成器函数自动执行的唯一方案。因为自动执行的关键是，必须有种机制自动控制生成器函数的流程，接收和交还程序的执行权。回调函数可以做到这一点，Promise 对象也可以做到这一点。
 
 ## 十三. 异步 JS
 
@@ -9211,7 +9891,7 @@ function f(x) {
 }
 ```
 
-像这样以语法转换的形式解释 await 关键宇比较困难。但可以把 await 关键字想象成分隔代码体的记号，它们把函数体分隔成相对独立的同步代码块。ES2017 解释器可以把函数体分割成一系列独立的子函数，每个子函数都将被传给位于它前面的以 await 标记的那个期约的 then() 方法。
+像这样以语法转换的形式解释 await 关键字比较困难。但可以把 await 关键字想象成分隔代码体的记号，它们把函数体分隔成相对独立的同步代码块。ES2017 解释器可以把函数体分割成一系列独立的子函数，每个子函数都将被传给位于它前面的以 await 标记的那个期约的 then() 方法。
 
 ### 13.4 异步迭代
 

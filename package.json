@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "学习笔记与资料",
   "dependencies": {
+    "npm": "^7.21.0",
     "typescript": "^4.3.5"
   },
   "devDependencies": {
