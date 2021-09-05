@@ -7,9 +7,7 @@
     "ms-ceintl.vscode-language-pack-zh-hans",
     "formulahendry.code-runner",
     "esbenp.prettier-vscode",
-    "msjsdiag.debugger-for-chrome",
     "dbaeumer.vscode-eslint",
-    "coenraads.bracket-pair-colorizer-2",
     "oderwat.indent-rainbow",
     "visualstudioexptteam.vscodeintellicode",
     "mkxml.vscode-filesize",
@@ -26,7 +24,6 @@
     "ecmel.vscode-html-css",
     "alefragnani.bookmarks",
     "gruntfuggly.todo-tree",
-    "pranaygp.vscode-css-peek",
-    "formulahendry.auto-rename-tag"
+    "pranaygp.vscode-css-peek"
   ]
 }
