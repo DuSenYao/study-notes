@@ -16,5 +16,12 @@
     ".vscode/css.css-data.json"
   ],
   "todo-tree.tree.scanMode": "workspace only",
-  "stylelint.enable": false
+  "stylelint.enable": false,
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#215732",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#21573299",
+    "titleBar.inactiveForeground": "#e7e7e799"
+  },
+  "peacock.color": "#215732"
 }
