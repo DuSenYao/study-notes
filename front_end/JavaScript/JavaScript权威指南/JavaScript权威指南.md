@@ -5950,7 +5950,7 @@ let obj = new MyClass();
 obj.foo(); // 'foo'
 ```
 
-上面的代码中，对象 Foo 有一个 foo 方法，通过 Object.assign 方法可以将 foo 方法 “混入” MyClass 类，导致 MyClass 的实例对象 obj 都具有 foo 方法。这就是 “混入” 模式的一个简单实现。下面，部署一个通用脚本 mixins.jS，将 Mixin 写成一个修饰器：
+上面的代码中，对象 Foo 有一个 foo 方法，通过 Object.assign 方法可以将 foo 方法 “混入” MyClass 类，导致 MyClass 的实例对象 obj 都具有 foo 方法。这就是 “混入” 模式的一个简单实现。下面，部署一个通用脚本 mixins.js，将 Mixin 写成一个修饰器：
 
 ```js
 export function mixins(...list) {
