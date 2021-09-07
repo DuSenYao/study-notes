@@ -59,6 +59,20 @@ title: 精通CSS-高级Web标准解决方案
       - [4.1.7 大小写变换和小型大写变体](#417-大小写变换和小型大写变体)
       - [4.1.8 控制字母和单词间距](#418-控制字母和单词间距)
     - [4.2 版心宽度、律动和毛边](#42-版心宽度-律动和毛边)
+      - [4.2.1 文本缩进与对齐](#421-文本缩进与对齐)
+      - [4.2.2 连字符](#422-连字符)
+      - [4.2.3 多栏文本](#423-多栏文本)
+    - [4.3 Web 字体](#43-web-字体)
+      - [4.3.1 许可](#431-许可)
+      - [4.3.2 @font-face 规则](#432-font-face-规则)
+      - [4.3.3 Web 字体、浏览器与性能](#433-web-字体-浏览器与性能)
+      - [4.3.4 使用 JS 加载字体](#434-使用-js-加载字体)
+    - [4.4 高级排版特性](#44-高级排版特性)
+      - [4.4.1 数字](#441-数字)
+      - [4.4.2 字距选项及文本渲染](#442-字距选项及文本渲染)
+    - [4.5 文本特效](#45-文本特效)
+      - [4.5.1 合理使用文本阴影](#451-合理使用文本阴影)
+      - [4.5.2 使用 JS 提升排版品质](#452-使用-js-提升排版品质)
 
 <!-- /code_chunk_output -->
 
@@ -909,3 +923,476 @@ article {
 默认情况下，文本都是左对齐的。文本左对齐有助于找到下一行，保持阅读节奏。对于连续的段落，或者为相邻段落设置 1 行的外边距，或设置段首缩进（`text-index`）。
 
 段落的右边可能参差不齐。这种参差不齐的样式在排版上也有术语，叫做 “毛边”（rag）。在应用文本居中对齐时需要格外小心，除非行长很短。居中文本非常适合小型用户界面元素或短标题的布局，因为两端参差不齐会影响可读性。
+
+`text-align` 属性可以接受下列任意一个关键字值：left、right、center 和 justify。CSS Text Level3 规范还额外定义了几个值，包括 start 和 end。这两个逻辑方向关键字与文本书写模式相对应：多数西方语言都是从左向右书写，因此如果文本语言是英语，那么 start 就代表左对齐，end 代表右对齐。而在从右向左书写的语言中（如阿拉伯语，就正好相反。如果给父元素设置了 dir="rtl" 属性，即从右向左显示，浏览器通常都会自动反转默认的文本方向。
+
+给 `text-align` 属性应用 `justify` 值，可以在单词间平均分布间距，结果就是左右两端对齐消除毛边。这也是印刷业中经常采用的技术，原版包括连字符在内的字体特性都会被修整以适应页面空间。
+
+网页又是另一种媒体，很多因素无法控制。屏幕大小不同、安装的字体不同、浏览器引擎不同，这些都会影响用户最终在页面上看到的结果。如果让文本两端对齐，可能会导致下图的结果，不易认读。由文本空白构成的 “串流”（river of whitespace）会出现，版心宽度越小就越严重。
+
+![文本“串流”现象](./image/文本“串流”现象.jpg)
+
+浏览器处理文本两端对齐时使用的算法挺粗糙的，不如传统出版效果好。虽然可以通过 `text-justify` 属性修改使用的算法，但浏览器对其多个值的支持较弱，基本上只涉及调整非西方语言的字形和单词。
+
+有意思的是，IE 支持这个属性的一个非标准值 newspaper，它好像使用了更聪明的算法。该算法会同时调整字母间距和单词间距。
+
+#### 4.2.2 连字符
+
+如果仍然打算在页面中让文本两端对齐，那么连字符可能会有助于减轻串流问题。为此，可以手工在 HTML 中插入一个表示连字符的实体，即所谓的软连字符 **&shy;**。只有当浏览器需要断词换行时才会显示这个连字符。
+
+![手工插入软连字符](./image/手工插入软连字符.jpg)
+
+对于文章之类的长文本，手动逐个插入连字符并不现实。此时可以使用 `hyphens` 属性，让浏览器帮插入连字符。这个属性相对较新，因此一般要加上浏览器前缀才能生效。IE10 之前的版本、安卓设备中内置的 WebKit 浏览器，甚至连基于 Blink 的 Chrome 和 Opera 都基本不支持 `hyphens`。
+
+要想使用自动连字符功能，需要保证两点：
+
+1. 在网页 html 元素中设置语言代码
+
+   ```html
+   <html lang="en"></html>
+   ```
+
+2. 通过 CSS 将相关元素的 `hyphens` 属性值设为 auto。
+
+   ```css
+   p {
+     hyphens: auto;
+   }
+   ```
+
+要关闭连字符，可以将 `hyphens` 属性值设置为 manual，即手动模式。在手动模式下，软连字符机制会起作用。
+
+#### 4.2.3 多栏文本
+
+把整篇文章的宽度都限制为 36em 可以达到限制版心宽度的目的，但对于大屏幕而言，却又太浪费空间了，留着大片的空白很可惜！有时候，为了有效利用宽屏，可以把文本分成多栏，并对每栏的宽度加以限制。CSS Multi-column Layout Module 定义的属性可以把文本内容切分成多个等宽的栏。
+
+“Multi-column Layout” 这个名字容易让人产生误会，以为使用它定义的属性，就可以在页面上创建带有栏和栏间距控制的网格布局。实际上并不是这样，这个模块定义的属性只是用来把网页中部分内容的版式转换成类似报纸上的分栏效果。当然，利用这些属性创建其他布局效果完全没问题，只是可能并非该模块的初衷罢了。
+
+如果把之前设置的 max-width 增加到 70em，那么可以分成 3 栏。为此，要把 `columns` 属性设置为想要的最小宽度。栏间距通过 `colum-gap` 属性控制：
+
+```css
+article {
+  max-width: 70em;
+  columns: 20em;
+  column-gap: 1.5em;
+  margin: 0 auto;
+}
+```
+
+![Multi-column-Layout](./image/Multi-column-Layout.jpg)
+
+这里的 `columns` 属性是 `column-count` 和 `column-width` 属性的简写形式。如果只设置 `column-count` 属性，浏览器会严格生成指定数量的栏，不管宽度如何。如果同时设置了 `column-count` 和 `colum-width`，则前者会作为最大栏数，后者会作为最小栏宽。
+
+```css
+article {
+  columns: 20em; /* 在保证最小宽度 20em 的前提下，自动设置栏数 */
+  column-width: 20em; /* 同上 */
+
+  columns: 3; /* 3栏，自动设置宽度 */
+  column-count: 3; /* 同上 */
+
+  columns: 3 20em; /* 至少3栏，每栏宽度至少 20em */
+  /* 以下两条声明的組合相当于以上代码的简写形式：*/
+  column-count: 3;
+  column-width: 20em;
+}
+```
+
+1. **后备宽度**
+
+   为了在不支持多栏属性的浏览器中确保行长不会超过限度，可以在段落元素上应 max-width 属性。这样一来，旧版本浏览器只会显示一栏，但仍然能保证可读性：
+
+   ```css
+   article > p {
+     max-width: 36em;
+   }
+   ```
+
+2. **跨栏**
+
+   在前面的例子中，文章中的所有元素都排在了栏内文本流中。其实可以让某些元素排到该本流之外，强制它们伸长以达到跨栏效果。下图中，文章标题和最后一段（包含来源链接）就横跨了所有栏：
+
+   ```css
+   h1,
+   source {
+     column-span: all; /* 或 column-span: none;，以关闭跨栏特性 */
+   }
+   ```
+
+   ![column-span跨栏](./image/column-span跨栏.jpg)
+
+   如果让位于文本流中间的一个元素横跨所有栏，那么文本会按照垂直切分后的几栏流动。在下图中，为 h2 元素应用了前面的规则，结果该标题前面后的文本分别灌入了各自的几个分栏。
+
+   ![垂直切分多栏文本流](./image/垂直切分多栏文本流.jpg)
+
+   几乎所有浏览器都支持上述多栏布局属性，IE9 及版本更早的 IE 除外。以下是几条使用建议：
+
+   - 几乎所有浏览器都需要使用合适的开发商前缀。
+   - 浏览器对多栏布局属性的实现存在不一致，而且还有一些 bug，其中多数集中于外边距折叠和边框渲染方面。
+
+3. **垂直律动与基线网格**
+
+   在排版时运用一些数学关系很有好处。比如，对于不同标题的大小，采用 “纯四度” 关系（比率约为 1.26）。同时，所有标题都应用了值为 1.5em（相当于一行正文高度）的 margin-top。此外，所有分栏的间距也是统一的。不少设计师非常信奉这种和谐的比例关系，把基本行高作为设计其他部分的基准。
+
+   在印刷设计中，这种律动关系的应用非常普遍，结果就是正文文本都会排进基线网格。即使标题、引用或其他页面部件时不时会打破这种律动，大的格局也不会受影响。这样不仅有助于读者眼球移动时轻松对准文本，还可以在双面印刷时避免背面的文本透过纸面，因为两面都遵循相同的基线。
+
+   在网页设计中，要保证基线准确可是麻烦多了，尤其是在视口会变、允许用户上传图片的情况下。不过在可能的情况下，还是有必要这样做的，比如使用多栏文本布局的时候。
+
+### 4.3 Web 字体
+
+目前为止，在示例中用到的都是用户电脑中安装的字体。Helvetica、Georgia 和 Times New Roman 等网页中常用的英文字体几乎每个电脑都有，因为 Windows 和 macOS X 操作系统多年来一直会预装它们。
+
+多年来，设计师一直梦想着可以在网页中嵌入远程字体，就像在网页中插入图片一样。自 1997 年 IE4 面世以来，相应的技术就已经出现了，只不过到了 2009 年才被 Firefox、Safari 和 Opera 等浏览器普遍支持。
+
+此后，Web 字体有了长足的发展。起初只是个人博客和网站的零星尝试，发展到今天，主流网站乃至政府机关的网站都开始采用定制的 Web 字体。
+
+#### 4.3.1 许可
+
+使用 Web 字体还有一个问题，那就是许可。最开始的时候，字体设计者在授权浏览器下载他们的字体方面非常谨慎，因为担心发生无法控制的侵权问题。这种担忧持续了几年才有所缓解。多数字体设计者都施加了安全限制。比如，只允许从指定的域名下载字体，或者要求定期改字体名，以防止盗链。
+
+**Web 字体托管服务**
+尝试 Web 字体最简单的方式，就是使用 Web 字体服务。有一些是收费的，比如 Adobe Typekit、Cloud.typography 以及 Fonts.com，它们会负责相关的一切。还有免费的 Google Fonts，是 Google 汇总并托管的一些免费字体。
+
+这些在线服务会帮用户处理设计者的许可事宜、支持把字体转换为多种格式，确保下载字体包含正确的字符集以及一些优化。然后，通过它们的高速服务器把字体提供给使用者。
+
+使用这些托管服务可以选择一次性许可，也可以选择长期租用。使用字体托管服务的好处是，复杂的事情不用考虑，只要关心如何在网站中使用这些字体就行了。
+
+#### 4.3.2 @font-face 规则
+
+嵌入 Web 字体的关键是 `@font-face` 规则。通过它可以指定浏览器下载 Web 字体的服务器地址，以及如何在样式表中引用该字体。
+
+```css
+@font-face {
+  font-family: Vollkorn;
+  font-weight: bold;
+  src: url('fonts/vollkorn/Vollkorn-Bold.woff') format('woff');
+}
+
+h1 {
+  font-family: Vollkorn, Georgia, serif;
+  font-weight: bold;
+}
+```
+
+前面的 `@font-face` 块声明了在 `font-family` 值为 Vollkorn 且为粗体时应用该规则。之后提供了一个 URL，供浏览器下载包含粗体字体的 Web 开放字体格式（WOFF，Web open font format）文件。
+
+声明了新的字体 Vollkorn 后，就可以在随后的 CSS 中通过 `font-family` 属性正常使用它了。
+
+1. **字体文件格式**
+   虽然目前浏览器基本上都已经支持 Web 字体，但它们对字体文件格式的支持却不一致。字体格式的问题很复杂，涉及微软、苹果、Adobe 等公司的发展史。好在所有浏览器开发商都支持标准的 WOFF 格式，有的甚至支持较新的 WOFF2。如果项目需要支持 IE8 及更早版本的 IE、旧版本的 Safari 或早期的安卓设备，那么可能要多写几行代码，补足各种格式的字体文件，比如 SVG、EOT 和 TTF。
+
+   > 如果获得了某款 Web 字体的使用许可，可以通过 Font Squirrel 生成其他格式。
+
+   为了解决旧版本浏览器对字体格式支持的不一致问题，可以在 `@font-face` 规则中声明多个 src 值（与 font-family 很像），包括 `format()` 提示。然后，由浏览器来决定到底使用哪种格式。
+
+   做到这一步，基本上就可以实现 Web 字体的跨浏览器支持了。比如以下的 `@font-face` 规则：
+
+   ```css
+   @font-face {
+     font-family: Vollkorn;
+     src: url('fonts/Vollkorn-Regular.eot#?ie') format('embedded-opentype'), url('fonts/Vollkorn-Regular.woff2') format('woff2'),
+       url('fonts/Vollkorn-Regular.woff') format('woff'), url('fonts/Vollkorn-Regular.ttf') format('truetype'),
+       url('fonts/Vollkorn-Regular.svg') format('svg');
+   }
+   ```
+
+   以上例子涵盖了支持 EOT、WOFF（包括 WOFF2）、TTF 和 SVG 的所有浏览器，几乎是现在市面上能见到的所有浏览器了。而且，通过在 src 的值中使用查询字符串，甚至可以满足 IE6~8 的古怪行为。
+
+2. **字体描述符**
+
+   `@font-face` 规则可以接受几个声明，多数是可选的。最常见的列举如下：
+
+   - font-family：必需，字体族的名称。
+   - src：必需，URL 或 URL 列表，用于下载字体。
+   - font-weight：可选的字体粗细，默认值为 normal。
+   - font-style：可选的字体样式，默认值为 normal。
+
+   > **注意**：这些声明与通常规则中的 font 属性不是一回事。这几个都不是属性，而是**字体描述符**（font descriptor）。它们不会改变字体，它们的值只是为了告诉浏览器在什么情况下可以触发使用这个特定的字体文件。
+
+   如果这里的 font-weight 值为 bold，那么就是告诉浏览器：“如果 font-family 中字体的 font-weight 设置成了 bold，那么可以使用这里定义的字体文件。”此处有一个陷阱：假如 Vollkorn 只在这里定义了这么一次，那么其他粗细也可以使用这里的字体文件，无论是否匹配。这是由于标准规定的浏览器加载和选择字体的原则：正确的 font-family 优先于正确的粗细值。
+
+   很多字型包含不同粗细、样式和变体的字体，因此可以在 `@font-face` 块中使用相同的 Vollkorn 名称，但引用不同的字体文件。在下面的例子中，加载了两种不同的字型，声明了具体的粗细值和样式对应的字体文件：
+
+   ```css
+   @font-face {
+     font-family: AlegreyaSans;
+     src: url('fonts/alegreya/AlegreyaSans-Regular.woff2') format('woff2'), url('fonts/alegreya/AlegreyaSans-Regular.woff')
+         format('woff');
+     /* 字体粗细和样式都为默认值 normal */
+   }
+
+   @font-face {
+     font-family: Vollkorn;
+     src: url('fonts/vollkorn/Vollkorn-Medium.woff2') format('woff2'), url('fonts/vollkorn/Vollkorn-Medium.woff') format('woff');
+     font-weight: 500;
+   }
+
+   @font-face {
+     font-family: Vollkorn;
+     font-weight: bold;
+     src: url('fonts/vollkorn/Vollkorn-Bold.woff2') format('woff2'), url('fonts/vollkorn/Vollkorn-Bold.woff') format('woff');
+   }
+   ```
+
+   在随后的样式表中，通过声明不同的粗细值，就可以分别使用不同的字体文件：
+
+   ```css
+   body {
+     font-family: AlegreyaSans, Helvetica, arial, sans-serif;
+   }
+
+   p {
+     font-family: Vollkorn, Georgia, Times, 'Times New Roman', serif;
+     font-weight: bold; /* 使用 Vollkorn bold 字体 */
+   }
+
+   h3 {
+     font-weight: 500; /* 使用 Vollkorn Medium 字体 */
+   }
+   ```
+
+#### 4.3.3 Web 字体、浏览器与性能
+
+Web 字体给网页设计带来了很大的飞跃，但同时也给网页中的实际应用带来了一些麻烦。
+
+首先，浏览器需要下载额外的字体文件，这显然会延长用户等待的时间。使用 Web 字体首先必须注意不要加载过多的字体文件。如果自己托管自己的自定义字体，那么要确保设置适当的缓存首部，以避免不必要的网络开销。除此之外，浏览器在渲染这些字体时也有一些问题。
+
+在下载 Web 字体的时候，浏览器有两种方式处理相应的文本内容：
+
+- 在字体下载完成前暂缓显示文本，术语叫 FOIT（flash of invisible text）。Safari、Chrome 和 IE 默认采用这种方式，问题是用户必须等待字体下载完成才能看到内容。如果用户的网络速度很慢，这个问题会非常明显。
+
+- 在字体下载完成前，浏览器先用一种后备字体显示内容。这样可以避免因网速慢而引起的问题，但也会带来字体切换时的闪动问题。这个闪动有时候也被称为 FOUT（flash of unstyled text）。FOUT 影响用户感知的速度，特别是在后备字体与 Web 字体的大小相差较多的情况下。如果在字体下载完成并应用的瞬间，网页内容跳跃过大，用户可能会失去焦点。
+
+如果想更好地控制浏览器处理 Web 字体的方式，包括如何显示 Web 字体和后备字体，那么可以选择使用 JS 加载字体。
+
+#### 4.3.4 使用 JS 加载字体
+
+最近的 CSS Font Loading 规范定义了一个用于加载字体的实验性 JS API，可惜这个 API 尚未得到浏览器的广泛支持。因此，需要借助第三方库来实现一致的字体加载体验。
+
+Typekit 维护着一个开源 JS 工具，叫 Web Font Loader。这个库体积很小，在浏览器支持的情况下，它会使用原生的字体加载 API；在浏览器不支持的情况下，它会模拟相同的功能。这个库内置支持一些 Web 字体服务，比如 Typekit、Google Fonts 和 Fonts.com，同时也支持自托管的字体。
+
+可以下载这个[库](https://developers.google.com/speed/libraries/#/web-font-loader)，也可以从 Google 的服务器上加载它。Web Font Loader 提供了很多有用的功能，其中最有用的就是确保字体加载的跨浏览器一致性。希望使用它达到的效果是，即使在网速慢的情况下也不会妨碍用户阅读内容。换句话说，想在目标浏览器中实现一致的 FOUT 行为。
+
+Web Font Loader 为以下事件提供了接入点：
+
+- loading：开始加载字体。
+- active：字体加载完成。
+- inactive：字体加载失败。
+
+在下面例子中，需要把 `@font-face` 块中的所有代码转移到一个独立的样式表 alegreya-vollkorn.css，同时把它放在一个子文件夹 css 中。然后，需要在页面头部添加一小段 JS 代码：
+
+```html
+<script type="text/javascript">
+  WebFontConfig = {
+    custom: {
+      families: ['AlegreyaSans:n4,i4', 'Vollkorn:n6,n5,n7'],
+      urls: ['css/alegreya-vollkorn.css']
+    }
+  };
+
+  void (() => {
+    let wf = document.createElement('script');
+    wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+    wf.type = 'text/javascript';
+    wf.async = true;
+    let s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(wf, s);
+  })();
+</script>
+```
+
+这段代码既负责加载 Web Font loader 脚本，又负责配置后面要使用的字体变体。描述变体的代码在 font-family 名称后面，比如 n4 表示 “normal 样式，400 粗细”，以此类推。在这个样式表中的字体加载后，脚本会自动给 html 元素添加生成的类名。这样，就可以在 CSS 中提前编写加载新字体的规则：
+
+```css
+body {
+  font-family: Helvetica, arial, sans-serif;
+}
+
+.wf-alegreya-n4-active body {
+  font-family: Alegreya, Helvetica, arial, sans-serif;
+}
+```
+
+这两条 CSS 规则的含义是，在 Alegreya 字体加载前，使用准备好的后备字体。而在 Alegreya 字体加载后，脚本会给 html 元素添加 wf-alegreya-n4-active 类，于是浏览器马上启用新下载的字体。这样不仅能保证跨浏览器加载字体的一致性，还有机会为后备字体和 Web 字体分别调整版式。
+
+**匹配后备字体大小**
+通过在字体加载期间应用类似的规则，可以控制因 Web 字体与后备字体大小不同带来的版式抖动。希望，在 Web 字体替代后备字体的瞬间，版式抖动尽可能细微且不易被用户察觉。
+
+在下面例子中，Alegreya 字体的 x 高度明显小于 Helvetica 和 Arial（后两个字体的尺寸差不多）。通过微调 font-size 和 line-height，可以让它们的高度尽量接近。同理，还可以通过 word-spacing 来微调字符宽度。这样做的结果是，使用后备字体时的版式与切换为使用 Web 字体时会相差无几。
+
+```css
+.wf-alegreyasans-n4-loading p {
+  font-size: 0.905em;
+  word-spacing: -0.11em;
+  line-height: 1.72;
+}
+```
+
+使用 Web Font loader 要注意的另一件事是在 web 字体加载后设置 `font-size-adjust` 属性。这个属性用于指定 x 高度与 font-size 的比率。在某个字形缺少合适字体的情况下，后备字体会被调整为该比率。这个比率通常是高度的一半（值为 0.5），但也可能不是，有可能导致后备字体与 Web 字体的差异非常明显。在这里用不着测量并设置一个数值，可以直接设置一个关键字 auto，让浏览器替做这件事：
+
+```css
+.wf-alegreyasans-n4-active body {
+  font-size-adjust: auto;
+}
+```
+
+### 4.4 高级排版特性
+
+微软和 Adobe 在 20 世纪 90 年代开发的 OpenType 字体格式，支持在字体文件中包含字体的额外设定和特性。如果使用的字体文件（.ttf、.otf 或 .woff/.woff2 都有可能）包含 OpenType 特性，那么在多数现代浏览器中都可以控制更多的 CSS 特性。这些特性包括字距调整（kerning）、连字（ligature）、替代数字（alternative numeral0，以及饰线（swash）等装饰性笔画。
+
+CSS 字体规范中也有许多与 OpenType 对应的属性，比如 font-kerning、font-variant-numeric 和 font-variant-ligatures。浏览器对这些属性的支持并不一致，但可以通过另一个更低级的属性 `font-fearture-settings` 来控制相应的特性。不过最好是两个属性都使用，因为也有浏览器支持上述的对应属性而不支持这个低级属性。
+
+`font-fearture-settings` 接受一些用于切换特性的值，就是 4 个字母的 OpenType 代码，其中也可以带有数值。比如，可以启用下图所示的连字特性。
+
+![font-fearture-settings连字特性](./image/font-fearture-settings连字特性.jpg)
+
+字体设计者可以根据使用目的，为连字特性指定分类。为启用 Vollkorn 中内置的两种连字特性，标准连字（standard ligatures）和任意连字（discretionary ligatures），可以使用以下规则：
+
+```css
+p {
+  font-variant-ligatures: common-ligatures discretionary-ligatures;
+  font-feature-settings: 'liga', 'dlig';
+}
+```
+
+对支持 OpenType 的浏览器，通过对应的 `font-variant-ligatures` 属性始终可以默认启用标准连字特性，因此前面第一条声明里就没有把标准连字特性写出来。有些浏览器支持 `font-feature-settings` 属性，但语法不一样。另外一些浏览器可能要求在这个属性前面加上开发商前缀。总之，启用常用（common）和任意（discretionary）连字特性的完整规则如下：
+
+```css
+p {
+  font-variant-ligatures: discretionary-ligatures;
+  -webkit-font-feature-settings: 'liga', 'dlig';
+  -moz-font-feature-settings: 'liga', 'dlig';
+  -moz-font-feature-settings: 'liga=1, dlig=1';
+  font-feature-settings: 'liga', 'dlig';
+}
+```
+
+下面稍微解释一下：
+
+- 影响 OpenType 特性的标准方式是使用加引号的 4 个字符的代码，后接一个关键字 on 或 off（可选），也可以后接一个数字（可选）。代码表示特定的状态，如果不写，则使用默认值 on。
+
+- 以数字 0 表示状态相当于关闭特性。如果特性只有 “开” 和 “关” 两个状态，那么 1 就表示 “开”。有的特性会包含多个 “状态”，可以通过相应的数字来选择，具体数字的含义取决于字体以及想启用的特性。
+
+- 如果想一次性列出多个特性，值之间要用逗号隔开。
+
+- 多数浏览器都以加前缀的属性实现这些特性，因此别忘了加上开发商前缀。
+
+- 针对 Mozilla 浏览器的旧语法稍有不同：多个特性作为一个字符串写在一对引号中，特性之间以逗号隔开；每个特性的状态则以写在等号后面的数字表示。
+
+完整的 OpenType 特性代码，可以在微软的[这个网页](https://docs.microsoft.com/zh-cn/typography/opentype/spec/featurelist)中找到。
+
+#### 4.4.1 数字
+
+有些字体中包含多种数字形式。Georgia 或 Vollkorn 等字体会默认使用老式的数字，也就是数字跟字母一样，有上伸部分（ascender）和下伸部分（descender）。Vollkorn 也包含线性数字，即所有数字都位于基线以上、具有与大写字母一样的高度。通过如下代码分别展示了老式数字和线性数字：
+
+```css
+.lining-nums {
+  font-variant-numeric: lining-nums;
+  font-feature-settings: 'lnum';
+}
+.old-style {
+  font-variant-numeric: oldstyle-nums;
+  font-feature-settings: 'onum';
+}
+```
+
+![线性数字与老式数字](./image/线性数字与老式数字.jpg)
+
+多数字体都有不同宽度的数字（比例数字），跟常规字母一样。如果想在表格或列表中垂直对齐数字，那么可能就需要表列数字。通过如下代码组合使用了下图中的表列数字和线性数字：
+
+```css
+table {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: 'tnum', 'lnum';
+}
+```
+
+![表列线性数字](./image/表列线性数字.jpg)
+
+#### 4.4.2 字距选项及文本渲染
+
+高品质字体中通常包含用于调整某些字形间距的数据。这种微调间距的过程叫作**字距调整**（kerning）。换句话说，有些字母之间需要加大间隔才不会显得拥挤，而有些字母之间需要缩小间隔才不会显得疏远。
+
+浏览器在渲染文本时通常会基于已知的尺寸自动处理字距，不过也可以手动设置现代浏览器读取字距调整数据。为此，可以设置 `font-kerning` 属性，或者启用 OpenType 的 kern 特性
+
+```css
+.kern {
+  font-kerning: normal;
+  font-feature-settings: 'kern';
+}
+```
+
+关键字 normal 告诉浏览器从字体中读取字距调整数据（如果有的话）。而 auto 关键字则允许浏览器自作主张，只在它认为合适的时候开启字距调整。比如，在文本很小的情况下，浏览器可能就不会多此一举。最后，如果要明确告诉浏览器不进行字距调整，就使用 none。
+
+> **注意**：在有些浏览器中，启用其他 OpenType 特性（如连字）可能自动触发字距调整。因此，如果希望连字但不调整字距，就需要明确告诉浏览器不进行字距调整。反之，启用 kern 特性也可能触发常见或标准连字特性。
+
+**不要使用 text-rendering 属性**
+设置 `text-rendering: optimizeLegibility` 是启用字距调整并同时启用连字的另一种方式。这不是 CSS 标准的方式，而是 SVG 规范中的一个属性，用于告诉浏览器选一种方法来渲染 SVG 中的字母。这个属性的值还有 optimizeSpeed（性能优先）、optimizeGeometricPrecision（更精确）或 optimizeLegibility（可读性）。
+
+这个属性出现时间不短了，也得到了浏览器较好的支持，因此很多网站会采用。在 WebKit 浏览器支持 font-feature-settings 属性以前，这个属性是在旧版浏览器中激活相应特性的唯一方法。然而，这个属性存在一些严重的渲染问题，建议最好不使用它。
+
+### 4.5 文本特效
+
+#### 4.5.1 合理使用文本阴影
+
+CSS 的 `text-shadow` 属性可以用来给文本绘制阴影。给大篇幅的正文文本加阴影不是什么好主意，因为会降低可读性。对于标题或短文本，阴影倒是大有用武之地，非常适合模拟凸版印刷或者喷涂效果。
+
+`text-shadow` 属性的语法非常直观，需要指定相对于源文本 x 轴和 y 轴的偏移量（可正可负）、模糊距离（0 意味着完全不模糊）和颜色值，由空格分隔：
+
+```css
+h1 {
+  text-shadow: -0.2em 0.4em 2em #ccc;
+}
+```
+
+除此之外，还可通过用逗号分隔来给文本添加多组阴影。多组阴影会按先后次序堆叠，先定义的在上，后定义的在下。
+
+为同一段文本添加多组阴影可以模拟出压印或浮雕的效果，方法就是在文本上方和下方加上偏暗或偏亮的阴影。偏亮或偏暗阴影的偏移取决于文本相对于背景的明度。暗文本上方加亮阴影且下方加暗阴影就是通常的压印效果，反之亦然。以下代码示例展示了两种不同的效果：
+
+```css
+.impressed {
+  background-color: #6990e1;
+  color: #31446b;
+  text-shadow: 0 -1px 1px #b3d6f9, 0 1px 0 #243350;
+}
+.embossed {
+  background-color: #3c5486;
+  color: #92b1ef;
+  text-shadow: 0 -1px 0 #243350, 0 1px 0 #def2fe;
+}
+```
+
+进一步发挥想象力，还可以利用多组阴影创造出 3D 效果，比如仿手写广告牌字体。沿对角线每隔 1 像素叠加一个实心阴影就可以创造出这个效果：
+
+```css
+h1 {
+  font-family: Nunito, 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+  color: #d0bb78;
+  text-transform: uppercase;
+  font-weight: 700;
+  /* 以 1px 为单位累加 */
+  text-shadow: -1px 1px 0 #743132, -2px 2px 0 #743132, -3px 3px 0 #743132, /* ... */ -22px 22px 0 #743132,
+    -23px 23px 0 #743132;
+}
+```
+
+为了让文字的仿手写体效果更突出。首先，用一批白色阴影给文字加上轮廓。这是因为，广告画工为了在字母油漆未干时就可以继续画阴影，通常会在字母和阴影间留一些空隙。为了把文字边缘包住，得在各个方向上偏移，加上白色阴影。
+
+其次，再运用一个技巧，让阴影颜色沿偏移方向渐变，从而更像 3D 效果。为此，需要亮阴影和暗阴影交错地偏移。这样，利用这些阴影的堆叠，就让一种颜色水平方向比较突出，另种颜色垂直方向比较突出。以下是实现技巧的代码：
+
+```css
+h1 {
+  /* 省略了一些属性 */
+  /* 首先，各个方向上的白色阴影构成轮廓 */
+  text-shadow: -2px 2px 0 #fff, 0 -2px 0 #fff, 0 3px 0 #fff, 3px 0 0 #fff, -3px 0 0 #fff, 2px 2px 0 #fff,
+    2px -2px 0 #fff, -2px -2px 0 #fff, /* 其次，交错叠加的阴影让颜色沿两个方向凸显 */ -3px 3px 0 #743b34, -4px 3px 0
+      #a8564d, -4px 5px 0 #743b34, -5px 4px 0 #a8564d, -5px 6px 0 #743b34, /* 继续叠加 */ -22px 21px 0 #a8564d,
+    -22px 23px 0 #743b34, -23px 22px 0 #a8564d, -23px 24px 0 #743b34;
+}
+```
+
+几乎所有浏览器都支持 text-shadow 属性，只有 IE9 及更早的 IE 不行。对于支持它的浏览器而言，由于绘制阴影开销比较大，请不要滥用。
+
+#### 4.5.2 使用 JS 提升排版品质
+
+也有 CSS 不能完全胜任的情况，比如可以通过 `:first-letter` 伪元素选中一段文本的第一

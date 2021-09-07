@@ -3909,10 +3909,10 @@ function chunkNamespace() {
 chunkNamespace(); // 别忘了调用这个函数
 ```
 
-以上代码只定义了一个全局变量，即函数 chunkNamespace。如果就连定义一个属性也嫌多，那可以在一个表达式中定义并调用匿名函数
+以上代码只定义了一个全局变量，即函数 chunkNamespace。如果就连定义一个属性也嫌多，那可以在一个表达式中定义并调用匿名函数：
 
 ```js
-(function () {
+void (function () {
   // 将 chunkNamespacer() 函数重写为一个无名表达式
   // 要复用的代码放在这里
 })(); // 函数定义结束后立即调用它
@@ -4489,10 +4489,7 @@ const reciprocal = partial(Math.pow, undefined, neg(1));
 let data = [1, 1, 3, 5, 5];
 let mean = product(reduce(data, sum), reciprocal(data.length));
 let stddev = sqrt(
-  product(
-    reduce(map(data, compose(square, partial(sum, neg(mean)))), sum),
-    reciprocal(sum(data.length, neg(1)))
-  )
+  product(reduce(map(data, compose(square, partial(sum, neg(mean)))), sum), reciprocal(sum(data.length, neg(1))))
 );
 
 [mean, stddev]; // [3, 2]
@@ -10971,10 +10968,7 @@ function loggingProxy(o, objname) {
       let value = Reflect.get(target, property, receiver);
 
       // 如果属性是目标的自有属性，而且值为对象或函数，则返回这个值的代理
-      if (
-        Reflect.ownKeys(target).includes(property) &&
-        (typeof value === 'object' || typeof value === 'function')
-      ) {
+      if (Reflect.ownKeys(target).includes(property) && (typeof value === 'object' || typeof value === 'function')) {
         return loggingProxy(value, `${objname}.${property.toString()}`);
       }
       // 否则原封不动地返回值
