@@ -1662,7 +1662,8 @@ methods: {
 
 ```js
 Vue.component('todo-item', {
-  template: '\
+  template:
+    '\
     <li>\
       {{ title }}\
       <button v-on:click="$emit(\'remove\')">Remove</button>\
@@ -1948,8 +1949,7 @@ methods: {
 单个复选框，绑定到布尔值：
 
 ```html
-<input type="checkbox" id="checkbox" v-model="checked" />
-<label for="checkbox">{{ checked }}</label>
+<input type="checkbox" id="checkbox" v-model="checked" /> <label for="checkbox">{{ checked }}</label>
 ```
 
 多个复选框，绑定到同一个数组：
@@ -3111,10 +3111,7 @@ Vue.component('blog-post', {
 为了给日期选择器插件定制一个主题，可能需要像这样添加一个特别的类名：
 
 ```html
-<bootstrap-date-input
-  data-date-picker="activated"
-  class="date-picker-theme-dark"
-></bootstrap-date-input>
+<bootstrap-date-input data-date-picker="activated" class="date-picker-theme-dark"></bootstrap-date-input>
 ```
 
 在这种情况下，定义了两个不同的 `class` 的值：
@@ -3926,8 +3923,7 @@ CSS 动画用法同 CSS 过渡，区别是在动画中 `v-enter` 类名在节点
   <button @click="show = !show">Toggle show</button>
   <transition name="bounce">
     <p v-if="show">
-      As a child, my parents give me all their love and I think it is a necessary thing, so I am
-      very naughty.
+      As a child, my parents give me all their love and I think it is a necessary thing, so I am very naughty.
     </p>
   </transition>
 </div>
@@ -4103,12 +4099,7 @@ Velocity 和 jQuery.animate 的工作方式类似，也是用来实现 JavaScrip
 
 <div id="example-4">
   <button @click="show = !show">Toggle</button>
-  <transition
-    v-on:before-enter="beforeEnter"
-    v-on:enter="enter"
-    v-on:leave="leave"
-    v-bind:css="false"
-  >
+  <transition v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:leave="leave" v-bind:css="false">
     <p v-if="show">Demo</p>
   </transition>
 </div>
@@ -4500,9 +4491,7 @@ FLIP 动画不仅可以实现单列过渡，[多维网格也同样可以过渡](
     v-on:enter="enter"
     v-on:leave="leave"
   >
-    <li v-for="(item, index) in computedList" v-bind:key="item.msg" v-bind:data-index="index">
-      {{ item.msg }}
-    </li>
+    <li v-for="(item, index) in computedList" v-bind:key="item.msg" v-bind:data-index="index">{{ item.msg }}</li>
   </transition-group>
 </div>
 ```
@@ -4625,12 +4614,7 @@ Vue.component('my-special-transition', {
   <input type="range" v-model="fadeInDuration" min="0" v-bind:max="maxFadeDuration" />
   Fade Out:
   <input type="range" v-model="fadeOutDuration" min="0" v-bind:max="maxFadeDuration" />
-  <transition
-    v-bind:css="false"
-    v-on:before-enter="beforeEnter"
-    v-on:enter="enter"
-    v-on:leave="leave"
-  >
+  <transition v-bind:css="false" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:leave="leave">
     <p v-if="show">hello</p>
   </transition>
   <button v-if="stop" v-on:click="stop = false; show = false">Start animating</button>
@@ -6589,7 +6573,6 @@ Vue 的模板是被编译为 JavaScript 的，而其中的表达式会作为渲�
 
 ```js
 '<script>alert("hi")</script>';
-
 ```
 
 则它会被转义成为如下 HTML：
@@ -6612,7 +6595,6 @@ Vue 的模板是被编译为 JavaScript 的，而其中的表达式会作为渲�
 
 ```js
 '" onclick="alert(\'hi\')';
-
 ```
 
 则它会被转义成为如下 HTML：
