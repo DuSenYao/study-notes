@@ -33,7 +33,7 @@ class Histogram {
     text = text.replace(/\s/g, '').toUpperCase();
     // 接着循环文本中的字符
     for (let character of text) {
-      let count = this.letterCounts.get(character); //取得这个字符之前的数量
+      let count = this.letterCounts.get(character); // 取得这个字符之前的数量
       this.letterCounts.set(character, count + 1); // 然后在数量上加1
       this.totalLetters++;
     }
