@@ -252,7 +252,7 @@ npm 默认安装源为 `https://registry.npmjs.org/`。
 
 命令行永久更改使用指定镜像（淘宝）
 
-```js
+```sh
 npm config set registry https://registry.npm.taobao.org
 ```
 

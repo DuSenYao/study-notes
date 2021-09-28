@@ -478,7 +478,7 @@ git merge dev
 
 合并提交记录
 
-**使用场景**:
+**使用场景**：
 
 本地开发分支灵活管理
 
@@ -487,7 +487,7 @@ git merge dev
 3. 首先切换到 master 分支，`git pull` 拉取最新的分支状态
 4. 然后切回 local 分支
 5. 通过 `git rebase local -i` 将本地 local 分支的多次提交合并为一个，以简化提交历史。本地有多个提交时,如果不进行这一步,在 `git rebase master` 时会多次解决冲突
-6. `git rebase master` 将 master 最新的分支同步到 local 分支，这个过程可能需要手动解决冲突(如果进行了上一步的话,只用解决一次冲突)
+6. `git rebase master` 将 master 最新的分支同步到 local 分支，这个过程可能需要手动解决冲突（如果进行了上一步的话，只用解决一次冲突）
 7. 然后切换到 master 分支，`git merge local` 将本地的 local 分支内容合并到 master 分支
 8. `git push` 将 master 分支的提交上传
 
@@ -499,9 +499,9 @@ git merge dev
   git rebase master HEAD~2 -i
   ```
 
-- `--continue` : 合并冲突，结合 `git add 文件` 命令一起用与修复冲突，提示开发者，有没有解决冲突。
-- `--abort` : 放弃合并，回到 rebase 操作之前的状态，之前的提交的不会丢弃
-- `--skip` : 则会将引起冲突的 commits 丢弃掉(**慎用**)；
+- `--continue`：合并冲突，结合 `git add 文件` 命令一起用与修复冲突，提示开发者，有没有解决冲突。
+- `--abort`：放弃合并，回到 rebase 操作之前的状态，之前的提交的不会丢弃
+- `--skip`：则会将引起冲突的 commits 丢弃掉（**慎用**）
 
 #### 1.2.7 其他
 
@@ -930,8 +930,8 @@ GitFlow 协同工作流是由 Vincent Driessen 于 2010 年在 A successful Git 
 **GitFlow 的问题**:
 
 - 分支太多，所以会出现 git log 混乱的局面。具体来说，主要是 git-flow 使用 `git merge --no-ff` 来合并分支，在 git-flow 这样多个分支的环境下会让分支管理的 log 变得很难看。
-   所谓 --no-ff 参数的意思是 no fast forward 的意思。也就是说，合并的方法不要把这个分支的提交以前置合并的方式，而是留下一个 merge 的提交。
-   对此的建议是：只有 feature 合并到 developer 分支时，使用 --no-ff 参数，其他的合并都不使用 --no-ff 参数来做合并。
+  所谓 --no-ff 参数的意思是 no fast forward 的意思。也就是说，合并的方法不要把这个分支的提交以前置合并的方式，而是留下一个 merge 的提交。
+  对此的建议是：只有 feature 合并到 developer 分支时，使用 --no-ff 参数，其他的合并都不使用 --no-ff 参数来做合并。
 
 - 管理复杂。需要来来回回地切换工作的分支，有时候一不小心没有切换，就提交到了不正确的分支上，还要回滚和重新提交。
 
