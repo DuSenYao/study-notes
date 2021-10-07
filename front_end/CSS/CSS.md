@@ -73,8 +73,8 @@ at-rule 由一个 `@` 关键字和后续的一个区块组成，如果没有区�
   用于引入一个 CSS 文件，除了 @charset 规则不会引入，@import 可以引入另一个文件的全部内容。
 
   ```css
-  @import "myStyle.css";
-  @import url("myStyle.css");
+  @import 'myStyle.css';
+  @import url('myStyle.css');
   ```
 
   ```css
@@ -104,10 +104,10 @@ at-rule 由一个 `@` 关键字和后续的一个区块组成，如果没有区�
     margin: 10%;
 
     @top-left {
-      content: "Hamlet";
+      content: 'Hamlet';
     }
     @top-right {
-      content: "Page " counter(page);
+      content: 'Page ' counter(page);
     }
   }
   ```
@@ -117,9 +117,9 @@ at-rule 由一个 `@` 关键字和后续的一个区块组成，如果没有区�
 
   ```css
   @counter-style circled-alpha {
-    system: "fixed";
+    system: 'fixed';
     symbols: Ⓐ Ⓑ Ⓒ Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ;
-    suffix: " ";
+    suffix: ' ';
   }
   ul li {
     list-style: circled-alpha;
@@ -250,7 +250,7 @@ id 选择器和 class 选择器都是针对特定属性的选择器，id 选择�
 
 ###### 1.2.1.1.3 属性选择器
 
-属性选择器根据 HTML 元素的属性来选中元素，属性选择器有以下几种形态。
+属性选择器根据 HTML 元素的属性来选中元素，属性选择器有以下几种形态：
 
 - **[att]**
   直接在方括号中放入属性名，检查元素是否具有这个属性，只要元素具有这个属性，不论属性是什么值都可以被选中。
@@ -265,7 +265,7 @@ id 选择器和 class 选择器都是针对特定属性的选择器，id 选择�
   精确匹配，检查一个元素属性的值是否为 val。
 
   ```css
-  span[class="col"] {
+  span[class='col'] {
     font-size: 10px;
   }
   ```
@@ -274,13 +274,13 @@ id 选择器和 class 选择器都是针对特定属性的选择器，id 选择�
   多种匹配，检查一个元素的值是否是若干值之一，这里的 val 不是一个单一的值，可以是用空格分隔的一个序列。
 
   ```css
-  p[class="col tool_div"] {
+  p[class='col tool_div'] {
     border-radius: 1px;
   }
   ```
 
 - **[att|=val]**
-  选取属性值为“val”或是以“val-”为前缀（"-"为连字符，Unicode 编码为 U+002D）开头，val 必须是整个单词。典型的应用场景是用来来匹配语言简写代码（如 zh-CN，zh-TW 可以用 zh 作为 value）。
+  选取属性值为 “val” 或是以 “val-” 为前缀（"-"为连字符，Unicode 编码为 U+002D）开头，val 必须是整个单词。典型的应用场景是用来来匹配语言简写代码（如 zh-CN，zh-TW 可以用 zh 作为 value）。
   有些 HTML 属性含有特殊字符，这个时候，可以把 val 用引号括起来，形成一个 CSS 字符串。CSS 字符串允许使用单双引号来规避特殊字符，也可以使用反斜杠转义。
 
 - **[att^=val]**
@@ -289,11 +289,11 @@ id 选择器和 class 选择器都是针对特定属性的选择器，id 选择�
 - **[att$=val]**
   匹配属性值以指定值结束的元素。
 
-- [att*=val]
+- **[att*=val]**
   匹配属性值包含指定值的每个元素，只需要有 val，不需要是整个单词。
 
   ```css
-  div[class*="test"] {
+  div[class*='test'] {
     background: #ffff00;
   }
   ```
