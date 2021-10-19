@@ -30,9 +30,9 @@ class Histogram {
   // 这个函数用文本中的字符更新柱形图
   add(text) {
     // 移除文本中的空白，然后将字母转换为大写
-    text = text.replace(/\s/g, '').toUpperCase();
+    let a = text.replace(/\s/g, '').toUpperCase();
     // 接着循环文本中的字符
-    for (let character of text) {
+    for (let character of a) {
       let count = this.letterCounts.get(character); // 取得这个字符之前的数量
       this.letterCounts.set(character, count + 1); // 然后在数量上加1
       this.totalLetters++;

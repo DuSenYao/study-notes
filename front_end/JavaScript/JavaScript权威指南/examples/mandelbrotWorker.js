@@ -20,9 +20,9 @@ onmessage = function (message) {
   // - index 是数组 iterations 中当前像素的索引
   // - n 记录每个像素的迭代次数
   // - max 和 min 记录当前矩形中已经检查过的像素的最大和最小迭代次数
-  let index = 0,
-    max = 0,
-    min = maxIterations;
+  let index = 0;
+  let max = 0;
+  let min = maxIterations;
   for (let row = 0, y = y0; row < height; row++, y += perPixel) {
     for (let column = 0, x = x0; column < width; column++, x += perPixel) {
       // 对每个像素，都从复数 c = x + yi 开始
@@ -31,11 +31,11 @@ onmessage = function (message) {
       //   z(n+1) = z(n)^2 + c
       // 如果 |z(n)|（z(n)的大小）大于2，则像素不属于集合，在 ∩ 次迭代后停止
       let n; // 目前为止迭代的次数
-      let r = x,
-        i = y; // 从把 z(0) 设置为 c 开始
+      let r = x;
+      let i = y; // 从把 z(0) 设置为 c 开始
       for (n = 0; n < maxIterations; n++) {
-        let rr = r * r,
-          ii = i * i; // 计算 z(n) 两部分的平方
+        let rr = r * r;
+        let ii = i * i; // 计算 z(n) 两部分的平方
         if (rr + ii > 4) {
           // 如果 |z(n)|^2 大于4,
           break; // 就是逃逸了，停止迭代

@@ -3766,7 +3766,7 @@ margin: 0 -.6875em;
    ```css
    .grid {
      width: 1000px;
-     grid-template-columns: repeat(8, 10px); /* 共 800 像素 */
+     grid-template-columns: repeat(8, 100px); /* 共 800 像素 */
    }
    ```
 
@@ -3780,14 +3780,14 @@ margin: 0 -.6875em;
 
    在网格中创建空距的方法有很多。比如，给网格项声明外边距，利用网格轨道的不同对齐方式（如前面的 `space-between`），或者创建空的网格轨道来充当空距。
 
-   如果希望所有轨道间的空距都是一个固定的值，那么最简单的方法是使用如下的 `grid-column-gap` 和 `grid-row-gap` 属性。通过它们可以创建固定宽度的空距，就好像网格线有了宽度一样。这其实就相当于多栏布局中的 `column-gap` 或表格中的 `border-spacing`：
+   如果希望所有轨道间的空距都是一个固定的值，那么最简单的方法是使用如下的 `column-gap` 和 `row-gap` 属性。通过它们可以创建固定宽度的空距，就好像网格线有了宽度一样：
 
    ```css
    .grid {
      display: grid;
      grid-template-columns: repeat(5, 1fr);
-     grid-column-gap: 1.5em;
-     grid-row-gap: 1.5em;
+     column-gap: 1.5em;
+     row-gap: 1.5em;
    }
    ```
 
@@ -3914,7 +3914,7 @@ CSS Grid Layout 的 “命名模板区”（named template area）也许是其�
 
 ![命名网格区](./image/命名网格区.jpg)
 
-列模板指定第一列宽度为 20%，其他列各占剩余宽度的 1/3。为了把网格项放到网格中，仍然使用 `grid-area` 属性，但这次使用自定义的网格区名。
+列模板指定第一列宽度为 20%，其他列各占剩余宽度的 1/3。为了把网格项放到网格中，仍然使用 `grid-area` 属性，但这次使用自定义的网格区名：
 
 ```css
 .grid-b .subcategory-header {
