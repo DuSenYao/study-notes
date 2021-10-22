@@ -3,22 +3,24 @@
 - computer-basics
 
   - [计算机组成原理](/computer_basics/computer-organization/计算机组成原理.md)
+  - [算法与数据结构](/computer_basics/Data_structure_and_algorithm/算法与数据结构.md)
 
 - front-end
 
   - [浏览器实现原理与 API](/front_end/浏览器的实现原理与API/浏览器实现原理与API.md)
+  - [Chrome-DevTools](/front_end/Chrome_DevTools/Chrome-DevTools.md)
   - [前端综合应用](/front_end/前端工程实践/前端综合应用.md)
   - [前端性能优化](/front_end/前端性能优化/前端性能优化.md)
-  - 前端工具
-    - [Emmet](/front_end/前端工具/Emmet.md)
+  - 常用工具
+    - [Emmet](/front_end/常用工具/Emmet.md)
   - [CSS](/front_end/CSS/CSS.md)
     - [SCSS](/front_end/CSS/SCSS/Scss.md)
   - [HTML](/front_end/HTML/HTML.md)
   - [JavaScript](/front_end/JavaScript/JavaScript.md)
-    - [JavaScript权威指南](/front_end/JavaScript/JavaScript权威指南/JavaScript权威指南.md)
-    - [JS代码规范](/front_end/JavaScript/JS代码规范.md)
-    - [JS开发优化技巧](/front_end/JavaScript/JS开发优化技巧.md)
-    - [JS设计模式](/front_end/JavaScript/JS设计模式.md)
+    - [JavaScript 权威指南](/front_end/JavaScript/JavaScript权威指南/JavaScript权威指南.md)
+    - [JS 代码规范](/front_end/JavaScript/JS代码规范.md)
+    - [JS 开发优化技巧](/front_end/JavaScript/JS开发优化技巧.md)
+    - [JS 设计模式](/front_end/JavaScript/JS设计模式.md)
   - [TypeScript](/front_end/TypeScript/TypeScript.md)
   - [Vue](/front_end/Vue/Vue.md)
     - [Vue-CLI](/front_end/Vue/Vue-CLI.md)
@@ -32,8 +34,6 @@
 
 - public-knowledge
   - [工作学习要点](/public_knowledge/工作与学习要点/工作学习要点.md)
-  - [Chrome-DevTools](/public_knowledge/Chrome_DevTools/Chrome-DevTools.md)
-  - [算法与数据结构](/public_knowledge/Data_structure_and_algorithm/算法与数据结构.md)
   - [Git](/public_knowledge/Git/Git.md)
   - [markdown](/public_knowledge/markdown/Markdown.md)
   - [RegRxp](/public_knowledge/regular_expression/正则表达式.md)
