@@ -6,36 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <style>
+      body {
+        padding: 200px;
+      }
       .box {
         display: inline-block;
-        width: 240px;
-        height: 240px;
-        border: 60px solid transparent;
-        border-image: url('./image/hsl色轮.jpg') 60 round;
-        vertical-align: middle;
-      }
-
-      .text {
-        display: inline-block;
-        vertical-align: middle;
-      }
-      .container {
-        height: 80vh;
-        border: 1px solid #ccc;
-        vertical-align: middle;
-      }
-      .container::before {
-        content: '';
-        display: inline-block;
-        vertical-align: middle;
-        height: 100%;
+        width: 200px;
+        height: 200px;
+        transform: rotate(45deg);
+        margin-top: 20px;
+        border: 1px #ccc solid;
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="box"></div>
-      <span class="text">在容器元素中垂直居中</span>
-    </div>
+    <div class="box"></div>
   </body>
 </html>
