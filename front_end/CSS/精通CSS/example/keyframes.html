@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>keyframes</title>
+    <style>
+      @keyframes roll {
+        from {
+          transform: translateX(-100%);
+          animation-timing-function: ease-in-out;
+        }
+        20% {
+          transform: translateX(-100%) skewX(15deg);
+        }
+        28% {
+          transform: translateX(-100%) skewX(0deg);
+          animation-timing-function: ease-out;
+        }
+        45% {
+          transform: translateX(-100%) skewX(-5deg) rotate(20deg) scaleY(1.1);
+          animation-timing-function: ease-in-out;
+        }
+        58% {
+          transform: translateX(-100%) rotate(45deg) scaleY(1.1);
+          animation-timing-function: ease-in;
+        }
+        60% {
+          transform: translateX(-100%) rotate(90deg);
+        }
+        65% {
+          transform: translateX(-100%) rotate(90deg) skewY(10deg);
+        }
+        78% {
+          transform: translateX(-100%) rotate(90deg) skewY(0deg);
+        }
+        to {
+          transform: translateX(-100%) rotate(90deg);
+        }
+      }
+
+      @keyframes shift {
+        from {
+          transform: translate(-300%);
+        }
+      }
+
+      body {
+        background-color: #663399;
+        margin: 2em;
+      }
+      .logo {
+        color: #fff;
+        font-family: Helvetica Neue, Arial, sans-serif;
+        font-size: 2em;
+        margin: 1em 0;
+      }
+      .box-outer {
+        display: inline-block;
+        animation: shift 4.5s 1s steps(3, start) backwards;
+      }
+      .box-inner {
+        display: inline-block;
+        width: 0.74em;
+        height: 0.74em;
+        animation: roll 1.5s 1s 3 linear;
+        transform-origin: bottom right;
+        background-color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="logo">
+      <!-- 这是要做动画的正方形盒子 -->
+      <span class="box-outer"><span class="box-inner"></span></span>
+      <span class="logo-box">Box</span><span class="logo-model">model</span>
+    </h1>
+  </body>
+</html>
