@@ -7,13 +7,16 @@
 
 - front-end
 
-  - [浏览器实现原理与 API](/front_end/浏览器的实现原理与API/浏览器实现原理与API.md)
-  - [Chrome-DevTools](/front_end/Chrome_DevTools/Chrome-DevTools.md)
+  - 浏览器
+    - [Chrome-DevTools](/front_end/浏览器/Chrome_DevTools/Chrome-DevTools.md)
+    - [浏览器工作原理与实践](/front_end/浏览器/浏览器工作原理与实践/浏览器工作原理与实践.md)
+    - [浏览器实现原理与 API](/front_end/浏览器/浏览器的实现原理与API/浏览器实现原理与API.md)
   - [前端综合应用](/front_end/前端工程实践/前端综合应用.md)
   - [前端性能优化](/front_end/前端性能优化/前端性能优化.md)
   - 常用工具
     - [Emmet](/front_end/常用工具/Emmet.md)
   - [CSS](/front_end/CSS/CSS.md)
+    - [精通CSS-高级Web标准解决方案](/front_end/CSS/精通CSS/精通CSS-高级Web标准解决方案.md)
     - [SCSS](/front_end/CSS/SCSS/Scss.md)
   - [HTML](/front_end/HTML/HTML.md)
   - [JavaScript](/front_end/JavaScript/JavaScript.md)
