@@ -197,6 +197,27 @@ title: 精通CSS-高级Web标准解决方案
       - [10.5.2 高级三维变换](#1052-高级三维变换)
   - [十一. 高级特效](#十一-高级特效)
     - [11.1 CSS Shapes](#111-css-shapes)
+    - [11.2 剪切与蒙版](#112-剪切与蒙版)
+      - [11.2.1 剪切](#1121-剪切)
+      - [11.2.2 蒙版](#1122-蒙版)
+      - [11.2.3 透明 JPEG 与 SVG 蒙版](#1123-透明-jpeg-与-svg-蒙版)
+    - [11.3 混合模式与合成](#113-混合模式与合成)
+      - [11.3.1 给背景图片上色](#1131-给背景图片上色)
+      - [11.3.2 混合元素](#1132-混合元素)
+    - [11.4 CSS 中的图像处理:滤镜](#114-css-中的图像处理滤镜)
+      - [11.4.1 调色滤镜](#1141-调色滤镜)
+      - [11.4.2 高级滤镜与 SVG](#1142-高级滤镜与-svg)
+    - [11.5 应用特效的次序](#115-应用特效的次序)
+  - [十二. 品控与流程](#十二-品控与流程)
+    - [12.1 外部代码质量：调试 CSS](#121-外部代码质量调试-css)
+      - [12.1.1 浏览器如何解析 CSS](#1211-浏览器如何解析-css)
+      - [12.1.2 优化渲染性能](#1212-优化渲染性能)
+    - [12.2 内部代码质量：以人为本](#122-内部代码质量以人为本)
+      - [12.2.1 理解 CSS](#1221-理解-css)
+      - [12.2.2 代码质量的例子](#1222-代码质量的例子)
+      - [12.2.3 管理层叠](#1223-管理层叠)
+      - [12.2.4 结构命名与 CSS 方法论](#1224-结构命名与-css-方法论)
+      - [12.2.5 管理复杂性](#1225-管理复杂性)
 
 <!-- /code_chunk_output -->
 
@@ -456,7 +477,11 @@ _目前最广泛采用的扩展 HTML 语义的方式是微格式_。微格式是
 ```html
 <section itemscope itemtype="http://schema.org/person">
   <p><a itemprop="name" href="http://thatemil.com/">Emil B</a></p>
-  <span itemprop="affiliation" itemscope itemtype="http://schema.org/organization">
+  <span
+    itemprop="affiliation"
+    itemscope
+    itemtype="http://schema.org/organization"
+  >
     <span itemprop="name">inUse Experience AB</span>
   </span>
   <a itemprop="email" href="mailto:emil@thatemil.com">emil@thatemil.com</a>
@@ -520,7 +545,7 @@ CSS 也是可以验证的。W3C 的 [CSS 验证器](http://jigsaw.w3.org/css-val
      cursor: help;
    }
 
-   input[type='submit'] {
+   input[type="submit"] {
      cursor: pointer;
    }
    ```
@@ -583,11 +608,11 @@ CSS 也是可以验证的。W3C 的 [CSS 验证器](http://jigsaw.w3.org/css-val
 
    ```css
    /* 如果输入框包含有效的电子邮件地址 */
-   input[type='email']:valid {
+   input[type="email"]:valid {
      border-color: green;
    }
    /* 如果输入框中的内容不是有效的电子邮件地址 */
-   input[type='email']:invalid {
+   input[type="email"]:invalid {
      border-color: red;
    }
    ```
@@ -614,7 +639,7 @@ CSS 也是可以验证的。W3C 的 [CSS 验证器](http://jigsaw.w3.org/css-val
 
 ### 2.3 特殊性
 
-为了量化规则的特殊性，每种选择符都对应着一个数值。这样，一条规则的特殊性就表示为其每个选择符的累加数值。但这里的累加计算使用的并非十进制加法，而是基于位置累加，以保证 10 个类选择符（或者 40 个，甚至更多的类选择符）累加的特殊性不会大于等于 1 个 ID 选择符的特殊性。这是为了避免 ID 这种高特殊性选择符被一堆低特殊性选择符（如类型选择符）的累加值所覆盖。如果某条规则中用到的选择符不足 10 个，为简单起见，也可以使用十进制来计算其特殊性。
+为了量化规则的特殊性，每种选择符都对应着一个数值。这样，一条规则的特殊性就表示为其每个选择符的累加数值。但这里的累加计算使用的并非十进制加法，而是基于位置累加，以保证 100 个类选择符（或更多的类选择符）累加的特殊性不会大于等于 1 个 ID 选择符的特殊性。这是为了避免 ID 这种高特殊性选择符被一堆低特殊性选择符（如类型选择符）的累加值所覆盖。如果某条规则中用到的选择符不足 10 个，为简单起见，也可以使用十进制来计算其特殊性。
 
 任何选择符的特殊性都对应于如下 4 个级别，即 a、b、c、d：
 
@@ -665,7 +690,7 @@ CSS 也是可以验证的。W3C 的 [CSS 验证器](http://jigsaw.w3.org/css-val
 
 ```html
 <style>
-  @import url('/c/modules.css');
+  @import url("/c/modules.css");
 </style>
 ```
 
@@ -812,7 +837,7 @@ HTML 元素可以嵌套，元素盒子当然也可以嵌套。多数盒子都是
 
 ```css
 .block:after {
-  content: ' ';
+  content: " ";
   display: block;
   clear: both;
 }
@@ -1189,7 +1214,7 @@ article {
 @font-face {
   font-family: Vollkorn;
   font-weight: bold;
-  src: url('fonts/vollkorn/Vollkorn-Bold.woff') format('woff');
+  src: url("fonts/vollkorn/Vollkorn-Bold.woff") format("woff");
 }
 
 h1 {
@@ -1214,9 +1239,9 @@ h1 {
    ```css
    @font-face {
      font-family: Vollkorn;
-     src: url('fonts/Vollkorn-Regular.eot#?ie') format('embedded-opentype'), url('fonts/Vollkorn-Regular.woff2') format('woff2'),
-       url('fonts/Vollkorn-Regular.woff') format('woff'), url('fonts/Vollkorn-Regular.ttf') format('truetype'),
-       url('fonts/Vollkorn-Regular.svg') format('svg');
+     src: url("fonts/Vollkorn-Regular.eot#?ie") format("embedded-opentype"), url("fonts/Vollkorn-Regular.woff2")
+         format("woff2"), url("fonts/Vollkorn-Regular.woff") format("woff"), url("fonts/Vollkorn-Regular.ttf")
+         format("truetype"), url("fonts/Vollkorn-Regular.svg") format("svg");
    }
    ```
 
@@ -1240,21 +1265,23 @@ h1 {
    ```css
    @font-face {
      font-family: AlegreyaSans;
-     src: url('fonts/alegreya/AlegreyaSans-Regular.woff2') format('woff2'), url('fonts/alegreya/AlegreyaSans-Regular.woff')
-         format('woff');
+     src: url("fonts/alegreya/AlegreyaSans-Regular.woff2") format("woff2"), url("fonts/alegreya/AlegreyaSans-Regular.woff")
+         format("woff");
      /* 字体粗细和样式都为默认值 normal */
    }
 
    @font-face {
      font-family: Vollkorn;
-     src: url('fonts/vollkorn/Vollkorn-Medium.woff2') format('woff2'), url('fonts/vollkorn/Vollkorn-Medium.woff') format('woff');
+     src: url("fonts/vollkorn/Vollkorn-Medium.woff2") format("woff2"), url("fonts/vollkorn/Vollkorn-Medium.woff")
+         format("woff");
      font-weight: 500;
    }
 
    @font-face {
      font-family: Vollkorn;
      font-weight: bold;
-     src: url('fonts/vollkorn/Vollkorn-Bold.woff2') format('woff2'), url('fonts/vollkorn/Vollkorn-Bold.woff') format('woff');
+     src: url("fonts/vollkorn/Vollkorn-Bold.woff2") format("woff2"), url("fonts/vollkorn/Vollkorn-Bold.woff")
+         format("woff");
    }
    ```
 
@@ -1266,7 +1293,7 @@ h1 {
    }
 
    p {
-     font-family: Vollkorn, Georgia, Times, 'Times New Roman', serif;
+     font-family: Vollkorn, Georgia, Times, "Times New Roman", serif;
      font-weight: bold; /* 使用 Vollkorn bold 字体 */
    }
 
@@ -1309,17 +1336,17 @@ Web Font Loader 为以下事件提供了接入点：
 <script type="text/javascript">
   WebFontConfig = {
     custom: {
-      families: ['AlegreyaSans:n4,i4', 'Vollkorn:n6,n5,n7'],
-      urls: ['css/alegreya-vollkorn.css']
-    }
+      families: ["AlegreyaSans:n4,i4", "Vollkorn:n6,n5,n7"],
+      urls: ["css/alegreya-vollkorn.css"],
+    },
   };
 
   void (() => {
-    let wf = document.createElement('script');
-    wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-    wf.type = 'text/javascript';
+    let wf = document.createElement("script");
+    wf.src = "https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js";
+    wf.type = "text/javascript";
     wf.async = true;
-    let s = document.getElementsByTagName('script')[0];
+    let s = document.getElementsByTagName("script")[0];
     s.parentNode.insertBefore(wf, s);
   })();
 </script>
@@ -1375,7 +1402,7 @@ CSS 字体规范中也有许多与 OpenType 对应的属性，比如 font-kernin
 ```css
 p {
   font-variant-ligatures: common-ligatures discretionary-ligatures;
-  font-feature-settings: 'liga', 'dlig';
+  font-feature-settings: "liga", "dlig";
 }
 ```
 
@@ -1384,10 +1411,10 @@ p {
 ```css
 p {
   font-variant-ligatures: discretionary-ligatures;
-  -webkit-font-feature-settings: 'liga', 'dlig';
-  -moz-font-feature-settings: 'liga', 'dlig';
-  -moz-font-feature-settings: 'liga=1, dlig=1';
-  font-feature-settings: 'liga', 'dlig';
+  -webkit-font-feature-settings: "liga", "dlig";
+  -moz-font-feature-settings: "liga", "dlig";
+  -moz-font-feature-settings: "liga=1, dlig=1";
+  font-feature-settings: "liga", "dlig";
 }
 ```
 
@@ -1412,11 +1439,11 @@ p {
 ```css
 .lining-nums {
   font-variant-numeric: lining-nums;
-  font-feature-settings: 'lnum';
+  font-feature-settings: "lnum";
 }
 .old-style {
   font-variant-numeric: oldstyle-nums;
-  font-feature-settings: 'onum';
+  font-feature-settings: "onum";
 }
 ```
 
@@ -1427,7 +1454,7 @@ p {
 ```css
 table {
   font-variant-numeric: tabular-nums lining-nums;
-  font-feature-settings: 'tnum', 'lnum';
+  font-feature-settings: "tnum", "lnum";
 }
 ```
 
@@ -1442,7 +1469,7 @@ table {
 ```css
 .kern {
   font-kerning: normal;
-  font-feature-settings: 'kern';
+  font-feature-settings: "kern";
 }
 ```
 
@@ -1490,13 +1517,14 @@ h1 {
 
 ```css
 h1 {
-  font-family: Nunito, 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+  font-family: Nunito, "Arial Rounded MT Bold", "Helvetica Rounded", Arial,
+    sans-serif;
   color: #d0bb78;
   text-transform: uppercase;
   font-weight: 700;
   /* 以 1px 为单位累加 */
-  text-shadow: -1px 1px 0 #743132, -2px 2px 0 #743132, -3px 3px 0 #743132, /* ... */ -22px 22px 0 #743132,
-    -23px 23px 0 #743132;
+  text-shadow: -1px 1px 0 #743132, -2px 2px 0 #743132, -3px 3px 0 #743132, /* ... */ -22px
+      22px 0 #743132, -23px 23px 0 #743132;
 }
 ```
 
@@ -1508,10 +1536,12 @@ h1 {
 h1 {
   /* 省略了一些属性 */
   /* 首先，各个方向上的白色阴影构成轮廓 */
-  text-shadow: -2px 2px 0 #fff, 0 -2px 0 #fff, 0 3px 0 #fff, 3px 0 0 #fff, -3px 0 0 #fff, 2px 2px 0 #fff,
-    2px -2px 0 #fff, -2px -2px 0 #fff, /* 其次，交错叠加的阴影让颜色沿两个方向凸显 */ -3px 3px 0 #743b34, -4px 3px 0
-      #a8564d, -4px 5px 0 #743b34, -5px 4px 0 #a8564d, -5px 6px 0 #743b34, /* 继续叠加 */ -22px 21px 0 #a8564d,
-    -22px 23px 0 #743b34, -23px 22px 0 #a8564d, -23px 24px 0 #743b34;
+  text-shadow: -2px 2px 0 #fff, 0 -2px 0 #fff, 0 3px 0 #fff, 3px 0 0 #fff,
+    -3px 0 0 #fff, 2px 2px 0 #fff, 2px -2px 0 #fff, -2px -2px 0 #fff,
+    /* 其次，交错叠加的阴影让颜色沿两个方向凸显 */ -3px 3px 0 #743b34, -4px 3px
+      0 #a8564d, -4px 5px 0 #743b34, -5px 4px 0 #a8564d, -5px 6px 0 #743b34, /* 继续叠加 */ -22px
+      21px 0 #a8564d, -22px 23px 0 #743b34, -23px 22px 0 #a8564d,
+    -23px 24px 0 #743b34;
 }
 ```
 
@@ -1788,7 +1818,8 @@ CSS 背景有一个 `background` 简写属性，可以同时设置一堆背景�
 
 ```css
 .profile-box {
-  background: url(img/cat.jpg) 50% 50% / cover no-repeat padding-box content-box #bada55;
+  background: url(img/cat.jpg) 50% 50% / cover no-repeat padding-box content-box
+    #bada55;
 }
 ```
 
@@ -1800,7 +1831,8 @@ CSS 背景有一个 `background` 简写属性，可以同时设置一堆背景�
 
 ```css
 .multi-bg {
-  background-image: url(img/spades.png), url(img/hearts.png), url(img/diamonds.png), url(img/clubs.png);
+  background-image: url(img/spades.png), url(img/hearts.png),
+    url(img/diamonds.png), url(img/clubs.png);
   background-position: left top, right top, left bottom, right bottom;
   background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
   background-color: pink;
@@ -1817,8 +1849,9 @@ CSS 背景有一个 `background` 简写属性，可以同时设置一堆背景�
 
 ```css
 .multi-bg-shorthand {
-  background: url(img/spades.png) left top no-repeat, url(img/hearts.png) right top no-repeat,
-    url(img/diamonds.png) left bottom no-repeat, url(img/clubs.png) right bottom no-repeat, pink;
+  background: url(img/spades.png) left top no-repeat, url(img/hearts.png) right
+      top no-repeat, url(img/diamonds.png) left bottom no-repeat, url(img/clubs.png)
+      right bottom no-repeat, pink;
 }
 ```
 
@@ -1826,8 +1859,8 @@ CSS 背景有一个 `background` 简写属性，可以同时设置一堆背景�
 
 ```css
 .multi-bg-shorthand {
-  background: url(img/spades.png) left top, url(img/hearts.png) right top, url(img/diamonds.png) left bottom, url(img/clubs.png)
-      right bottom, pink;
+  background: url(img/spades.png) left top, url(img/hearts.png) right top,
+    url(img/diamonds.png) left bottom, url(img/clubs.png) right bottom, pink;
 
   background-repeat: no-repeat; /* 用于 4 张图片 */
 }
@@ -1984,7 +2017,8 @@ box-shadow 的另一个比 text-shadow 更为灵活之处是可以使用 `inset`
 
 ```css
 .profile-photo {
-  box-shadow: 0 0 0 10px #1c318d, 0 0 0 20px #3955c7, 0 0 0 30px #546dc7, 0 0 0 40px #7284d8;
+  box-shadow: 0 0 0 10px #1c318d, 0 0 0 20px #3955c7, 0 0 0 30px #546dc7, 0 0 0
+      40px #7284d8;
 }
 ```
 
@@ -2061,7 +2095,11 @@ box-shadow 的另一个比 text-shadow 更为灵活之处是可以使用 `inset`
 
 ```css
 .profile-box {
-  background-image: radial-gradient(circle closest-corner at 20% 30%, #cfdfee, #2c56a1);
+  background-image: radial-gradient(
+    circle closest-corner at 20% 30%,
+    #cfdfee,
+    #2c56a1
+  );
 }
 ```
 
@@ -2073,7 +2111,14 @@ box-shadow 的另一个比 text-shadow 更为灵活之处是可以使用 `inset`
 
 ```css
 .profile-box {
-  background-image: radial-gradient(#cfdfee, #2c56a1, #cfdfee, #2c56a1, #cfdfee, #2c56a);
+  background-image: radial-gradient(
+    #cfdfee,
+    #2c56a1,
+    #cfdfee,
+    #2c56a1,
+    #cfdfee,
+    #2c56a
+  );
 }
 ```
 
@@ -2106,7 +2151,11 @@ box-shadow 的另一个比 text-shadow 更为灵活之处是可以使用 `inset`
 ```css
 body {
   background-color: #fff;
-  background-image: linear-gradient(transparent, transparent 50%, rgba(55, 118, 176, 0.3) 50%);
+  background-image: linear-gradient(
+    transparent,
+    transparent 50%,
+    rgba(55, 118, 176, 0.3) 50%
+  );
   background-size: 40px 40px;
 }
 ```
@@ -2121,8 +2170,16 @@ body {
 .body {
   margin: 0;
   background-color: #fff;
-  background-image: linear-gradient(transparent, transparent 50%, rgba(55, 110, 176, 0.3) 50%), linear-gradient(to right, transparent, transparent
-        50%, rgba(55, 110, 176, 0.3) 50%);
+  background-image: linear-gradient(
+      transparent,
+      transparent 50%,
+      rgba(55, 110, 176, 0.3) 50%
+    ), linear-gradient(to right, transparent, transparent 50%, rgba(
+          55,
+          110,
+          176,
+          0.3
+        ) 50%);
   background-size: 40px 40px;
 }
 ```
@@ -2343,7 +2400,7 @@ iframe {
    ```css
    .comment:after {
      position: absolute;
-     content: '';
+     content: "";
      display: block;
      width: 0;
      height: 0;
@@ -2365,11 +2422,19 @@ iframe {
 
    ```html
    <header class="photo-header">
-     <img src="images/big_spaceship.jpg" alt="An artist's mockup of the “Dragon” spaceship" />
+     <img
+       src="images/big_spaceship.jpg"
+       alt="An artist's mockup of the “Dragon” spaceship"
+     />
 
      <div class="photo-header-plate">
        <h1>SpaceX unveil the Crew Dragon</h1>
-       <p>photo from SpaceX on<a href="https://www.flickr.com/photos/spacexphotos/16787988882/">Flickr</a></p>
+       <p>
+         photo from SpaceX on<a
+           href="https://www.flickr.com/photos/spacexphotos/16787988882/"
+           >Flickr</a
+         >
+       </p>
      </div>
    </header>
    ```
@@ -2427,10 +2492,15 @@ iframe {
 ```html
 <p>You may think[...]</p>
 <figure>
-  <img src="images/spaceship.jpg" alt="The Dragon spaceship in orbit around Earth." />
+  <img
+    src="images/spaceship.jpg"
+    alt="The Dragon spaceship in orbit around Earth."
+  />
   <figcaption>
     The "dragon" spaceship, created by SpaceX.image from
-    <a href="https://www.flickr.com/photos/spacexphotos16787988882/">Flickr.com</a>
+    <a href="https://www.flickr.com/photos/spacexphotos16787988882/"
+      >Flickr.com</a
+    >
   </figcaption>
 </figure>
 <p>There's various [...]</p>
@@ -2474,7 +2544,9 @@ figure {
   <img class="author-image" src="images/author.jpg" alt="Arthur C.Lark" />
   <span class="author-info">
     <span class="author-name">Written by Arthur C. Lark</span>
-    <a class="author-email" href="mailto:arthur.c.lark@example.com">arthur.c.lark@example.com</a>
+    <a class="author-email" href="mailto:arthur.c.lark@example.com"
+      >arthur.c.lark@example.com</a
+    >
   </span>
 </p>
 ```
@@ -2530,7 +2602,7 @@ figure {
 
    ```css
    .author-meta:before {
-     content: '';
+     content: "";
      display: inline-block;
      vertical-align: middle;
      height: 100%;
@@ -2953,7 +3025,7 @@ Flexbox 支持对元素大小的灵活控制。这一点既是实现精确内容
 }
 .tags a:before {
   position: absolute;
-  content: '';
+  content: "";
   width: 0;
   height: 0;
   border: 1em solid transparent;
@@ -3031,7 +3103,10 @@ Flexbox 支持对元素大小的灵活控制。这一点既是实现精确内容
   <div class="article-teaser-text">
     <p>There are actual spaceships.</p>
   </div>
-  <img src="images/medium_spaceship.jpg" alt="The Dragon spaceship in orbit around Earth." />
+  <img
+    src="images/medium_spaceship.jpg"
+    alt="The Dragon spaceship in orbit around Earth."
+  />
   <p class="article-teaser-more">
     <a href="/spaceships">Read the whole Spaceship article</a>
   </p>
@@ -3313,7 +3388,7 @@ body 元素默认是有外边距的，为避免不必要的干扰，得去掉它
 
 ```css
 .row:after {
-  content: '';
+  content: "";
   display: block;
   clear: both;
   height: 0;
@@ -3926,7 +4001,7 @@ CSS Grid Layout 的 “命名模板区”（named template area）也许是其�
 .grid-b {
   display: grid;
   grid-template-columns: 20% 1fr 1fr 1fr;
-  grid-template-areas: 'hd st1 . st2' 'hd st1 . st2';
+  grid-template-areas: "hd st1 . st2" "hd st1 . st2";
 }
 ```
 
@@ -3960,7 +4035,7 @@ CSS Grid Layout 的 “命名模板区”（named template area）也许是其�
 .grid-b {
   display: grid;
   grid-auto-columns: 1fr;
-  grid-template-areas: 'hd ... ... ...' 'hd st1 ... st2' 'hd ... ... ...';
+  grid-template-areas: "hd ... ... ..." "hd st1 ... st2" "hd ... ... ...";
 }
 ```
 
@@ -4003,7 +4078,7 @@ iPhone 在 2007 年的首次亮相，标志着移动设备上网体验的巨大�
   margin: 0 -0.6875em;
 }
 .row:after {
-  content: '';
+  content: "";
   display: block;
   clear: both;
   box-sizing: border-box;
@@ -4148,7 +4223,10 @@ initial-scale 的值大于 1，表示要放大布局，实际会导致布局视�
 可以通过在视口 meta 标签中设置 maximum-scale 和 minimum-scale 属性（为数值）锁定缩放范围。通过设置 user-scalable=no 也可以完全禁用缩放。如下视口 meta 标签并不少见：
 
 ```html
-<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+<meta
+  name="viewport"
+  content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
+/>
 ```
 
 这样用户在移动设备上就不能缩放网页了，因此网页的适应性会变差。即使在设计网页时会考虑给文本和可操作的部分（如链接和按钮）应用较大和较明显的样式，视力或行动有障碍的用户可能仍然会感到不便。
@@ -4368,18 +4446,18 @@ CSS 文件中的第一批规则，既针对最小的屏幕，也针对那些不�
 
 ```css
 body {
-  font-family: 'Open Sans', Helvetica Neue, Arial, sans-serif;
+  font-family: "Open Sans", Helvetica Neue, Arial, sans-serif;
 }
 h1,
 h2,
 h3 {
-  font-family: 'Open Sans Condensed', 'Arial Narrow', Arial, sans-serif;
+  font-family: "Open Sans Condensed", "Arial Narrow", Arial, sans-serif;
 }
 @media only screen and (min-width: 37.5em) {
   h1,
   h2,
   h3 {
-    font-family: 'Open Sans,Helvetica Neue', Arial, sans-serif;
+    font-family: "Open Sans,Helvetica Neue", Arial, sans-serif;
   }
 }
 ```
@@ -4388,13 +4466,13 @@ h3 {
 
 ```css
 body {
-  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
 }
 @media only screen and (max-width: 37.5em) {
   h1,
   h2,
   h3 {
-    font-family: 'Open Sans Condensed', 'Arial Narrow', Arial, sans-serif;
+    font-family: "Open Sans Condensed", "Arial Narrow", Arial, sans-serif;
   }
 }
 ```
@@ -4457,8 +4535,12 @@ Flexbox 也是 CSS 中具有某种响应式特质的规范。无须使用媒体�
   <li class="item">
     <span class="item-name">Flux capacitor regulator</span>
     <span class="item-controls">
-      <button class="item-control item-increase" aria-label="Increase">+</button>
-      <button class="item-control item-decrease" aria-label="Decrease">-</button>
+      <button class="item-control item-increase" aria-label="Increase">
+        +
+      </button>
+      <button class="item-control item-decrease" aria-label="Decrease">
+        -
+      </button>
     </span>
   </li>
   <!-- 省略其他代码 -->
@@ -4474,7 +4556,7 @@ Flexbox 也是 CSS 中具有某种响应式特质的规范。无须使用媒体�
   list-style: none;
   margin: 0;
   padding: 0;
-  font-family: 'Avenir Next', Avenir, SegoeUI, sans-serif;
+  font-family: "Avenir Next", Avenir, SegoeUI, sans-serif;
 }
 ```
 
@@ -4588,7 +4670,7 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
 .grid-b {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-areas: 'hd' 'st1' '.' 'st2' '.';
+  grid-template-areas: "hd" "st1" "." "st2" ".";
 }
 ```
 
@@ -4598,7 +4680,7 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
 @media only screen and (min-width: 37.5em) {
   .grid-b {
     grid-template-columns: 1fr 1fr;
-    grid-template-areas: 'hd hd ' 'st1 ...', '... st2';
+    grid-template-areas: "hd hd " "st1 ...", "... st2";
   }
 }
 ```
@@ -4609,7 +4691,7 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
 @media only screen and( min-width: 55em) {
   .grid-b {
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-areas: 'hd hd hd' 'st1 .. st2', 'st2 .. st2';
+    grid-template-areas: "hd hd hd" "st1 .. st2", "st2 .. st2";
   }
 }
 ```
@@ -4620,7 +4702,7 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
 @media only screen and (min-width: 70em) {
   .grid-b {
     grid-template-columns: 20% 1fr 1fr 1fr;
-    grid-template-areas: 'hd st1 . st2', 'hd st1 . st2';
+    grid-template-areas: "hd st1 . st2", "hd st1 . st2";
   }
 }
 ```
@@ -4727,7 +4809,11 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
    WebKit 系浏览器最早实现了 `srcset` 的一个版本。这个版本能针对目标分辨率和物理像素与 CSS 像素的比例（x-descriptor）指定可替换的图片。对于新闻页面中的专题报道而言，可以让默认分辨率或不支持的浏览器加载 600 像素 × 300 像素的图片，但在像素比高的时候加载两倍大的图片。
 
    ```html
-   <img src="img/600x300 png" srcset="img/1200X600.png 1.5x" alt="Dummy image" />
+   <img
+     src="img/600x300 png"
+     srcset="img/1200X600.png 1.5x"
+     alt="Dummy image"
+   />
    ```
 
    根据分辨率只能切换图片，不能控制图片的显示尺寸。为此，可以添加 `sizes` 属性，声明图片显示宽度，而不是检测像素比。
@@ -4737,7 +4823,13 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
    ```html
    <img
      src="img/small.png"
-     srcset="img/xsmall.png 300w, img/small.png 400w, img/medium.png 600w, img/large.png 800w, img/xlarge.png 1200w"
+     srcset="
+       img/xsmall.png  300w,
+       img/small.png   400w,
+       img/medium.png  600w,
+       img/large.png   800w,
+       img/xlarge.png 1200w
+     "
      sizes="(min-width: 70em) 12.6875em,
        (min-width: 50em) calc(25vw * 0.95 - 2.75em),
        (min-width: 35em) calc(95vw / 2 - 4.125em),
@@ -4823,7 +4915,10 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
 
    ```html
    <picture>
-     <source media="(min-width: 70em) and (min-resolution: 3dppx)" srcset="..." />
+     <source
+       media="(min-width: 70em) and (min-resolution: 3dppx)"
+       srcset="..."
+     />
      <img src="..." alt="..." />
    </picture>
    ```
@@ -4855,7 +4950,10 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
    要判断某种距离关系下的屏幕大小与字体大小是否匹配，可以使用设计师 Trent Walton 的一个技巧。他在可接受范围的起始位置上各加人了一个特殊字符，然后再到设备上[测试相应段落](https://trentwalton.com/2012/06/19/fluid-type/)。
 
    ```html
-   <p>Lorem ipsum dolor sit amet, consectetur adip *isicing elit, sed do eius mod* tempor incidid.</p>
+   <p>
+     Lorem ipsum dolor sit amet, consectetur adip *isicing elit, sed do eius
+     mod* tempor incidid.
+   </p>
    ```
 
    上面段落中的星号所在位置是第 45 个和第 70 个字符。意思是，如果第一行出现了两个星号，那说明这一行太长了。而在移动设备上测试时，第一行折行的地方应该在第一个星号之前一点。在找到适合最小和最大屏幕的字体大小后，就可以在此基础上进行网站的其他响应式排版了。下一步就是实现，实现的方式当然不止一种，但其中有一些是相对比较灵活的。
@@ -5039,7 +5137,7 @@ CSS 标准规定了两种表格边框模型：分离型和折叠型。在分离�
   table-layout: fixed;
   width: 100%;
   max-width: 25em;
-  font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
+  font-family: "Lucida Grande", Verdana, Arial, sans-serif;
   text-align: center;
 }
 ```
@@ -5188,7 +5286,7 @@ CSS 标准规定了两种表格边框模型：分离型和折叠型。在分离�
 
    ```css
    .cars {
-     font-family: 'Lucida Sans', Verdana, Arial, sans-serif;
+     font-family: "Lucida Sans", Verdana, Arial, sans-serif;
      width: 100%;
      border-collapse: collapse;
    }
@@ -5307,7 +5405,8 @@ CSS 标准规定了两种表格边框模型：分离型和折叠型。在分离�
    第二种是显式的，把 label 的 `for` 属性设为与相关表单控件的 id 属性相同的值：
 
    ```html
-   <label for="comment-email">Email</label> <input name="comment-email" id="comment-email" type="email" />
+   <label for="comment-email">Email</label>
+   <input name="comment-email" id="comment-email" type="email" />
    ```
 
    这里表单示例主要采用第二种方式，因此每个表单控件几乎都会有 name 和 id 属性。id 属性是在表单输入字段与 label 元素间建立联系的关键，name 属性则是表单正确地将数据提交给服务器的关键。id 和 name 的值可以不一样，但为了保持一致性，让它们相同比较好。
@@ -5319,7 +5418,12 @@ CSS 标准规定了两种表格边框模型：分离型和折叠型。在分离�
    在前面简单的例子中，使用了两种表单控件：input 和 textarea。后者主要用于输人多行文本，比如留言。可以通过 cols 和 rows 设置文本区默认的宽度和高度，这两个属性可以近似对应期望内容的长度。通过 CSS 可以进一步控制文本区的样式：
 
    ```html
-   <textarea name="comment-text" id="comment-text" cols="20" rows="10"></textarea>
+   <textarea
+     name="comment-text"
+     id="comment-text"
+     cols="20"
+     rows="10"
+   ></textarea>
    ```
 
    input 元素是个多面手。默认情况下，它被浏览器渲染为一个单行文本输人框，即其 `type` 属性的默认值是 text。除了 text，`type` 属性还支持很多其他的值。比如，password 可以让输入框中的内容被其他符号代替，达到保密的效果，而 checkbox 顾名思义就是显示为复选框。HTML5 扩展了 `type` 属性，为它增加了很多值，其中一些主要是对文本输入框的扩展，但相应地在后台会有不同的交互行为，比如 email、url 和 search。还有一些值会让 input 显示为不同的界面控件，比如 checkbox、radio、color、range 和 file。除了 type 属性，输入字段还有些其他属性，用于说明期待的格式。
@@ -6225,4 +6329,1007 @@ CSS Shapes 包含两组新属性，一组用于设置影响盒子中内容的形
 
 1. **形状函数**
 
-前面例子中的 `shape-outside` 属性使用了一个值：`circle()`。这是一个形状函数，类似的形状函数还有 **ellipse()、polygon()、inset()**。前两个分别用于定义椭圆形和多边形，`inset()` 则表示嵌入在盒子边界内的矩形，也可以指定圆角，算是 CSS2.1 中 `clip` 属性的加强版，只是语法不同。
+   前面例子中的 `shape-outside` 属性使用了一个值：`circle()`。这是一个形状函数，类似的形状函数还有 **ellipse()、polygon()、inset()**。前两个分别用于定义椭圆形和多边形，`inset()` 则表示嵌入在盒子边界内的矩形，也可以指定圆角，算是 CSS2.1 中 `clip` 属性的加强版，只是语法不同。
+
+   此处圆形和椭圆形的语法，类似于放射性渐变的大小及位置的语法：
+
+   ```css
+   .shape-circle {
+     /* 圆形接受一个半径值和一个位置值 */
+     shape-outside: circle(150px at 50%);
+   }
+   .shape-ellipse {
+     /* 椭圆形接受两个半径值和一个位置值 */
+     shape-outside: ellipse(150px 40px at 50% 25%);
+   }
+   ```
+
+   与渐变函数类似，圆形和椭圆形函数也有合理的默认值。前面月亮图片的 circle() 函数并未传入参数，而默认的参数是以元素中心为圆心，以最近边为半径。
+
+   `inset()` 函数需要传入一组长度值，分别表示到上、右、下、左边的距离，很像 margin 和 padding 简写。同样，1~3 个值的外边距和内边距简写规则在这里也适用。此外，还可以通过 `round` 关键字指定圆角，随后是半径值，与 `border-radius` 属性的类似：
+
+   ```css
+   .shape-inset {
+     /* 距离外部盒子的上、下边各 20 像素，距离外部盒子的左、右边各 30 像素，还有半径为10像素的圆角 */
+     shape-outside: inset(20px 30px round 10px);
+   }
+   ```
+
+   相对复杂一些的是 `polygon()` 函数。这个函数接受一系列坐标对，用于在盒子表面指定多个点，坐标相对于盒子的左上角，最终把各个点连接起来就是要创建的形状。在 “Planets” 部分，为土星创建了一个多边形。
+
+   创建多边形最简单的一种方式就是使用 CSS Shapes Editor 插件，它支持 Chrome 和 Opera。Chrome 和 Opera 都支持 CSS Shapes，而且会在检查形状元素时给出预览。这个插件会添加额外的工具，因此既可以通过它看到形状如何影响页面，也可以通过创建并拖动控制点来创建新形状。
+
+   ![ShapesEditor插件绘制的形状](./image/ShapesEditor插件绘制的形状.jpg)
+
+   然后就可以把得到的多边形复制粘贴到代码中：
+
+   ```css
+   .fig-planet {
+     float: right;
+     max-width: 65%;
+     shape-outside: polygon(
+       41.85% 108%,
+       22.75% 92.85%,
+       5.6% 73.3%,
+       0.95% 52.6%,
+       5.6% 35.05%,
+       21.45% 17.15%,
+       37.65% 12.35%,
+       40% 0,
+       100% 0%,
+       100%1 00%
+     );
+   }
+   ```
+
+   多边形中每个点的坐标以百分比表示，这样可以保证最大的灵活度。当然也可以在这里使用任意长度值，比如像素、em，甚至 calc() 表达式。
+
+2. **形状图片**
+
+   基于复杂的图片创建多边形会非常麻烦。好在可以直接在图片的源文件上基于透明度来创建形状。比如，可以比照预期的形状新创建一张图片。但土星的图片已经是带透明度的 PNG 格式了，因此可以直接通过它来生成形状。要做的就是把 `shape-outside` 的值由 polygon() 函数修改为指向该图片的 url() 函数：
+
+   ```css
+   .fig-planet {
+     float: right;
+     max-width: 65%;
+     shape-outside: url(img/saturn.png);
+   }
+   ```
+
+   如果在 Chrome 开发者工具里检查这张图片，会看到如下图所示的模样。可以看到，图片的透明度数据被用于生成形状了。
+
+   ![图片透明区域的轮廓被用于生成形状](./image/图片透明区域的轮廓被用于生成形状.jpg)
+
+   > **注意**：只通过浏览器打开 HTML 文件是不行的，就算浏览器支持 CSS Shapes 也不行。必须通过 Web 服务器取得这个页面，这样引用的图片才会带有合适的 HTTP 首部信息，告诉浏览器该图片与 CSS 来自同一个域。是为了防止引用的文件对计算机造成危害。
+
+   默认情况下，形状轮廓会沿图片完全透明区域的边缘生成，但这个值可以通过 `shape-image-threshold` 属性来修改。默认值是 0.0（完全透明），而较大的值（最大为 1.0）意味着较高的不透明度也可以用于生成形状边界。比如，修改土星图片的不透明度阈值为 0.9，则半透明的土星环将不再被包含在形状内，结果文本会覆盖其上：
+
+   ```css
+   .fig-planet {
+     float: right;
+     max-width: 65%;
+     shape-outside: url(img/saturn.png);
+     shape-image-threshold: 0.9;
+   }
+   ```
+
+3. **形状盒子与边距**
+
+   除了使用形状函数或图片，还可以使用元素的参照盒子来生成形状。乍一听好像有点不对毕竟元素盒子都是方形的。不过，形状也能依照圆角生成。
+
+   比如，以前面的月亮图片为例，如果想改变区块背景的颜色，同时也去掉图片周围的黑色区域，那么可以在图片上使用 `border-radius` 来创建圆形：
+
+   ```css
+   .fig-moon {
+     float: right;
+     max-width: 40%;
+     border-radius: 50%;
+   }
+   ```
+
+   仅有圆角边框还不能生成形状，还得通过 `shape-outside` 属性告诉浏览器，以 `border-box` 作为生成形状的依据：
+
+   ```css
+   .fig-moon {
+     float: right;
+     max-width: 40%;
+     border-radius: 50%;
+     shape-outside: border-box;
+   }
+   ```
+
+   这样外部形状就变成了环绕元素边框盒子的圆形。其他能生成形状的参照盒子还有 content-box、padding-box 和 margin-box。margin-box 是个例外。因为形状是基于浮动区域的，浮动区域也包含外边距，所以这个关键字是专门为形状定义的，并没有 `box-sizing: margin-box;` 这种用法。
+
+   对于形状而言，参照盒子为 margin-box 时，形状仍然会参照圆角边框，但这样一来就可以像定义常规的外边距一样，给月亮图片周围添加一些边距了。
+
+   ```css
+   .fig-moon {
+     float: right;
+     max-width: 40%;
+     border-radius: 50%;
+     shape-outside: margin-box;
+     margin: 2em;
+   }
+   ```
+
+   这样，文本会环绕着弧形的外边距形状排布。如果在 Chrome 开发者工具中检查图片，可以看到此时形状的样子，还有原始的外边距。
+
+   如果想给更复杂的土星图片添加外边距，可以使用另一个属性 `shape-margin`，这个属性用于给整个形状添加外边距，与创建形状的方法无关。
+
+   ```css
+   .fig-planet {
+     max-width: 65%;
+     shape-outside: url(img/saturn.png);
+     shape-margin: 1em;
+   }
+   ```
+
+### 11.2 剪切与蒙版
+
+CSS 形状虽然可以影响周围文本流，却不允许修改元素自身的外观。添加圆角边框只是视觉上改变元素形状的一种方式。实际上，通过把元素的部分区域变透明，是可以影响元素自身形状的。
+
+**剪切**（clipping）使用路径形状定义硬边界，可以基于该边界完全切换元素的可见性。**蒙版**（masking）不太一样，它用于将元素的某些区域设置为更透明或更不透明。剪切会影响对象的响应区域，而蒙版不会。比如要触发悬停，鼠标必须移到剪切后元素的可见区域。而对于加了蒙版的元素无论鼠标下面的区域是否可见，只要位于该元素上，都会激活 :hover 状态。
+
+#### 11.2.1 剪切
+
+剪切最早是在 CSS2.1 中通过 `clip` 属性引入的。但这个属性只能应用给绝对定位的元素，而且只能把这些元素剪切为矩形（使用 rect() 函数）。
+
+好在新的 `clip-path` 属性提供了更多选择。它可以使用 CSS 形状中的基本形状函数定义如何剪切元素。它还能使用 SVG 文档剪切元素，只要通过 URL 引用一个 `<clipPath>` 元素即可。
+
+下面从使用形状函数定义剪切路径开始。
+
+“观星指南” 页面中的所有区块都是被剪切过的，因此都有一些向对角线倾斜。每个区块都有一个 stacked 类，其中使用多边形函数指定了剪切路径:
+
+```css
+.stacked {
+  clip-path: polygon(0 3vw, 100% 0, 100% calc(100%- 3vw), 0% 100%);
+}
+```
+
+这个多边形没有前面土星的多边形复杂，因此可以稍微深入地讲解一下。多边形中的每一个点都对应着一对空格分隔的值，值对之间以逗号隔开。
+
+先从左上角开始，0 3vw 表示 x 轴剪切长度为 0，y 轴剪切长度为 3vw。这里使用相对视口的单位保证角度以视口大小为参照。接下来的坐标是右上角坐标 100%。第三个 100% calc(100% - 3vw) 指距右下角 3vw，它不能使用百分比表示，因为这个 y 轴坐标是从上方开始计算的。最后左下角的坐标是 0 100%。
+
+因为剪切路径只影响元素渲染后的外观，而不会影响页面流，所以剪切后的元素之间会出现透明间隙。为消除间隙，可以给每个堆叠的区块应用一个负外边距，而且要比 3vw 稍大一些，好让相邻的区块边缘能彼此重叠。但只希望在支持 `clip-path` 的浏览器中应用这个负外边距，这时候正好可以用上 `@supports` 规则。
+
+```css
+@supports ((clip-path: polygon(0 0)) or (-webkit-clip-path: polygon(0 0))) {
+  .stacked {
+    margin-bottom: -3.4vw;
+  }
+}
+```
+
+在 `@supports` 规则块中，测试了浏览器是否支持最小的多边形（只有一个点）。增加这些保障后，区块就可以完美地对齐了。而在不支持 `clip-path` 的浏览器中，区块也会像平常一样上下相接，不会重叠。
+
+1. **使用 SVG**
+
+   可以使用 `polygon()`、`circle()`、`ellipse()` 和 `inset()` 函数创建剪切路径，与创建 CSS 形状一样。对于复杂的形状，建议还是使用图片编辑器来创建，然后再将最终的图形作为剪切路径的源。
+
+   使用图形作为剪切源，需要先使用 SVG 创建剪切路径，然后再通过一个 URL 引用到形状函数中。首先，要在图形编辑器中创建想要的形状。虽然不那么简单，但还是可行的。
+
+   导航区块本身是一个包含页内链接的无序列表：
+
+   ```html
+   <nav class="stacked section nav-section inverted">
+   <ul class="wrapper">
+   <li><a href="#moon">The Moon</a></li>
+   <li><a href="#sun">The Sun</a></li>
+   <li><a href="#planets">Planets</ax/li>
+   <li><a href="#milky-way">Galaxy</a></li>
+   <li><a href="#universe">Universe</a></li>
+   </ul>
+   </nav>
+   ```
+
+   在此，就不涉及导航本身的样式了，只要知道这里用到了 Flexbox 水平布局导航项目，将它们固定为 100 像素见方的方块就够了。
+
+   然后，在支持 SVG 的图形编辑器中创建一张图片。图片的大小也是 100 像素见方。其中的星球由两个黑色的形状构成，一个圆形和一个旋转后的椭圆形。接着把这个图片保存为 SVG 格式，命名为 clip.svg。
+
+   ![星球图形](./image/星球图形.jpg)
+
+   下面在代码编辑器中打开生成的 SVG 文件，看上去大概是这样的：
+
+   ```xml
+   <svg xmlns="http://www.w3.org/2000/svg" width="100px" height="100px" viewbox="0 0 100 100">
+     <circle cx="50" cy="50" r="45" />
+     <ellipse transform="matrix(-0.7553 0.6554 -0.6554 -0.7553 -12.053 54.99)" cx="50" cy="50" rx="63.9" ry="12.8" />
+   </svg>
+   ```
+
+   为了把这个图片转换为剪切路径，需要把其内容包装在一个 `<clipPath>` 元素中，并添加 ID 属性：
+
+   ```xml
+   <svg xmlns="http://www.w3.org/2000/svg" width="100px" height="100px" viewbox="0 0 100 100">
+     <clipPath id="saturnclip">
+       <circle cx="50" cy="50" r="45" />
+       <ellipse transform="matrix(-0.7553 0.6554 -0.6554 -0.7553 -12.053 54.99)" cx="50" cy="50" rx="63.9" ry="12.8" />
+     </clipPath>
+   </svg>
+   ```
+
+   最后，就可以在 CSS 中引用 clip.svg 中的这个剪切路径了：
+
+   ```css
+   .nav-section [href="#planets"] {
+     clip-path: url(img/clip.svg#saturnclip);
+   }
+   ```
+
+   这样就可以把多个剪切源保存在一个 SVG 文件中，然后通过 URL 的片段 ID 分别引用。
+
+   > **注意**：SVG 文件中 `<clipPath>` 的坐标会被解释为像素，因此剪切形状没有伸缩性，不能随着 HTML 内容的缩放而缩放。百分比值是有效的，但浏览器支持不好。
+
+2. **行内 SVG 剪切源**
+
+   不支持引用外部剪切源的浏览器其实支持 SVG 剪切路径，只不过 CSS、HML 和 SVG 都必须在一个文件中。
+
+   如果把 CSS 放在 style 元素中，把 SVG 内容也嵌入同一个文件中，就可以直接通过 ID 用 `<clipPath>` 元素了。下面就是一个例子：
+
+   ```html
+   <!-- 以下是想要剪切的元素 -->
+   <li><a href="#planets">Planets</a></li>
+
+   <!-- 在同一个HTML文件中，包含了CSS -->
+   <style>
+     .nav-section [href="#planets"] {
+       clip-path: url(img/clip.svg#saturnclip);
+     }
+   </style>
+
+   <!-- 还是同一个HTML文件中，内嵌了SVG作为剪切路径 -->
+   <svg
+     xmlns="http://www.w3.org/2000/svg"
+     width="100px"
+     height="100px"
+     viewbox="0 0 100 100"
+   >
+     <clipPath id="saturnclip">
+       <circle cx="50" cy="50" r="45" />
+       <ellipse
+         transform="matrix(-0.7553 0.6554 -0.6554 -0.7553 -12.053 54.99)"
+         cx="50"
+         cy="50"
+         rx="63.9"
+         ry="12.8"
+       />
+     </clipPath>
+   </svg>
+   ```
+
+   这样写具有更好的跨浏览器兼容性，但牺牲了 SVG 的复用性，HTML 也会显得乱一些。
+
+   > **注意**：WebKit 内核的浏览器有一个相关的 bug，它们会认为剪切路径中点的坐标相对于页面，而不是相对于被剪切的元素。为确保准确定位，最终的示例还对被剪切元素应用了 `transform: translate(0, 0)`，表面上看不出什么，但可以解决这个问题。
+
+3. **使用对象边界盒子控制剪切路径大小**
+
+第二个问题是剪切路径不会随导航项目的缩放而自动缩放，因为它们的大小都硬编码了，就是 100 像素见方。
+
+为了调整剪切路径的大小，可以使用两个坐标系。默认的坐标系叫 “当前用户空间”（user space on use），就是剪切路径要应用的内容。对这个例子而言，这意味着剪切路径中的一个单位会被解释为被剪切的 HTML 元素中的一个像素。
+
+另一个坐标系是 “对象边界盒子”（object bounding box），这个坐标系会使用一个比例尺，动态地将剪切路径中的单位对应到被剪切内容的大小。这个比例尺中，x 轴的 0 表示被剪切内容边框盒子的最左边，1 表示最右边。类似地，y 轴的 0 表示这个盒子的最上边，1 表示最下边。
+
+对于简单的图形，手动修改这些值就行了。比如 50 像素，在宽和高均为 100 像素的元素中，就要转换成 0.5。但是对于复杂的图形，手工修改很容易出错。更简单的办法是在图形编辑器中把图形边长缩小到 1 像素，然后再导出 SVG。
+
+在最终的例子中，还使用了 `objectBoundingBox` 这个值作为行内 SvG 剪切路径。比如土星剪切路径的最终代码就是这样的：
+
+```html
+<clipPath id="staturnclip" clipPathUnits="objectBoundingBox">
+  <circle cx="0.5" cy="0.5" r="0.45" />
+  <ellipse
+    transform="matrix(-0.7553 0.6554 -0.6554 -0.7553 1.2053 9.5499)"
+    cx="8.5"
+    cy="8.5"
+    rx="0.639"
+    ry="0.125"
+  />
+</clipPath>
+```
+
+#### 11.2.2 蒙版
+
+“观星指南” 页面的标题好像半隐于地球大气层的后面。这种透明渐隐效果是通过蒙版实现的。
+
+![通过蒙版实现了渐隐效果](./image/通过蒙版实现了渐隐效果.jpg)
+
+Safari 早在 2008 年就实现了蒙版，使用的是非标准属性 `-webkit-mask-image`。这个属性允许指定一张图片，并以这张图片作为加蒙版元素透明度层次的来源。作为蒙版的图片中，每个像素都有一个阿尔法级别（alpha level），也就是透明度。如果蒙版图片中的像素是透明的，那么加蒙版元素中对应的像素也不可见。相反，蒙版图片中完全不透明的区域，对应的加蒙版元素的区域也会完全可见。蒙版图片的颜色与此无关，因此灰度图常用作蒙版。
+
+除了图片，还可以使用 CSS 渐变来创建蒙版。页面标题的蒙版效果就是这么做的：
+
+```css
+.header-title {
+  mask-image: radial-gradient(
+    ellipse 90% 30% at 50% 50%,
+    rgba(0, 0, 0, 0) 45%,
+    #000 76%
+  );
+  mask-size: 100% 200%;
+}
+```
+
+`mask-image` 后面的值非常类似 background-image 属性的值，甚至也可以声明多个蒙版。除了指定蒙版图片，还可以指定蒙版的大小和位置。
+
+在 WebKit 最初实现的基础上，蒙版相关的属性得以标准化和扩展，同时也支持了对应的 SVG 效果。没错，就像 `clip-path` 一样，SVG 中的蒙板也可以应用给 HTML 内容。
+
+```css
+.header-title {
+  /* 嵌入页面中的 CSS，指向嵌入同一页面中的 SVG <mask> 元素 */
+  mask: url(#ellipseMask);
+}
+```
+
+与前面 CSS 渐变等价的 SVG 标记如下：
+
+```xml
+<mask id="ellipseMask" maskUnits="objectBoundingBox" maskContentUnits="objectBoundingBox">
+  <radialGradient id="radialfill" r="0.9" cy="1.1">
+    <stop offset="45%" stop-color="#000" />
+    <stop offset="70%" stop-color="#fff" />
+  </radialGradient>
+</mask>
+```
+
+与剪切路径一样，这里也需要使用 objectBounding Box 坐标系，按照 0~1 的比例尺将蒙版缩放到与元素边界匹配。SVG 蒙版元素本身还有一个 maskContentUnits 属性，这里也将其设置为与蒙版形状相同的坐标系。
+
+SVG 蒙版源使用明度值（luminance）而非阿尔法级别来应用蒙版。这意味着蒙版较暗的区域对应的加蒙版元素区域会较透明，而蒙版较亮的区域对应的加蒙版元素区域会较不透明。在前面 SVG 蒙版的例子中，使用了黑白渐变。
+
+浏览器会在使用蒙版图片时使用阿尔法级别，在使用 SVG 蒙版时使用明度值。在对标准的建议中，有一个 `mask-type` 属性可以切换这个应用蒙版的依据值。
+
+另外，-webkit- 前缀版与建议的标准版属性之间也有一些差异。可以参考 MDN 中 WebKit 实现的完整属性和语法。
+
+#### 11.2.3 透明 JPEG 与 SVG 蒙版
+
+页面头部有两个地方使用了蒙版，其中一个并不容易发现。除了标题文本之外，地球背景图片也有自己的蒙版。这是一个分辨率非常高的图片，而头部有一个平滑渐变的背景。在下图中，去掉了文本，同时高亮了渐变，让它看起来更明显。
+
+带有透明度的图片一般会保存为 PNG 格式。PNG 格式的问题是文件相对较大，这张地球大图差不多得有 190KB。为减少文件大小，要通过蒙版使用 SVG，给 JPEG 格式的文件应用阿尔法透明度。使用 JPEG 格式后，文件大小约为 24KB。
+
+1. **SVG 中的图片**
+
+   首先要创建一张 JPEG 图片，仍然保留其背景。然后创建一个 SVG “包装” 文件并命名为 earth.svg，用于加载位图。SVG 是一种矢量图格式，但也可以通过 `<image>` 标签加载和使用位图。最终会在 CSS 中使用这个 SVG 文件作为头部背景。
+
+   接下来要把 SVG 图形设置为跟位图一样大小，使用 viewBox、width 和 height 属性。其中 viewBox 属性负责设置图形中的坐标系统，width 和 height 属性则用于设置外部图片的大小。多数浏览器不需要后面两个属性，但在 IE 中如果没有它们，则会让 SVG 背景变形。相关代码如下：
+
+   ```xml
+   <svg
+     xmlns="http://www.w3.org/2000/svg"
+     width="1200"
+     height="141"
+     viewbox="0 0 1200 141"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+   >
+     <image width="100%" height="100%" xlink:href="earth.jpg" />
+   </svg>
+   ```
+
+2. **SVG 蒙版**
+
+   下面创建蒙版。蒙版的形状可以通过放射性渐变来模拟，然后这个渐变经过大小和位置的调整会覆盖地球的天际线。放射线性渐变的四周稍微有些透明。要精确地找到坐标很难，因此可以使用图形编辑器。方便地获取渐变的尺寸信息。当然也可以绘制一个路径来创建模板，但放射性渐变的边缘过渡更平滑。
+
+   很快就知道渐变的半径约为 1224 像素，坐标为 y 轴 1239 像素，x 轴 607 像素。下面在 carh.svg 文件中创建一个 SVG `<mask>` 元素，包含覆盖整个 SvG 视口的矩形，然后用放射性渐变填充
+
+   ```xml
+   <mask id="earthmask">
+     <radialGradient gradientUnits="userspaceOnUse" id="earthfill" r="1224" cx="607" cy="1239">
+       <stop offset="99.5%" stop-color="#fff" />
+       <stop offset="100%" stop-color="#000" />
+     </radialGradient>
+     <rect width="1200" height="141" fill="url(#earthfill)" />
+   </mask>
+   ```
+
+   渐变色标由白到黑，边缘有少许的羽化。渐变与剪切路径的尺寸应用算法不同，它们默认是基于 objectBoundingBox 的。因此，还需要添加 gradientUnits="userSpaceonUse" 属性。下面就可以让图片使用创建的蒙版了：
+
+   ```xml
+   <mask id="earthmask"><!--这里是蒙版的内容--></mask>
+   <image width="100%" height="100%" xlink:href="earth.jpg" mask="url(#earthmask)"/>
+   ```
+
+3. **嵌入图片**
+
+   此时，如果只将这个文件作为 SVG 图形单独使用，那就完事了。问题是这个 SVG 背景不能加载其他资源。要加载其他资源，还需要一步：把位图（earth.jpg）转换成 Base64 编码的数据 URI。最后，把原来的图片 URL 替换成这个编码字符串
+
+   ```xml
+   <image width="100%" height="100%" mask="url(#earthmask)" xlink:href="data:image/jpg;base64,/9j/4AAQSkZ..."/>
+   ```
+
+   > **注意**：这个编码字符串非常长。相比于二进制编码，Base64 编码会让图片文件增大 30%。
+
+   现在可以把这个 SVG 图片作为头部的背景图片了，还要加上一点渐变：
+
+   ```css
+   .page-header {
+     background-image: url(img/earth.svg), linear-gradient(to bottom, #000, #102133);
+     background-repeat: no-repeat;
+     background-size: 100% auto, cover;
+     background-position: 50% bottom;
+   }
+   ```
+
+   这个技术可以在几乎所有支持 SVG 的浏览器中使用。IE9 和一些根本不支持 SVG 蒙版的旧版安卓是例外。
+
+4. **实现自动化**
+
+   创建一个背景图片的工作量还是挺大的，但相比于 PNG 格式的图片，最终图片的大小只有原来的 1/10。对例子中的图形而言，放射性渐变作为蒙版很合适，虽然要做一些手动工作。
+
+   对于更复杂的形状，推荐使用一个 Web 服务：ZorroSVG。可以上传透明的 PNG 图片，然后得到包含 JPEG 格式的 SVG 模板文件。这个服务的缺点是会把透明数据转换为一个位图蒙版，相比于将其绘制为 SVG 图形，前者占用的空间稍大一些。即便如此，文件瘦身效果也还是非常不错的。
+
+### 11.3 混合模式与合成
+
+在 Photoshop 等图形编辑软件中，设计师很早就可以选择两个设计元素叠加时的颜色如何混合了。而在 CSS 中，直到最近才能实现阿尔法混合，包括 PNG 文件、rgba 背景颜色、opacity 属性、蒙版，等等。
+
+图层合并的术语是**合成**（compositing）。**混合模式**（blending mode）则是合成过程中可能最常遇到的场景。混合模式只要知道它们是在合成图片的颜色值时不同的数学算法就行了（合成图片时上方图片叫**源图片**，下方图片叫**目标图片**）。
+
+最简单的混合模式可能就是 “正片叠加”（multiply）了，计算方法是源像素每个颜色通道的值乘以目标像素对应颜色通道的值，混合后的图片会变暗。可以借助灰阶来理解这种混合模式，在灰阶中 0 代表黑色，1 代表白色。假设源值为 0.8，目标值为 0.5，那最终相乘后值就是 `0.8 * 0.5=0.4`，偏暗了。
+
+#### 11.3.1 给背景图片上色
+
+另一个混合模式是 “明度”（luminosity），即从源像素取得亮度级别，将其应用到目标像素的色相和饱和度。示例页面中的银河部分有一个背景，其中的蓝色调非常夺目。这是因为给这个区块应用了偏紫色的背景颜色，然后又应用了 `background-blend-mode: luminosity`。这会给图片增加色彩，让全图的色调更统一。
+
+```css
+.section-milkyway {
+  background-image: url(img/milkyway.jpg);
+  background-color: #202d53;
+  background-blend-mode: luminosity;
+}
+```
+
+如果不涉及数学，很难说清楚全部 16 种混合模式的原理。其中有几个混合模式仅在特定场景下有用，比如通过与纯色图片进行明度混合，为图片增添色彩。在下图中，通过混合相对较暗的蓝色背景图和浅粉色背景色，展示了在两个图层差别很大时每种混合模式的效果。
+
+一个元素可以有多个背景图片，这些背景会按照它们声明的次序逆序叠加在一起。如果有多个图层，那么就可以声明一个逗号分隔的背景混合模式列表，把它们依次应用到每一层（及其下一层）。
+
+> **注意**：背景层不会与元素后面的内容混合，无论背景是否透明。如果只有一个背景颜色层，那么设置 `background-blend-mode` 也没用。如果要混合元素的内容，还要使用另外一个属性，
+
+#### 11.3.2 混合元素
+
+与混合背景层类似，也可以混合元素与它们的背景。元素的混合可能是静态定位的子元素与其父元素混合，也可能是绝对定位的元素与页面另一部分的叠加。
+
+> **注意**：不同的堆叠上下文中的元素不能相互混合。
+
+混合元素与混合背景层的语法类似，只不过属性是 `mix-blend-mode`：
+
+```css
+.fig-plane {
+  mix-blend-mode: screen;
+}
+```
+
+滤色（screen）也是一种比较有用的混合模式。这个名字源于把两张图片投影到同一块屏幕上，会得到整体偏亮的图像。如果一张图片不够亮，那么第二张图片上的光线会透过来，反之亦然，最后就是整体变亮。换句话说，白色的源会完全不透明，但黑色的源会变透明，因此很适合作为蒙版使用。利用这一点，可以实现有趣的 “镂空” 效果。
+
+1. **文字镂空**
+
+   示例页面的 “The Observable Universe” 标题实现了 “穿透” 效果。
+
+   ![使用screen混合模式实现镂空效果](./iamge/使用screen混合模式实现镂空效果.jpg)
+
+   标题文字显示在白色背景上，白色背景定位于背景图片之上。这个效果也包含所谓的 “版式锁定” 效果，也就是通过加空和调整大小使文字适应容器大小。通过 CSS 实现这个效果有点麻烦。这是因为要用到视口相关的单位，但即使如此也做不到完美。比如，视口相关的单位并不相对于元素自身，因此还必须把它们锁定到最大断点。
+
+   为此，在例子中使用了 SVG 文本来实现相对元素大小可伸缩的文本。标题中包含一小段 SVG 代码：
+
+   ```html
+   <h2 class="universe-title">
+     <svg viewBox="0 0 400 120" role="presentation">
+       <text>
+         <tspan class="universe-span-1" x="6" dy="0.8em">The Observable</tspan>
+         <tspan class="universe-span-2" x="3" dy="0.75em">Universe</tspan>
+       </text>
+     </svg>
+   </h2>
+   ```
+
+   SVG 文本自身也很复杂，但可以简单地分析一下这段代码：
+
+   - SVG 文本很像图形对象，不会像 HTML 内容一样流动。换行也不是自动的，因此每行都要包含在相应的 `<tspan>` 元素中并手动定位。
+   - 每个 `<tspan>` 元素都通过 x 属性相对于 SVG 视口的左侧水平定位。
+   - 文本则相对于行盒子的底部垂直定位。要想保持文本的可伸缩性，就得相对于它们的大小垂直定位每一行，给它们一个相对偏移值，有点像行高一样，这就是 dy 属性的作用。
+   - 行内 SVG 中的文本应该允许屏幕阅读器无障碍访问，理论上是这样的。而在实践中，某些辅助技术会存在问题，但添加 `role="presentation"` 能确保最大的可访问性。
+
+   因为 `<svg>` 是在 HTML 中的，所以可以通过常规 CSS 给它添加样式。
+
+   > **注意**：SVG 中的文本颜色是通过 `fill` 而非 color 属性控制的。
+
+   ```css
+   .universe-span-1 {
+     font-size: 53.2px;
+   }
+   .universe-span-2 {
+     font-size: 96.2px;
+   }
+   .universe-title text {
+     fill: #682135;
+     text-transform: uppercase;
+   }
+   ```
+
+   每个 `<tspan>` 元素都通过像素指定为恰好能填充相应空间的大小。应该明确一下，这里的像素大小是相对于 SVG 片段的坐标系统而非 HTML 的坐标系统的。这意味着当 SVG 随页面伸缩时，其中文本的大小也会随之伸缩，保持锁定状态。最后，给标题应用混合模式:
+
+   ```css
+   @supports (mix-blend-mode: screen) {
+     .universe-title {
+       mix-blend-mode: screen;
+     }
+     .universe-title text {
+       fill: #000;
+     }
+   }
+   ```
+
+   SVG 中的文本最开始是深红色的，这个颜色与它后面图片的颜色很搭。把这个颜色作为在不支持 mix-blend-mode 属性的浏览器中的一个后备选项。在 `@supports` 规则内，应用混合模式的同时，也将文本的填充颜色改为黑色，让它完全透明。
+
+   一般来说，遵循渐进增强的原则，实际应用混合模式也没有那么难。但混合模式的效果多数情况下不会很明显，如果变化确实很大，那就考虑使用 @supports 规则。
+
+2. **隔离**
+
+   除了混合模式，合成中可以通过 CSS 控制的另一方面是**隔离**（isolation）。实际上，隔离就是创建元素分组，把混合控制在分组内部。位于不同堆叠上下文中的元素不会相互混合。
+
+   下图中，有两组元素，都使用了 multiply 混合模式。这两组元素位于同一个背景图案之上。左边一组的混合模式是没有应用隔离的，因此每个元素同时也都跟背景混合在了一起。右边一组则应用了 opacity:0.999，这会强制生成一个新的堆叠上下文，从而隔离混合。
+
+   ```css
+   .item {
+     mix-blend-mode: multiply;
+   }
+   .group-b {
+     opacity: 0.999;
+   }
+   ```
+
+   group-b 中的元素相互混合，但都没有跟背景混合。可以不必通过 opacity 属性间接地创建新堆叠上下文（从而隔离混合），而是使用新的 `isolation` 属性。像下面这样也可以实现同样的效果：
+
+   ```css
+   group-b {
+     isolation: isolate;
+   }
+   ```
+
+### 11.4 CSS 中的图像处理:滤镜
+
+接下来要介绍的一个 CSS 工具同样源于图形编辑软件，即给元素应用图形滤镜。滤镜会应用给元素及其子元素。其效果很像给网页某一部分截图，然后将该图片放到 Photoshop 里做一番处理。（事实上，这个比喻还真与浏览器对这个过程的实现相差不多，第 12<!--TODO--> 章还会谈到这一点。）
+
+可用的滤镜有 10 种，还可以通过 SVG 自定义滤镜。下面先从 CSS 预定义的滤镜说起。
+
+#### 11.4.1 调色滤镜
+
+通过滤镜可以给元素（按序）应用一种或多种特效。其中一部分滤镜与颜色有关，可用于调整亮度、对比度和饱和度等。
+
+```css
+.universe-header {
+  /* 将整个元素的颜色去掉了 70%，又将其亮度（从正常亮度 1）调低到 0.7，并将对比度提升为正常值的 2 倍。 */
+  filter: grayscale(70%) brightness(0.7) contrast(2);
+}
+```
+
+多数滤镜既可以接受百分比值，又可以接受数值。对于可双向调节大小的值，比如 `constrast()`、`brightness()` 和 `saturation()` 接受的值，默认值为 100% 或 1。而对于 `grayscale()`、`invert()` 和 `sepia()`，它们的默认值为 0，上限为 100% 或 1。任何大于上限值的值都会被截取为最大值。
+
+还有一个 `opacity()` 滤镜，其默认值为 1（或 100%），最小值为 0。这个滤镜与 opacity 属性的区别在于，前者的实际效果取决于它在滤镜链条中的位置。相对而言，opacity 属性则总是在所有滤镜应用完之后才起作用。
+
+最后，还有几个滤镜的原理没那么直白，下面通过 “观星指南” 页面中的例子来逐一说明
+
+1. **色相旋转**
+
+   太阳及其黑子的图片实际上是一张带黑色背景的黑白照片。这样的视觉效果并不理想，在把图片放到页面上之前，多数情况下都应该先用图形编辑器处理一下，就算考虑性能也该如此。但为了演示滤镜的使用，假设没有机会编辑图片，只能通过 CSS 处理它。用 CSS 给太阳图片上色，并让它更加明亮。下图展示了没有应用滤镜时的样子。
+
+   ![原始的太阳天文图片](./image/原始的太阳天文图片.jpg)
+
+   可以通过给 `hue-rotate()` 滤镜传递一个度数值来旋转图片的整体色相，以标准色轮为参照。
+
+   明黄色大约在色轮的 40 度位置（从顶部开始算），因此 `hue-rotate(40deg)` 就可以了。但问题在于，这张图片是黑白的，根本没有色相信息，色相旋转不会有任何效果!
+
+   因此，可以先使用另一个滤镜 `sepia()`，通过它先用位于色轮大约 30 度位置的褐色给图片上色。然后再连缀使用一个 10 度左右的色相旋转，就可以得到想要的黄色。最后，还需要降低对比度，提高亮度，让太阳发光。这需要在色相操作之前完成，否则黄色会显得过于苍白。记住**滤镜的应用是有顺序的**。
+
+   ```css
+   .fig-sun {
+     filter: contrast(0.34) brightness(1.6) sepia(1) hue-rotate(10deg);
+   }
+   ```
+
+   接下来，通过前面介绍的 SVG 蒙版技术将黑色背景遮住。
+
+   ```css
+   .fig-sun {
+     filter: contrast(0.34) brightness(1.6) sepia(1) hue-rotate(10deg);
+     mask: url(#circlemask); /* 指向创建的圆形 SVG 蒙版 */
+   }
+   ```
+
+   ![加了滤镜和蒙版之后的太阳图片](./image/加了滤镜和蒙版之后的太阳图片.jpg)
+
+2. **剪切形状的阴影**
+
+   接下来要介绍的滤镜是 `drop-shadow()`。这个滤镜很像 `box-shadow` 和 `text-shadow` 属性，但也有局限和不同的花样。
+
+   `box-shadow` 会应用到元素矩形的边框盒子，而 `drop-shaodw()` 滤镜则会应用到元素透明的轮廓。应用范围包括基于阿尔法透明度给图片应用阴影，保持阴影与轮廓吻合，或者给通过 clip-path 剪切的元素添加阴影。
+
+   在 “观星指南” 页面的导航菜单中，每个导航项都被剪切成不同的形状，并通过 `drop-shadow()` 滤镜应用了阴影。其语法非常像 `text-shadow` 属性，要传入 x/y 轴偏移量、模糊半径和颜色。换句话说，`box-shadow` 属性中的范围（spread）参数在这里不见了。
+
+   ```css
+   .nav-section li {
+     filter: drop-shadow(0 0 0.5em rgba(0，0，0，0.3));
+   }
+   ```
+
+   在应用 CSS 滤镜效果时，浏览器会优先使用图形芯片（GPU）。这样 `drop-shadow()` 滤镜就有了性能优势。举例来说，如果要给阴影加动画，那最好不要使用 box-shadow，而要使用 `drop-shadow()` 滤镜。第 12 <!--TODO-->章将深入讨论开发者工具，届时大家将看到如何测试渲染 CSS 属性的性能。不过，接下来要介绍的滤镜在性能方面可以说乏善可陈。
+
+3. **模糊滤镜**
+
+   `blur()` 滤镜给元素应用高斯模糊，接受一个表示模糊半径范围的长度值。
+
+   ```css
+   .fig-planet {
+     filter: blur(10px);
+   }
+   ```
+
+   从性能方面来说，`blur()` 滤镜很不友好，因此要小心使用。通过模糊背景来突出焦点，是界面设计中常用的吸引注意力的技术。
+
+4. **背景滤镜**
+
+   说到背景，CSS 也提供了相关的滤镜。在示例页面的银河部分，使用了属性 `backdrop-filter`。`backdrop-filter` 的原理与 filter 属性相似，只不过是给元素背景及其后页面的合成结果应用滤镜。利用它可以实现类似 “毛玻璃” 的效果。
+
+   ```css
+   .section-milkyway .section-text {
+     backdrop-filter: blur(5px);
+     background-color: rgba(0, 0, 0, 0.5);
+   }
+   ```
+
+5. **通过图片滤镜函数为背景图片应用滤镜**
+
+   Filter Effects 规范规定，通过 CSs 加载的图片的时候也可以使用滤镜。要给背景图片加滤镜，可以把图片传给 `filter()` 函数。这个函数的参数与 `filter` 属性的值一样，可以连缀传递，只不过是在加载图片时使用。第一个参数是图片，然后是空格分隔的滤镜链：
+
+   ```css
+   .figure-filtered {
+     background-image: filter(url(img/saturn.png), grayscale(1) opacity(0 4));
+   }
+   ```
+
+#### 11.4.2 高级滤镜与 SVG
+
+Instagram 等图片应用支持给照片应用预合成的滤镜，这些滤镜基本上就是颜色叠加和前面看到的滤镜函数的几次操作的组合。开发者兼设计师 Una Kravets 将 Instagram 滤镜整合为一个小型 CSS 库，即 CSSgram，其中巧妙地使用伪元素、CSS 渐变和混合模式实现了颜色叠加。
+
+CSS 滤镜最强大的地方在于，可以使用 SVG 创建这些自定义滤镜，而且对滤镜效果的复杂度没有限制，CSS 代码量也不大。
+
+CSS 版滤镜最初是在 SVG 中出现的。一开始的目标也是与 HTML 相结合。最早将其付诸实践的浏览器是 Firefox，可以让直接把 SvG 滤镜应用到 HTML 内容上，方法也和前面介绍的剪切和蒙版类似。之后直到 2011 年，CSS 滤镜的规范才出来，由 Adobe、Apple 和 Opera 共同编写。这个规范基于 SVG 滤镜，并加入了简单易用的简写滤镜函数。
+
+事实上，所有 CSS 滤镜都是以对应的 SVG 滤镜作为范本实现的。比如，`filter:grayscale(100%);` 声明对应的就是下面这个 SVG 滤镜：
+
+```xml
+<filter id="grayscale">
+<feColorMatrix type="matrix"
+values=".213 .715 .072 0 0
+ .213 .715 .072 0 0
+.213 .715 .072 0 0
+ 0 0 0 1 0"/>
+</filter>
+```
+
+前面的滤镜声明只包含一个滤镜原语（filter primitive），由一个 “颜色矩阵” 滤镜效果元素（`<feColorMatrix>`）表示。这个颜色矩阵滤镜是一个通用工具，支持将输入的颜色以多种方式映射为输出。其实不用知道具体每个值是如何转换的，只要知道 grayscale 本身并非底层机制，而是通常颜色操作的结果即可（至少对 SVG 来说是如此）。
+
+还有其他几种滤镜原语，而多数滤镜效果都是这些原语组合的结果。比如，drop-shadow() 滤镜由高斯模糊（Gaussian Blur）、偏移（Offset）、泛光（Flod）、合成（Composite）和合并（Merge）等滤镜原语组成。
+
+关键在于，现在可以创作自己的滤镜，并将其应用到 HTML 内容。换句话说，滤镜可以想要多复杂就有多复杂，只要通过 SVG 定义然后将其指定为滤镜源即可。指定滤镜源要在 filter 声明中使用 url() 函数，与剪切和蒙版类似。
+
+### 11.5 应用特效的次序
+
+为保证正确的结果，要遵循应用剪切、蒙版、混合和滤镜的标准次序。
+
+所有剪切、蒙版、混合和滤镜都会在其他属性之后应用，包括 color、width、height、border 背景属性等设置元素基本外观的属性（opacity）。然后是 “后处理” 阶段，即应用特效，此时的元素及其内容会被当成一张图片。
+
+首先，按声明次序应用滤镜。接着剪切元素，然后应用蒙版。
+
+> **注意**：因为先应用滤镜之后才会应用剪切和蒙版，所以不能直接对剪切后的形状应用 drop-filter() 滤镜。
+
+最后一步是合成，也就是应用混合模式。这一步同时会应用 `opacity` 属性，因为它实际上也是一种混合模式。
+
+## 十二. 品控与流程
+
+### 12.1 外部代码质量：调试 CSS
+
+本节将解释浏览器如何处理 HTML 和 CSS，在此基础上就可以理解如何优化渲染性能。这方面通常可以归为 “外部代码质量”，也就是用户能体验到的最终结果，主要有以下几方面：
+
+- **正确性**：代码是否如期运行?CSS 属性名都写对了吗?浏览器能否支持?
+- **可用性**：代码运行后的结果不仅看起来没问题，而且还能使用?无障碍访问就是要解决这部分问题。
+- **健壮性**：万一出错以后会怎么样?比如，可以声明两套属性，其中一套用作旧版浏览器的后备。
+- **性能**：页面加载快不快?动画和滚动是否平滑?
+
+#### 12.1.1 浏览器如何解析 CSS
+
+以下步骤描述的是每次浏览器加载页面时都会经历的一个简化流程，不过有些（甚至全部）步骤也可能会在响应用户操作时发生：
+
+1. **解析文件及构建对象模型**
+
+   浏览器在加载一个网站时，首先会收到网址对应的一个 HTML 文件。然后浏览器把这个 HTML 文件解析为一个对象（节点）树，也就是文档对象模型（DOM，document object model）。
+
+   ![文档对象模型](./image/文档对象模型.jpg)
+
+   浏览器在碰到 HTML 中指向 CSS 文件的链接时，会获取并解析 CSS 文件。类似于把 HTML 转换成 DOM，CSS 文件会被浏览器转换为 CSS 对象模型（CSSOM，CSS object model）不仅是外部 CSS，内部 style 元素或行内 sty1e 属性中的 CSS 也会被解析并添加到 CSSOM 中。和 DOM 类似，CSSOM 也是一个树形结构，包含页面中样式的层次结构。
+
+   ![CSSOM树](./image/CSSOM树.jpg)
+
+   每个 CSS 选择符都会匹配一个 DOM 节点，然后浏览器会基于层叠、继承和特殊性来计算每个 DOM 节点的最终样式。
+
+   > DOM 和 CSSOM 都是标准化的，在任何浏览器中都应该相同。但在此之后，如何把数据转换成屏幕显示就由浏览器自己掌握了。当然，所有浏览器这时候也都遵循类似的步骤。
+
+2. **渲染树**
+
+   渲染页面的下一步是构建另外一个树结构，一般叫作 “渲染树”。在渲染树中，每个节点表示要渲染到屏幕上的信息。这个结构很像 DOM，但不完全一样。比如，被隐藏的 DOM 节点不会出现在这里，如：head、title、meta 等元素。而类似 :before 之类的伪元素则可能在这里有渲染对象，但在 DOM 里没有节点。除了节点，浏览器还会在这里保存其他表现性信息，比如滚动块或视口。
+
+   ![假想的简化渲染树.jpg]
+
+   在构建完成的渲染树中，节点都应该知道了自己是什么颜色、文本使用哪种字体显示，以及是否有明确的宽度，等等。
+
+3. **布局**
+
+   接下来，计算每个渲染对象的几何属性。这个过程叫布局（layout）或重排（reflow）。浏览器会遍历渲染树，确定每个对象显示在页面上的什么位置。
+
+   由于多数网页都会保持默认的页面流，也就是说元素之间会相互 “推挤”，布局过程会变得非常复杂。有一个开发者 Satoshi Ueyama 发布的一个[视频](https://www.youtube.com/watch?v=dndeRnzkJDU)，这个视频形象地展示了当 Firefox 布局一个页面时，Gecko 引擎的重排操作。
+
+   有时候，带有自己渲染属性的额外渲染对象需要在这个阶段构建出来。比如，文本在使用某种字体时会换行，因此原来的一个行盒子必须拆分两个匿名行盒子。而增加行盒子势必会影响父元素高度，以及它们周围的其他元素。
+
+   最终，浏览器会计算出每个渲染对象的位置，接下来就是把它们显示在屏幕上了。
+
+4. **绘制、合成与呈现**
+
+   简单地说，这一步就是浏览器基于渲染树中的信息，把元素准确地呈现到屏幕上。但实际过程并没那么简单。
+
+   确定了每个渲染对象的位置和属性后，浏览器可以计算出它们在屏幕上占据的像素数，这个过程叫**绘制**。但除此之外，浏览器还要做一些别的工作。
+
+   浏览器如果发现最终图像的某一部分不影响页面其他内容的显示，也可能决定把绘制拆分成不同的任务，每个任务负责绘制页面上特定的部分，或者叫**层**。
+
+   有些复杂元素，比如经过三维变换的元素，可能需要通过 GPU 进行硬件加速。其他应用了滤镜或混合模式的元素，需要确定如何与其他层混合。这个先拆分为层，再组合起来的过程就叫**合成**（compositing）。如果把页面想象成描图纸，合成就相当于先在不同的纸上画出各层内容，然后再把它们对齐并粘成一张图。
+
+   最后就可以把页面发给屏幕去显示（或呈现）了。
+
+#### 12.1.2 优化渲染性能
+
+如果页面上有了任何变化，那么浏览器就需要重复之前的步骤。为保证屏幕上的页面能平滑变化，最好能在 16 毫秒以内完成重绘。16 毫秒对应的屏幕刷新率为 60Hz 有些变化几乎不会影响性能，比如滚动页面。这时候浏览器只要把整个渲染结果重新绘制到不同位置即可。如果某些变化会导致页面上的样式改变，那么就可能会影响性能。
+
+如果通过 JS 改变了某个元素的 width 和 height，浏览器就需要重新布局、合成和绘制。只改变文本颜色不需要重新布局，只会触发绘制及合成。总之，最不会影响性能的操作，就是那些能在合成阶段完成的操作。
+
+这个[网站](https://csstriggers.com/)其中给出了哪个属性对应哪个渲染阶段的表格，目前跟踪着 Blink、Gecko、WebKit 和 EdgeHTML 中的渲染操作。
+
+![CSS属性及其会触发的浏览器工作量](./image/CSS属性及其会触发的浏览器工作量.jpg)
+
+还可以通过开发者工具看到浏览器执行以上步骤的过程，以及最终的性能如何。在 Chrome 开发者工具中打开 “性能”（Performance）面板，可以查看并记录交互操作是否会触发特定的渲染步骤。
+
+### 12.2 内部代码质量：以人为本
+
+作为开发者，应该首先考虑用户的感受，而不是自己方不方便。因此，始终要关注代码的外部质量。然而，也有人认为代码的内部质量其实更重要。那么代码的内部质量需要从哪几个方面来衡量呢?
+
+- **复用性**（DRY，don't repeat yourself）：一个问题能否在一个地方解决掉?如果要修改某个方案，是不是需要修改很多地方
+- **可读性**：其他人阅读代码时，是否能很快读懂?
+- **可移植**：写的一段代码是可以独立使用，还是必须依赖项目的其他代码才能用?
+- **模块化**：能否将代码以不言自明的方式组织起来，放到其他地方重用?
+
+这些方面之所以如此重要，关键在于它们会影响一个人如何编写和修改代码。如果外部质量出了问题（如 bug），而又没人能看懂代码，找不到问题的根源，那么问题怎么修复?外部质量高往往是内部质量高的结果；反之，内部质量不高的话，外部质量也很难高到哪儿去。内部代码质量更主观，往往取决于个人偏好和项目特点。
+
+#### 12.2.1 理解 CSS
+
+CSS 的设计反映了几个设计原理，其中最重要的原理之一就是简单：CSS 很容易学会。换句话说，使用它不需要多高深的软件编写知识。
+
+1. **把 CSS 当成软件**
+
+   CSS 其实也是软件。作为软件，就不能仅仅停留在够用的层面。如果只是做一个原型草稿，那么代码质量倒无所谓，能用就行。然而，一且涉及线上的产品，代码质量就可能产生深远影响。它关系到维护成本的高低，出现 bug 的可能性，以及新人上手的难易。
+
+   即使做的只是一个单人项目，那也应该假设是两个人在参与这个项目：你和未来的你。几个月甚至几年之后，当需要修复某个 bug 时，不可能还记得当初创造这些代码时都想过什么。
+
+2. **自己引入结构**
+
+   CSS 经常被称为**声明式**语言。简单点说，要通过它告诉计算机去做什么，而做什么由这门语言限定。相对而言，很多通用的编程语言都是**命令式**的，也就是会通过代码告诉计算机完成某个任务的每一步，或者说告诉计算机怎么做（以及按什么顺序去做）。
+
+   很多命令式编程语言都会内置几种语法，以便能针对自己的代码写出相应的控制结构和逻辑。但 CSS 没有这些，它虽然提供可以调用的函数，如 url()，但不能在 CSS 里定义函数。
+
+   所有 CSS 都会被汇集到一个文档中，而且共享同一个全局作用域。如果为选择符 p 定义了规则，那么这条规则就会被用于计算所有段落元素的样式，无论它来自哪里，也不管浏览器是怎么把它加载进来的。选择符决定了每条规则的作用域，而样式表与文档的联系始终是全局的。
+
+   很多编程语言都有命名空间的概念，用于隔离代码，使其不影响其他代码或者不被其他代码影响，除非明确地将其导入或导出。这样就能方便组织代码，不至于出现意料之外的问题。
+
+   CSS 本身的简单性意味着，想要给它增加结构，就必须从编写规则上做文章。下一节将通过一个简单例子归纳出几条编写高质量 CSS 的原则。
+
+#### 12.2.2 代码质量的例子
+
+有几条警告消息，它们长得都一样，但实现不同。看一看它们的源代码，前面关于代码质量的理论就会更加清晰易懂。
+
+第一条警告消息使用了如下 HTML 和 CSS 代码：
+
+```html
+<div id="pink-box">
+  <p>This is alert message implementation one</p>
+</div>
+<style>
+  div#pink-box {
+    border-radius: 0.5em;
+    padding: 1em;
+    border: 0.25em solid #d9c7cc;
+    background-color: #ffeded;
+    color: #373334;
+  }
+</style>
+```
+
+首先注意这里使用了 ID 选择符。ID 选择符是不能复用的，这个限制完全没必要。ID 属性本身没什么问题，但它们主要是用于页内链接，或作为 JS 的接入点。当然把它们用作 CSS 选择符也完全可行，但 ID 选择符的[高特殊性](#23-特殊性)导致难以覆盖它们的样式。像警告框这种消息组件，其样式很可能经常要被覆盖，因此这里的 ID 选择符绝对是个问题。
+
+另外，选择符前面还加了 div，目的是限定 ID 选择符。但这个限定完全没必要，而且还增加了特殊性。这种元素与 ID 或类选择符共用的情形也很常见，但通常是用于覆盖某些太过特殊选择符的。通常，这种问题的解决方案不是一步步地提高特殊性，而是重新思考命名策略。
+
+还有一个问题是 ID 属性的名字，#pink-box，它描述了警告消息框的特定属性。如果以后想把消息框改成白色背景，里面有一个红色图标，那这个名字就对不上了。
+
+至于样式声明，其本身也没什么问题：相对于字体大小的 border、padding 和 border-radius 属性，以及给文本、边框、背景的颜色值。不过还可以改进，下面是第二个实现，看看有什么不同：
+
+```html
+<div class="warning-message">
+  <p>This is alert message implementation two</p>
+</div>
+<style>
+  .warning-message {
+    border-radius: 0.5em;
+    padding: 1em;
+    border: 0.25em solid rgba(0, 0, 0, 0.15);
+    background-color: #ffeded;
+    color: rgba(0, 0, 0, 0.8);
+  }
+</style>
+```
+
+这里，类名的意思很清楚：这是一个警告（warning）消息组件。颜色的定义方式不同：文本和边框的阴影都通过半透明的黑色生成，再与粉色背景混合。这意味着以后要修改背景颜色，只要改一个地方就行了，另外两个阴影都不用动，也就是少修改一个地方。
+
+可是这个类名还是只适合特定的消息框样式。如果想显示一条成功消息，并覆盖文本颜色，这个名字中的 warning 就不合适了。第三个实现解决了这个问题：
+
+```html
+<div class="message message-warning">
+  <p>This is alert message implementation three</p>
+</div>
+<style>
+  .message {
+    border-radius: 0.5em;
+    padding: 1em;
+    border: 0.25em solid rgba(0, 0, 0, 0.15);
+    background-color: #ffffed;
+    color: rgba(0, 0, 0, 0.8);
+  }
+
+  .message-warning {
+    background-color: #ffeded;
+  }
+</style>
+```
+
+乍一看，这个例子的代码多了一点。但仔细看看，这里的 .message 规则实际上已经变成中立的了，文本颜色是浅黄色。而 .message-warning 规则通过追加一个背景色，把通用的消息变成了警告消息。
+
+这样，再创建其他类型的消息就简单了，只要另建一个特殊规则就行了。通过这样组织代码，可以获得如下的一系列好处：
+
+- 半透明的文本和边框让创建新变体更容易，只要改一个地方就行。
+- message 这个名字反映的是组件功能，而不是最终结果。而且，这个名字让新加入的开发者也可以一目了然。
+- 想组件变体的命名以 .message 这个共享类名开头，并在 CSS 文件中把它们的规则放在一起，从而通过看代码就很容易发现它们的关系和作用。
+
+#### 12.2.3 管理层叠
+
+从前面消息框的例子中，可以归纳几条有助于提升代码质量的原则：
+
+- 以类名作为应用样式的主要手段。
+- 类名要能顾名思义，清晰明了。
+- 通过拆分出单一用途的规则来避免不必要的重复。
+- 不要把元素类型和样式规则绑定在一起。
+
+这几条原则有一个共性，即**限制层叠效应，主要是通过控制特殊性实现的**。
+
+为什么要限制 CSS 中这个强大的特性呢？某种意义上说，这个问题本身就是答案。正如很多工具使用说明中都会有一句: “使用时请远离身体。” 层叠在 CSS 中是有特定用途的，即用于混合不同来源（用户代理默认样式、作者样式和用户样式）的样式规则，从而得到文档的最终表现形式。
+
+这里使用 “文档” 这个词是有原因的，因为在 CSS 刚刚问世时，网页主要被看作一种享文本文档的技术。通过层叠和继承机制，CSS 能够很好地保持文档外观的一致性。同时，CSS 也提出了用户样式表的概念。如果用户想要增强网页内容的对比度，可以用自己的样式表覆作者样式。
+
+虽然网页底层仍然架构在文档模型基础上，但现在的 Web 应用已经需要支持非常高级的视觉设计和用户界面。在实践中，这意味着作者样式表的重要性日益增高。随着 CSS 复杂度的增加，就有了希望把样式表拆分开的呼声，让它们更方便重用、更自成一体，也更容易掌控。前面的几条原则只是实现这一目标的起点。
+
+#### 12.2.4 结构命名与 CSS 方法论
+
+在前面消息框的例子中，类名都以 .message 开头。这个 “前缀” 不光是为了让代码更容易理解，也是为了以类似命名空间的方式来组织代码。
+
+不少个人和组织都在探索能把迄今为止公认的品质原则付诸实践的方法，以便为 CSS 作者提供指南，而这些方法往往都会涉及上述结构化的命名方案。比如 OOCSS、SMACSS 或 BEM。
+
+1. **OOCSS**
+
+   OOCSS 表示 object oriented CSS，即面向对象的 CSS，由 Nicole Sullivan 在 2009 年提出，是一种编写 CSS 的方法。这个方法的提出代表人们已经把 CSS 当成可维护软件的软件来看待了。Nicole 在 OOCSS 中借鉴了面向对象编程的思想，可重用的类名与 CSS 中恰当定义的规则成为创建层次化对象的手段。
+
+   在 OOCSS 中，类名（在语义正确的 HTML 标记基础上）成为传达组件在 UI 中用途的主要载体。Nicole 称其为 “可视化语义”。
+
+   OOCSS 中最有名的一个例子可能就是 “媒体对象” 了，即左边是图片、视频或其他媒体，右边是一段文本的这么一个组件。通过把这个模式提炼为一个对象，然后在必要的地方添加一些类名，很多重复的代码可以从 CSS 中剔除掉。Nicole 的工作就展示了这一点。
+
+   OOCSS 包含 “**从结构中分离出皮肤**” 及 “**从内容中分离出容器**” 的建议。从结构中分离出皮肤，意味着尽量不要把字体、颜色（即皮肤）和定位、浮动（即结构）的样式写在一起。此时，最好给这两类样式分别创建规则和类名。比如，“媒体对象” 是一个包含浮动图片及相关文本的布局。字体和颜色可以追加到这个组件上。以下博客导读片段展示了标记中类的组合运用：
+
+   ```html
+   <article class="media-block post-teaser">
+     <div class="media-body post-teaser-body">
+       <h2 class="post-title">Media object</h2>
+       <p>Article text goes here.</p>
+     </div>
+     <img class="media-fig" src="" alt="" />
+   </article>
+   ```
+
+   这里的 post- 类可以代表组件的 “皮肤”，而媒体对象模式则有自己的类名。
+
+   “从内容中分离出容器” 的例子见于第 7 章的网格策略。通过给一个技术上显得多余的外部元素（.col）应用决定组件如何适应布局的样式，可以避免这些样式与组件本身的样式产生冲突：
+
+   ```html
+   <div class="row row-trio">
+     <div class="col">
+       <article class="media-block post-teaser">
+         <div class="media-bost-teaser-body">
+           <h2 class="post-title">Post teaser heading</h2>
+           <p>Article text goes here.</p>
+         </div>
+         <img class="media-fig post-fig" src="" alt="" />
+       </article>
+     </div>
+     <!--其他 post-teaser -->
+   </div>
+   ```
+
+2. **SMACSS**
+
+   SMACSS 即 scalable and modular architecture for CSS（CSS 可伸缩及模块化的架构），是由 Jonathan Snook 在 Yahoo! 工作时创造出来的。SMACSS 与 OOCSS 有很多地方很类似，比如推崇以类名和专注组件的规则，并将其作为创建 UI 元素层级及避免特殊性冲突的主要手段。Jonathan 的 SMACSS 理论有自己的观点，主要是提出了一种如下的规则分类法：
+
+   - **基本样式**：为 HTML 元素提供默认样式，同时基于元素属性提供不同版本。
+   - **布局样式**：网格系统和其他布局的辅助。
+   - **模块样式**：包含网站特定组件（产品、产品列表、网站头部等）的所有样式，大部分样式都属于这一类。
+   - **状态**：用于改变已有模块的外观，如菜单项有激活和未激活状态。
+
+   坚持这套分类法的同时，SMACSS 还提倡思考命名方式，而且要区分场景。正常情况下，以上规则应该按照上述顺序包含在样式表中，即从最通用到最具体。这是避免特殊性冲突以及合理应用层叠的另一方面。
+
+   除了对样式进行分类，SMACSS 还提倡给类名加前缀，让类名能更清晰地传达其用意。在第 6 章中提到了布局辅助类，使用了.row 和 .col 这样的类名。SMACSS 推荐在这些类名前面加上能够反映其本质的前缀，比如用 .l- 表示布局（layout）。
+
+   类似地，可以给状态加上 is- 前缀。这样，禁用状态的 .productlist 组件就会变成类似于 .is-productlist-disabled 或 .productlist-is-disabled 的形式。组件本身不使用前缀，但组件的名字可以充当子组件的前缀。
+
+3. **BEM**
+
+   如果说 OOCSS 和 SMACSS 更像一种结构化的 CSS 框架，同时融合了一些经验规则，那么 BEM（block element modifier）则更像一个严格的 CSS 编写和命名体系。
+
+   BEM 最早源于搜索引擎公司 Yandex，是作为一个应用开发方法提出的。BEM 包含一些约定、库和工具，用于在大规模 Web 应用中实现结构化 UI 这些应用中使用的命名约定已经具有了 BEM 在 HTML 和 CSS 这个上下文中的含义。
+
+   BEM 是 block、element 和 modifier 的首字母缩写。其中，块（block）是最高级抽象，对应于 SMACSS 中的模块或 OOCSS 中的对象。任何自成一体的东西都可以描述为块。元素（element）是块的子组件，不要跟 HTML 元素混淆，它们不是一样的概念。最后，修饰符（modifier）是块或元素的不同状态或变体。
+
+   BEM 中的块、元素和修饰符全部小写，以连字符分隔：.product-list。块中的元素由两个下划线分隔 .product-list\_\_item。修饰符前面要加一个下划线，用于修饰块或元素。
+
+#### 12.2.5 管理复杂性
+
+前面介绍的所有指南或方法论，归根结底都是为了**管理复杂性**。任何不能一目了然的场景都可能迅速复杂化，因此可以实施大范围限制（只允许更简单的设计），也可以把复杂的部分化整为零。
+
+使用命名模式及类名来表示 UI 行为，能让 CSS 更容易理解，但复杂性依然存在。这样做只不过把复杂性转移到了 HTML 上。转移的比例或许不同，转移的目标可能各异，但转移肯定会发生。要明白为什么会如此，需要沿时光轴往回移动，回溯到 CSS 问世的时候。
+
+1. **关注点分离**
+
+   在网页告别了 `<font>`、`<center>` 标签，迈入由 CSS 负责表现的时代后，有很多公司都致力于使用 CSS 来保证 HTML 的纯粹。仅凭 HTML 完全看不出来文档将会展示出来的效果。
+
+   CSS Zen Garden 这一类的网站让很多设计师和开发者认同了语义标记和 CSS 的威力。将表现与底层文档的标记解耦，反映了软件设计中关注点分离（SoC，separation of concerns）的思想：标记中不应该包含表现性信息，也不应该依赖表现层，这两层之间的交集应该始终尽可能保持最小化。Web 本身就是这样：即使没有 CSS（包括 JS），网页本身也足以传达自身的信息。
+
+   责任分离既有助于用户使用网站，也有助于构建网站。无论用户自身情况如何，也无论 CSS 能否有效加载，用户都应该能正常使用 HTML 中的内容。开发者应该只关注 CSS，不应该为更新设计而去修改某个特定的 HTML 元素。
+
+   如果类名只涵盖一种特定的表现形式，比如水平布局中的 row 和 col：
+
+   ```css
+   .row {
+     margin: 0 -0.9%;
+     padding: 0;
+   }
+   .row:after {
+     content: "";
+     display: block;
+     clear: both;
+   }
+   .col {
+     float: left;
+     box-sizing: border-box;
+     margin: 0 0.9% 1.375em;
+   }
+   ```
+
+   那么，即使把它们重命名为没那么形象的 group 或 block，也不会改变它们的用途，即作为应用样式的渠道。但这样做已经在 HTML 中添加了表现性信息，并且别无选择。这与 SoC 原则相悖，但可以接受，为什么？
+
+   SoC 原则本身出现在 Web 诞生以前，由计算机界的传奇人物 Edsger Dijkstra 于 1974 年提出。他在一篇关于推动软件工程发展的文章 _On the Role of Scientific Thought_ 中首次提及了这原则。
+
+   如何应对日益复杂的软件开发？Dijkstra 的文章指出，要 “把关注点放在某些方面”，而不是 “同时处理各个方面”。因为需要同时考虑 HTML 和 CSS，所以一上来就违背了这条原则。
+
+   情况是这样的：可以在代码的不同层面上应用 “关注点分离” 原则，虽然一方面牺牲了理论上的纯粹性，但可以在另一方面弥补回来。
+
+   类似，row 这种规则的单一目的，体现的正是 Dijkstra 所谓的 “聚焦”。在某个地方解决了基于列的布局这个通用问题之后，就算是大功告成了。即使将来有了更好的命名方案，也不必在 CSS 中替换所有使用了原方案的名称。
+
+   有一个需要权衡的地方，即类名改变时，需要修改 HTML，或者代码中特定的部分，以便不再使用该方案。支持采用这种命名方案的人认为在 HTML 中替换类名比重构混乱的 CSS 文件更容易。
+
+2. **找到平衡点**
+
+   通过与表现无关的名字来降低样式与结构的耦合度，显然是个不错的努力方向。但即使类名表示 “可视化的语义”，也能将其表现性倾向控制在最低程度。
