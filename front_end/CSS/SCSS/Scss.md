@@ -1846,9 +1846,9 @@ p {
 区别在于 `through` 与 `to` 的含义：
 
 - 当使用 `through` 时，条件范围包含 `<start>` 与 `<end>` 的值
-- 而使用 `to` 时条件范围只包含 `<start>` 的值不包含 `<end>` 的值。
+- 而使用 `to` 时条件范围只包含 `<start>` 的值不包含 `<end>` 的值
 
-另外，`$var` 可以是任何变量，比如 `$i`；`<start>` 和 `<end>` 必须是整数值。
+另外，`$var` 可以是任何变量，比如 `$i`；`<start>` 和 `<end>` 必须是整数值：
 
 ```scss
 @for $i from 1 through 3 {
