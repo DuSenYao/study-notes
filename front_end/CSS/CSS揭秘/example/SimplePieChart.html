@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SimplePieChart</title>
+    <style>
+      body {
+        padding: 10%;
+      }
+      svg {
+        width: 100px;
+        height: 100px;
+        transform: rotate(-90deg);
+        background: yellowgreen;
+        border-radius: 50%;
+      }
+      circle {
+        fill: yellowgreen;
+        stroke: #655;
+        stroke-width: 32;
+      }
+
+      .basic circle {
+        stroke-dasharray: 38 100; /* 可得到比率为38%的扇区 */
+      }
+
+      @keyframes fillUp {
+        to {
+          stroke-dasharray: 158 158;
+        }
+      }
+      .animation circle {
+        stroke-width: 50;
+        stroke-dasharray: 0 158;
+        animation: fillUp 5s linear infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="basic">
+    <svg viewBox="0 0 32 32">
+      <circle r="16" cx="16" cy="16" />
+    </svg>
+    </div>
+
+    <div class="animation">
+      <svg width="100" height="100">
+        <circle r="25" cx="50" cy="50" />
+      </svg>
+    </div>
+
+    <div class="pie">20%</div>
+    <div class="pie">80%</div>
+
+    <script>
+      function $$(selector, context) {
+        let dom = context || document;
+        let elements = dom.querySelectorAll(selector);
+        return Array.prototype.slice.call(elements);
+      }
+
+      window.onload = () => {
+        $$('.pie').forEach((pie) => {
+          let p = parseFloat(pie.textContent);
+          let NS = 'http://www.w3.org/2000/svg';
+          let svg = document.createElementNS(NS, 'svg');
+          let circle = document.createElementNS(NS, 'circle');
+          let title = document.createElementNS(NS, 'title');
+          circle.setAttribute('r', 16);
+          circle.setAttribute('cx', 16);
+          circle.setAttribute('cy', 16);
+          circle.setAttribute('stroke-dasharray', p + ' 100');
+          svg.setAttribute('viewBox', '0 0 32 32');
+          title.textContent = pie.textContent;
+          pie.textContent = '';
+          svg.appendChild(title);
+          svg.appendChild(circle);
+          pie.appendChild(svg);
+        });
+      };
+    </script>
+  </body>
+</html>
