@@ -13,17 +13,42 @@
         width: 200px;
         height: 120px;
       }
-      .tab {
-        font-size: 16px;
-        background: #58a;
-        color: white;
-        text-shadow: 0 0.5px hsl(0, 0%, 85%), 0 1px hsl(0, 0%, 80%),
-          0 1.5px hsl(0, 0%, 75%), 0 2px hsl(0, 0%, 70%), 0 2.5px hsl(0, 0%, 65%),
-          0 2.5px 10px black;
+      @keyframes typing {
+        from {
+          width: 0;
+        }
+      }
+      @keyframes caret {
+        50% {
+          border-color: transparent;
+        }
+      }
+      h1 {
+        width: 15ch; /* 文本的宽度 */
+        overflow: hidden;
+        white-space: nowrap;
+        border-right: 0.05em solid;
+        animation: typing 6s steps(15), caret 1s steps(1) infinite;
       }
     </style>
   </head>
   <body>
-    <div class="basic tab">CSS</div>
+    <h1>ICanSeeTom</h1>
+    <script>
+      function $$(selector, context) {
+        let dom = context || document;
+        let elements = dom.querySelectorAll(selector);
+        return Array.prototype.slice.call(elements);
+      }
+
+      window.onload = () => {
+        $$('h1').forEach((h1) => {
+          let len = h1.textContent.length;
+          let s = h1.style;
+          s.width = len + 'ch';
+          s.animationTimingFunction = `steps(${len}), steps(1)`;
+        });
+      };
+    </script>
   </body>
 </html>

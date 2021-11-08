@@ -37,6 +37,39 @@ title: CSS 揭秘
       - [3.3.3 内联 SVG 与 border-image 方案](#333-内联-svg-与-border-image-方案)
     - [3.4 梯形标签页](#34-梯形标签页)
     - [3.5 简单的饼图](#35-简单的饼图)
+  - [四. 视觉效果](#四-视觉效果)
+    - [4.1 不规则投影](#41-不规则投影)
+    - [4.2 染色效果](#42-染色效果)
+      - [4.2.1 基于滤镜的方案](#421-基于滤镜的方案)
+      - [4.2.2 基于混合模式的方案](#422-基于混合模式的方案)
+    - [4.3 折角效果](#43-折角效果)
+      - [4.3.1 45° 折角](#431-45-折角)
+      - [4.3.2 其他角度的解决方案](#432-其他角度的解决方案)
+  - [五. 字体排印](#五-字体排印)
+    - [5.1 连字符断行](#51-连字符断行)
+    - [5.2 文本行的斑马条纹](#52-文本行的斑马条纹)
+    - [5.3 连字](#53-连字)
+    - [5.4 华丽的 & 符号](#54-华丽的-符号)
+    - [5.5 自定义下划线](#55-自定义下划线)
+    - [5.6 现实中的文字效果](#56-现实中的文字效果)
+      - [5.6.1 凸版印刷效果](#561-凸版印刷效果)
+      - [5.6.2 空心字效果](#562-空心字效果)
+      - [5.6.3 文字外发光效果](#563-文字外发光效果)
+      - [5.6.4 文字凸起效果](#564-文字凸起效果)
+  - [六. 用户体验](#六-用户体验)
+  - [七. 结构与布局](#七-结构与布局)
+    - [7.1 自适应内部元素](#71-自适应内部元素)
+  - [八. 过渡与动画](#八-过渡与动画)
+    - [8.1 缓动效果](#81-缓动效果)
+      - [8.1.1 弹跳动画](#811-弹跳动画)
+      - [8.1.2 弹性过渡](#812-弹性过渡)
+    - [8.2 逐帧动画](#82-逐帧动画)
+    - [8.3 闪烁效果](#83-闪烁效果)
+    - [8.4 打字动画](#84-打字动画)
+    - [8.5 状态平滑的滚动](#85-状态平滑的滚动)
+    - [8.6 沿环形路径平移的动画](#86-沿环形路径平移的动画)
+      - [8.6.1 需要两个元素的解决方案](#861-需要两个元素的解决方案)
+      - [8.6.2 单个元素的解决方案](#862-单个元素的解决方案)
 
 <!-- /code_chunk_output -->
 
@@ -1735,3 +1768,423 @@ animation: loader 1s infinite steps(8);
 `steps()` 还接受可选的第二个参数，其值可以是 start 或 end（默认值）。这个参数用于指定动画在每个循环周期的什么位置发生帧的切换动作（关于默认值 end 的行为，见下图），但实际上这个参数用得并不多。如果只需要一个单步切换效果，还可以使用 step-start 和 step-end 这样的简写属性，它们分别等同于 steps(1, start) 和 steps(1, end)。
 
 ![steps](./image/steps.jpg)
+
+### 8.3 闪烁效果
+
+用 CSS 动画确实可以实现各种类型的闪烁效果，比如对整个元素进行闪烁（通过 opacity 属性），对文字的颜色进行闪烁（通过 color 属性），对边框进行闪烁（通过 border-color 属性），等等。在下面的内容中，将只讨论文字的闪烁效果，因为这是最常见的需求。不过，原理同样适用于元素其他部分的闪烁效果。
+
+要实现一个平滑的闪烁效果其实很简单。迈出的第一步可能是这样的：
+
+```css
+@keyframes blink-smooth {
+  to {
+    color: transparent;
+  }
+}
+.highlight {
+  animation: 1s blink-smooth 3;
+}
+```
+
+这段文字可以平滑地从它原来的颜色淡化为透明色，但随后会生硬地跳回原来的颜色。如果希望文字颜色的变化不仅是平滑隐去的，同时还是平滑显现的，可以修改关键帧，让状态切换发生在每个循环周期的中间：
+
+```css
+@keyframes blink-smooth {
+  50% {
+    color: transparent;
+  }
+}
+.highlight {
+  animation: 1s blink-smooth 3;
+}
+```
+
+现在似乎就是所期望的效果了。不过这里还有一个问题，虽然在这个特定的动画中表现得不是很明显（因为颜色或透明度的过渡很难体现出各种调速函数的特征），但心里一定要明白：这个动画一直是处在加速过程中的，不论是在文字显现还是隐去时—这对某些动画来说可能会显得不太自然（比如类似脉搏跳动的动画）。在那种情况下，可以使用 `animation-direction`。
+
+`animation-direction` 的唯一作用就是反转每一个循环周期（`reverse`），或第偶数个循环周期（`alternate`），或第奇数个循环周期（`alternate-reverse`）它的伟大之处在于，它会同时反转调整函数，从而产生更加逼真的动画效果。可以把它用在需要闪烁的元素上，比如：
+
+```css
+@keyframes blink-smooth {
+  to {
+    color: transparent;
+  }
+}
+.highlight {
+  animation: 0.5s blink-smooth 6 alterna;
+}
+```
+
+> **注意**：必须把动画循环的次数翻倍（而不是把循环周期的时间长度翻倍），因为现在一次淡入淡出的过程是由两个循环周期组成的。基于同样的原因，也要把 animation-duration 减半。
+
+如果想得到的是一个平滑的闪烁动画，现在就可以了。不过，假如只想得到最普通的那种闪烁效果呢?应该如何实现?首先想到的办法可能是：
+
+```css
+@keyframes blink {
+  to {
+    color: transparent;
+  }
+}
+.highlight {
+  animation: 1s blink 3 steps(1);
+}
+```
+
+但是，这个尝试会失败：什么动静也没有。原因在于，steps(1) 本质上等同于 steps(1, end)，它表示当前颜色与 transparent 之间的过渡会在一次步进中完成，于是颜色值的切换只会发生在动画周期的末尾。因此，会看到起始值贯穿于整个动画周期，而终止值只在动画结尾的无限短的时间点处出现。如果改用 steps(1, start)，结果就完全相反了：颜色值的切换会发生在动画周期最开始，于是始终只能看到纯透明的文字，没有任何动画或闪烁效果。
+
+以这个逻辑来看，接下来可以换用 steps(2) 来碰碰运气，两种步进方式（start 或 end）都可以试一下。现在终于可以看到闪烁效果了，但这个闪烁效果要么是由半透明切到纯透明，要么是由半透明切到实色，原因同上。由于无法通过配置 steps() 来让这个切换动作发生在动画周期的中间点（只能发生在起点或终点），唯一的解决方案是**调整动画的关键帧**，让切换动作发生在 50% 处：
+
+```css
+@keyframes blink {
+  50% {
+    color: transparent;
+  }
+}
+
+.highlight {
+  animation: 1s blink 3 steps(1);
+}
+```
+
+### 8.4 打字动画
+
+核心思路就是**让容器的宽度成为动画的主体**：把所有文本包裹在这个容器中，然后让它的宽度从 0 开始以步进动画的方式、一个字一个字地扩张到它应有的宽度。这个方法是有局限的：它并不适用于多行文本。
+
+另外一件需要注意的事情是，**动画的持续时间越长，动画效果越差**：持续时间较短的动画会让界面显得更加精致，在某些场景下还是有益于可用性的。反之，动画的持续时间越长，越容易让用户感到厌烦。因此，**即使这个技巧可以用在大段文本身上，也不一定是个好主意**。
+
+假设需要把这个动画效果应用到最顶级 CSS 的标题上，并且已经它把设置为等宽字体了，可以很容易地给它加上一个动画，让它的宽度从 0 变化到完整的宽度，就像这样：
+
+```css
+@keyframes typing {
+  from {
+    width: 0;
+  }
+}
+h1 {
+  width: 7.7em; /* 文本的宽度 */
+  animation: typing 8s;
+}
+```
+
+但它产生的结果简直就是车祸现场，跟想要的打字效果一点关系也没有。
+
+首先，忘了用 `white-space: nowrap;` 来阻止文本折行，因此文本的行数会随着宽度的扩张不断变化。其次，忘了加上 `overflow: hidden;`，所以超出宽度的文本没有被裁切掉。不过，当修复了这两个小问题之后，真正的大问题才会浮出水面：
+
+- 最明显的问题是整个动画是平滑连贯的，而不是逐字显现的。
+- 另一个不那么明显的问题是，目前已经用 em 单位指定了宽度，虽然它比像素单位要好一些，但仍然不够理想。这个宽度为什么是 7.7?是怎么算出来的?
+
+可以用 steps() 来修复第一个问题，就像 “逐帧动画” 和 “闪烁效果” 中所做的那样。但不幸的是，所需要的步进数量是由字符的数量来决定的，这显然是很难维护的，而且对于动态文字来说更是不可能维护的。不过，稍后将看到，可以用一小段 JS 代码来把这件事情自动化。
+
+第二个问题可以通过 `ch` 单位来缓解。这个 **ch 单位是由 [CSS 值与单位(第三版)](https://w3.org/TR/css3-values)规范引入的一个新单位，表示 “0” 字形的宽度**。它应该是最不为人知的一个新单位，因为在绝大多数场景下，并不关心 0 这个字符显示出来到底有多宽。但对等宽字体来说，这是个例外。**在等宽字体中，“0” 字形的宽度和其他所有字形的宽度是一样的**。因此，如果用 ch 单位来表达这个标题的宽度，那取值实际上就是字符的数量。把上面的这些想法综合起来：
+
+```css
+@keyframes typing {
+  from {
+    width: 0;
+  }
+}
+h1 {
+  width: 15ch; /* 文本的宽度 */
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 6s steps(15);
+}
+```
+
+终于得到了期望已久的效果：这段文字是逐字显现出来的。不过，它看起来还不够逼真。画龙点睛的最后一步，就是给它加上一个闪烁的光标。在这个例子中，可以用一个伪元素来生成光标，并通过 opacity 属性来实现闪烁效果；也可以用右边框来模拟光标效果，这样就可以把有限的伪元素资源节省下来留作他用：
+
+```css
+@keyframes typing {
+  from {
+    width: 0；;
+  }
+}
+@keyframes caret {
+  50% {
+    border-color: transparent;
+  }
+}
+h1 {
+  width: 15ch; /* 文本的宽度 */
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 0.05em solid;
+  animation: typing 6s steps(15), caret 1s steps(1) infinite;
+}
+```
+
+> **注意**：与文字逐个跳出的动画不同，光标的闪烁动画是需要无限循环的，因此需要用到 infinite 关键字。此外，这里并不需要指定边框的颜色，因为希望边框颜色自动与文字颜色保持一致。
+
+这个动画现在的表现相当完美，不过还不是很易于维护：需要根据每个标题的字数来给它们分别指定不同的宽度样式，而且还需要在每次改变标题内容时同步更新这些宽度样式。显然，这种场景正是 JS 的用武之地：
+
+```js
+$$("h1").forEach((h1) => {
+  let len = h1.textContent.length,
+    s = h1.style;
+  s.width = len + "ch";
+  s.animationTimingFunction = `steps(${len}), steps(1)`;
+});
+```
+
+### 8.5 状态平滑的滚动
+
+在默认情况下，动画只会立即停止播放，并生硬地跳回开始状态。这会产生非常生硬的用户体验。
+
+假设有一张非常长的宽幅照片，但现在只能提供一个 150×150 的正方形区域来展示它。为了突破这种窘境，想到了动画的方法：在默认情况下只显示这张照片的左边缘，当用户跟它交互（比如鼠标悬停）的时候，让它滚动并显露出剩余的部分。只需要用到一个元素就可以显示这张图片了，稍后再给它的背景定位属性加上动画：
+
+```css
+.panoramic {
+  width: 150px;
+  height: 150px;
+  background: url("img/naxos-greece.jpg");
+  background-size: auto 100%;
+}
+```
+
+改变它的 `background-position` 属性值。实际上当这个值从原本的 0 0 一直变化到 100% 0 时，就会看到这张图片从左侧一直滚动到右侧的完整过程。这就是需要的动画关键帧：
+
+```css
+@keyframes panoramic {
+  to {
+    background-position: 100% 0;
+  }
+}
+.panoramic {
+  width: 150px;
+  height: 150px;
+  background: url("img/naxos-greece.jpg");
+  background-size: auto 100%;
+  animation: panoramic 10s linear infinite alternate;
+}
+```
+
+这个方法立竿见影。它的效果有些像全景视图，仿佛身临其境环顾左右。不过，这个动画是在页面加载后就立即触发的，在某些场景下这很可能会干扰到用户。如果动画是用户鼠标悬停时才开始播放的，那效果就更加理想了：
+
+```css
+.panoramic {
+  width: 150px;
+  height: 150px;
+  background: url("img/naxos-greece.jpg");
+  background-size: auto 100%;
+}
+.panoramic:hover,
+.panoramic:focus {
+  animation: panoramic 10s linear infinite alternate;
+}
+```
+
+当把鼠标悬停到图片上时：它会从图片的最左侧区域开始，向右慢慢滚动，并逐渐显示出图片的右侧区域。不过，当把鼠标移出图片时，它就会生硬地跳回最左侧。
+
+为了修复这个问题，需要换个角度来思考：在这里到底想要实现什么样的结果。需要的并不是在 :hover 时应用一个动画，因为这意味着动画被中断时的状态是无处保存的。需要的是当失去 :hover 状态时暂停动画。有一个属性正好是为暂停动画的需求专门设计的：`animation-play-state`。
+
+因此，需要把动画加在 .panoramic 这条样式中，但是让它一开始就处于暂停状态，直到 :hover 时再启动动画。这再也不是添加和取消动画的间题了，而只是暂停和继续一个一直存在的动画，因此再也不会有生硬的跳回现象了。最终代码如下所示：
+
+```css
+@keyframes panoramic {
+  to {
+    background-position: 100% 0;
+  }
+}
+.panoramic {
+  width: 150px;
+  height: 150px;
+  background: url("img/naxos-greece.jpg");
+  background-size: auto 100%;
+  animation: panoramic 10s linear infinite alternate;
+  animation-play-state: paused;
+}
+.panoramic:hover,
+.panoramic:focus {
+  animation-play-state: running;
+}
+```
+
+### 8.6 沿环形路径平移的动画
+
+#### 8.6.1 需要两个元素的解决方案
+
+最主要的思路与 “平行四边形” 或者 “菱形图片” 中提到的 “嵌套的两层变形会相互抵消” 如出一辙：**用内层的变形来抵消外层的变形效果**。不过，这一次可不是静态的抵消了，这次的抵消作用是贯穿于整个动画的每一帧的。需要注意的是，需要两层元素：
+
+```html
+<div class="path">
+  <div class="avatar">
+    <img src="lea.jpg" />
+  </div>
+</div>
+```
+
+现在把旋转动画应用到 .avatar 这个容器身上，但是它会让头像沿着环形路径转动。不过，假设对头像元素**设置另一个旋转动画，让它以相反的方向自转一周**，会发生什么呢？这两层旋转的作用会在头像上相互抵消，只会看到父元素旋转所产生的环绕动作！
+
+不过还有一个问题需要考虑：当前所面临的并不是一个可以抵消的静态旋转变形，而是一个在一定角度范围内连续运转的动画。举例来说，如果角度是固定的 60deg，可以用 -60deg（或 300deg）来抵消它，如果是 70deg，那可以用-70deg（或 290deg）来抵消。但现在它可能是 0~360deg（或 0~1turn）的任意角度，那该用什么来抵消它呢?答案比看起来要简单得多。只需把头像的动画设置为相反的角度范围（360~0deg）即可：
+
+```css
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+@keyframes spin-reverse {
+  from {
+    transform: rotate(1turn);
+  }
+}
+.avatar {
+  animation: spin 3s infinite linear;
+  transform-origin: 50% 150px; /* 150px = 路径的半径 */
+}
+.avatar > img {
+  animation: spin-reverse 3s infinite linear;
+}
+```
+
+这样一来，在任意时间点上，假设第一套动画的旋转角度是 x，那么第二套动画的旋转角度就正好是 360-x，因为前者的角度值是不断增加的，而后者则是相应减少的。这正是所期望的。于是它终于产生了梦寐以求的效果。
+
+虽然效果已经达到了，但这段代码仍然是有必要继续改进的。比如说，两套动画中的各个参数其实是重复了两次的。如果需要调整动画周期的话，还要修改两处，这显然是不够 DRY 的。可以很容易地解决这个问题，让内层动画从父元素那里继承所有的动画属性，然后把动画名覆盖掉就可以了：
+
+```css
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+@keyframes spin-reverse {
+  from {
+    transform: rotate(1turn);
+  }
+}
+.avatar {
+  animation: spin 3s infinite linear;
+  transform-origin: 50% 150px; /* 150px = 路径的半径 */
+}
+.avatar > img {
+  animation: inherit;
+  animation-name: spin-reverse;
+}
+```
+
+不过再想一想，如果只是为了反转第一套动画，就又建了一套新动画，有点浪费。可以使用 `animation-direction: reverse` ，它可以得到原始动画的反向版本，这样就可以利用一套关键帧实现两套旋转动画：
+
+```css
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+.avatar {
+  animation: spin 3s infinite linear;
+  transform-origin: 50% 150px; /* 150px = 路径的半径 */
+}
+.avatar > img {
+  animation: inherit;
+  animation-direction: reverse;
+}
+```
+
+#### 8.6.2 单个元素的解决方案
+
+上面的技巧很有效，但还不够理想，因为它需要修改 HTML 结构。
+
+> transform-origin 只是一个语法糖而已。实际上总是可以用 translate() 来代替它。每个 transform-origin 都是可以被两个 translate() 模拟出来的。
+
+比如，下面两段代码实际上是等效的：
+
+```css
+transform: rotate(30deg);
+transform-origin: 200px 300px;
+
+transform: translate(200px, 300px) rotate(30deg) translate(-200px, -300px);
+transform-origin: 0 0;
+```
+
+这乍看起来确实有些费解，但只要牢记变形函数并不是彼此独立的，这个道理就会逐渐清晰起来。每个变形函数并不是只对这个元素进行变形，而且会把整个元素的坐标系统进行变形，从而影响所有后续的变形操作。这也说明了为什么变形函数的顺序是很重要的，变形属性中不同函数的顺序如果被打乱，可能会产生完全不同的结果。
+
+![两次位移变形代替变形原点](./image/两次位移变形代替变形原点.jpg)
+
+因此，借助这个思路，就可以基于同一个 transform-origin 来实现前面用到的两个旋转动画（会再次把动画分成两套，因为现在它们的关键帧已经完全不一样了）：
+
+```css
+@keyframes spin {
+  from {
+    transform: translate(50%, 150px) rotate(0turn) translate(-50%, -150px);
+  }
+  to {
+    transform: translate(50%, 150px) rotate(1turn) translate(-50%, -150px);
+  }
+}
+@keyframes spin-reverse {
+  from {
+    transform: translate(50%, 50%) rotate(1turn) translate(-50%, -50%);
+  }
+  to {
+    transform: translate(50%, 50%) rotate(0turn) translate(-50%, -50%);
+  }
+}
+.avatar {
+  animation: spin 3s infinite linear;
+}
+.avatar > img {
+  animation: inherit;
+  animation-name: spin-reverse;
+}
+```
+
+这段代码看起来臃肿得可怕，但接下来会大幅度改进它的。请注意，现在已经不需要不同的变形原点了，而这正是先前需要动用两个元素（和两套动画）的唯一理由。由于现在所有变形函数所使用的都是相同的原点，可以把这两套动画合并为一套，并只用在 .avatar 这一个元素上：
+
+```css
+@keyframes spin {
+  from {
+    transform: translate(50%, 150px) rotate(0turn) translate(-50%, -150px) translate(
+        50%,
+        50%
+      )
+      rotate(1turn) translate(-50%, -50%);
+  }
+  to {
+    transform: translate(50%, 150px) rotate(1turn) translate(-50%, -150px) translate(
+        50%,
+        50%
+      )
+      rotate(0turn) translate(-50%, -50%);
+  }
+}
+.avatar {
+  animation: spin 3s infinite linear;
+}
+```
+
+代码质量显然已经上了一个台阶，但仍然比较冗长、难以理解。先从最简单的地方入手，把连续的 translate() 变形操作合并起来，尤其是 translate(-50%， 150px) 和 translate(50%， 50%) 这样的情况。但遗憾的是，百分比值和绝对长度是无法合并的（除非使用 calc()，但那样一来代码同样会相当臃肿）。尽管如此，单纯水平方向上的位移还是可以相互抵消的，因此这基本上相当于只在 Y 轴上做了两次位移操作（`translateYY(-150px) translateY(50%)`）。此外，由于同一关键帧内的两次旋转也会相互抵消，还可以把旋转之前和之后的水平位移动作去掉，再把垂直位移合并起来。这样一来就得到了如下的关键帧：
+
+```css
+@keyframes spin {
+  from {
+    transform: translateY(150px) translateY(-50%) rotate(0turn) translateY(
+        -150px
+      )
+      translateY(50%) rotate(1turn);
+  }
+  to {
+    transform: translateY(150px) translateY(-50%) rotate(1turn) translateY(
+        -150px
+      )
+      translateY(50%) rotate(0turn);
+  }
+}
+.avatar {
+  animation: spin 3s infinite linear;
+}
+```
+
+这样代码会稍短一些，重复度也稍低一些，但还不够好。还能更进步吗？如果把头像放在圆心并以此作为起点，就可以消除最开始的那两个位移操作了，而实际上这两个位移在本质上所做的就是把它放在圆心。然后，这个动画就会变为：
+
+```css
+@keyframes spin {
+  from {
+    transform: rotate(0turn) translateY(-150px) translateY(50%) rotate(1turn);
+  }
+  to {
+    transform: rotate(1turn) translateY(-150px) translate(50%) rotate(0turn);
+  }
+}
+.avatar {
+  animation: spin 3s infinite linear;
+}
+```
