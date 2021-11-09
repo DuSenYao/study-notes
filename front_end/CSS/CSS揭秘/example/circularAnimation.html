@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        padding: 10%;
+      }
+
+      .path {
+        background-color: #289;
+        border-radius: 50%;
+        width: 300px;
+        height: 300px;
+        padding: 20px;
+      }
+
+      .img,.avatar2 {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-image: linear-gradient(#e66465 50%, #9198e5 0);
+        margin: 0 auto;
+        overflow: hidden;
+      }
+
+      @keyframes spin{
+        to {
+          transform: rotate(1turn);
+        }
+      }
+      .avatar {
+        animation: spin 10s infinite linear;
+        transform-origin: 50% 150px; /* 150px = 路径的半径 */
+      }
+      .avatar > .img {
+        animation: inherit;
+        animation-direction: reverse;
+      }
+
+      @keyframes spin2 {
+        from {
+          transform: translateY(150px) translateY(-50%) rotate(0turn) translateY(
+            -150px
+          )
+          translateY(50%) rotate(1turn);
+      }
+      to {
+        transform: translateY(150px) translateY(-50%) rotate(1turn) translateY(
+            -150px
+          )
+          translateY(50%) rotate(0turn);
+      }
+      }
+      .avatar2 {
+        animation: spin2 10s infinite linear;
+      }
+    </style>
+  </head>
+  <h3>
+    <h3>两个元素</h3>
+    <div class="path">
+      <div class="avatar">
+        <div class="img"></div>
+      </div>
+    </div>
+
+    <h3>单个元素</h3>
+
+    <div class="path">
+      <div class="avatar2"></div>
+    </div>
+  </body>
+</html>
