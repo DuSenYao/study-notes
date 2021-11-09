@@ -11,7 +11,9 @@ title: TypeScript
     - [1.1 什么是 TypeScript](#11-什么是-typescript)
       - [1.1.1 始于 JS，终于 JS](#111-始于-js终于-js)
       - [1.1.2 TypeScript 特性](#112-typescript-特性)
-  - [二. 基础](#二-基础)
+    - [1.2 TypeScript 优势](#12-typescript-优势)
+  - [二. 语言基础](#二-语言基础)
+    - [2.1 tsconfig.json](#21-tsconfigjson)
 
 <!-- /code_chunk_output -->
 
@@ -50,8 +52,16 @@ function sum(x, y) {
 const total = sum(1, 2);
 ```
 
-对比编译之前和之后的代码，能够看到编译器生成的 JS 代码既清晰又简洁，并且两者之间在代码结构上几乎没有明显变化。实际上这种
-行为是 TypeScript 语言的基本设计原则之一：**TypeScript 应该生成简洁、符合编写习惯并易于识别的 JS 代码；TypeScript 不应该进行激进的性能优化**。
+对比编译之前和之后的代码，能够看到编译器生成的 JS 代码既清晰又简洁，并且两者之间在代码结构上几乎没有明显变化。实际上这种行为是 TypeScript 语言的基本设计原则之一。TypeScript 语言的设计原则中包含了以下几个基本原则：
+
+- 保留 JS 代码的运行时行为
+- 避免增加表达式级别的语法，仅增加类型相关语法
+- 与当前和未来版本的 ECMAScrip 规范保持—致
+- 应该生成简洁、符合编写习惯并易于识别的 JS 代码
+- 不应该进行激进的性能优化
+
+_语法糖_
+: 在计算机科学中，语法糖指的是编程语言里的某种语法，这种语法对语言的功能没有影响，但是会方便开发者的使用，能够让程序更加简洁，具有更高的可读性。
 
 #### 1.1.2 TypeScript 特性
 
@@ -89,4 +99,62 @@ const total = sum(1, 2);
 
   在 TypeScript 程序中，可以直接使用这些新特性而不必过多担心兼容问题。TypeScript 编译器会负责把代码编译成兼容指定 ECMAScript 版本的 JS 代码。
 
-## 二. 基础
+## 二. 语言基础
+
+### 2.1 tsconfig.json
+
+tsconfig.json 是 TypeScript 编译器默认使用的配置文件。下面的例子中指定模块类型为 CommonJS，并将输岀 JS 的版本指定为 ECMAScript2017：
+
+```json
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "CommonJS"
+  }
+}
+```
+
+在 VSCode 中使用快捷键 `Ctrl + Shift + B` 或从菜单栏里选择 `终端 -> 运行生成任务` 打开并运行构建任务面板，然后选择 "tsc: -p tsconfig.json" 来编译 TypeScript 程序。编译完成后，会在当前文件目录下生成同名 JS 文件。
+
+### 2.1 类型基础
+
+#### 2.1.1 类型注解
+
+在 TypeScript 中可以使用类型注解来明确标识类型。**类型注解的语法由一个冒号 “:" 和某种具体类型 “Type” 组成**，并且总是放在被修饰的实体之后：
+
+```ts
+const greeting: string = "Hello，World";
+```
+
+TypeScript 中的类型注解是可选的，编译器在大部分情况下都能够自动推断岀表达式的类型。关于类型推断的详细介绍参考 7.3 节<!--TODO-->。
+
+#### 2.1.2 类型检查
+
+类型检查是验证程序中类型约束是否正确的过程。类型检查既可以在程序编译时进行，即静态类型检査；也可以在程序运行时进行，即动态类型检查。TypeScript 支持静态类型检查，Javascrip 支持动态类型检查。
+
+为了满足不同用户的需求，TypeScript 提供了两种静态类型检查模式：
+
+- **非严格类型检查**（默认方式）
+
+  严格类型检査是 TypeScript 默认的类型检査模式。在该模式下，类型检査的规则相对宽松。例如，在非严格类型检查模式下不会对 undefined 值和 null 值做过多限制，允许将 undefined 值和 null 值赋值给 string 类型的
+  变量。当进行 JS 代码到 TypeScript 代码的迁移工作时，非严格类型检查是一个不错的选择，因为它能够帮助快速地完成迁移工作。
+
+- **严格类型检查**
+
+  该模式下的类型检査比较激进，会尽可能地发现代码中的错误。例如，在严格类型检査模式下不允许将 undefined 值和 null 值赋值给 string 类型的变量。启用严格类型检査模式能够最大限度地利用 TypeScript 静争态类型检査带来的益处。从长远来讲，使用严格类型检查模式对提高代码质量更加有利，因此建议在新的工程中启用。
+
+  TypeScript 提供了若干个与严格类型检查相关的编译选项，例如：“-strictNullChecks” 和 “--noImplicitAny” 等。关于严格类型检查编译选项的详细介绍参考 8.2 <!--TODO-->节。
+
+  也可以在工程的 tsconfig.json 配置文件中启用 “strict" 编译选项：
+
+  ```json
+  {
+    "compilerOptions": {
+      "strict": true
+    }
+  }
+  ```
+
+  将 “strict” 编译选项设置为 true 将开启所有的严格类型检査编译选项。它包含了前面提到的 “-strictNullChecks” 和 “--noImplicitAny” 编译选项。关于配置文件的详细介绍请参考 8.3 节<!--TODO-->
+
+#### 2.1.3 原始类型

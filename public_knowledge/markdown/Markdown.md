@@ -86,11 +86,11 @@ Markdown 是一种文本格式。可以用它来控制文档的显示。使用 m
 #### 强调
 
 ```markdown
-*这是斜体的文字*
+_这是斜体的文字_
 _这是斜体的文字_
 
 **这是粗体的文字**
-__这是粗体的文字__
+**这是粗体的文字**
 
 _也可以 **组合** 这些符号_
 
@@ -121,13 +121,13 @@ _也可以 **组合** 这些符号_
 
 定义型列表由名词和解释组成。一行写定义，紧跟一行写解释。解释的写法 **:** 后紧跟一个空格
 
-```txt
+```markdown
 Markdown
-: 轻量级文本标记语言，可以转换成html，pdf等格式（左侧有一个可见的冒号和一个空格）
+: 轻量级文本标记语言，可以转换成 html，pdf 等格式（左侧有一个可见的冒号和一个空格）
 
 代码块 2
 : 这是代码块的定义（左侧有一个可见的冒号和一个空格）
-      代码块（左侧有六个不可见的空格）
+代码块（左侧有六个不可见的空格）
 ```
 
 #### 插入图片
@@ -178,7 +178,7 @@ HTML风格的注释: <!-- notes -->
 
 #### 分割线
 
-```markdown
+```txt
 如下，三个及以上的
 连字符 ---
 
@@ -201,7 +201,8 @@ HTML风格的注释: <!-- notes -->
   可以给代码块添加任何一种语言的语法高亮，如下:
 
 ```js
-let a = 1, b = 2;
+let a = 1,
+  b = 2;
 [a, b] = [b, a];
 ```
 
@@ -227,7 +228,7 @@ function ride(x, y) {
 - 高亮代码行数
   可以通过添加 highlight 属性的方式来高亮代码行数
 
-```txt{highlight=[1,3,5]}
+```markdown{highlight=[1,3,5]}
   javascript
 
   javascript
@@ -237,26 +238,26 @@ function ride(x, y) {
 
 #### 表格
 
-```txt
-First Header | Second Header
------------- | -------------
-Content from cell 1 | Content from cell 2
-Content in the first column | Content in the second column
+```markdown
+| First Header                | Second Header                |
+| --------------------------- | ---------------------------- |
+| Content from cell 1         | Content from cell 2          |
+| Content in the first column | Content in the second column |
 ```
 
 #### 目录列表(TOC)
 
-```txt
+```markdown
 Markdown Preview Enhanced 支持在 markdown 文件中创建 TOC。
 可以通过 cmd-shift-p 然后选择 Markdown Preview Enhanced: Create Toc 命令来创建 TOC。
-可以创建多个TOC。 如果想要在 TOC 中排除一个标题，可以在标题后面添加 {ignore=true} 。
+可以创建多个 TOC。 如果想要在 TOC 中排除一个标题，可以在标题后面添加 {ignore=true} 。
 
 注意: TOC 只会在 预览打开 并且 markdown 文件保存时更新。
 ```
 
 - 设置项
 
-```txt
+```markdown
 orderedList 是否使用有序列表。
 depthFrom, depthTo [1~6] 包含的。
 ignoreLink 如果设置为 true，那么 TOC 将不会被超链接。
@@ -264,15 +265,16 @@ ignoreLink 如果设置为 true，那么 TOC 将不会被超链接。
 
 #### todo list
 
-```txt
-待办列表:
-- [X] 整理Markdown手册
-- [X] 改善项目
-   - [X] 优化首页显示方式
-   - [X] 修复闪退问题
-   - [X] 修复视频卡顿
-- [X] 项目修复
-   - [X] 修复数值错误
+```markdown
+<!-- 待办列表: -->
+
+- [x] 整理 Markdown 手册
+- [x] 改善项目
+  - [x] 优化首页显示方式
+  - [x] 修复闪退问题
+  - [x] 修复视频卡顿
+- [x] 项目修复
+  - [x] 修复数值错误
 ```
 
 #### 序列图
@@ -322,31 +324,31 @@ cond(no)->sub->io
 
 > 需要在插件设置中打开 `enableExtendedTableSyntax` 选项来使其工作。
 
-```txt
+```markdown
 colspan ">" or 空单元格
-  |a|b|
-  |---|---|
-  |>|1|
-  |2||
+|a|b|
+|---|---|
+|>|1|
+|2||
 rowspan "^"
-  |a|b|
-  |---|---|
-  |1|2|
-  |^|4|
+|a|b|
+|---|---|
+|1|2|
+|^|4|
 ```
 
 #### Emoji & Font-Awesome
 
-> 只适用于 markdown-it parser 而不适用于 pandoc parser。 缺省下是启用的。可以在插件设置里禁用此功能。
+> 只适用于 markdown-it parser 而不适用于 pandoc parser。缺省下是启用的。可以在插件设置里禁用此功能。
 
-```txt
+```markdown
 :smile:
 :fa-car:
 ```
 
 #### 上标
 
-```txt
+```markdown
 30^th^
 ```
 
@@ -358,27 +360,28 @@ H~2~O
 
 #### 注脚
 
-```txt
+```markdown
 Content [^1]
 [^1]: Hi! This is a footnote
 ```
 
 #### 标记
 
-```txt
+```markdown
 ==marked==
 ```
 
 #### 导入外部文件
 
-```txt
-  @import "文件路径"
-  <!-- @import "文件路径" -->
+```markdown
+@import "文件路径"
+
+<!-- @import "文件路径" -->
 ```
 
 - 设置图片
 
-```txt
+```markdown
 @import "test.png" {width="300px" height="200px" title="图片的标题" alt="我的 alt"}
 ```
 
@@ -387,14 +390,14 @@ Content [^1]
 
 - 强制渲染为代码块
 
-```txt
+```markdown
 @import "test.js" {code_block=true class="line-numbers"}
 @import "test.py" {class="line-numbers"}
 ```
 
 - 导入特定行数
 
-```txt
+```markdown
 @import "test.md" {line_begin=2}
 @import "test.md" {line_begin=2 line_end=10}
 @import "test.md" {line_end=-4}
@@ -403,16 +406,18 @@ Content [^1]
 - 插件中特有的 Front-matter
   可以通过 front-matter 来设置图片的保存路径以及输出路径。
 
-```txt
-  ---
-  markdown:
-    image_dir: /assets
-    path: output.md
-    ignore_from_front_matter: true
-    absolute_image_path: false
-  export_on_save:
-    markdown: false
-  ---
+```markdown
+---
+
+markdown:
+image_dir: /assets
+path: output.md
+ignore_from_front_matter: true
+absolute_image_path: false
+export_on_save:
+markdown: false
+
+---
 ```
 
 image_dir `可选`

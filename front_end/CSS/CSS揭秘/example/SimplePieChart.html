@@ -62,7 +62,7 @@
       }
 
       window.onload = () => {
-        $$('.pie').forEach((pie) => {
+        $$('.pie').forEach(pie => {
           let p = parseFloat(pie.textContent);
           let NS = 'http://www.w3.org/2000/svg';
           let svg = document.createElementNS(NS, 'svg');

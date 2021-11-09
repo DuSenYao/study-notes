@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "strict": true,
     "target": "es2017",
     "module": "CommonJS",
     // 调试TS文件，需要把TS文件和生成的JS文件进行映射，是否生成映射文件

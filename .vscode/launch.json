@@ -60,21 +60,6 @@
       "url": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
       "webRoot": "${workspaceFolder}/out"
     },
-    // 在Firefox调试当前文件
-    {
-      "name": "Launch firefox Current File",
-      "type": "firefox",
-      "request": "launch",
-      "reAttach": true,
-      "file": "${file}"
-    },
-    {
-      "name": "Launch firefox localhost",
-      "type": "firefox",
-      "request": "launch",
-      "url": "http://localhost/index.html",
-      "webRoot": "${workspaceFolder}"
-    },
     {
       "type": "chrome",
       "request": "launch",

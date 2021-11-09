@@ -1287,27 +1287,21 @@ IdentifierName 可以是 Identifier、NullLiteral、BooleanLiteral 或者 keywor
 
 仅当不是保留字的时候，IdentifierName 会被解析为 Identifier
 
-> 注意 `<ZWNJ>`和 `<ZWJ>` 是 ES5 新加的两个格式控制字符，它们都是 0 宽
+> **注意**：`<ZWNJ>`和 `<ZWJ>` 是 ES5 新加的两个格式控制字符，它们都是 0 宽。
 
-在 JS 中，有 33 个关键字：
+在 JS 中，有 33 个保留字：
 
 ```txt
-await break try catch class const continue debugger default delete else export extends finally for function if import instanceof new return super switch case this throw typeof var void do while with yield
+await break try catch class const continue debugger default delete else export extends finally for function if import instanceof new return super switch case this throw typeof var void do while with enum
 ```
 
-除了上面的内容外，还有一个为未来使用而保留的关键字：
+其中 `enum` 是一个为未来使用而保留的关键字。而在严格模式下，下列保留字不允许作为标识符使用：
 
-```js
-enum;
+```txt
+implements package protected interface private public let static yield
 ```
 
-在严格模式下，有一些额外的为未来使用而保留的关键字：
-
-```js
-implements package protected interface private public
-```
-
-> 除了这些，NullLiteral（null）和 BooleanLiteral（true false）也是保留字，不能用于 Identifier
+> 除了这些，NullLiteral（null）和 BooleanLiteral（true false）也是保留字，不能用于标识符。
 
 #### 4.1.5 符号 Punctuator
 

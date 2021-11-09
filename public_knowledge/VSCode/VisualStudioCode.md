@@ -237,7 +237,7 @@ keyword: VSCode operation
 | C/C++         | #pragma region                 | #pragma endregion                  |
 | Java          | //#region 或 `//<editor-fold>` | //#endregion 或 `//</editor-fold>` |
 | Python        | #region                        | #endregion                         |
-| TypeScript/JS | //#region 或//region           | //#endregion 或//endregion\        |
+| TypeScript/JS | //#region                      | //#endregion                       |
 | Markdown      | \<!--#region-->                | \<!--endregion-->                  |
 
 ### 2.3 自动检测代码缩进
