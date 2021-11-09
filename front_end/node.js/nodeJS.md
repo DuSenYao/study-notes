@@ -1449,7 +1449,7 @@ function postJSON(host, endpoint, body, port, username, password) {
       if (response.statusCode !== 200) {
         reject(new Error(`HTTP status ${response.statusCode}`));
 
-        // 这里我们并不关心响应体，但不希望它逗留在缓冲区里
+        // 这里并不关心响应体，但不希望它逗留在缓冲区里
         // 因此把流切换为流动模式，但不注册 “data” 处理程序，因此响应体会被丢弃
         response.resume();
         return;

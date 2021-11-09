@@ -94,13 +94,13 @@ function HTMLLexicalParser() {
     }
   };
 
-  // 状态函数通过代码中的 emitToken 函数来输出解析好的 token（词），我们只需要覆盖 emitToken，即可指定对解析结果的处理方式。
+  // 状态函数通过代码中的 emitToken 函数来输出解析好的 token（词），只需要覆盖 emitToken，即可指定对解析结果的处理方式。
   var emitToken = function emitToken(c) {
     console.log(c);
   };
   // ……
 
-  // 关键一句是“ state = state(char) ”，不论我们用何种方式来读取字符串流，我们都可以通过 state 来处理输入的字符流，这里用循环是一个示例，真实场景中，可能是来自 TCP 的输出流。
+  // 关键一句是“ state = state(char) ”，不论用何种方式来读取字符串流，都可以通过 state 来处理输入的字符流，这里用循环是一个示例，真实场景中，可能是来自 TCP 的输出流。
   var state = data;
   this.receiveInput = function (char) {
     state = state(char);

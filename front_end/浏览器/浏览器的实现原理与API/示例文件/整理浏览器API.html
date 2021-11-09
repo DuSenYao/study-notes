@@ -20,7 +20,7 @@
      *  4.用代码在 window 的属性中过滤掉标准中涉及的API
      */
 
-    // 大部分的 API 属于 Window 对象（或者说全局对象），我们可以用反射来看一看现行浏览器中已经实现的 API
+    // 大部分的 API 属于 Window 对象（或者说全局对象），可以用反射来看一看现行浏览器中已经实现的 API
     function log_getOwnPropertyNames() {
       let objects = [
         'BigInt',
