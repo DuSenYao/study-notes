@@ -1,2 +1,7 @@
-const a = 1;
-console.log(a);
+enum Bool {
+  False = 0,
+  True = 1
+}
+
+Bool.False; // 0
+console.log(Bool[Bool.True]); // "True"

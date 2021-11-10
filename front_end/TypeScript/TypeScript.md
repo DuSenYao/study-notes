@@ -12,13 +12,14 @@ title: TypeScript
       - [1.1.1 始于 JS，终于 JS](#111-始于-js终于-js)
       - [1.1.2 TypeScript 特性](#112-typescript-特性)
     - [1.2 TypeScript 优势](#12-typescript-优势)
-  - [二. 类型系统](#二-类型系统)
     - [2.1 tsconfig.json](#21-tsconfigjson)
-    - [2.1 类型基础](#21-类型基础)
-      - [2.1.1 类型注解](#211-类型注解)
-      - [2.1.2 类型检查](#212-类型检查)
-      - [2.1.3 原始类型](#213-原始类型)
-        - [2.1.3.1 symbol 和 unique symbol](#2131-symbol-和-unique-symbol)
+  - [二. 类型基础](#二-类型基础)
+    - [2.1 类型注解](#21-类型注解)
+    - [2.2 类型检查](#22-类型检查)
+    - [2.3 原始类型](#23-原始类型)
+      - [2.3.1 symbol 和 unique symbol](#231-symbol-和-unique-symbol)
+      - [2.3.2 Nullable](#232-nullable)
+      - [2.3.3 枚举类型](#233-枚举类型)
 
 <!-- /code_chunk_output -->
 
@@ -104,9 +105,9 @@ _语法糖_
 
   在 TypeScript 程序中，可以直接使用这些新特性而不必过多担心兼容问题。TypeScript 编译器会负责把代码编译成兼容指定 ECMAScript 版本的 JS 代码。
 
-## 二. 类型系统
-
 ### 2.1 tsconfig.json
+
+<!--TODO-->
 
 tsconfig.json 是 TypeScript 编译器默认使用的配置文件。下面的例子中指定模块类型为 CommonJS，并将输岀 JS 的版本指定为 ECMAScript2017：
 
@@ -121,9 +122,9 @@ tsconfig.json 是 TypeScript 编译器默认使用的配置文件。下面的例
 
 在 VSCode 中使用快捷键 `Ctrl + Shift + B` 或从菜单栏里选择 `终端 -> 运行生成任务` 打开并运行构建任务面板，然后选择 "tsc: -p tsconfig.json" 来编译 TypeScript 程序。编译完成后，会在当前文件目录下生成同名 JS 文件。
 
-### 2.1 类型基础
+## 二. 类型基础
 
-#### 2.1.1 类型注解
+### 2.1 类型注解
 
 在 TypeScript 中可以使用类型注解来明确标识类型。**类型注解的语法由一个冒号 “:" 和某种具体类型 “Type” 组成**，并且总是放在被修饰的实体之后：
 
@@ -133,7 +134,7 @@ const greeting: string = "Hello，World";
 
 TypeScript 中的类型注解是可选的，编译器在大部分情况下都能够自动推断岀表达式的类型。关于类型推断的详细介绍参考 7.3 节<!--TODO-->。
 
-#### 2.1.2 类型检查
+### 2.2 类型检查
 
 类型检查是验证程序中类型约束是否正确的过程。类型检查既可以在程序编译时进行，即静态类型检査；也可以在程序运行时进行，即动态类型检查。TypeScript 支持静态类型检查，Javascrip 支持动态类型检查。
 
@@ -162,7 +163,7 @@ TypeScript 中的类型注解是可选的，编译器在大部分情况下都能
 
   将 “strict” 编译选项设置为 true 将开启所有的严格类型检査编译选项。它包含了前面提到的 “-strictNullChecks” 和 “--noImplicitAny” 编译选项。关于配置文件的详细介绍请参考 8.3 节<!--TODO-->
 
-#### 2.1.3 原始类型
+### 2.3 原始类型
 
 JS 语言中的每种原始类型都有与之对应的 TypeScript 类型。除此之外，TypeScript 还对原始类型进行了细化与扩展，增加了枚举类型和字面量类型等。到目前为止，TypeScript 中的原始类型包含以下几种：
 
@@ -173,21 +174,25 @@ JS 语言中的每种原始类型都有与之对应的 TypeScript 类型。除�
   TypeScript 中的 string 类型对应于 JS 中的 String 原始类型。该类型能够表示采用 Unicode UTF-16 编码格式存储的字符序列。
 
 - **number**
-
   TypeScript 中的 number 类型对应于 JS 中的 Number 原始类型。该类型能够表示采用双精度 64 位二进制浮点数格式存储的数字。
 
 - **bigint**
-
   TypeScript 中的 bigint 类型对应于 JS 中的 BigInt 原始类型。该类型能够表示仼意精度的整数，但也仅能表示整数。bigint 采用了特殊的对象数据结构来表示和存储一个整数。
 
 - **[symbol 和 unique symbol](#2131-symbol-和-unique-symbol)**
 
-- **undefined 和 null**
-- void
-- 枚举类型
-- 字面量类型
+- **[undefined 和 null](#2132-nullable)**
 
-##### 2.1.3.1 symbol 和 unique symbol
+- **void**
+  void 类型表示某个值不存在，该类型用作函数的返回值类型。若一个函数没有返回值，那么该函数的返回值类型为 void 类型。除了将 void 类型作为函数返回值类型外，在其他地方使用 void 类型是无意义的。关于函数类型的详细介绍请参考 5.12 <!--TODO-->
+
+  > 当启用 strictNullChecks 编译选项时，只允许将 undefined 值赋值给 void 类型。没有启用 strictNullChecks 编译选项，那么允许将 undefined 和 null 赋值给 void 类型。
+
+- **枚举类型**
+
+- **字面量类型**
+
+#### 2.3.1 symbol 和 unique symbol
 
 TypeScript 中的 symbol 类型对应于 JS 中的 Symbol 原始类型。该类型能够表示任意的 Symbol 值。
 
@@ -258,8 +263,200 @@ const e = a;
 const f = a;
 ```
 
-##### 2.1.3.2 Nullable
+#### 2.3.2 Nullable
 
 TypeScript 中的 Nullable 类型指的是值可以为 undefined 或 null 的类型。JS 中有两个比较特殊的原始类型，即 Undefined 类型和 Null 类型。两者分别仅包含一个原始值，即 undefined 值和 null 值。
 
-在 TypeScript 早期的版本中，没有提供与 JS 中 Undefined 类型和 Null 类型相对应的类型。TypeScript 允许将 undefined 值和 null 值赋值给仼何其他类型。虽然在 Type Script 语言的内部实现中确实存在这两种原始类
+在 TypeScript 早期的版本中，没有提供与 JS 中 Undefined 类型和 Null 类型相对应的类型。TypeScript 允许将 undefined 值和 null 值赋值给仼何其他类型。虽然在 TypeScript 语言的内部实现中确实存在这两种原始类型，但之前没有开放给开发者使用。
+
+TypeScript 2.0 版本的一个改变就是增加了 undefined 类型和 null 类型供开发者使用。虽然看上去是一项普通的改进，但却有着非凡的意义。因为，不当地使用 undefined 值和 null 值是程序缺陷的主要来源之一。
+
+现在，在 TypeScript 程序中能够明确地指定某个值的类型是否为 undefined 类型或 null 类型。TypeScript 编译器也能够对代码进行更加细致的检査以找出程序中潜在的错误。
+
+**strictNullChecks**
+TypeScript 2.0 还增加了新的编译选项 `strictNullchecks`，即严格的 null 检查模式。虽然该编译选项的名字中只提及了 null，但实际上它同时作用于 undefined 类型和 null 类型的类型检查。
+
+在默认情况下，`strictNullchecks` 编译选项没有被启用。这时候，除尾端类型外的所有类型都是 Nullable 类型。也就是说，除尾端类型外所有类型都能够接受 undefined 值和 null 值。关于尾端类型的详细介绍请参考 5.8 节<!--TODO-->。
+
+当启用了 `strictNullchecks` 编译选项时，undefined 值和 null 值不再能够赋值给不相关的类型。例如，undefined 值和 null 值不允许赋值给 string 类型。在该模式下，undefined 值只能够赋值给 undefined、顶端、void 类型；null 值只能赋值给 null 类型和顶端类型。
+
+#### 2.3.3 枚举类型
+
+枚举类型由零个或多个枚举成员构成，每个枚举成员都是一个命名的常量。在 TypeScript 中，枚举类型是一种原始类型，它通过 `enum` 关键字来定义：
+
+```ts
+enum Season {
+  Spring,
+  Summer,
+  Fall,
+  Winter,
+}
+```
+
+按照枚举成员的类型可以将枚举类型划分为以下三类：
+
+- 数值型枚举
+- 字符串枚举
+- 异构型枚举
+
+##### 2.3.3.1 数值型枚举
+
+数值型枚举是最常用的枚举类型，是 number 类型的子类型，它由一组命名的数值常量构成。定义数值型枚举的方法如下所示：
+
+```ts
+enum Direction {
+  Up,
+  Down,
+  Left,
+  Right,
+}
+
+const direction: Direction = Direction.Up;
+```
+
+此例中，使用 enum 关键字定义了枚举类型 Direction，它包含了四个枚举成员 Up、Down、Left 和 Right。在使用枚举成员时，可以像访问对象属性一样访问枚举成员。
+
+每个数值型枚举成员都表示一个具体的数字。如果在定义枚举时没有设置枚举成员的值，那么 TypeScript 将自动计算枚举成员的值。根据 TypeScript 语言的规则，第一个枚举成员的值为 0，其后每个枚举成员的值等于前一个枚举成员的值加 1。因此，Direction 枚举中 Up 的值为 0、Down 的值为 1，以此类推。
+
+在定义数值型枚举时，可以为一个或多个枚举成员设置初始值。对于未指定初始值的枚举成员，其值为前一个枚举成员的值加 1：
+
+```ts
+enum Direction {
+  Up = 1,
+  Down, // 2
+  Left = 10,
+  Right, // 11
+}
+```
+
+数值型枚举是 number 类型的子类型，因此允许将数值型枚举类型赋值给 number 类型：
+
+```ts
+enum Direction {
+  Up,
+  Down,
+  Left,
+  Right,
+}
+const direction: number = Direction.Up;
+```
+
+number 类型也能够赋值给枚举类型，即使 number 类型的值不在枚举成员值的列表中也不会产生错误：
+
+```ts
+enum Direction {
+  Up,
+  Down,
+  Left,
+  Right,
+}
+const d1: Direction = 0; // Direction.Up
+const d2: direction = 10; // 不会产生错误
+```
+
+##### 2.3.3.2 字符串枚举
+
+字符串枚举与数值型枚举相似。在字符串枚举中，枚举成员的值为字符串。字符串枚举成员必须使用字符串字面量或另一个字符串枚举成员来初始化。字符串枚举成员没有自增长的行为：
+
+```ts
+enum Direction {
+  Up = "UP",
+  Down = "DOWN",
+  Left = "LEFT",
+  Right = "RIGHT",
+
+  U = Up,
+  D = Down,
+  L = Left,
+  R = Right,
+}
+```
+
+字符串枚举是 string 类型的子类型，因此允许将字符串枚举类型赋值给 string 类型。但是反过来，**不允许将 string 类型赋值给字符串枚举类型**，这点与数值型枚举是不同的。
+
+##### 2.3.3.3 异构型枚举
+
+TypeScript 允许在一个枚举中同时定义数值型枚举成员和字符串枚举成员，将这种类型的枚举称作异构型枚举。异构型枚举在实际代码中很少被使用，虽然在语法上允许定义昇构型枚举，但是**不推荐在代码中使用舁构型枚举**。可以尝试使用对象来代替异构型枚举：
+
+```ts
+enum Color {
+  Black = 0,
+  White = "White",
+}
+```
+
+**注意**：
+
+1. 在定义异构型枚举时，不允许使用计算的值作为枚举成员的初始值。
+2. 在异构型枚举中，必须为紧跟在字符串枚举成员之后的数值型枚举成员指定一个初始值。
+
+##### 2.3.3.4 枚举成员映射
+
+不论是哪种类型的枚举，都可以通过枚举成员名去访问枚举成员值。对于数值型枚举，不但可以通过枚举成员名来获取枚举成员值，也可以反过来通过枚举成员值去获取枚举成员名：
+
+```ts
+enum Bool {
+  False = 0,
+  True = 1,
+}
+
+Bool.False; // 0
+Bool[Bool.True]; // "True"
+```
+
+对于字符串枚举和异构型枚举，则不能够通过枚举成员值去获取枚举成员名。
+
+##### 2.3.3.5 常量枚举成员与计算枚举成员
+
+每个枚举成员都有一个值，根据枚举成员值的定义可以将枚举成员划分为以下两类：
+
+- **常量枚举成员**
+
+  若枚举类型的第一个枚举成员没有定义初始值，那么该枚举成员是常量枚举成员并且初始值为 0。
+
+  若枚举成员没有定义初始值并且与之紧邻的前一个枚举成员值是数值型常量，那么该枚举成员是常量枚举成员并且初始值为紧邻的前枚举成员值加 1。如果紧邻的前一个枚举成员的值不是数值型常量，那么将产生错误。
+
+  若枚举成员的初始值是常量枚举表达式，那么该枚举成员是常量枚举成员。常量枚举表达式是 TypeScript 表达式的子集，它能够在编译阶段被求值。常量枚举表达式的具体规则如下：
+
+  - 可以是数字字面量、字符串字面量和不包含替换值的模板字面量。
+  - 可以是对前面定义的常量枚举成员的引用。
+  - 可以是用分组运算符包围起来的常量枚举表达。
+  - 可以使用一元运算符操作数 "+" "-" "~"，操作数必须为常量枚举表达式。
+  - 可以使用二元运算符 "+" "-" `"*"` `"**"` "/" "%" "<<" ">>" ">>>" "&" "|" "^"，两个操作数必须为常量枚举表达式。
+
+  例如，下例中的枚举成员均为常量枚举成员：
+
+  ```ts
+  enum Foo {
+    A = 0, // 数字字面量
+    B = "B", // 字符串字面量
+    C = `C`, // 无替换值的模板字面量
+    D = A, // 引用前面定义的常量枚举成员
+  }
+  enum Bar {
+    A = -1, // 一元运算符
+    B = 1 + 2, // 二元运算符
+    C = (4 / 2) * 3, // 分组运算符（小括号）
+  }
+  ```
+
+  字面量枚举成员是常量枚举成员的子集。字面量枚举成员是指满足下列条件之一的枚举成员，具体条件如下：
+
+  - 枚举成员没有定义初始值。
+  - 枚举成员的初始值为数字字面量、字符串字面量和不包含替换值的模板字面量。
+  - 枚举成员的初始值为对其他字面量枚举成员的引用。
+
+  下例中，Foo 枚举的所有成员都是字面量枚举成员，同时它们也都是常量枚举成员：
+
+  ```ts
+  enum Foo {
+    A,
+    B = 1,
+    C = -3,
+    D = "foo",
+    E = `bar`,
+    F = A,
+  }
+  ```
+
+- **计算枚举成员**

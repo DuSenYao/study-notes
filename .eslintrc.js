@@ -2,14 +2,14 @@ module.exports = {
   root: true,
   env: {
     browser: true,
-    node: true,
-    es6: true
+    node: true
   },
   parser: '@typescript-eslint/parser',
   extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier', 'plugin:prettier/recommended'],
   parserOptions: {
     sourceType: 'module',
     parser: 'babel-eslint',
+    ecmaVersion: 7,
     ecmaFeatures: {
       impliedStrict: true
     }
@@ -55,7 +55,6 @@ module.exports = {
         properties: 'always'
       }
     ],
-    'comma-dangle': [2, 'never'],
     'comma-spacing': [
       2,
       {
@@ -143,7 +142,7 @@ module.exports = {
     ],
     'no-unsafe-finally': 2,
     'no-unused-vars': [
-      2,
+      1,
       {
         vars: 'all',
         args: 'none'
