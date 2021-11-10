@@ -12,8 +12,13 @@ title: TypeScript
       - [1.1.1 始于 JS，终于 JS](#111-始于-js终于-js)
       - [1.1.2 TypeScript 特性](#112-typescript-特性)
     - [1.2 TypeScript 优势](#12-typescript-优势)
-  - [二. 语言基础](#二-语言基础)
+  - [二. 类型系统](#二-类型系统)
     - [2.1 tsconfig.json](#21-tsconfigjson)
+    - [2.1 类型基础](#21-类型基础)
+      - [2.1.1 类型注解](#211-类型注解)
+      - [2.1.2 类型检查](#212-类型检查)
+      - [2.1.3 原始类型](#213-原始类型)
+        - [2.1.3.1 symbol 和 unique symbol](#2131-symbol-和-unique-symbol)
 
 <!-- /code_chunk_output -->
 
@@ -99,7 +104,7 @@ _语法糖_
 
   在 TypeScript 程序中，可以直接使用这些新特性而不必过多担心兼容问题。TypeScript 编译器会负责把代码编译成兼容指定 ECMAScript 版本的 JS 代码。
 
-## 二. 语言基础
+## 二. 类型系统
 
 ### 2.1 tsconfig.json
 
@@ -158,3 +163,103 @@ TypeScript 中的类型注解是可选的，编译器在大部分情况下都能
   将 “strict” 编译选项设置为 true 将开启所有的严格类型检査编译选项。它包含了前面提到的 “-strictNullChecks” 和 “--noImplicitAny” 编译选项。关于配置文件的详细介绍请参考 8.3 节<!--TODO-->
 
 #### 2.1.3 原始类型
+
+JS 语言中的每种原始类型都有与之对应的 TypeScript 类型。除此之外，TypeScript 还对原始类型进行了细化与扩展，增加了枚举类型和字面量类型等。到目前为止，TypeScript 中的原始类型包含以下几种：
+
+- **boolean**
+  TypeScript 中的 boolean 类型对应于 JS 中的 Boolean 原始类型。该类型能够表示两个逻辑值：true 和 false。
+
+- **string**
+  TypeScript 中的 string 类型对应于 JS 中的 String 原始类型。该类型能够表示采用 Unicode UTF-16 编码格式存储的字符序列。
+
+- **number**
+
+  TypeScript 中的 number 类型对应于 JS 中的 Number 原始类型。该类型能够表示采用双精度 64 位二进制浮点数格式存储的数字。
+
+- **bigint**
+
+  TypeScript 中的 bigint 类型对应于 JS 中的 BigInt 原始类型。该类型能够表示仼意精度的整数，但也仅能表示整数。bigint 采用了特殊的对象数据结构来表示和存储一个整数。
+
+- **[symbol 和 unique symbol](#2131-symbol-和-unique-symbol)**
+
+- **undefined 和 null**
+- void
+- 枚举类型
+- 字面量类型
+
+##### 2.1.3.1 symbol 和 unique symbol
+
+TypeScript 中的 symbol 类型对应于 JS 中的 Symbol 原始类型。该类型能够表示任意的 Symbol 值。
+
+字面量能够表示一个固定值。例如，数字字面量 3 表示固定数值 3；字符串字面量 "up" 表示固定字符串 "up"。symbol 类型不同于其他原始类型，它不存在字面量形式。symbol 类型的值只能通过 `Symbol()` 和 `Symbol.for()` 函数来创建或直接引用某个 “Well-Known Symbol” 值：
+
+```ts
+const s0: symbol = Symbol();
+const s1: symbol = Symbol.for("foo");
+const s2: symbol = Symbol.hasInstance;
+const s3: symbol = s0;
+```
+
+为了能够将一个 Symbol 值视作表示固定值的字面量，TypeScript 引入了 `unique symbol` 类型。unique symbol 类型使用 `unique symbol` 关键字来表示。
+
+**unique symbol 类型的主要用途是用作接口、类等类型中的可计算属性名**。因为如果使用可计算属性名
+
+在接口中添加了一个类型成员，那么必须保证该类型成员的名字是固定的，否则接口定义将失去意义。下例中，允许将 unique symbol 类型的常量 x 作为接口的类型成员，而 symbol 类型的常量 y 不能作为接口的类型成员，因为 symbol 类型不止包含一个可能值：
+
+```ts
+const x: unique symbol = Symbol();
+const y: symbol = Symbol();
+
+interface Foo {
+  [x]: string; // 正确
+  [y]: string; // 错误：接口中计算属性名称必须引用类型为字面量类型或 unique symbol 的表达式
+}
+```
+
+实际上，unique symbol 类型的设计初衷是作为一种变通方法，让一个 Symbol 值具有字面量的性质，即仅表示一个固定的值。unique symbol 类型没有改变 Symbol 值没有字面量表示形式的事实。为了能够将某个 Symbol 值视作表示固定值的字面量，TypeScript 对 unique symbol 类型和 Symbol 值的使用施加了限制。
+
+TypeScript 选择将一个 Symbol 值与声明它的标识符绑定在一起，并通过绑定了该 Symbol 值的标识符来表示 "Symbol 字面量"。这种设计的前提是要确保 Symbol 值与标识符之间的绑定关系是不可变的。因此，TypeScript 中只允许使用 const 声明或 readonly 属性声明来定义 unique symbol 类型的值：
+
+```ts
+// 必须使用 const 声明
+const a: unique symbol = Symbol();
+interface WithUniqueSymbol {
+  // 必须使用 readonly 修饰
+  readonly b: unique symbol;
+}
+class C {
+  // 必须使用 static 和 readonly 修饰符
+  static readonly C: unique symbol = Symbol();
+}
+```
+
+上例第 1 行，常量 a 的初始值为 Symbol 值，其类型为 unique symbol 类型。在标识符 a 与其初始值 Symbol 值之间形成了绑定关系，并且该关系是不可变
+的。这是因为常量的值是固定的，不允许再被赋予其他值。标识符 a 能够固定表示该 Symbol 值，标识符 a 的角色相当于该 Symbol 值的字面量形式。
+
+如果使用 let 或 var 声明定义 unique symbol 类型的变量，那么将产生错误，因为标识符与 Symbol 值之间的绑定是可变的。
+
+> **注意**：unique symbol 类型的值只允许使用 Symbolo() 函数或 Symbol.for() 方法的返回值进行初始化，因为只有这样才能够 “确保” 引用了唯一的 Symbol 值。但是，使用相同的参数调用 Symbol.for() 方法实际上返回的是相同的 Symbol 值。因此，可能出现多个 unique symbol 类型的值实际是同一个 Symbol 值的情况。由于设计上的局限性，TypeScript 目前无法识别岀这种情况，因此不会产生编译错误，必须要留意这种特殊情况。
+
+在设计上，每一个 unique symbol 类型都是一种独立的类型。在不同的 unique symbol 类型之间不允许相互赋值；在比较两个 unique symbol 类型的值时，也将永远返回 false。
+
+由于 unique symbol 类型是 symbol 类型的子类型，因此可以将 unique symbol 类型的值赋值给 symbol 类型。
+
+如果程序中未使用类型注解来明确定义是 symbol 类型还是 unique symbol 类型，那么 TypeScript 会自动地推断类型：
+
+```ts
+// a 和b 均为 symbol 类型，因为没有使用 const 声明
+let a = Symbol();
+let b = Symbol.for();
+// c 和 d 均为 unique symbol 类型
+const c = Symbol();
+const d = Symbol.for();
+// e 和 f 为 symbol 类型，没有使用 Symbol 或 Symbol.for()
+const e = a;
+const f = a;
+```
+
+##### 2.1.3.2 Nullable
+
+TypeScript 中的 Nullable 类型指的是值可以为 undefined 或 null 的类型。JS 中有两个比较特殊的原始类型，即 Undefined 类型和 Null 类型。两者分别仅包含一个原始值，即 undefined 值和 null 值。
+
+在 TypeScript 早期的版本中，没有提供与 JS 中 Undefined 类型和 Null 类型相对应的类型。TypeScript 允许将 undefined 值和 null 值赋值给仼何其他类型。虽然在 Type Script 语言的内部实现中确实存在这两种原始类
