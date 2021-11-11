@@ -533,12 +533,12 @@ move(Direction.None); // 'None'
 
 ##### 2.3.3.6 联合枚举类型
 
-当枚举类型中的所有成员都是字面量枚举成员时，该枚举类型成了联合枚举类型。
+**当枚举类型中的所有成员都是字面量枚举成员时，该枚举类型成了联合枚举类型**。
 
 **联合枚举成员类型**
-联合枚举类型中的枚举成员除了能够表示一个常量值外，还能够表示一种类型，即联合枚举成员类型。
+联合枚举类型中的枚举成员除了能够表示一个常量值外，还能够表示一种类型，即联合枚举成员类型。**联合枚举成员类型是联合枚举类型的子类型，因此可以将联合枚举成员类型赋值给联合枚举类型**。
 
-下例中，Direction 枚举是联合枚举类型，Direction 枚举成员 Up、DoWn、Le 和 Right 既表示数值常量，也表示联合枚举成员类型
+下例中，Direction 枚举是联合枚举类型，Direction 枚举成员 Up、DoWn、Le 和 Right 既表示数值常量，也表示联合枚举成员类型：
 
 ```ts
 enum Direction {
@@ -547,5 +547,158 @@ enum Direction {
   Left,
   Down
 }
+// 第一个 Direction.Up 表示联合枚举成员类型，第二个 Direction.Up 则表示数值常量 0
 const up: Direction.Up = Direction.Up;
+// 常量 up 的类型是联合枚举成员类型 Direction.Up，常量 direction 的类型是联合枚举类型 Direction。
+// 由于 Direction.Up 类型是 Direction 类型的子类型，因此可以将常量 up 赋值给常量 direction
+const direction: Direction = up;
+```
+
+**联合枚举类型**
+联合枚举类型是由所有联合枚举成员类型构成的联合类型。示例如下
+
+```ts
+enum Direction {
+  Up,
+  Down,
+  Left,
+  Right
+}
+
+type UnionDirectionType = Direction.Up | Direction.Down | Direction.Left | Direction.Right;
+```
+
+上例中 Direction 枚举是联合枚举类型，它等同于联合类型 UnionDirectionType 其中 “|” 符号是定义联合类型的语法。关于联合类型的详细介绍请参考 6.3 节<!--TODO-->。
+
+由于联合枚举类型是由固定数量的联合枚举成员类型构成的联合类型，因此编译器能够利用该性质对代码进行类型检査。示例如下：
+
+```ts
+enum Direction {
+  Up,
+  Down,
+  Left,
+  Right
+}
+
+// 编译器能够分析岀 Direction 联合枚举类型只包含四种可能的联合枚举成员类型。
+function f(direction: Direction) {
+  if (direction === Direction.Up) {
+    //  Direction.Up
+  } else if (direction === Direction.Down) {
+    // Direction.Down
+  } else if (direction === Direction.Left) {
+    // Direction.Left
+  } else {
+    // 在 if-else 语句中，编译器能够根据控制流分析出最后的 else 分支中 Direction 的类型为 Direction.Right
+    direction;
+  }
+}
+```
+
+下面再来看另外一个例子。Foo 联合枚举类型由两个联合枚举成员类型 Foo.A 和 Foo.B 构成。编译器能够检查出在第 7 行 if 条件判断语句中的条件表达式结果永远为 true，因此将产生编译错误：
+
+```ts
+enum Foo {
+  A = 'A',
+  B = 'B'
+}
+
+function bar(foo: Foo) {
+  if (fool !== Foo.A || Foo !== Foo.B) {
+    // 编译错误：该条件永远为 true
+  }
+}
+```
+
+下例中，由于 Foo 联合枚举类型等同于联合类型 Foo.A|Foo.B，因此它是联合类型 'A'|'B' 的子类型：
+
+```ts
+enum Foo {
+  A = 'A',
+  B = 'B'
+}
+
+enum Bar {
+  A = 'A'
+}
+
+enum Baz {
+  B = 'B',
+  C = 'C'
+}
+
+// f1 接受 'A'|'B' 联合类型的参数
+function f1(x: 'A' | 'B') {
+  console.log(x);
+}
+
+function f2(foo: Foo, bar: Bar, baz: Baz) {
+  // 允许使用 Foo 枚举类型的参数 foo 调用函数 f1，因为 Foo 枚举类型是 'A'|'B' 类型的子类型
+  f1(foo);
+  // 允许使用 Bar 枚举类型的参数 bar 调用函数 f1，因为 Bar 枚举类型是 'A' 类型的子类型，也是 'A'|'B' 类型的子类型
+  f1(bar);
+  // 不允许使用 Baz 枚举类型的参数 baz 调用函数 f1，因为 Baz 枚举类型是 'B'|'C' 类型的子类型
+  // 错误：类型 'Baz' 不能赋值给参数类型 'A' | 'B'
+  f1(baz);
+}
+```
+
+关于子类型兼容性的详细介绍请参考 7.1 节
+
+##### 2.3.3.7 const 枚举类型
+
+枚举类型是 TypeScript 对 JS 的扩展，JS 语言本身并不支持枚举类型。在编译时，TypeScript 编译器会将枚举类型编译为 JS 对象。例如，定义如下的枚举：
+
+```ts
+enum Direction {
+  Up,
+  Down,
+  Left,
+  Right
+}
+
+const d: Direction = Direction.Up;
+```
+
+此例中的代码编译后生成的 JS 代码如下所示，为了支持枚举成员名与枚举成员值之间的正、反向映射关系，TypeScript 还生成了一些额外的代码：
+
+```js
+'use strict';
+var Direction;
+(function (Direction) {
+  Direction[(Direction['Up'] = 0)] = 'Up';
+  Direction[(Direction['Down'] = 1)] = 'Down';
+  Direction[(Direction['Left'] = 2)] = 'Left';
+  Direction[(Direction['Right'] = 3)] = 'Right';
+})(Direction || (Direction = {}));
+
+const d = Direction.Up;
+```
+
+有时候不会使用枚举成员值到枚举成员名的反向映射，因此没有必要生成额外的反向映射代码，只需要生成如下代码就能够满足需求：
+
+```js
+'use strict';
+var Direction;
+(function (Direction) {
+  Direction['Up'] = 0;
+  Direction['Down'] = 1;
+  Direction['Left'] = 2;
+  Direction['Right'] = 3;
+})(Direction || (Direction = {}));
+
+const d = Direction.Up;
+```
+
+更进一步讲，如果只关注枚举类型的使用方式就会发现，完全不需要生成与 Direction 对象相关的代码，只需要将 Direction.Up 替换为它所表示的常量 0 即可。经过此番删减后的代码量将大幅减少，并且不会改变程序的运行结果，如下所示：
+
+```js
+'usestrict';
+const d = 0;
+```
+
+const 枚举类型具有相似的效果。**const 枚举类型将在编译阶段被完全删除，并且在使用了 const 枚举类型的地方会直接将 const 枚举成员的值内联到代码中**。const 枚举类型使用 `const enum` 关键字定义。
+
+```ts
+
 ```

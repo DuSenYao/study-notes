@@ -16,7 +16,6 @@
     ".vscode/css.css-data.json"
   ],
   "todo-tree.tree.scanMode": "workspace only",
-  "stylelint.enable": false,
   "workbench.colorCustomizations": {
     "titleBar.activeBackground": "#215732",
     "titleBar.activeForeground": "#e7e7e7",
@@ -27,5 +26,6 @@
     "sash.hoverBorder": "#2f7c47",
     "sideBar.border": "#2f7c47"
   },
-  "peacock.color": "#215732"
+  "peacock.color": "#215732",
+  "svg.preview.background": "editor"
 }
