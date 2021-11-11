@@ -51,7 +51,7 @@ const total = sum(1, 2);
 ```
 
 ```js
-"use strict";
+'use strict';
 function sum(x, y) {
   return x + y;
 }
@@ -129,7 +129,7 @@ tsconfig.json 是 TypeScript 编译器默认使用的配置文件。下面的例
 在 TypeScript 中可以使用类型注解来明确标识类型。**类型注解的语法由一个冒号 “:" 和某种具体类型 “Type” 组成**，并且总是放在被修饰的实体之后：
 
 ```ts
-const greeting: string = "Hello，World";
+const greeting: string = 'Hello，World';
 ```
 
 TypeScript 中的类型注解是可选的，编译器在大部分情况下都能够自动推断岀表达式的类型。关于类型推断的详细介绍参考 7.3 节<!--TODO-->。
@@ -200,7 +200,7 @@ TypeScript 中的 symbol 类型对应于 JS 中的 Symbol 原始类型。该类�
 
 ```ts
 const s0: symbol = Symbol();
-const s1: symbol = Symbol.for("foo");
+const s1: symbol = Symbol.for('foo');
 const s2: symbol = Symbol.hasInstance;
 const s3: symbol = s0;
 ```
@@ -289,7 +289,7 @@ enum Season {
   Spring,
   Summer,
   Fall,
-  Winter,
+  Winter
 }
 ```
 
@@ -308,7 +308,7 @@ enum Direction {
   Up,
   Down,
   Left,
-  Right,
+  Right
 }
 
 const direction: Direction = Direction.Up;
@@ -325,7 +325,7 @@ enum Direction {
   Up = 1,
   Down, // 2
   Left = 10,
-  Right, // 11
+  Right // 11
 }
 ```
 
@@ -336,7 +336,7 @@ enum Direction {
   Up,
   Down,
   Left,
-  Right,
+  Right
 }
 const direction: number = Direction.Up;
 ```
@@ -348,7 +348,7 @@ enum Direction {
   Up,
   Down,
   Left,
-  Right,
+  Right
 }
 const d1: Direction = 0; // Direction.Up
 const d2: direction = 10; // 不会产生错误
@@ -360,15 +360,15 @@ const d2: direction = 10; // 不会产生错误
 
 ```ts
 enum Direction {
-  Up = "UP",
-  Down = "DOWN",
-  Left = "LEFT",
-  Right = "RIGHT",
+  Up = 'UP',
+  Down = 'DOWN',
+  Left = 'LEFT',
+  Right = 'RIGHT',
 
   U = Up,
   D = Down,
   L = Left,
-  R = Right,
+  R = Right
 }
 ```
 
@@ -381,7 +381,7 @@ TypeScript 允许在一个枚举中同时定义数值型枚举成员和字符串
 ```ts
 enum Color {
   Black = 0,
-  White = "White",
+  White = 'White'
 }
 ```
 
@@ -397,7 +397,7 @@ enum Color {
 ```ts
 enum Bool {
   False = 0,
-  True = 1,
+  True = 1
 }
 
 Bool.False; // 0
@@ -429,14 +429,14 @@ Bool[Bool.True]; // "True"
   ```ts
   enum Foo {
     A = 0, // 数字字面量
-    B = "B", // 字符串字面量
+    B = 'B', // 字符串字面量
     C = `C`, // 无替换值的模板字面量
-    D = A, // 引用前面定义的常量枚举成员
+    D = A // 引用前面定义的常量枚举成员
   }
   enum Bar {
     A = -1, // 一元运算符
     B = 1 + 2, // 二元运算符
-    C = (4 / 2) * 3, // 分组运算符（小括号）
+    C = (4 / 2) * 3 // 分组运算符（小括号）
   }
   ```
 
@@ -453,10 +453,99 @@ Bool[Bool.True]; // "True"
     A,
     B = 1,
     C = -3,
-    D = "foo",
+    D = 'foo',
     E = `bar`,
-    F = A,
+    F = A
   }
   ```
 
 - **计算枚举成员**
+
+  除常量枚举成员之外的其他枚举成员都属于计算枚举成员：
+
+  ```ts
+  enum Foo {
+    A = 'A'.length,
+    B = Math.pow(2, 3)
+  }
+  ```
+
+**使用示例**
+**枚举表示一组有限元素的集合，并通过枚举成员名来引用集合中的元素**。有时候，程序中并不关注枚举成员值。在这种情况下，让 TypeScript 去自动计算枚举成员值是很方便的：
+
+```ts
+enum Direction {
+  Up,
+  Right,
+  Left,
+  Down
+}
+
+function move(direction: Direction) {
+  switch (direction) {
+    case Direction.Up:
+      console.log('Up');
+      break;
+    case direction.Down:
+      console.log('Down');
+      break;
+    case Direction.Left:
+      console.log('Left');
+    case Direction.Right:
+      console.log('Right');
+  }
+}
+move(Direction.Up); // 'Up'
+```
+
+**程序不依赖枚举成员值时，能够降低代码耦合度，使程序易于扩展**。例如，想给 Direction 枚举添加一个名为 None 的枚举成员来表示未知方向。按照惯例，None 应作为第一个枚举成员。因此，可以将代码修改如下：
+
+```ts
+enum Direction {
+  None,
+  Up,
+  Right,
+  Left,
+  Down
+}
+
+function move(direction: Direction) {
+  switch (direction) {
+    case Direction.None:
+      console.log('None');
+      break;
+    case Direction.Up:
+      console.log('Up');
+      break;
+    case direction.Down:
+      console.log('Down');
+      break;
+    case Direction.Left:
+      console.log('Left');
+    case Direction.Right:
+      console.log('Right');
+  }
+}
+move(Direction.None); // 'None'
+```
+
+此例中，枚举成员 Up、Down、Left 和 Right 的值已经发生了改变，Up 的值由 0 变为 1，以此类推。由于 move() 函数的行为不直接依赖枚举成员的值，因此本次代码修改对 move() 函数的已有功能不产生任何影响。但如果程序中依赖了枚举成员的具体值，那么这次代码修改就会破坏现有的代码。
+
+##### 2.3.3.6 联合枚举类型
+
+当枚举类型中的所有成员都是字面量枚举成员时，该枚举类型成了联合枚举类型。
+
+**联合枚举成员类型**
+联合枚举类型中的枚举成员除了能够表示一个常量值外，还能够表示一种类型，即联合枚举成员类型。
+
+下例中，Direction 枚举是联合枚举类型，Direction 枚举成员 Up、DoWn、Le 和 Right 既表示数值常量，也表示联合枚举成员类型
+
+```ts
+enum Direction {
+  Up,
+  Right,
+  Left,
+  Down
+}
+const up: Direction.Up = Direction.Up;
+```
