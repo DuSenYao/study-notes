@@ -5,7 +5,7 @@ module.exports = {
     node: true
   },
   parser: '@typescript-eslint/parser',
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier', 'plugin:prettier/recommended'],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
   parserOptions: {
     sourceType: 'module',
     parser: 'babel-eslint',
@@ -17,22 +17,8 @@ module.exports = {
   settings: {
     'html/html-extensions': ['.html', '.vue']
   },
-  plugins: ['html', '@typescript-eslint'],
+  plugins: ['html', '@typescript-eslint', 'prettier'],
   rules: {
-    'prettier/prettier': [
-      'error',
-      {
-        tabWidth: 2,
-        useTabs: false,
-        semi: true,
-        singleQuote: true,
-        trailingComma: 'none',
-        endOfLine: 'auto',
-        bracketSpacing: true,
-        arrowParens: 'avoid',
-        printWidth: 120
-      }
-    ],
     'accessor-pairs': 2,
     'arrow-spacing': [
       2,

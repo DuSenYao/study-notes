@@ -5,41 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pieChart</title>
+    <style>
+      #chart {
+        color: #abc;
+      }
+    </style>
   </head>
   <body>
     <div id="chart"></div>
 
     <script>
-      window.onload = () => {
-        document.querySelector('#chart').append(
-          pieChart({
-            width: 640,
-            height: 400, // 饼图的整体大小
-            cx: 200,
-            cy: 200,
-            r: 180, // 饼图的中心和半径
-            lx: 400,
-            ly: 10, // 图例的位置
-            // 要呈现的数据
-            data: {
-              JavaScript: 71.5,
-              Java: 45.4,
-              'Bash/Shell': 40.4,
-              Ptyhon: 37.9,
-              'C#': 35.3,
-              PHP: 31.4,
-              'C++': 24.6,
-              C: 22.1,
-              TypeScript: 18.3,
-              Ruby: 10.3,
-              Swift: 8.3,
-              'Objective-C': 7.3,
-              Go: 7.2
-            }
-          })
-        );
-      };
-
       /**
        * 示例15-4：使用 JS 和 SVG 绘制饼图
        * 创建一个 <svg> 元素并在其中绘制一个饼图
@@ -127,6 +102,36 @@
         });
         return chart;
       }
+
+      window.onload = () => {
+        document.querySelector('#chart').append(
+          pieChart({
+            width: 640,
+            height: 400, // 饼图的整体大小
+            cx: 200,
+            cy: 200,
+            r: 180, // 饼图的中心和半径
+            lx: 400,
+            ly: 10, // 图例的位置
+            // 要呈现的数据
+            data: {
+              JavaScript: 71.5,
+              Java: 45.4,
+              'Bash/Shell': 40.4,
+              Ptyhon: 37.9,
+              'C#': 35.3,
+              PHP: 31.4,
+              'C++': 24.6,
+              C: 22.1,
+              TypeScript: 18.3,
+              Ruby: 10.3,
+              Swift: 8.3,
+              'Objective-C': 7.3,
+              Go: 7.2
+            }
+          })
+        );
+      };
     </script>
   </body>
 </html>
