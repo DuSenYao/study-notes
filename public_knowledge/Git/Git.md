@@ -17,21 +17,21 @@ tags:
     - [1.1 特点](#11-特点)
     - [1.2 Git 命令](#12-git-命令)
       - [1.2.1 创建仓库命令](#121-创建仓库命令)
-        - [1.2.1.1 `git clone` 网址 [本地文件夹名]](#1211-git-clone-网址-本地文件夹名)
-        - [1.2.1.2 `git init`](#1212-git-init)
+        - [1.2.1.1 git clone <网址> <本地文件夹名>](#1211-git-clone-网址-本地文件夹名)
+        - [1.2.1.2 git init](#1212-git-init)
       - [1.2.2 Git 查看](#122-git-查看)
-        - [1.2.2.1 `git status`](#1221-git-status)
-        - [1.2.2.2 `git diff [file]`](#1222-git-diff-file)
-        - [1.2.2.3 `git log` [-number] [分支名]](#1223-git-log-number-分支名)
-        - [1.2.2.4 `git reflog`](#1224-git-reflog)
-        - [1.2.2.5 `git blame <file>`](#1225-git-blame-file)
-        - [1.2.2.6 `git cat-file -[t|s|p] 哈希值`](#1226-git-cat-file-tsp-哈希值)
-        - [1.2.2.7 `git config`](#1227-git-config)
+        - [1.2.2.1 git status](#1221-git-status)
+        - [1.2.2.2 git diff <file>](#1222-git-diff-file)
+        - [1.2.2.3 git log <-number> <分支名>](#1223-git-log-number-分支名)
+        - [1.2.2.4 git reflog](#1224-git-reflog)
+        - [1.2.2.5 git blame <file>](#1225-git-blame-file)
+        - [1.2.2.6 git cat-file -[t|s|p] 哈希值](#1226-git-cat-file-tsp-哈希值)
+        - [1.2.2.7 git config](#1227-git-config)
       - [1.2.3 文件操作](#123-文件操作)
-        - [1.2.3.1 `git add ./文件名/文件夹名`](#1231-git-add-文件名文件夹名)
-        - [1.2.3.2 `git rm <file>`](#1232-git-rm-file)
-        - [1.2.3.3 `git mv [file] [newFile]`](#1233-git-mv-file-newfile)
-        - [1.2.3.4 `git restore`](#1234-git-restore)
+        - [1.2.3.1 git add ./文件名/文件夹名](#1231-git-add-文件名文件夹名)
+        - [1.2.3.2 git rm <file>](#1232-git-rm-file)
+        - [1.2.3.3 git mv [file] [newFile]](#1233-git-mv-file-newfile)
+        - [1.2.3.4 git restore](#1234-git-restore)
       - [1.2.4 远程操作](#124-远程操作)
         - [1.2.4.1 `git remote`](#1241-git-remote)
         - [1.2.4.2 `git fetch [alias]`](#1242-git-fetch-alias)
@@ -117,48 +117,48 @@ tags:
 
 #### 1.2.1 创建仓库命令
 
-##### 1.2.1.1 `git clone` 网址 [本地文件夹名]
+##### 1.2.1.1 git clone <网址> <本地文件夹名>
 
 克隆 Git 仓库到本地
 
-- `--bare`: 新建一个**裸仓库**，不是将代码放到 `<directory>/.git` 中，而是将 `<directory>` 本身设置为仓库，无法签出工作树，此外，远程的分支头直接复制到相应的本地分支头，而不将它们映射到 `refs/remotes/origin/`。使用此选项时，既不会创建远程跟踪分支，也不会创建相关的配置变量。
+- `--bare`: 新建一个裸仓库，不是将代码放到 `<directory>/.git` 中，而是将 `<directory>` 本身设置为仓库，无法签出工作树，此外，远程的分支头直接复制到相应的本地分支头，而不将它们映射到 `refs/remotes/origin/`。使用此选项时，既不会创建远程跟踪分支，也不会创建相关的配置变量。
 
-##### 1.2.1.2 `git init`
+##### 1.2.1.2 git init
 
 初始化 Git 仓库，把已有的项目代码纳入 Git 管理：
 
-1. `cd` 项目代码所在的文件夹
-2. `git init`
+1. cd <项目代码所在的文件夹>
+2. git init
 
-新建的项目直接用 Git 管理。
+> **注意**：会在当前路径下创建和项目名称同名的文件夹。
 
-1. `cd` 文件夹
-2. `git init 项目名称`'
+新建的项目直接用 Git 管理：
 
-> 注: 会在当前路径下创建和项目名称同名的文件夹
+1. cd <文件夹>
+2. git init <项目名称>
 
 #### 1.2.2 Git 查看
 
-##### 1.2.2.1 `git status`
+##### 1.2.2.1 git status
 
 查看仓库当前的状态，显示有变更的文件。
 
-- `-s` : 简短的输出
+- `-s`：简短的输出
 
-##### 1.2.2.2 `git diff [file]`
+##### 1.2.2.2 git diff <file>
 
-显示暂存区与工作区的差异
+显示暂存区与工作区的差异：
 
-```git
+```sh
 # 显示工作区和暂存区与最后一次 commit 之间的差异
 git diff HEAD
 ```
 
-- `[--cached|--staged] [file]` : 显示暂存区和最后一次提交(commit)的差异
+- `[--cached|--staged] [file]`：显示暂存区和最后一次提交（commit）的差异
 
-- `[first-branch]...[second-branch] [-- file]` : 显示两次提交或两个分支之间的差异，如果最后有 `-- 文件名`，就是对比两次提交指定文件的差异
+- `[first-branch]...[second-branch] [-- file]`：显示两次提交或两个分支之间的差异，如果最后有 `-- 文件名`，就是对比两次提交指定文件的差异
 
-```git
+```sh
 git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1
 
 git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1...e77f6c3cc85fd535c36df30813ed23e9fb8255d3
@@ -166,139 +166,139 @@ git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1...e77f6c3cc85fd535c36df30813ed
 git diff temp master --Git.md
 ```
 
-##### 1.2.2.3 `git log` [-number] [分支名]
+##### 1.2.2.3 git log <-number> <分支名>
 
-查看历史提交记录
+查看历史提交记录：
 
-```git
+```sh
 # 查看最近的两次提交记录
 git log -2
 ```
 
-- `-p SHA [filename]` : 按补丁格式显示每个更新之间的差异
-- `--oneline` : 查看简要历史记录
-- `--graph` : 显示 ASCII 图形表示的分支合并历史
-- `--reverse` : 逆向显示日志
-- `--author` : 查找指定用户的提交日志
+- `-p SHA [filename]`：按补丁格式显示每个更新之间的差异
+- `--oneline`：查看简要历史记录
+- `--graph`：显示 ASCII 图形表示的分支合并历史
+- `--reverse`：逆向显示日志
+- `--author`：查找指定用户的提交日志
 
-##### 1.2.2.4 `git reflog`
+##### 1.2.2.4 git reflog
 
-查看本地所有分支的所有操作记录 (包括已经被删除的 commit 和 reset 的操作)
+查看本地所有分支的所有操作记录（包括已经被删除的 commit 和 reset 的操作）
 
-- `delete` : 删除指定的记录
+- `delete`：删除指定的记录
 
-  ```git
+  ```sh
   git reflog delete HEAD@{270}
   ```
 
-##### 1.2.2.5 `git blame <file>`
+##### 1.2.2.5 git blame <file>
 
 以**列表形式**查看指定文件的修改记录
 
-##### 1.2.2.6 `git cat-file -[t|s|p] 哈希值`
+##### 1.2.2.6 git cat-file -[t|s|p] 哈希值
 
-查看 Git 对象的属性
+查看 Git 对象的属性：
 
-- `t`: 查看 git 对象的类型
-- `s`: 查看 git 对象的大小
-- `p` 查看 git 对象的内容
+- `t`：查看 git 对象的类型
+- `s`：查看 git 对象的大小
+- `p`：查看 git 对象的内容
 
-```git
+```sh
 git cat-file -p 003e2f133adc5a53f21a72ca5b62eb08566121d1
 ```
 
-##### 1.2.2.7 `git config`
+##### 1.2.2.7 git config
 
-查看、设置或清除配置
+查看、设置或清除配置：
 
-- `[--local|--global|--system] [config 'message']`: 设置配置
+- `[--local|--global|--system] [config 'message']`：设置配置
 
-  ```git
+  ```sh
   git config [--local|--global|--system] user.name 'You name'
 
   git config [--local|--global|--system] user.email 'You email'
   ```
 
-- `git config --list [--local|--global|--system]` : 查看配置
+- `git config --list [--local|--global|--system]`：查看配置
 
-  ```git
+  ```sh
   git config --list --local
   ```
 
-- `git config --unset [--local|--global|--system]` : 清除配置
+- `git config --unset [--local|--global|--system]`：清除配置
 
-  ```git
+  ```sh
    git config --unset --local user.name
   ```
 
-**区别**:
+**区别**：
 
-- local: 当前仓库
-- global: 当前用户的所有仓库
-- system: 本系统的所有用户
+- local：当前仓库
+- global：当前用户的所有仓库
+- system：本系统的所有用户
 
-**优先级**:
+**优先级**：
 
 local > global > system
 
 #### 1.2.3 文件操作
 
-##### 1.2.3.1 `git add ./文件名/文件夹名`
+##### 1.2.3.1 git add ./文件名/文件夹名
 
 将文件添加到暂存区，`.` 表示所有文件
 
-- `-u`: 仅添加已被跟踪的文件
+- `-u`：仅添加已被跟踪的文件
 
-##### 1.2.3.2 `git rm <file>`
+##### 1.2.3.2 git rm <file>
 
-将文件从暂存区和工作区中删除
+将文件从暂存区和工作区中删除：
 
-```git
+```sh
 git rm hello.txt
 ```
 
-- `-f`: 强制删除选项，用于删除之前修改过并且**已经放到暂存区域**的文件
+- `-f`：强制删除选项，用于删除之前修改过并且**已经放到暂存区域**的文件
 
-  ```git
+  ```sh
   git rm -f hello.txt
   ```
 
-- `--cached` : 把文件从暂存区域移除，但仍然保留在当前工作目录中，换句话说，仅是从跟踪清单中删除
+- `--cached`：把文件从暂存区域移除，但仍然保留在当前工作目录中，换句话说，仅是从跟踪清单中删除
 
-  ```git
+  ```sh
   git rm --cached hello.txt
   ```
 
-- `-r` : 递归删除，即如果后面跟的是一个目录做为参数，则会递归删除整个目录中的所有子目录和文件
+- `-r`：递归删除，即如果后面跟的是一个目录做为参数，则会递归删除整个目录中的所有子目录和文件
 
-  ```git
+  ```sh
   # 删除当前目录下的所有文件和子目录
   git rm –r *
   ```
 
-##### 1.2.3.3 `git mv [file] [newFile]`
+##### 1.2.3.3 git mv [file] [newFile]
 
-用于移动或重命名一个文件、目录或软连接
+用于移动或重命名一个文件、目录或软连接：
 
-- `-f`: 重命名
+- `-f`：重命名
 
-  ```git
+  ```sh
   git mv -f hello.txt hello.css
   ```
 
-##### 1.2.3.4 `git restore`
+##### 1.2.3.4 git restore
 
 把未 add 到暂存区的文件修改撤销
 
-```git
+```sh
 git restore public_knowledge\Git\Git.md
 ```
 
-- `--staged` : 把文件从暂存区撤回到工作区，保留文件最后一次修改的内容
+- `--staged`：把文件从暂存区撤回到工作区，保留文件最后一次修改的内容
 
-- `-s SHA file`: 表示将当前工作区或文件切换到指定 commit 版本
+- `-s SHA file`：表示将当前工作区或文件切换到指定 commit 版本
 
-  ```git
+  ```sh
   git restore -s 703025cf public_knowledge\Git\Git.md
   ```
 
@@ -310,13 +310,13 @@ git restore public_knowledge\Git\Git.md
 
 - `-v`: 显示所有远程仓库
 
-  ```git
+  ```sh
   git remote -v
   ```
 
 - `show [remote]`: 显示某个远程仓库的信息
 
-  ```git
+  ```sh
   git remote show https://github.com/1758231591/Learning-notes-and-materials.git
   ```
 
@@ -328,15 +328,15 @@ git restore public_knowledge\Git\Git.md
 
 ##### 1.2.4.2 `git fetch [alias]`
 
-用于从远程获取代码库
+用于从远程获取代码库：
 
-```git
-git fetch origin
+```sh
+git fetch origin main
 ```
 
-取回更新后，会返回一个 `FETCH_HEAD` ，指的是某个 **branch** 在远程仓库上的最新状态，可以在本地使用 `git log -p FETCH_HEAD` 来查看这个分支的更新信息，可以看到返回的信息包括更新的文件名，更新的作者和时间，以及更新的代码。
+取回更新后，会返回一个 `FETCH_HEAD` ，指的是某个 branch 在远程仓库上的最新状态，可以在本地使用 `git log -p FETCH_HEAD` 来查看这个分支的更新信息，可以看到返回的信息包括更新的文件名，更新的作者和时间，以及更新的代码。
 
-通过这些信息来判断是否产生冲突，以确定是否将更新 **merge** 到当前分支。
+通过这些信息来判断是否产生冲突，以确定是否将更新 `merge` 到当前分支。
 
 ##### 1.2.4.3 `git pull` [<远程主机名> <远程分支名>:<本地分支名>]
 
@@ -352,7 +352,7 @@ git fetch origin
 
 用于从将本地的分支版本上传到远程并合并
 
-```git
+```sh
 git push origin master
 # 相当于
 git push origin master:master
@@ -374,7 +374,7 @@ git push origin master:master
 
 - `-r`: 查看远程分支
 
-  ```git
+  ```sh
   git branch -r
   ```
 
@@ -388,19 +388,19 @@ git push origin master:master
 
 - `-b`: 创建并直接切换到新分支
 
-  ```git
+  ```sh
   git checkout -b test
   ```
 
 - `-- [file]`: 将工作区文件恢复为和暂存区一样
 
-  ```git
+  ```sh
   git checkout -- index.html
   ```
 
 - `-b name origin/branchName`: 基于远程的分支创建一个本地的分支，并切换到新分支
 
-  ```git
+  ```sh
   git checkout -b dev origin/dev
   ```
 
@@ -408,13 +408,13 @@ git push origin master:master
 
 合并分支
 
-```git
+```sh
 git merge dev
 ```
 
 - `[alias]/[brach]`: 将远程的分支合并到当前分支
 
-  ```git
+  ```sh
   git merge origin/master
   ```
 
@@ -437,7 +437,7 @@ git merge dev
 
 - `--mixed`: 默认参数，可以不用带该参数，清空暂存区，工作区文件内容保持不变。
 
-  ```git
+  ```sh
   # 回退所有内容到上一个版本
   git reset HEAD^
 
@@ -450,14 +450,14 @@ git merge dev
 
 - `--soft`: 保留工作区的更改内容，并把重置版本带来的差异放入暂存区
 
-  ```git
+  ```sh
   # 回退到当前版本
   git reset --soft HEAD
   ```
 
 - `--hard`: 将指定版本的内容放入暂存区和工作区，也就是所有没有 commit 的修改都会丢失，**慎用**！
 
-  ```git
+  ```sh
   # 回退上上上一个版本
   git reset –hard HEAD~3
 
@@ -470,7 +470,7 @@ git merge dev
 
 - `edition -- file`: 取消部分文件的更改
 
-  ```git
+  ```sh
   git reset HEAD -- index.html
   ```
 
@@ -495,7 +495,7 @@ git merge dev
 
   > 在后面加 `HEAD~2` 表示合并几个提交
 
-  ```git
+  ```sh
   git rebase master HEAD~2 -i
   ```
 
@@ -518,7 +518,7 @@ git merge dev
 - `pop stash@{num}`: 恢复，num 是可选值，通过 `git stash list` 查看具体值，只能恢复一次
 - `apply stash@{num}`: 恢复，num 是可选值，通过 `git stash list` 查看具体值，可恢复多次
 
-  ```git
+  ```sh
   git stash apply stash@{0}
   ```
 
@@ -529,7 +529,7 @@ git merge dev
 
 重用记录的解决方案，它允许 Git 记住解决一个块冲突的方法，这样在下一次看到 **相同的冲突** 时，Git 可以自动地解决它。
 
-```git
+```sh
 # 启用 rerere
 git config --global rerere.enabled true
 ```
@@ -599,7 +599,7 @@ C --> A: git merge FETCH_HEAD
   区别是跟随数字时候，^2 是第二个父节点，而~2 是父节点的父节点
 - `^` 和 `~` 可以组合使用
 
-```git
+```sh
 # 最新 commit 的父节点的父节点的第二个父节点
 HEAD~2^2
 ```
@@ -791,7 +791,7 @@ Projects 可以有序的管理 **issue** 和 **Pull request**
 
 - 把本地的提交基于远端分支做 `rebase` ，在本地解决掉冲突并完成自测。
 
-  ```git
+  ```sh
   git pull --rebase
   ```
 
