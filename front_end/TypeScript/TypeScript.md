@@ -1827,3 +1827,217 @@ let bar: () => ; // 编译错误：未指定返回值类型
 ```
 
 #### 2.12.8 调用签名
+
+函数在本质上是一个对象，但特殊的地方在于函数是可调用的对象。因此，可以使用对象类型来表示函数类型。若在对象类型中定义了调用签名类型成员，那么称该对象类型为函数类型。调用签名的语法如下所示：
+
+```ts
+{
+  (ParameterList): Type
+}
+```
+
+在该语法中，ParameterList 表示函数形式参数列表类型，Type 表示函数返回值类型，两者都是可选的。
+
+下例中，使用对象类型字面量和调用签名定义了一个函数类型，该函数类型接受两个 number 类型的参数，并返回 number 类型的值：
+
+```ts
+let add: { (x: number, y: number): number };
+
+add = function (x: number, y: number): number {
+  return x + y;
+};
+```
+
+实际上，上一节介绍的函数类型字面量完全等同于仅包含一个类型成员并且是调用签名类型成员的对象类型字面量。换句话说，函数类型字面量是仅包含单个调用签名的对象类型字面量的简写形式，如下所示：
+
+```ts
+{(ParameterList): Type}
+// 简写为
+(ParameterList) => Type
+```
+
+例如，Math.abs() 是一个内置函数，它接受一个数字参数并返回该参数的绝对值。下面，分别使用函数类型字面量和带有调用签名的对象类型字面量来定义 Math.abs() 函数的类型：
+
+```ts
+const abs0: (x: number) => number = Math.abs;
+const abs1: { (x: number): number } = Math.abs;
+abs0(-1) === abs1(-1); // true
+```
+
+**函数类型字面量的优点是简洁，而对象类型字面量的优点是具有更强的类型表达能力**。知道函数是一种对象，因此函数可以拥有自己的属性。下例中，函数 f 除了可以被调用以外，还提供了一个 version 属性：
+
+```ts
+function f(x: number) {
+  console.log(x);
+}
+f.version = '1.0';
+
+f(1); // 1
+f.version; // '1.0'
+```
+
+若使用函数类型字面量，则无法描述 string 类型的 version 属性，因此也就无法准确地描述函数 f 类型。示例如下：
+
+```ts
+function f(x: number) {
+  console.log(x);
+}
+f.version = '1.0';
+
+let foo: (x: number) => void = f;
+const version = foo.version;
+// 编译错误：(x: number) => void 类型上不存在 'version' 属性
+```
+
+在这种情况下，可以使用带有调用签名的对象类型字面量来准确地描述函数的类型。示例如下：
+
+```ts
+function f(x: number) {
+  console.log(x);
+}
+f.version = '1.0';
+
+let foo: { (x: number): void; version: string } = f;
+const version = foo.version; // string 类型
+```
+
+#### 2.12.9 构造函数类型字面量
+
+在面向对象编程中，构造函数是一类特殊的函数，它用来创建和始化对象。JS 中的函数可以作为构造函数使用，在调用构造函数时需要使用 new 运算符。例如，可以使用内置的 Date 构造函数来创建一个日期对象：
+
+```ts
+const date = new Date();
+```
+
+构造函数类型字面量是定义构造函数类型的方法之一，它能够指定构造函数的参数类型、返回值类型以及将在 6.1<!--TODO--> 节中介绍的泛型类型参数。构造函数类型字面量的具体语法如下所示：
+
+```ts
+new ParameterList() = Type;
+```
+
+在该语法中 `new` 是关键字，ParameterList 表示可选的构造函数形式参数列表类型，Type 表示构造函数返回值类型。
+
+JS 提供了一个内置的 Error 构造函数，它接受一个可选的 message 作为参数并返回新创建的 Error。可以使用如下构造函数类型字面量来表示 Error 构造函数的类型。该构造函数有一个可选参数 message 并返回 Error 类型的对象。
+
+```ts
+let ErrorConstructor: new (message?: string) => Error;
+```
+
+#### 2.12.10 构造签名
+
+构造签名的用法与调用签名类似。若在对象类型中定义了构造签名类型成员，那么称该对象类型为构造函数类型。构造签名的语法如下所示：
+
+```ts
+{
+  new(ParameterList): Type;
+}
+```
+
+在该语法中，`new` 是运算符关键字，Parameterlist 表示构造函数形式参数列表类型，Type 表示构造函数返回值类型，两者都是可选的。
+
+下例中，使用对象类型字面量和构造签名定义了一个构造函数类型，该构造函数接受一个 string 类型的参数，并返回新创建的对象：
+
+```ts
+let Dog: { new (name: string): object };
+Dog = class {
+  private name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+};
+let dog = new Dog('hua');
+```
+
+此例中，Dog 的类型为构造函数类型，它接受一个 string 类型的参数并返回 object 类型的值。
+
+构造函数类型字面量完全等同于仅包含一个类型成员并且是构造签名类型成员的对象类型字面量。换句话说，构造函数类型字面量是仅包含单个构造签名的对象类型字面量的简写形式，如下所示：
+
+```ts
+{ new(ParameterList): Type }
+// 简写为
+new(ParameterList) => Type；
+```
+
+#### 2.12.11 调用签名与构造签名
+
+有一些函数被设计为既可以作为普通函数使用，同时又可以作为构造函数来使用。例如，JS 内置的 Number() 函数和 String() 函数等都属于这类函数：
+
+```ts
+const a: number = Number(1);
+const b: Number = new Number(1);
+```
+
+若在对象类型中同时定义调用签名和构造签名，则能够表示既可以被直接调用，又可以作为构造函数使用的函数类型。语法如下：
+
+```ts
+{
+  new (x: number): Number; // 构造签名
+  (x: number): number; // 调用签名
+}
+```
+
+此例中，对象类型字面量定义了一个构造签名 `new (x: number): Number;`，它接受一个 number 类型的参数，并返回 Number 类型的值。同时，该对象类型字面量还定义了一个调用签名 `(x:number): number;`，它接受一个 number 类型的参数，并返回 number 类型的值。示例如下：
+
+```ts
+declare const F: {
+  new (x: number): Number; // 构造签名
+  (x: number): number; // 调用签名
+};
+
+// 作为普通函数调用
+const a: number = F(1);
+// 作为构造函数调用
+const b: Number = new F(1);
+```
+
+此例中，函数 F 的类型既是函数类型又是构造函数类型。因此，允许直接调用 F 函数，或者以构造函数的方式调用 F 函数。
+
+#### 2.12.12 重载函数
+
+重载函数是指一个函数同时拥有多个同类的函数签名。例如，个函数拥有两个及以上的调用签名，或者一个构造函数拥有两个及以上的构造签名。当使用不同数量和类型的参数调用重载函数时，可以执行不同的函数实现代码。
+
+TypeScript 中的重载函数与其他编程语言中的重载函数略有不同。首先，看一个重载函数的例子。下例中定义了一个重载函数 add。它接受两个参数，若两个参数的类型为 number，则返回它们的和；若两个参数的类型为数组，则返回合并后的数组。在调用 add 函数时，允许使用这两个调用签名之一并且能够得到正确的返回值类型：
+
+```ts
+function add(x: number, y: number): number;
+function add(x: any[], y: any[]): any[];
+function add(x: number | any[], y: number | any[]): any {
+  if (typeof x === 'number' && typeof y === 'number') {
+    return x + y;
+  }
+
+  if (Array.isArray(x) && Array.isArray(y)) {
+    return [...x, ...y];
+  }
+}
+
+const a: number = add(1, 2);
+const b: number[] = add([1], [2]);
+```
+
+在使用函数声明定义函数时能够定义重载函数。重载函数的定义由以下两部分组成：
+
+- 一条或多条函数重载语句
+- 一条函数实现语句
+
+##### 2.12.12.1 函数重载
+
+不带有函数体的函数声明语句叫作函数重载。例如，下例中的 add 函数声明没有函数体，因此它属于函数重载：
+
+```ts
+function add(x: number, y: number): number;
+```
+
+函数重载的语法中不包含函数体，它只提供了函数的类型信息函数重载只存在于代码编译阶段，在编译生成 JS 代码时会被完全删除，因此在最终生成的 JS 代码中不包含函数重载的代码。
+
+函数重载允许存在一个或多个，但只有多于一个的函数重载才有意义，因为若只有一个函数重载，则可以直接定义函数实现。在函数重载中，不允许使用默认参数。函数重载应该位于函数实现(<!--TODO-->将在下节中介绍)之前，每一个函数重载中的函数名和函数实现中的函数名必须一致：
+
+```ts
+function add(x: number, y: number): number;
+function add(x: any[], y: any[]): any[];
+function add(x: number | any[], y: number | any[]): any {
+  // 省略了实现代码
+}
+```
+
+> **注意**：在各个函数重载语句之间以及函数重载语句与函数实现语句之间不允许出现任何其他语句，否则将产生编译错误。
