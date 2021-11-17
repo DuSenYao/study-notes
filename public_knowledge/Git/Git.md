@@ -1,12 +1,4 @@
----
-title: Git
-date: 2020-12-14 18:22:34
-author: 杜森垚
-keywords: 'Git'
-categories: Git
-tags:
-  - Git
----
+# Git(分布式版本控制器)
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -21,15 +13,15 @@ tags:
         - [1.2.1.2 git init](#1212-git-init)
       - [1.2.2 Git 查看](#122-git-查看)
         - [1.2.2.1 git status](#1221-git-status)
-        - [1.2.2.2 git diff <file>](#1222-git-diff-file)
+        - [1.2.2.2 git diff](#1222-git-diff)
         - [1.2.2.3 git log <-number> <分支名>](#1223-git-log-number-分支名)
         - [1.2.2.4 git reflog](#1224-git-reflog)
-        - [1.2.2.5 git blame <file>](#1225-git-blame-file)
+        - [1.2.2.5 git blame](#1225-git-blame)
         - [1.2.2.6 git cat-file -[t|s|p] 哈希值](#1226-git-cat-file-tsp-哈希值)
         - [1.2.2.7 git config](#1227-git-config)
       - [1.2.3 文件操作](#123-文件操作)
         - [1.2.3.1 git add ./文件名/文件夹名](#1231-git-add-文件名文件夹名)
-        - [1.2.3.2 git rm <file>](#1232-git-rm-file)
+        - [1.2.3.2 git rm](#1232-git-rm)
         - [1.2.3.3 git mv [file] [newFile]](#1233-git-mv-file-newfile)
         - [1.2.3.4 git restore](#1234-git-restore)
       - [1.2.4 远程操作](#124-远程操作)
@@ -100,8 +92,6 @@ tags:
 
 ---
 
-# Git(分布式版本控制器)
-
 ## 一. Git
 
 ### 1.1 特点
@@ -145,7 +135,7 @@ tags:
 
 - `-s`：简短的输出
 
-##### 1.2.2.2 git diff <file>
+##### 1.2.2.2 git diff
 
 显示暂存区与工作区的差异：
 
@@ -191,9 +181,13 @@ git log -2
   git reflog delete HEAD@{270}
   ```
 
-##### 1.2.2.5 git blame <file>
+##### 1.2.2.5 git blame
 
 以**列表形式**查看指定文件的修改记录
+
+```sh
+git blame hello.ts
+```
 
 ##### 1.2.2.6 git cat-file -[t|s|p] 哈希值
 
@@ -249,7 +243,7 @@ local > global > system
 
 - `-u`：仅添加已被跟踪的文件
 
-##### 1.2.3.2 git rm <file>
+##### 1.2.3.2 git rm
 
 将文件从暂存区和工作区中删除：
 

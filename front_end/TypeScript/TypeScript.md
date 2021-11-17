@@ -1,6 +1,4 @@
----
-title: TypeScript
----
+# TypeScript
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -88,8 +86,6 @@ title: TypeScript
       - [2.13.5 只读属性与方法](#2135-只读属性与方法)
 
 <!-- /code_chunk_output -->
-
-# TypeScript
 
 ## 一. 介绍
 
@@ -2532,3 +2528,211 @@ interface Bar {
 ```
 
 #### 2.13.5 只读属性与方法
+
+在接口声明中，使用 `readonly` 修饰符能够定义只读属性。readonly 修饰符只允许在属性签名和索引签名中使用，具体语法如下：
+
+```ts
+readonly propertyName: Type
+readonly [IndexName: string]: Type
+readonly [IndexName: number]: Type
+```
+
+例如，下例的接口 A 中定义了只读属性 a 和只读的索引签名：
+
+```ts
+interface A {
+  readonly a: string;
+  readonly [prop: string]: string;
+  readonly [prop: number]: string;
+}
+```
+
+若接口中定义了只读的索引签名，那么接口类型中的所有属性都是只读属性。示例如下：
+
+```ts
+interface A {
+  readonly [prop: string]: number;
+}
+
+const a: A = { x: 0 };
+a.x = 1; // 编译错误!不允许修改属性值
+```
+
+如果接口中既定义了只读索引签名，又定义了非只读的属性签名，那么非只读的属性签名定义的属性依旧是非只读的，除此之外的所有属性都是只读的。例如，下例的接口 A 中定义了只读索引签名和非只读属性 x。最终的结果为，属性 x 是非只读的，其余的属性为只读属性。示例如下
+
+```ts
+interface A {
+  readonly [prop: string]: number;
+  x: number;
+}
+const a: A = { x: 0, y: 0 };
+a.x = 1; // 正确
+a.y = 1; // 错误
+```
+
+#### 2.13.6 接口的继承
+
+接口可以继承其他的对象类型，这相当于将继承的对象类型中的类型成员复制到当前接口中。接口可以继承的对象类型如下：
+
+- 接口
+- 对象类型的类型别名
+- 类
+- 对象类型的交叉类型
+
+本节将通过接口与接口之间的继承来介绍接口继承的具体使用方法。关于类型别名的详细介绍请参考 5.14 节。关于类的详细介绍请参考 5.15 节。关于交叉类型的详细介绍请参考 6.4 节。<!--TODO-->
+
+接口的继承需要使用 `extends` 关键字。下例中，Circle 接口继承了 Shape 接口。可以将 Circle 接口称作子接口，同时将 Shape 接口称作父接口。示例如下：
+
+```ts
+interface Shape {
+  name: string;
+}
+
+interface Circle extends Shape {
+  radius: number;
+}
+```
+
+接口可以同时继承多个接口，父接口名之间使用逗号分隔。下例中，Circle 接口同时继承了 Style 接口和 Shape 接口：
+
+```ts
+interface Style {
+  color: string;
+}
+interface Shape {
+  name: string;
+}
+
+interface Circle extends style, Shape {
+  radius: number;
+}
+```
+
+当一个接口继承了其他接口后，子接口既包含了自身定义的类型成员，也包含了父接口中的类型成员。下例中，Circle 接口同时继承了 Style 接口和 Shape 接口，因此 Circle 接口中包含了 color、name 和 radius 属性：
+
+```ts
+interface Style {
+  color: string;
+}
+
+interface Shape {
+  name: string;
+}
+
+interface Circle extends Style, Shape {
+  radius: number;
+}
+
+const c: Circle = {
+  color: 'red',
+  name: 'circle',
+  radius: 1
+};
+```
+
+如果子接口与父接口之间存在同名的类型成员，那么子接口中的类型成员具有更高的优先级。同时，子接口与父接口中的同名类型成员必须是类型兼容的。也就是说，子接口中同名类型成员的类型需要能够赋值给父接口中同名类型成员的类型，否则将产生编译错误：
+
+```ts
+interface Style {
+  color: string;
+}
+interface Shape {
+  name: string;
+}
+
+// 编译错误：color 类型不兼容，number 类型不能赋值给 string 类型
+interface Circle extends Style, Shape {
+  name: 'circle';
+  color: number;
+}
+```
+
+如果仅是多个父接口之间存在同名的类型成员，而子接口本身没有该同名类型成员，那么父接口中同名类型成员的类型必须是完全相同的，否则将产生编译错误：
+
+```ts
+interface Style {
+  draw(): { color: string };
+}
+interface Shape {
+  draw(): { x: number; y: number };
+}
+
+// 编译错误
+interface Circle extends Style, Shape {}
+```
+
+两个 draw 方法返回值不同。所以，当 Circle 接口尝试将两个 draw 方法合并时发生冲突，因此产生了编译错误。
+
+解决这个问题的一个办法是，在 Circle 接口中定义一个同名的 draw 方法。这样 Circle 接口中的 draw 方法会拥有更高的优先级，从而取代父接口中的 draw 方法。这时编译器将不再进行类型合并操作，因此也就不会发生合并冲突。但是，Circle 接口中定义的 draw 方法一定要与所有父接口中的 draw 方法是**类型兼容**的：
+
+```ts
+interface Style {
+  draw(): { color: string };
+}
+interface Shape {
+  draw(): { x: number; y: number };
+}
+
+interface Circle extends Style, Shape {
+  draw(): { color: string; x: number; y: number };
+}
+```
+
+此例中，Circle 接口中定义了一个 draw 方法，它的返回值类型为 `{ color: string;x: number;y: number}`。它既能赋值给 `{ color: string}` 类型，也能赋值给 `{x: number;y: number}` 类型，因此不会产生编译错误。
+
+关于类型兼容性的详细介绍请参考 7.1 节。<!--TODO-->
+
+### 2.14 类型别名
+
+如同接口声明能够为对象类型命名，类型别名声明则能够为 TypeScript 中的任意类型命名。
+
+#### 2.14.1 类型别名声明
+
+类型别名声明能够定义一个类型别名，它的基本语法如下所示：
+
+```ts
+type AliasName = Type;
+```
+
+在该语法中，type 是声明类型别名的关键字；AliasName 表示类型别名的名称；Type 表示类型别名关联的具体类型。
+
+类型别名的名称必须为合法的标识符。由于类型别名表示一种类型，因此类型别名的首字母通常需要大写。同时需要注意，不能使用 TypeScript 内置的类型名作为类型别名的名称，例如 boolean、number 和 any 等。下例中，声明了一个类型别名 Point，它表示包含两个属性的对象类型：
+
+```ts
+type Point = { x: number; y: number };
+```
+
+类型别名引用的类型可以为任意类型，例如原始类型、对象类型、联合类型和交叉类型等：
+
+```ts
+type Stringtype = string;
+
+type BooleanType = true | false;
+
+type Point = { x: number; y: number; z?: number };
+```
+
+在类型别名中，也可以引用其他类型别名：
+
+```ts
+type Numeric = number | bigint;
+// string number bigint
+type StringOrNumber = string | Numeric;
+```
+
+类型别名不会创建出一种新的类型，它只是给已有类型命名并接引用该类型。在程序中，使用类型别名与直接使用该类型别名引用的类型是完全等价的。因此，在程序中可以直接使用类型别名引用的类型来替换掉类型别名：
+
+```ts
+type Point = { x: number; y: number };
+
+let a: Point;
+// let a: { x: number; y: number }
+```
+
+在程序中，可能会有一些比较复杂的或者书写起来比较长的类型，这时就可以声明一个类型别名来引用该类型，这也便于对这个类型进行重用。例如，下例中的 DecimalDigit 类型比较长，如果在每个引用该类型的地方都完整地写出该类型会很不方便。使用类型别名不但能够简化代码，还能够给该类型起一个具有描述性的名字：
+
+```ts
+type DecimalDigit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+
+const digit: DecimalDigit = 6;
+```
