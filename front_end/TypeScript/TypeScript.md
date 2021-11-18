@@ -84,6 +84,22 @@
         - [2.13.3.2 数值索引签名](#21332-数值索引签名)
       - [2.13.4 可选属性与方法](#2134-可选属性与方法)
       - [2.13.5 只读属性与方法](#2135-只读属性与方法)
+      - [2.13.6 接口的继承](#2136-接口的继承)
+    - [2.14 类型别名](#214-类型别名)
+      - [2.14.1 类型别名声明](#2141-类型别名声明)
+      - [2.14.2 递归的类型别名](#2142-递归的类型别名)
+      - [2.14.3 类型别名与接口的差别](#2143-类型别名与接口的差别)
+    - [2.15 类](#215-类)
+      - [2.15.1 类的定义](#2151-类的定义)
+        - [2.15.1.1 类声明](#21511-类声明)
+        - [2.15.1.2 类表达式](#21512-类表达式)
+      - [2.15.2 成员变量](#2152-成员变量)
+        - [5.15.2.1 --strictPropertyInitialization](#51521-strictpropertyinitialization)
+        - [2.15.2.2 readonly 属性](#21522-readonly-属性)
+      - [2.15.3 成员函数](#2153-成员函数)
+      - [2.15.4 成员存取器](#2154-成员存取器)
+      - [2.15.5 索引成员](#2155-索引成员)
+      - [2.15.6 成员可访问性](#2156-成员可访问性)
 
 <!-- /code_chunk_output -->
 
@@ -2910,4 +2926,248 @@ const c = new Circle();
 
 此例中，声明了一个 Circle 类，它包含一个 number 类型的 radius 属性。使用 `new` 关键字能够创建类的实例。
 
-与函数声明不同的是，类声明不会被提升，因此必须先声明后使
+与函数声明不同的是，类声明不会被提升，因此必须先声明后使用：
+
+```ts
+ const c0= new Circle();∥/错误
+
+ class circle
+ radius: number.
+
+
+ const c1= new Circle(;∥l确
+```
+
+在使用类声明时，不允许声明同名的类，否则将产生错误：
+
+```ts
+// 错误! 重复的类声明
+class Circle {
+  radius: number;
+}
+class Circle {
+  radius: number;
+}
+```
+
+##### 2.15.1.2 类表达式
+
+类表达式是另一种定义类的方式，它的语法如下所示：
+
+```ts
+const Name = class className {
+  // ...
+};
+```
+
+在该语法中，`class` 是关键字；Name 表示引用了该类的变量名；ClassName 表示类的名字。在类表达式中，类名 ClassName 是可选的例如，下例中使用类表达式定义了一个匿名类，同时使用常量 Circle 引用了该匿名类：
+
+```ts
+const Circle = class {
+  radius: number;
+};
+const a = new Circle();
+```
+
+如果在类表达式中定义了类名，则该类名只能够在类内部使用在类外不允许引用该类名：
+
+```ts
+const A = class B {
+  name = B.name;
+};
+const b = new B(); // 错误
+```
+
+#### 2.15.2 成员变量
+
+在类中定义成员变量的方法如下所示：
+
+```ts
+class Circle {
+  radius: number = 1;
+}
+```
+
+此例中，Circle 类只包含一个成员变量。其中，radius 是成员变量名，成员变量名之后的类型注解定义了该成员变量的类型。最后，将该成员变量的初始值设置为 1。除了在成员变量声明中设置初始值，还可以在类的构造函数中设置成员变量的初始值：
+
+```ts
+class Circle {
+  radius: number;
+
+  constructor() {
+    this.radius;
+  }
+}
+```
+
+此例中，在构造函数里将 radius 成员变量的值初始化为 1。同时，在构造函数中引用成员变量时需要使用 `this` 关键字。
+
+##### 5.15.2.1 --strictPropertyInitialization
+
+虽然类的成员变量设置初始值是可选的，但是对成员变量进行初始化是一个好的编程实践，它能够有效避免使用未初始化的值而引发的错误。因此，TypeScript 提供了 `--strictPropertyInitialization` 编译选项来帮助严格检査未经初始化的成员变量。当启用了该编译选项时，成员变量必须在声明时进行初始化或者在构造函数中进行初始化，否则将产生编译错误。
+
+> **注意**：`--strictPropertyInitialization` 编译选项必须与 `--strictNullChecks` 编译选项同时启用，否则 `--strictPropertyInitialization` 编译选项将不起作用。
+
+```ts
+class A {
+  // 正确
+  a: number = 0;
+
+  // 正确，在构造函数中初始化
+  b: number;
+  // 错误！未初始化
+  c: number;
+  constructor() {
+    this.b = 0;
+  }
+}
+```
+
+在此例中，类 A 的成员变量 a 在声明时进行了初始化，成员变量 b 在构造函数中进行了初始化，只有成员变量 c 始终没有进行初始化，因此将产生未初始化的编译错误。
+
+若启用了 `--strictPropertyInitialization` 编译选项并且仅在构造函数中对成员变量迸行了初始化操作，那么需要在构造函数中直接进行赋值操作。如果通过在构造函数中调用某个方法，进而在该方法中间接地初始化成员变量，那么编译器将无法检测到该初始化操作，因此会产生编译错误。示例如下：
+
+```ts
+class a {
+  // 编译错误！未初始化
+  a: number;
+
+  init() {
+    this.a = 0;
+  }
+
+  constructor() {
+    this.init();
+  }
+}
+```
+
+在一些场景中，确实想要通过调用某些方法来初始化类的成员变量。这时可以使用非空类型断言 `!` 来通知编译器该成员变量已经进行初始化，以此来避免产生编译错误：
+
+```ts
+class A {
+  // 非空类型断言
+  a!: number;
+  init() {
+    this.a = 0;
+  }
+  constructor() {
+    this.init();
+  }
+}
+```
+
+##### 2.15.2.2 readonly 属性
+
+在声明类的成员变量时，在成员变量名之前添加 `readonly` 修饰符能够将该成员变量声明为只读的。**只读成员变量必须在声明时初始化或在构造函数里初始化**：
+
+```ts
+class A {
+  readonly a = 0;
+  readonly b: number;
+  readonly c: number; // 编译错误
+
+  constructor() {
+    this.b = 0;
+  }
+}
+```
+
+> 关于类只读成员变量的一个最佳实践是，若类的成员变量不应该被修改，那么应该为其添加 `readonly` 修饰符。就算不确定是否允许修改类的某个成员变量，也可以先将该成员变量声明为只读的，当发现需要对该成员变量进行修改时再将 `readonly` 修饰符去掉。
+
+#### 2.15.3 成员函数
+
+成员函数也称作方法，声明成员函数与在对象字面量中声明方法是类似的：
+
+```ts
+class Circle {
+  radius: number = 1;
+
+  area(): number {
+    return Math.PI * this.radius * this.radius;
+  }
+}
+```
+
+此例中，area 是一个成员函数。在成员函数中，需要使用 ·this` 关键字来引用类的其他成员。
+
+#### 2.15.4 成员存取器
+
+成员存取器由 `get` 和 `set` 方法构成，并且会在类中声明一个属性成员存取器的定义方式与对象字面量中属性存取器的定义方式是完全相同的。如果一个类属性同时定义了 get 方法和 set 方法，那么 get 方法的返回值类型必须与 set 方法的参数类型一致，否则将产生错误：
+
+```ts
+class C {
+  // 正确
+  private _foo: number = 0;
+  get foo(): number {
+    return this._foo;
+  }
+  set foo(value: number) {}
+
+  // 错误! get 和 set 存取器必须具有相同的类型
+  private _bar: string = '';
+  get bar(): string {
+    return this._bar;
+  }
+  set bar(value: number) {}
+}
+```
+
+**如果一个类属性同时定义了 get 方法和 set 方法，那么 get 方法和 set 方法必须具有相同的可访问性**。例如，不允许将 get 方法定义为公有的，而将 set 方法定义为私有的。关于成员可访问性的详细介绍<!--TODO-->参考 5.15.6 节。
+
+存取器是实现数据封装的一种方式，它提供了一层额外的访问控制。类可以将成员变量的访问权限制在类内部，在类外部通过存取器方法来间接地访问成员变量。在存取器方法中，还可以加入额外的访可控制等处理逻辑：
+
+```ts
+class Circle {
+  private _radius: number = 0;
+  get radius(): number {
+    return this._radius;
+  }
+  set radius(value: number) {
+    if (value >= 0) {
+      this._radius = value;
+    }
+  }
+}
+
+const circle = new Circle();
+circle.radius; // 0
+
+circle.radius = -1;
+circle.radius; // 0
+
+circle.radius = 10;
+circle.radius; // 10
+```
+
+#### 2.15.5 索引成员
+
+类的索引成员会在类的类型中引入索引签名。索引签名包含两种：
+
+- 字符串索引签名
+- 数值索引签名
+
+在实际应用中，定义类的索引成员并不常见。类中所有的属性和方法必须符合字符串索引签名定义的类型。同时，只有当类具有类似数组的行为时，数值索引签名才有意义。
+
+类的索引成员与接口中的索引签名类型成员具有完全相同的语法和语义，这里不再重复。关于索引签名的详细介绍请参考 5136 节。示例如下:
+
+```ts
+ class A {
+ x:number =0
+ [prop: string]: number
+
+ [prop: number]: number
+
+```
+
+在类的索引成员上不允许定义可访问性修饰符，如 public 和 private 等。
+
+#### 2.15.6 成员可访问性
+
+成员可访问性定义了类的成员允许在何处被访问。TypeScript 为类成员提供了以下三种可访问性修饰符：
+
+- public
+- protected
+- private
+
+这三种可访问性修饰符是 TypeScript 语言对 JS 语言的补充。在 JS 中不支持这三种可访问性修饰符。本节会涉及与继承相关的部分内容，关于继承的详细介绍参考 5.15.9 <!--TODO-->
