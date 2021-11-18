@@ -1,6 +1,4 @@
----
-title: TypeScript
----
+# TypeScript
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -65,10 +63,29 @@ title: TypeScript
       - [2.12.4 剩余参数类型](#2124-剩余参数类型)
       - [2.12.5 解构参数类型](#2125-解构参数类型)
       - [2.12.6 返回值类型](#2126-返回值类型)
+      - [2.12.7 函数类型字面量](#2127-函数类型字面量)
+      - [2.12.8 调用签名](#2128-调用签名)
+      - [2.12.9 构造函数类型字面量](#2129-构造函数类型字面量)
+      - [2.12.10 构造签名](#21210-构造签名)
+      - [2.12.11 调用签名与构造签名](#21211-调用签名与构造签名)
+      - [2.12.12 重载函数](#21212-重载函数)
+        - [2.12.12.1 函数重载](#212121-函数重载)
+        - [2.12.12.2 函数实现](#212122-函数实现)
+        - [2.12.12.3 函数重载解析顺序](#212123-函数重载解析顺序)
+        - [2.12.12.4 重载函数的类型](#212124-重载函数的类型)
+      - [2.12.13 函数中 this 值的类型](#21213-函数中-this-值的类型)
+        - [2.12.13.1 --noImplicitThis](#212131-noimplicitthis)
+        - [2.12.13.2 函数的 this 参数](#212132-函数的-this-参数)
+    - [2.13 接口](#213-接口)
+      - [2.13.1 接口声明](#2131-接口声明)
+      - [2.13.2 方法签名](#2132-方法签名)
+      - [2.13.3 索引签名](#2133-索引签名)
+        - [2.13.3.1 字符串索引签名](#21331-字符串索引签名)
+        - [2.13.3.2 数值索引签名](#21332-数值索引签名)
+      - [2.13.4 可选属性与方法](#2134-可选属性与方法)
+      - [2.13.5 只读属性与方法](#2135-只读属性与方法)
 
 <!-- /code_chunk_output -->
-
-# TypeScript
 
 ## 一. 介绍
 
@@ -1827,3 +1844,895 @@ let bar: () => ; // 编译错误：未指定返回值类型
 ```
 
 #### 2.12.8 调用签名
+
+函数在本质上是一个对象，但特殊的地方在于函数是可调用的对象。因此，可以使用对象类型来表示函数类型。若在对象类型中定义了调用签名类型成员，那么称该对象类型为函数类型。调用签名的语法如下所示：
+
+```ts
+{
+  (ParameterList): Type
+}
+```
+
+在该语法中，ParameterList 表示函数形式参数列表类型，Type 表示函数返回值类型，两者都是可选的。
+
+下例中，使用对象类型字面量和调用签名定义了一个函数类型，该函数类型接受两个 number 类型的参数，并返回 number 类型的值：
+
+```ts
+let add: { (x: number, y: number): number };
+
+add = function (x: number, y: number): number {
+  return x + y;
+};
+```
+
+实际上，上一节介绍的函数类型字面量完全等同于仅包含一个类型成员并且是调用签名类型成员的对象类型字面量。换句话说，函数类型字面量是仅包含单个调用签名的对象类型字面量的简写形式，如下所示：
+
+```ts
+{(ParameterList): Type}
+// 简写为
+(ParameterList) => Type
+```
+
+例如，Math.abs() 是一个内置函数，它接受一个数字参数并返回该参数的绝对值。下面，分别使用函数类型字面量和带有调用签名的对象类型字面量来定义 Math.abs() 函数的类型：
+
+```ts
+const abs0: (x: number) => number = Math.abs;
+const abs1: { (x: number): number } = Math.abs;
+abs0(-1) === abs1(-1); // true
+```
+
+**函数类型字面量的优点是简洁，而对象类型字面量的优点是具有更强的类型表达能力**。知道函数是一种对象，因此函数可以拥有自己的属性。下例中，函数 f 除了可以被调用以外，还提供了一个 version 属性：
+
+```ts
+function f(x: number) {
+  console.log(x);
+}
+f.version = '1.0';
+
+f(1); // 1
+f.version; // '1.0'
+```
+
+若使用函数类型字面量，则无法描述 string 类型的 version 属性，因此也就无法准确地描述函数 f 类型。示例如下：
+
+```ts
+function f(x: number) {
+  console.log(x);
+}
+f.version = '1.0';
+
+let foo: (x: number) => void = f;
+const version = foo.version;
+// 编译错误：(x: number) => void 类型上不存在 'version' 属性
+```
+
+在这种情况下，可以使用带有调用签名的对象类型字面量来准确地描述函数的类型。示例如下：
+
+```ts
+function f(x: number) {
+  console.log(x);
+}
+f.version = '1.0';
+
+let foo: { (x: number): void; version: string } = f;
+const version = foo.version; // string 类型
+```
+
+#### 2.12.9 构造函数类型字面量
+
+在面向对象编程中，构造函数是一类特殊的函数，它用来创建和始化对象。JS 中的函数可以作为构造函数使用，在调用构造函数时需要使用 new 运算符。例如，可以使用内置的 Date 构造函数来创建一个日期对象：
+
+```ts
+const date = new Date();
+```
+
+构造函数类型字面量是定义构造函数类型的方法之一，它能够指定构造函数的参数类型、返回值类型以及将在 6.1<!--TODO--> 节中介绍的泛型类型参数。构造函数类型字面量的具体语法如下所示：
+
+```ts
+new ParameterList() = Type;
+```
+
+在该语法中 `new` 是关键字，ParameterList 表示可选的构造函数形式参数列表类型，Type 表示构造函数返回值类型。
+
+JS 提供了一个内置的 Error 构造函数，它接受一个可选的 message 作为参数并返回新创建的 Error。可以使用如下构造函数类型字面量来表示 Error 构造函数的类型。该构造函数有一个可选参数 message 并返回 Error 类型的对象。
+
+```ts
+let ErrorConstructor: new (message?: string) => Error;
+```
+
+#### 2.12.10 构造签名
+
+构造签名的用法与调用签名类似。若在对象类型中定义了构造签名类型成员，那么称该对象类型为构造函数类型。构造签名的语法如下所示：
+
+```ts
+{
+  new(ParameterList): Type;
+}
+```
+
+在该语法中，`new` 是运算符关键字，Parameterlist 表示构造函数形式参数列表类型，Type 表示构造函数返回值类型，两者都是可选的。
+
+下例中，使用对象类型字面量和构造签名定义了一个构造函数类型，该构造函数接受一个 string 类型的参数，并返回新创建的对象：
+
+```ts
+let Dog: { new (name: string): object };
+Dog = class {
+  private name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+};
+let dog = new Dog('hua');
+```
+
+此例中，Dog 的类型为构造函数类型，它接受一个 string 类型的参数并返回 object 类型的值。
+
+构造函数类型字面量完全等同于仅包含一个类型成员并且是构造签名类型成员的对象类型字面量。换句话说，构造函数类型字面量是仅包含单个构造签名的对象类型字面量的简写形式，如下所示：
+
+```ts
+{ new(ParameterList): Type }
+// 简写为
+new(ParameterList) => Type；
+```
+
+#### 2.12.11 调用签名与构造签名
+
+有一些函数被设计为既可以作为普通函数使用，同时又可以作为构造函数来使用。例如，JS 内置的 Number() 函数和 String() 函数等都属于这类函数：
+
+```ts
+const a: number = Number(1);
+const b: Number = new Number(1);
+```
+
+若在对象类型中同时定义调用签名和构造签名，则能够表示既可以被直接调用，又可以作为构造函数使用的函数类型。语法如下：
+
+```ts
+{
+  new (x: number): Number; // 构造签名
+  (x: number): number; // 调用签名
+}
+```
+
+此例中，对象类型字面量定义了一个构造签名 `new (x: number): Number;`，它接受一个 number 类型的参数，并返回 Number 类型的值。同时，该对象类型字面量还定义了一个调用签名 `(x:number): number;`，它接受一个 number 类型的参数，并返回 number 类型的值。示例如下：
+
+```ts
+declare const F: {
+  new (x: number): Number; // 构造签名
+  (x: number): number; // 调用签名
+};
+
+// 作为普通函数调用
+const a: number = F(1);
+// 作为构造函数调用
+const b: Number = new F(1);
+```
+
+此例中，函数 F 的类型既是函数类型又是构造函数类型。因此，允许直接调用 F 函数，或者以构造函数的方式调用 F 函数。
+
+#### 2.12.12 重载函数
+
+重载函数是指一个函数同时拥有多个同类的函数签名。例如，个函数拥有两个及以上的调用签名，或者一个构造函数拥有两个及以上的构造签名。当使用不同数量和类型的参数调用重载函数时，可以执行不同的函数实现代码。
+
+TypeScript 中的重载函数与其他编程语言中的重载函数略有不同。首先，看一个重载函数的例子。下例中定义了一个重载函数 add。它接受两个参数，若两个参数的类型为 number，则返回它们的和；若两个参数的类型为数组，则返回合并后的数组。在调用 add 函数时，允许使用这两个调用签名之一并且能够得到正确的返回值类型：
+
+```ts
+function add(x: number, y: number): number;
+function add(x: any[], y: any[]): any[];
+function add(x: number | any[], y: number | any[]): any {
+  if (typeof x === 'number' && typeof y === 'number') {
+    return x + y;
+  }
+
+  if (Array.isArray(x) && Array.isArray(y)) {
+    return [...x, ...y];
+  }
+}
+
+const a: number = add(1, 2);
+const b: number[] = add([1], [2]);
+```
+
+在使用函数声明定义函数时能够定义重载函数。重载函数的定义由以下两部分组成：
+
+- 一条或多条函数重载语句
+- 一条函数实现语句
+
+##### 2.12.12.1 函数重载
+
+不带有函数体的函数声明语句叫作函数重载。例如，下例中的 add 函数声明没有函数体，因此它属于函数重载：
+
+```ts
+function add(x: number, y: number): number;
+```
+
+函数重载的语法中不包含函数体，它只提供了函数的类型信息函数重载只存在于代码编译阶段，在编译生成 JS 代码时会被完全删除，因此在最终生成的 JS 代码中不包含函数重载的代码。
+
+函数重载允许存在一个或多个，但只有多于一个的函数重载才有意义，因为若只有一个函数重载，则可以直接定义函数实现。在函数重载中，不允许使用默认参数。函数重载应该位于函数实现(<!--TODO-->将在下节中介绍)之前，每一个函数重载中的函数名和函数实现中的函数名必须一致：
+
+```ts
+function add(x: number, y: number): number;
+function add(x: any[], y: any[]): any[];
+function add(x: number | any[], y: number | any[]): any {
+  // 省略了实现代码
+}
+```
+
+> **注意**：在各个函数重载语句之间以及函数重载语句与函数实现语句之间不允许出现任何其他语句，否则将产生编译错误。
+
+##### 2.12.12.2 函数实现
+
+函数实现包含了实际的函数体代码，该代码不仅在编译时存在在编译生成的 JS 代码中同样存在。每一个重载函数只允许有一个函数实现，并且它必须位于所有函数重载语句之后，否则将产生编译错误。示例如下：
+
+```ts
+function add(x: number, y: number): number;
+function add(x: any[], y: any[]): any[];
+// 函数实现必须位于最后
+function add(x: number | any[], y: number | any[]): any {
+  // 省略了实现代码
+}
+```
+
+TypeScript 中的重载函数最令人迷惑的地方在于，函数实现中的函数签名不属于重载函数的调用签名之一，只有函数重载中的函数签名能够作为重载函数的调用签名。因此，可以使用两个 number 类型的值来调用 add 函数，或者使用两个数组类型的值来调用 add 函数。但是，不允许使用一个 number 类型和一个数组类型的值来调用 add 函数，尽管在函数实现的函数签名中允许这种调用方式。
+
+函数实现需要兼容每个函数重载中的函数签名，函数实现的函数签名类型必须能够赋值给函数重载的函数签名类型：
+
+```ts
+function foo(x: number): boolean;
+// 编译错误：重载签名与实现签名的返回值类型不匹配
+function foo(x: string): void;
+// 编译错误：重载签名与实现签名的参数类型不匹配
+function foo(x: number): void {
+  // 省略函数体代码
+}
+```
+
+此例中，重载函数 foo 可能的参数类型为 number 类型或 string 类型，同时返回值类型可能为 boolean 类型或 void 类型。因此，在函数实现中的参数 x 必须同时兼容 number 类型和 string 类型，而返回值类型则需要兼容 boolean 类型和 void 类型。可以使用联合类型来解决这些问题：
+
+```ts
+function foo(x: number): boolean;
+function foo(x: string): void;
+function foo(x: number | string): any {
+  // 省略函数体代码
+}
+```
+
+在其他一些编程语言中允许存在多个函数实现，并且在调用重载函数时编程语言负责选择合适的函数实现执行。在 TypeScript 中，重载函数只能存在一个函数实现，开发者需要在这个唯一的函数实现中实现所有函数重载的功能。这就需要开发者自行去检测参数的类型及数量，并根据判断结果去执行不同的操作：
+
+```ts
+function add(x: number, y: number): number;
+function add(x: any[], y: any[]): any;
+function add(x: number | any[], y: number | any[]): any {
+  if (typeof x === number && typeof y === number) {
+    return x + y;
+  }
+
+  if (Array.isArray(x) && Array.isArray(y)) {
+    return [...x, ...y];
+  }
+}
+```
+
+TypeScript 不支持为不同的函数重载分别定义不同的函数实现。
+
+##### 2.12.12.3 函数重载解析顺序
+
+当程序中调用了一个重载函数时，编译器将首先构建出一个候选函数重载列表。一个函数重载需要满足如下条件才能成为本次函数调用的候选函数重载：
+
+- 函数实际参数的数量不少于函数重载中定义的必选参数的数量
+- 函数实际参数的数量不多于函数重载中定义的参数的数量
+- 每个实际参数的类型能够赋值给函数重载定义中对应形式参数的类型
+
+候选函数重载列表中的成员将以函数重载的声明顺序作为初始顺序，然后进行简单的排序，将参数类型中包含字面量类型的函数重载排名提前，如果构建的候选函数重载列表为空列表，则会产生编译错误：
+
+```ts
+function f(x: string): void; // 函数重载1
+function f(y: 'specialized'): void; // 函数重载2
+function f(x: string) {
+  // 省略函数体代码
+}
+
+f('specialized');
+```
+
+使用字符串参数 'specialized' 调用重载函数 f，函数重载 1 和函数重载 2 都满足候选函数重载的条件，因此两者都在候选函数重载列表中。但是因为函数重载 2 的函数签名中包含字面量类型，所以比函数重载 1 的优先级更高。
+
+通过以上的介绍能够知道，函数重载的解析顺序依赖于函数重载的声明顺序以及函数签名中是否包含字面量类型。因此，TypeScript 中的函数重载功能可能没有其他一些编程语言那么 “智能”。这就要求开发者在编写函数重载代码时一定要将最精确的函数重载定义放在最前面，因为它们定义的顺序将影响函数调用签名的选择：
+
+```ts
+function f(x: any): number; // 函数重载1
+function f(x: string): 0 | 1; // 函数重载2
+function f(x: any): any {
+  // ...
+}
+
+const a: 0 | 1 = f('hi'); // 编译错误!类型 number 不能赋值给类型 0
+```
+
+此例中，函数重载 2 比函数重载 1 更加精确，但函数重载 2 是在函数重载 1 之后定义的。由于函数重载 2 的参数中不包含字面量类型，因此编译器不会对候选函数重载列表进行重新排序。当使用字符串调用函数是，函数重载 1 位于候选函数重载列表的首位，并被选为最终使用的函数重载。能看到 f('hi') 的返回值类型为 number 类型，而不是更精确的 "0|1" 联合类型。若想要修复这个问题，只需将函数重载 1 和函数重载 2 的位置互换即可。
+
+到这里，已经介绍了重载函数的大部分功能。因为 TypeScript 语言的自身特点，所以它提供的函数重载功能可能不如其他编程语言那样便利。实际上在很多场景中并不需要声明重载函数，尤其是在函数返回值类型不变的情况下：
+
+```ts
+function foo(x: string): boolean;
+function foo(x: string, y: number): boolean;
+function foo(x: string, y?: number): boolean {
+  // ...
+}
+const a = foo('hello');
+const b = foo('hello', 2);
+
+function bar(x: string, y?: number): boolean {
+  // ...
+}
+const a = bar('hello');
+const b = bar('hello', 2);
+```
+
+上例中，foo 函数是重载函数，而 bar 函数则为普通函数声明。两个函数在功能上以及可接受的参数类型和函数返回值类型都是相同的。但是，bar 函数的声明代码更少也更加清晰。
+
+##### 2.12.12.4 重载函数的类型
+
+重载函数的类型可以通过包含多个调用签名的对象类型来表示。例如，有以下重载函数定义：
+
+```ts
+function f(X: string): 0 | 1;
+function f(x: any): number;
+function f(X: any): any {}
+```
+
+可以使用如下对象类型字面量来表示重载函数 f 的类型。在该对象类型字面量中，定义了两个调用签名类型成员，分别对应于重载函数的两个函数重载。示例如下：
+
+```ts
+{
+  (x: string): 0 | 1;
+  (x: any): number;
+}
+```
+
+在定义重载函数的类型时，有以下两点需要注意：
+
+- 函数实现的函数签名不属于重载函数的调用签名之一
+- 调用签名的书写顺序是有意义的，它决定了函数重载的解析顺序，一定要确保更精确的调用签名位于更靠前的位置
+
+对象类型字面量以及后面会介绍的接口都能够用来定义重载函数的类型，但是函数类型字面量无法定义重载函数的类型，因为它只能够表示一个调用签名。
+
+本节中，主要介绍了重载函数的定义和解析规则，以及如何描述重载函数的类型。实际上构造函数也支持重载并且与重载函数是类似的。关于重载构造函数的详细介绍请参考 5.15.7 节。<!--TODO-->
+
+#### 2.12.13 函数中 this 值的类型
+
+this 是 JS 中的关键字，它可以表示调用函数的对象或者实例对象等。本节将介绍函数声明和函数表达式中 this 值的类型。
+
+在默认情况下，编译器会将函数中的 this 值设置为 any 类型，并允许程序在 this 值上执行任意的操作。因为，编译器不会对 any 类型进行类型检査。例如，下例中在 this 值上的所有访问操作都是允许的：
+
+```ts
+function f() {
+  // 以下语句均没有错误
+  this.a = true;
+  this.b++;
+  this.c = () => {};
+}
+```
+
+##### 2.12.13.1 --noImplicitThis
+
+将 this 值的类型设置为 any 类型对类型检查没有任何帮助。因此 TypeScript 提供了一个 `--noImplicitThis` 编译选项。当启用了该编译选项时，如果 this 值默认获得了 any 类型，那么将产生编译错淏；如果
+函数体中没有引用 this 值，则没有任何影响。示例如下：
+
+```ts
+// --noImplicitThis = true
+
+function f0() {
+  this.a = tue; // 编译错误
+  this.b++; // 编译错误
+  this.c = () => {}; // 编译错误
+}
+```
+
+函数中 this 值的类型可以通过一个特殊的 this 参数来定义。下面将介绍这个特殊的 this 参数。
+
+##### 2.12.13.2 函数的 this 参数
+
+TypeScript 支持在函数形式参数列表中定义一个特殊的 this 参数来描述该函数中 this 值的类型。示例如下：
+
+```ts
+function foo(this: { name: string }) {
+  this.name = 'Patrick';
+  this.name = 0; // 编译错误！类型 0 不能赋值给类型 'string'
+}
+```
+
+this 参数固定使用 `this` 作为参数名。**this 参数是一个可选的参数，若存在，则必须作为函数形式参数列表中的第一个参数**。this 参数的类型即为函数体中 this 值的类型。this 参数不同于常规的函数形式参数，它只存在于编译阶段，在编译生成的 JS 代码中会被完全删除，在运行时的代码中不存在这个 this 参数。
+
+如果想要定义一个纯函数或者是不想让函数代码依赖于 this 的值，那么在这种情况下可以明确地将 this 参数定义为 void 类型。这样做之后，在函数体中就不允许读写 this 的属性和方法。示例如下：
+
+```ts
+function add(this: void, x: number, y: number) {
+  this.name = 'Patrick'; // 编译错误！属性 'name' 不存在与类型 'void'
+}
+```
+
+当调用定义了 this 参数的函数时，若 this 值的实际类型与函数定义的期望类型不匹配，则会产生编译错误。示例如下：
+
+```ts
+function foo(this: { bar: string }, baz: numbert) {
+  // ...
+}
+
+// 编译错误
+// this 类型为 void，不能赋值给 {bar: string} 类型的 this
+foo(0);
+foo.call({ bar: 'hello' }, 0); // 正确
+```
+
+foo 函数 this 值的类型设置为对象类型 `{ bar: string }`。第一个调用 foo 时 this 值的类型为 void 类型，它与期望的类型不匹配，因此产生编译错误。第二个调用 foo 函数时指定了 this 值为 {bar:'hello'}，其类型符合 this 参数的类型定义，因此不会产生错误。
+
+### 2.13 接口
+
+类似于对象类型字面量，接口类型也能够表示任意的对象类型。不同的是，接口类型能够给对象类型命名以及定义类型参数。接口类型无法表示原始类型，如 boolean 类型等。
+
+接口声明只存在于编译阶段，在编译后生成的 JS 代码中不包含任何接口代码。
+
+#### 2.13.1 接口声明
+
+通过接口声明能够定义一个接口类型。接口声明的基础语法如下：
+
+```ts
+interface InterfaceName {
+  TypeMember;
+  TypeMember;
+  // ...
+}
+```
+
+在该语法中，`interface` 是关键字，`InterfaceName` 表示接口名，它必须是合法的标识符，TypeMember 表示接口的类型成员，所有类型成员都置于一对大括号 `{}` 之内。
+
+按照惯例，接口名的首字母需要大写。因为接口定义了一种类型而类型名的首字母通常需要大写。在接口名之后，由一对大括号 `{}` 包围起来的是接口类型中的类型成员。这部分的语法与[对象类型字面量](#2113-对象类型字面量)的语法完全相同。从语法的角度来看，接口声明就是在对象类型字面量之前添加了 `interface` 关键字和接口名。因此，[对象类型字面量](#2113-对象类型字面量)的语法规则同样适用于接口声明。例如，类型成员间的分隔符和类型成员的尾后分号、逗号。
+
+同样地，接口类型的类型成员也分为以下五类：
+
+- [属性签名](#21131-属性签名)
+- [调用签名](#2128-调用签名)
+- [构造签名](#21210-构造签名)
+- 方法签名
+- 索引签名
+
+#### 2.13.2 方法签名
+
+方法签名是声明函数类型的属性成员的简写。方法签名的语法如下所示：
+
+```ts
+Property Name(ParameterList): Type;
+```
+
+在该语法中，PropertyName 表示对象属性名，可以为标识符字符串、数字和可计算属性名；Parameterlist 表示可选的方法形式参数列表类型；Type 表示可选的方法返回值类型。从语法的角度来看，方法签名是在调用签名之前添加一个属性名作为方法名。
+
+下例中定义了 Document 接口，它包含一个方法签名类型成员该方法的方法名为 getElementById，它接受一个 string 类型的参数并返回 "HTMLElement | null" 类型的值。示例如下：
+
+```ts
+interface Document {
+  getElementById(elementId: string): HTMLElement | null;
+}
+```
+
+之所以说方法签名是声明函数类型的属性成员的简写，是因为方法签名可以改写为具有同等效果但语法稍显复杂的属性签名：
+
+```ts
+PropertName(ParameterList): Type
+// 同等效果的属性签名
+PropertName:{(ParameterList): Type}
+```
+
+在改写后的语法中，属性名保持不变并使用对象类型字面量和调用签名来表示函数类型。由于该对象类型字面量中仅包含一个调用签名，因此也可以使用函数类型字面量来代替对象类型字面量：
+
+```ts
+PropertyName: ParameterList => Type;
+```
+
+下面通过一个真实的例子来演示这三种可以互换的接口定义方式：
+
+```ts
+interface A {
+  f(x: boolean): string; // 方法签名
+}
+interface B {
+  f: { (x: boolean): string }; // 属性签名和对象类型字面量
+}
+interface C {
+  f: (x: boolean) => string; // 属性签名和函数类型字面量
+}
+```
+
+此例中定义了三个接口 A、B 和 C，它们都表示同一种类型即定义了方法的对象类型，方法 f 接收一个 boolean 类型的参数并返回 string 类型的值。
+
+方法签名中的属性名可以为[可计算属性名]#2113-对象类型字面量)，这一点与属性签名中属性名的规则是相同的。
+
+若接口中包含多个名字相同但参数列表不同的方法签名成员，则表示该方法是重载方法。例如，下例中的方法穠是一个重载方法，它具有三种调用签名：
+
+```ts
+interface A {
+  f(): number;
+  f(x: boolean): boolean;
+  f(x: string, y: string): string;
+}
+```
+
+#### 2.13.3 索引签名
+
+JS 支持使用索引去访问对象的属性，即通过方括号 `[]` 语法去访问对象属性：
+
+```ts
+const colors = ['red', 'green', 'blue'];
+// 访问数组中的第一个元素
+const red = colors[0];
+// 访问数组对象的 length 属性
+const len = colors['length'];
+```
+
+接口中的索引签名能够描述使用索引访问的对象属性的类型。索引签名只有以下两种 a 字符串索引签名。数值索引签名。
+
+##### 2.13.3.1 字符串索引签名
+
+字符串索引签名的语法如下所示：
+
+```ts
+[IndexName: string]: Type;
+```
+
+在该语法中，IndexName 表示索引名，它可以为任意合法的标识符。索引名只起到占位的作用，它不代表真实的对象属性名；在字符串索引签名中，索引名的类型必须为 string 类型；Type 表示索引值的类型，它可以为任意类型。示例如下：
+
+```ts
+interface A {
+  [Prop: string]: number;
+}
+```
+
+一个接口中最多只能定义一个字符串索引签名。**字符串索引签名会约束该对象类型中所有属性的类型**。例如，下例中的字符串索引签名定义了索引值的类型为 number 类型。那么，该接口中所有属性的类型必须能够赋值给 number 类型。示例如下：
+
+```ts
+interface A {
+  [prop: string]: number;
+
+  a: number;
+  b: 0;
+  c: 1 | 2;
+}
+```
+
+此例中，属性 a、b 和 c 的类型都能够赋值给字符串索引签名中定义的 number 类型，因此不会产生错误。接下来，再来看一个错误的例子：
+
+```ts
+interface B {
+  [prop: string]: number;
+
+  a: boolean; // 编译错误
+  b: () => number; // 编译错误
+  c(): number; // 编译错误
+}
+```
+
+此例中，字符串索引签名中定义的索引值类型依旧为 number 类型。属性 a 的类型为 boolean 类型，它不能赋值给 number 类型，因此产生编译错误。属性 b 和方法 c 的类型均为函数类型，不能赋值给 number 类型，因此也会产生编译错误。
+
+##### 2.13.3.2 数值索引签名
+
+数值索引签名的语法如下所示：
+
+```ts
+[IndexName: number]: Type;
+```
+
+在该语法中，IndexName 表示索引名，它可以为任意合法的标识符。索引名只起到占位的作用，它不代表真实的对象属性名；在数值索引签名中，索引名的类型必须为 number 类型；Type 表示索引值的类型，它可以为任意类型。示例如下：
+
+```ts
+interface A {
+  [prop: number]: string;
+}
+```
+
+一个接口中最多只能定义一个数值索引签名。数值索引签名约束了数值属性名对应的属性值的类型。示例如下：
+
+```ts
+interface A {
+  [prop: number]: string;
+}
+const obj: A = ['a', 'b', 'c'];
+obj[0]; // string
+```
+
+若接口中同时存在字符串索引签名和数值索引签名，那么**数值索引签名的类型必须能够赋值给字符串索引签名的类型**。因为在 JS 中，对象的属性名只能为字符串（或 Symbol）。虽然 JS 允许使用数字等其他值作为对象的索引，但最终它们都会被转换为字符串类型。因此，数值索引签名能够表示的属性集合是字符串索引签名能够表示的属性集合的子集。
+
+下例中，字符串索引签名的类型为 number 类型，数值索引签名的类型为数字字面量联合类型 "0|1"。由于 "0|1" 类型能够赋值给 number 类型，因此该接口定义是正确的。示例如下：
+
+```ts
+interface A {
+  [prop: string]: number;
+  [prop: number]: 0 | 1;
+}
+```
+
+但如果交换字符串索引签名和数值索引签名的类型，则会产生编译错误。示例如下：
+
+```ts
+interface A {
+  [prop: string]: 0 | 1;
+  [prop: number]: number; // 编译错误
+}
+```
+
+#### 2.13.4 可选属性与方法
+
+在默认情况下，接口中属性签名和方法签名定乂的对象属性都是必选的。在给接口类型赋值时，如果未指定必选属性则会产生编译错误：
+
+```ts
+interface Foo {
+  x: string;
+  y(): number;
+}
+ const a: Foo={x: 'hi'}
+// 编译错误！缺少属性 y
+const b: Foo = {y(): {return 0;}}
+// 编译错误！缺少属性 x
+
+// 正确
+ const c: Foo = {
+   x: 'hi',
+   y(): {return 0; }
+};
+```
+
+可以在属性名或方法名后添加一个问号 `?`，从而将该属性或方法定义为可选的。可选属性签名和可选方法签名的语法如下所：
+
+```ts
+PropertyName?: Type;
+PropertyName?(ParameterList): Type;
+```
+
+下例中，接口 Foo 的属性 x 和方法 y 都是可选的：
+
+```ts
+interface Foo {
+  x?: string;
+  y?(): number;
+}
+const a: Foo = {};
+const b: Foo = { x: 'hi' };
+const c: Foo = {
+  y() {
+    return 0;
+  }
+};
+const d: Foo = {
+  x: 'hi',
+  y() {
+    return 0;
+  }
+};
+```
+
+如果接口中定义了重载方法，那么所有重载方法签名必须同时为必选的或者可选的。示例如下：
+
+```ts
+// 正确
+interface Foo {
+  a(): void;
+  a(x: boolean): boolean;
+
+  b?(): void;
+  b?(x: boolean): boolean;
+}
+
+// 编译错误：重载签名必须全部为必选的或可选的
+interface Bar {
+  a(): void;
+  a?(x: boolean): boolean;
+}
+```
+
+#### 2.13.5 只读属性与方法
+
+在接口声明中，使用 `readonly` 修饰符能够定义只读属性。readonly 修饰符只允许在属性签名和索引签名中使用，具体语法如下：
+
+```ts
+readonly propertyName: Type
+readonly [IndexName: string]: Type
+readonly [IndexName: number]: Type
+```
+
+例如，下例的接口 A 中定义了只读属性 a 和只读的索引签名：
+
+```ts
+interface A {
+  readonly a: string;
+  readonly [prop: string]: string;
+  readonly [prop: number]: string;
+}
+```
+
+若接口中定义了只读的索引签名，那么接口类型中的所有属性都是只读属性。示例如下：
+
+```ts
+interface A {
+  readonly [prop: string]: number;
+}
+
+const a: A = { x: 0 };
+a.x = 1; // 编译错误!不允许修改属性值
+```
+
+如果接口中既定义了只读索引签名，又定义了非只读的属性签名，那么非只读的属性签名定义的属性依旧是非只读的，除此之外的所有属性都是只读的。例如，下例的接口 A 中定义了只读索引签名和非只读属性 x。最终的结果为，属性 x 是非只读的，其余的属性为只读属性。示例如下
+
+```ts
+interface A {
+  readonly [prop: string]: number;
+  x: number;
+}
+const a: A = { x: 0, y: 0 };
+a.x = 1; // 正确
+a.y = 1; // 错误
+```
+
+#### 2.13.6 接口的继承
+
+接口可以继承其他的对象类型，这相当于将继承的对象类型中的类型成员复制到当前接口中。接口可以继承的对象类型如下：
+
+- 接口
+- 对象类型的类型别名
+- 类
+- 对象类型的交叉类型
+
+本节将通过接口与接口之间的继承来介绍接口继承的具体使用方法。关于类型别名的详细介绍请参考 5.14 节。关于类的详细介绍请参考 5.15 节。关于交叉类型的详细介绍请参考 6.4 节。<!--TODO-->
+
+接口的继承需要使用 `extends` 关键字。下例中，Circle 接口继承了 Shape 接口。可以将 Circle 接口称作子接口，同时将 Shape 接口称作父接口。示例如下：
+
+```ts
+interface Shape {
+  name: string;
+}
+
+interface Circle extends Shape {
+  radius: number;
+}
+```
+
+接口可以同时继承多个接口，父接口名之间使用逗号分隔。下例中，Circle 接口同时继承了 Style 接口和 Shape 接口：
+
+```ts
+interface Style {
+  color: string;
+}
+interface Shape {
+  name: string;
+}
+
+interface Circle extends style, Shape {
+  radius: number;
+}
+```
+
+当一个接口继承了其他接口后，子接口既包含了自身定义的类型成员，也包含了父接口中的类型成员。下例中，Circle 接口同时继承了 Style 接口和 Shape 接口，因此 Circle 接口中包含了 color、name 和 radius 属性：
+
+```ts
+interface Style {
+  color: string;
+}
+
+interface Shape {
+  name: string;
+}
+
+interface Circle extends Style, Shape {
+  radius: number;
+}
+
+const c: Circle = {
+  color: 'red',
+  name: 'circle',
+  radius: 1
+};
+```
+
+如果子接口与父接口之间存在同名的类型成员，那么子接口中的类型成员具有更高的优先级。同时，子接口与父接口中的同名类型成员必须是类型兼容的。也就是说，子接口中同名类型成员的类型需要能够赋值给父接口中同名类型成员的类型，否则将产生编译错误：
+
+```ts
+interface Style {
+  color: string;
+}
+interface Shape {
+  name: string;
+}
+
+// 编译错误：color 类型不兼容，number 类型不能赋值给 string 类型
+interface Circle extends Style, Shape {
+  name: 'circle';
+  color: number;
+}
+```
+
+如果仅是多个父接口之间存在同名的类型成员，而子接口本身没有该同名类型成员，那么父接口中同名类型成员的类型必须是完全相同的，否则将产生编译错误：
+
+```ts
+interface Style {
+  draw(): { color: string };
+}
+interface Shape {
+  draw(): { x: number; y: number };
+}
+
+// 编译错误
+interface Circle extends Style, Shape {}
+```
+
+两个 draw 方法返回值不同。所以，当 Circle 接口尝试将两个 draw 方法合并时发生冲突，因此产生了编译错误。
+
+解决这个问题的一个办法是，在 Circle 接口中定义一个同名的 draw 方法。这样 Circle 接口中的 draw 方法会拥有更高的优先级，从而取代父接口中的 draw 方法。这时编译器将不再进行类型合并操作，因此也就不会发生合并冲突。但是，Circle 接口中定义的 draw 方法一定要与所有父接口中的 draw 方法是**类型兼容**的：
+
+```ts
+interface Style {
+  draw(): { color: string };
+}
+interface Shape {
+  draw(): { x: number; y: number };
+}
+
+interface Circle extends Style, Shape {
+  draw(): { color: string; x: number; y: number };
+}
+```
+
+此例中，Circle 接口中定义了一个 draw 方法，它的返回值类型为 `{ color: string;x: number;y: number}`。它既能赋值给 `{ color: string}` 类型，也能赋值给 `{x: number;y: number}` 类型，因此不会产生编译错误。
+
+关于类型兼容性的详细介绍请参考 7.1 节。<!--TODO-->
+
+### 2.14 类型别名
+
+如同接口声明能够为对象类型命名，类型别名声明则能够为 TypeScript 中的任意类型命名。
+
+#### 2.14.1 类型别名声明
+
+类型别名声明能够定义一个类型别名，它的基本语法如下所示：
+
+```ts
+type AliasName = Type;
+```
+
+在该语法中，type 是声明类型别名的关键字；AliasName 表示类型别名的名称；Type 表示类型别名关联的具体类型。
+
+类型别名的名称必须为合法的标识符。由于类型别名表示一种类型，因此类型别名的首字母通常需要大写。同时需要注意，不能使用 TypeScript 内置的类型名作为类型别名的名称，例如 boolean、number 和 any 等。下例中，声明了一个类型别名 Point，它表示包含两个属性的对象类型：
+
+```ts
+type Point = { x: number; y: number };
+```
+
+类型别名引用的类型可以为任意类型，例如原始类型、对象类型、联合类型和交叉类型等：
+
+```ts
+type Stringtype = string;
+
+type BooleanType = true | false;
+
+type Point = { x: number; y: number; z?: number };
+```
+
+在类型别名中，也可以引用其他类型别名：
+
+```ts
+type Numeric = number | bigint;
+// string number bigint
+type StringOrNumber = string | Numeric;
+```
+
+类型别名不会创建出一种新的类型，它只是给已有类型命名并接引用该类型。在程序中，使用类型别名与直接使用该类型别名引用的类型是完全等价的。因此，在程序中可以直接使用类型别名引用的类型来替换掉类型别名：
+
+```ts
+type Point = { x: number; y: number };
+
+let a: Point;
+// let a: { x: number; y: number }
+```
+
+在程序中，可能会有一些比较复杂的或者书写起来比较长的类型，这时就可以声明一个类型别名来引用该类型，这也便于对这个类型进行重用。例如，下例中的 DecimalDigit 类型比较长，如果在每个引用该类型的地方都完整地写出该类型会很不方便。使用类型别名不但能够简化代码，还能够给该类型起一个具有描述性的名字：
+
+```ts
+type DecimalDigit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+
+const digit: DecimalDigit = 6;
+```
