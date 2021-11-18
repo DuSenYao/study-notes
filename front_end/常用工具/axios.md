@@ -592,8 +592,6 @@ params.append('param2', 'value2');
 axios.post('/foo', params);
 ```
 
-> 注意 : 所有浏览器都不支持 URLSearchParams（请参阅 caniuse.com），但可以使用 polyfill（确保填充全局环境）。
-
 或者，可以使用 qs 库编码数据：
 
 ```js
@@ -601,7 +599,7 @@ const qs = require('qs');
 axios.post('/foo', qs.stringify({ bar: 123 }));
 ```
 
-或者以另一种方式（ES6），
+或者以另一种方式（ES6）：
 
 ```js
 import qs from 'qs';

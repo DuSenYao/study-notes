@@ -1,31 +1,14 @@
 {
-  "cSpell.words": [
-    "EDVAC",
-    "Gunt",
-    "Kubernetes",
-    "MISP",
-    "SSIM",
-    "Skia",
-    "ation",
-    "gitk",
-    "lval",
-    "vorbis"
-  ],
+  "cSpell.words": ["EDVAC", "Gunt", "Kubernetes", "MISP", "SSIM", "Skia", "ation", "gitk", "lval", "vorbis"],
   "html.customData": [".vscode/html.html-data.json"],
-  "css.customData": [
-    ".vscode/css.css-data.json"
-  ],
+  "css.customData": [".vscode/css.css-data.json"],
   "todo-tree.tree.scanMode": "workspace only",
   "workbench.colorCustomizations": {
     "titleBar.activeBackground": "#215732",
     "titleBar.activeForeground": "#e7e7e7",
     "titleBar.inactiveBackground": "#21573299",
     "titleBar.inactiveForeground": "#e7e7e799",
-    "editorGroup.border": "#2f7c47",
-    "panel.border": "#2f7c47",
-    "sash.hoverBorder": "#2f7c47",
-    "sideBar.border": "#2f7c47"
+    "sash.hoverBorder": "#2f7c47"
   },
-  "peacock.color": "#215732",
-  "svg.preview.background": "editor"
+  "peacock.color": "#215732"
 }
