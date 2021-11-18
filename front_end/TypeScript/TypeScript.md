@@ -2736,3 +2736,178 @@ type DecimalDigit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 const digit: DecimalDigit = 6;
 ```
+
+#### 2.14.2 递归的类型别名
+
+一般情况下，在类型别名声明中赋值运算符右侧的类型不允许引用当前定义的类型别名。因为类型别名对其引用的类型使用的是及早求值的策略，而不是惰性求值的策略。因此，如果类型别名引用了自身，那么在解析类型别名时就会出现无限递归引用的问题：
+
+```ts
+type T = T; // 编译错误!类型别名 T 存在循环的自身引用
+```
+
+在 TypeScript 3.7 版本中，编译器对类型别名的解析进行了一些优化。在类型别名所引用的类型中，使用惰性求值的策略来解析泛型类型参数。因此，允许在泛型类型参数中递归地使用类型别名。总结起来，目前允许在以下场景中使用递归的类型别名：
+
+1. 若类型别名引用的类型为接口类型、对象类型字面量、函数类型字面量和构造函数类型字面量，则允许递归引用类型别名：
+
+   ```ts
+   type T0 = { name: T0 };
+   type T1 = () => T1;
+   type T2 = new () => T2;
+   ```
+
+2. 若类型别名引用的是数组类型或元组类型，则允许在元素类型中递归地引用类型别名：
+
+   ```ts
+   type T0 = Array<T0>;
+   type T1 = T1[];
+   type T3 = [number, T3];
+   ```
+
+3. 若类型别名引用的是泛型类或泛型接口，则允许在类型参数中递归的引用类型别名。关于泛型的详细介绍请参考 6.1 节：<!--TODO-->
+
+   ```ts
+   interface A<T> {
+     name: T;
+   }
+   type T0 = A<T0>;
+
+   class B<T> {
+     name: T | undefined;
+   }
+   type T1 = B<T1>;
+   ```
+
+通过递归的类型别名能够定义一些特别常用的类型。TypeScript 官方文档中给出了使用递归的类型别名来定义 Json 类型的例子：
+
+```ts
+type Json = string | number | boolean | null | { [property: string]: Json } | Json[];
+
+const data: Json = {
+  name: 'TypeScript',
+  version: { major: 3 }
+};
+```
+
+#### 2.14.3 类型别名与接口的差别
+
+类型别名与接口相似，它们都可以给类型命名并通过该名字来引用表示的类型。虽然在大部分场景中两者是可以互换使用的，但类型别名和接口之间还是存在一些差别：
+
+1. **类型别名能够表示非对象类型，而接口则只能表示对象类型**。因此，当想要表示原始类型、联合类型和交叉类型等类型时只能使用类型别名：
+
+   ```ts
+   type NumericType = number | bigint;
+   ```
+
+2. **接口可以继承其他的接口、类等对象类型，而类型别名则不支持继承**：
+
+   ```ts
+   interface Shape {
+     name: string;
+   }
+   interface Circle extends shape {
+     radius: number;
+   }
+   ```
+
+   若要对类型别名实现类似继承的功能，则需要使用一些变通方法。例如，当类型别名表示对象类型时，可以**借助于交叉类型来实现继承的效果**：
+
+   ```ts
+   type Shape = { name: string };
+   type Circle = Shape & { radius: number };
+   function foo(circle: Circle) {
+     const name = circle.name;
+     const radius = circle.radius;
+   }
+   ```
+
+   此例中的方法只适用于表示对象类型的类型别名。如果类型别名表示非对象类型，则无法使用该方法。关于交叉类型的详细介绍请参考 6.4 节<!--TODO-->。
+
+3. 接口名总是会显示在编译器的诊断信息（例如，错误提示和警告）和代码编辑器的智能提示信息中，而类型别名的名字只在特定情况下才会显示出来：
+
+   ```ts
+   type NumericType = number | bigint;
+   interface Circle {
+     radius: number;
+   }
+
+   function f(value: NumericType, circle: Circle) {
+     // 编译错误! Type 'number | bigint' is not assignable to type boolean
+     const bar: boolean = value;
+     // 编译错误! Type 'Circle' is not assignable to type 'boolean'
+     const baz: boolean = circle;
+   }
+   ```
+
+   此例中，分别定义了 NumericType 类型别名和 Circle 接口。在 f 函数中，有意制造了两个和它们有关的类型错误。第一个与类型别名有关的错误消息没有显示出类型别名的名字，而是将类型别名表示的具体类型展开显示，即 "number | bigint" 联合类型。第二个在与接口有关的错误消息中直接显示了接口的名字 "Circle"。
+
+   只有当类型别名表示数组类型、元组类型以及类或接口的泛型实例类型时，才会在相关提示信息中显示类型别名的名字：
+
+   ```ts
+   type Point = [number, number];
+
+   function f(value: Point) {
+     // 编译错误! Type 'Point' is not assignable to type 'boolean'
+     const bar: boolean = value;
+   }
+   ```
+
+4. **接口具有声明合并的行为，而类型别名则不会进行声明合并**：
+
+   ```ts
+   interface A {
+     x: number;
+   }
+   interface A {
+     y: number;
+   }
+   ```
+
+   此例中，定义了两个同名接口 A，最终这两个接口中的类型成员会被合并。合并后的接口 A 如下所示：
+
+   ```ts
+   interface A {
+     x: number;
+     y: number;
+   }
+   ```
+
+   关于声明合并的详细介绍请参考 7.10<!--TODO-->
+
+### 2.15 类
+
+JS 是一门面向对象的编程语言，它允许通过对象来建模和解决实际问题。同时，JS 支持基于原型链的对象继承机制。虽然大多数的面向对象编程语言都支持类，但是 JS 语在很长一段时间内都没有支持它。在 JS 程序中，需要使用函数来实现类的功能。
+
+在 ECMAScript 2015 规范中正式地定义了类。同时，TypeScript 语言也对类进行了全面的支持。
+
+#### 2.15.1 类的定义
+
+虽然 JS 支持了类，但其本质上仍是函数，类是一种语法糖。TypeScript 语言对 JS 中的类进行了扩展，为其添加了类型支持，如实现接口、泛型类等。
+
+定义一个类需要使用 `class` 关键字。类似于函数定义，类的定义也有以下两种方式：
+
+- 类声明
+- 类表达式
+
+##### 2.15.1.1 类声明
+
+类声明能够创建一个类，类声明的语法如下所示
+
+```ts
+class className {
+  // ...
+}
+```
+
+在该语法中，`class` 是关键字；ClassName 表示类的名字。在类声明中的类名是必选的。按照惯例，类名的首字母应该大写：
+
+```ts
+class Circle {
+  radius: number;
+}
+
+const c = new Circle();
+```
+
+此例中，声明了一个 Circle 类，它包含一个 number 类型的 radius 属性。使用 `new` 关键字能够创建类的实例。
+
+与函数声明不同的是，类声明不会被提升，因此必须先声明后使
