@@ -100,6 +100,49 @@
       - [2.15.4 成员存取器](#2154-成员存取器)
       - [2.15.5 索引成员](#2155-索引成员)
       - [2.15.6 成员可访问性](#2156-成员可访问性)
+        - [2.15.6.1 public](#21561-public)
+        - [2.15.6.2 protected](#21562-protected)
+        - [2.15.6.3 private](#21563-private)
+        - [2.15.6.4 私有字段](#21564-私有字段)
+      - [2.15.7 构造函数](#2157-构造函数)
+      - [2.15.8 参数成员](#2158-参数成员)
+      - [2.15.9 继承](#2159-继承)
+        - [2.15.9.1 重写基类成员](#21591-重写基类成员)
+        - [2.15.9.2 派生类实例化](#21592-派生类实例化)
+        - [2.15.9.3 单继承](#21593-单继承)
+        - [2.15.9.4 接口继承类](#21594-接口继承类)
+      - [2.15.10 实现接口](#21510-实现接口)
+      - [2.15.11 静态成员](#21511-静态成员)
+        - [2.15.11.1 静态成员可访问性](#215111-静态成员可访问性)
+        - [2.15.11.2 继承静态成员](#215112-继承静态成员)
+      - [2.15.12 抽象类和抽象成员](#21512-抽象类和抽象成员)
+        - [2.15.12.1 抽象类](#215121-抽象类)
+        - [2.15.12.2 抽象成员](#215122-抽象成员)
+      - [2.15.13 this 类型](#21513-this-类型)
+      - [2.15.14 类类型](#21514-类类型)
+  - [三. 类型进阶](#三-类型进阶)
+    - [3.1 泛型](#31-泛型)
+      - [3.1.1 泛型简介](#311-泛型简介)
+      - [3.1.2 形式类型参数](#312-形式类型参数)
+        - [3.1.2.1 形式类型参数声明](#3121-形式类型参数声明)
+        - [3.1.2.2 类型参数默认类型](#3122-类型参数默认类型)
+        - [3.1.2.3 可选的类型参数](#3123-可选的类型参数)
+      - [3.1.3 实际类型参数](#313-实际类型参数)
+      - [3.1.4 泛型约束](#314-泛型约束)
+        - [3.1.4.1 泛型约束声明](#3141-泛型约束声明)
+        - [3.1.4.2 泛型约束引用类型参数](#3142-泛型约束引用类型参数)
+        - [3.1.4.3 基约束](#3143-基约束)
+        - [3.1.4.4 常见错误](#3144-常见错误)
+      - [3.1.5 泛型类型](#315-泛型类型)
+        - [3.1.5.1 泛型函数定义](#3151-泛型函数定义)
+        - [3.1.5.2 泛型函数示例](#3152-泛型函数示例)
+        - [3.1.5.3 泛型函数类型推断](#3153-泛型函数类型推断)
+        - [3.1.5.4 泛型函数注意事项](#3154-泛型函数注意事项)
+      - [3.1.6 泛型接口](#316-泛型接口)
+      - [6.1.7 泛型类型别名](#617-泛型类型别名)
+        - [6.1.7.1 泛型类型别名定义](#6171-泛型类型别名定义)
+        - [3.1.7.2 泛型类型别名示例](#3172-泛型类型别名示例)
+      - [3.1.8 泛型类](#318-泛型类)
 
 <!-- /code_chunk_output -->
 
@@ -115,9 +158,9 @@
 
 #### 1.1.1 始于 JS，终于 JS
 
-TypeScript 是一门专为开发大规模 JS 应用程序而设计的编程语言，是 JS 的超集，包含了 JS 现有的全部功能，并且使用了与 JS 相同的语法和语义。因此， JS 程序本身已经是合法的 TypeScript 程序了。
+TypeScript 是一门专为开发大规模 JS 应用程序而设计的编程语言，是 JS 的超集，包含了 JS 现有的全部功能，并且使用了与 JS 相同的语法和语义。因此，JS 程序本身已经是合法的 TypeScript 程序了。
 
-开发者不但能够快速地将现有的 JS 程序迁移 TypeScript，而且能够继续使用依赖的 JS 库，比如 jQuery 等。因此，就算现有工程依赖的第三方代码库没有迁移到 TypeScript，它也不会阻碍程序开发。反之， TypeScript 能够更好地利用现有的 JS 代码库。
+开发者不但能够快速地将现有的 JS 程序迁移 TypeScript，而且能够继续使用依赖的 JS 库，比如 jQuery 等。因此，就算现有工程依赖的第三方代码库没有迁移到 TypeScript，它也不会阻碍程序开发。反之，TypeScript 能够更好地利用现有的 JS 代码库。
 
 TypeScript 代码不能直接运行，它需要先被编译成 JS 代码 然后才能 TypeScript 编译器（tsc）将负责把 TypeScript 代码编译为 JS 代码。例如：
 
@@ -3171,3 +3214,1626 @@ circle.radius; // 10
 - private
 
 这三种可访问性修饰符是 TypeScript 语言对 JS 语言的补充。在 JS 中不支持这三种可访问性修饰符。本节会涉及与继承相关的部分内容，关于继承的详细介绍参考 5.15.9 <!--TODO-->
+
+##### 2.15.6.1 public
+
+类的公有成员没有访问限制，可以在当前类的内部、外部以及派生类的内部访问。类的公有成员使用 `public` 修饰符标识：
+
+```ts
+class Base {
+  public a: string = '';
+}
+
+class Derived extends Base {
+  public b() {
+    return this.a; // 允许访问
+  }
+}
+
+const derived = new Derived();
+
+derived.a; // 允许访问
+derived.b(); // 允许访问
+```
+
+在默认情况下，类的所有成员都是公有成员。因此，在定义公有成员时也可以省略 `public` 修饰符。
+
+##### 2.15.6.2 protected
+
+类的受保护成员允许在当前类的内部和派生类的內部访问，但是不允许在当前类的外部访问。类的受保护成员使用 `protected` 修饰符标识。
+
+```ts
+class Base {
+  protected x: string = '';
+  a() {
+    this.x; // 允许访问
+  }
+}
+class Derived extends Base {
+  b() {
+    this.x; // 允许访问
+  }
+}
+
+const base = new Base();
+base.x; // 不允许访问
+```
+
+##### 2.15.6.3 private
+
+类的私有成员只允许在当前类的内部被访问，在当前类的外部以及派生类的内部都不允许访问。类的私有成员使用 `private` 修饰符标识：
+
+```ts
+class Base {
+  private x: string = '';
+
+  a() {
+    this.x; // 允许访问
+  }
+}
+class Derived extends Base {
+  b() {
+    this.x; // 不允许访问
+  }
+}
+
+const base = new Base();
+base.x; // 不允许访问
+```
+
+##### 2.15.6.4 私有字段
+
+ECMAScript 标准在 2020 年 1 月引入了一个新特性，那就是允许在类中定义私有字段。这意味着 JS 语言将原生地支持类的私有成员。TypeScript 也从 3.8 版本开始支持该特性。在 ECMAScript 标准中，类的私有字段使用一种新的语法来定义，即在字段标识符前添一个 `#` 符号。不论是在定义私有字段时还是在访问私有字段时都需要在私有字段名前添加一个 `#` 符号：
+
+```ts
+class Circle {
+  #radius: number;
+
+  construct() {
+    this.#radius = 0;
+  }
+}
+const circle = new Circle();
+circle.#radius; // 不允许访问
+```
+
+在写作本书时，该特性还处于早期实现版本，所以这里只作简单介绍。关于在未来 TypeScript 是否会弃用 private 修饰符，仅支持标准的私有字段语法这一话题还在讨论当中，感兴趣的读者可以继续关注。
+
+#### 2.15.7 构造函数
+
+构造函数用于创建和初始化类的实例。当使用 new 运算符调用个类时，类的构造函数就会被调用。构造函数以 `constructor` 作为函数名：
+
+```ts
+class Circle {
+  radius: number;
+
+  constructor(r: number) {
+    this.radius = r;
+  }
+}
+const c = new Circle(1);
+```
+
+与普通函数相同，在构造函数中也可以定义可选参数、默认值参数和剩余参数。但是构造函数不允许定义返回值类型，因为构造函数的返回值类型永远为类的实例类型：
+
+```ts
+class a {
+  constructor(a: number = 0, b?: boolean, ...c: string[]) {}
+}
+
+class B {
+  constructor(): object {
+    // 编译错误! 不允许指定构造函数的返回值类型
+  }
+}
+```
+
+在构造函数上也可以使用可访问性修饰符。它描述的是在何处允许使用该类来创建实例对象。在默认情况下，构造函数是公有的。如果将构造函数设置成私有的，则只允许在类的內部创建该类的对象。
+
+```ts
+class Singleton {
+  private static instance?: Singleton;
+
+  private constructor() {}
+
+  static getInstance() {
+    if (Singleton.instance) {
+      // 允许访问
+      Singleton.instance = new Singleton();
+    }
+    return new Singleton.instance();
+  }
+}
+
+new Singleton(); // 编译错误
+```
+
+与[函数重载](#212121-函数重载)类似，构造函数也支持重载。将没有函数体的构造函数声明称为构造函数重载，同时将定义了函数体的构造函数声明称为构造函数实现。构造函数重载可以存在零个或多个，而构造函数实现只能存在一个：
+
+```ts
+class A {
+  constructor(x: number, y: number);
+  constructor(s: string);
+  constructor(xs: number | string, y?: number) {}
+}
+const a = new A(0, 0);
+const b = new A('foo');
+```
+
+#### 2.15.8 参数成员
+
+TypeScript 提供了一种简洁语法能够把构造函数的形式参数声明为类的成员变量，它叫作参数成员。在构造函数参数列表中，为形式参数添加任何一个可访问性修饰符或者 readonly 修饰符，该形式参数就成了参数成员，进而会被声明为类的成员变量：
+
+```ts
+class A {
+  constructor(public x: number, protected y: number, private z: number) {}
+}
+const a = new A(0);
+a.x; // 0
+```
+
+readonly 修饰符也可以和任意一个可访问性修饰符结合使用来定义只读的参数成员。
+
+```ts
+class A {
+  construct(public readonly x: number) {}
+}
+```
+
+#### 2.15.9 继承
+
+继承是面向对象程序设计的三个基本特征之一，TypeScript 中的类也支持继承。在定义类时可以使用 `extends` 关键字来指定要继承的类。
+
+```ts
+class DerivedClass extends BaseClass {}
+```
+
+在该语法中，将 Baseclass 叫作**基类**，将 DerivedClass 叫作**派生类**，派生类继承了基类。有时候，也将基类称作父类，将派生类称作子类。
+
+当派生类继承了基类后，就自动继承了基类的非私有成员。例如下例中 Circle 类继承了 Shape 类。因此，Circle 类获得了 Shape 类的 coloR 和 switchColor 公有成员。可以在 Circle 类的实例对象上访问 color 成员变量和调用 switchColor 成员函数：
+
+```ts
+class Shape {
+  color: string = 'black';
+
+  switchColor() {
+    this.color = this.color === 'black' ? 'white' : 'black';
+  }
+}
+class Circle extends Shape {}
+
+const circle = new Circle();
+circle.color; // "black"
+circle.switchColor();
+circle.color; // "white"
+```
+
+##### 2.15.9.1 重写基类成员
+
+在派生类中可以重写基类的成员变量和成员函数。在重写成员变量和成员函数时，需要在派生类中定义与基类中同名的成员变量和成员函数。
+
+在派生类中，可以通过 `super` 关键字来访问基类中的非私有成员。当派生类和基类中存在同名的非私有成员时，在**派生类中只能通过 `super` 关键字来访问基类中的非私有成员**，无法使用 `this` 关键字来引用基类中的非私有成员。
+
+若派生类重写了基类中的受保护成员，则可以将该成员的可访问性设置为受保护的或公有的。也就是说，在**派生类中只允许放宽基类成员的可访问性**。
+
+由于派生类是基类的子类型，因此在**重写基类的成员时需要保证子类型兼容性 7.1 节**<!--TODO-->：
+
+```ts
+class Shape {
+  color: string = 'black';
+  switchColor() {
+    this.color = this.color === 'black' ? 'white' : 'black';
+  }
+}
+
+class Circle extends Shape {
+  // 编译错误
+  // 类型 '(color: string) =>void' 不能赋值给类型 '()=>void'
+  switchColor(color: string) {}
+}
+```
+
+##### 2.15.9.2 派生类实例化
+
+在派生类的构造函数中必须调用基类的构造函数，否则将不能正确地实例化派生类。在派生类的构造函数中使用 `super()` 语句就能够调用基类的构造函数：
+
+```ts
+class Shape {
+  color: string = 'black';
+  constructor() {
+    this.color = 'black';
+  }
+}
+
+class Circle extends Shape {
+  radius: number;
+  constructor() {
+    super();
+    this.radius = 1;
+  }
+}
+```
+
+在派生类的构造函数中，引用了 `this` 的语句必须放在 `super()` 调用的语句之后，否则将产生编译错误，因为在基类初始化之前访问类的成员可能会产生错误。在实例化派生类时的初始化顺序如下：
+
+1. 初始化基类的属性
+2. 调用基类的构造函数
+3. 初始化派生类的属性
+4. 调用派生类的构造函数
+
+```ts
+class Shape {
+  color: string = 'black'; // 1
+
+  constructor() {
+    // 2
+    console.log(this.color);
+    this.color = 'white';
+    console.log(this.color);
+  }
+}
+
+class Circle extends Shape {
+  radius: number = 1; // 3
+
+  constructor() {
+    // 4
+    super();
+    console.log(this.radius);
+    this.radius = 2;
+    console.log(this.radius);
+  }
+}
+const circle = new Circle();
+
+// 输出结果为
+// black
+// white
+// 1
+// 2
+```
+
+##### 2.15.9.3 单继承
+
+TypeScript 中的**类仅支持单继承，不支持多继承**。也就是说，在 `extends` 语句中只能指定一个基类。
+
+##### 2.15.9.4 接口继承类
+
+TypeScript 允许接口继承类。若接口继承了一个类，那么该接口会继承基类中所有成员的类型。例如，下例中接口 B 继承了类 A。因此，接口 B 中包含了 string 类型的成员 x 和方法类型 y：
+
+```ts
+class A {
+  x: string;
+  y(): boolean {
+    return true;
+  }
+}
+
+interface B extends A {}
+declare const b: B;
+b.x; // 类型为 string
+b.y(); // 类型为 boolean
+```
+
+在接口继承类时，接口不但会继承基类的公有成员类型，还会继承基类的受保护成员类型和私有成员类型。如果接口从基类继承了非公有成员，那么该接口只能由基类或基类的子类来实现：
+
+```ts
+// 正确，A 可以实现接口 I，因为私有属性和受保护属性源自同一个类 A
+class A implements I {
+  private x: string = '';
+  protected y: string = '';
+}
+
+// 接口 I 能够继承 A 的私有属性和受保护属性
+interface I extends A {}
+
+// 正确，B 可以实现接口 I，因为私有属性和受保护属性源自同一个类 A
+class B extends A implements I {}
+
+// 错误! C 不是 A 的子类，无法实现 A 的私有属性和受保护属性
+class C implements I {}
+```
+
+#### 2.15.10 实现接口
+
+虽然一个类只允许继承一个基类，但是可以实现一个或多个接口。在定义类时，使用 `implements` 语句能够声明类所实现的接口。当实现多个接口时，接口名之间使用逗号 `,` 分隔：
+
+```ts
+interface A {}
+interface B {}
+class C implements A, B {}
+```
+
+如果类的定义中声明了要实现的接口，那么这个类就需要实现接口中定义的类型成员。下例中，Circle 类声明了要实现 Shape 和 Color 两个接口。因此，在 Circle 类中需要实现两个接口中定义的类型成员 color 和 area：
+
+```ts
+interface Color {
+  color: string;
+}
+
+interface Shape {
+  area(): number;
+}
+
+class Circle implements Shape, Color {
+  radius: number = 1;
+  color: string = 'black';
+
+  area(): number {
+    return math.PI * this.radius * this.radius;
+  }
+}
+```
+
+#### 2.15.11 静态成员
+
+类的定义中可以包含静态成员。类的静态成员不属于类的某个实例，而是属于类本身。类的静态成员使用 `static` 关键字定义，并且只允许通过类名来访问。
+
+例如，下例中 Circle 类定义了静态成员变量 version，它只允许通过类名 Circle 进行访问：
+
+```ts
+class Circle {
+  static version: string = '1.0';
+}
+
+// 正确，结果为 '1.0'
+const version = Circle.version;
+
+const circle = new Circle();
+circle.version;
+// 编译错误! 'version' 属性是 Circle 类的静态属性
+```
+
+##### 2.15.11.1 静态成员可访问性
+
+类的静态成员也可以定义不同的可访问性，如 public、 private 和 protected。
+
+- 类的 `public` 静态成员对访问没有限制，可以在当前类的内部、外部以及派生类的内部访问。
+- 类的 `protected` 静态成员允许在当前类的内部和派生类的内部访问，但是不允许在当前类的外部访问。
+- 类的 `private` 静态成员只允许在当前类的内部访问。
+
+##### 2.15.11.2 继承静态成员
+
+类的 `public` 静态成员和 `protected` 静态成员也可以被继承。例如，下例中派生类 Derived 继承了基类 Base 的静态成员 x 和 y：
+
+```ts
+class Base {
+  public static x: string = '';
+  protected static y: string = '';
+}
+class Derived extends Base {
+  b() {
+    // 继承了基类的静态成员 x
+    Derived.x;
+    // 继承了基类的静态成员 y
+    Derived.y;
+  }
+}
+```
+
+#### 2.15.12 抽象类和抽象成员
+
+前面介绍的类和类的成员都属于具体类和具体类成员。TypeScript 支持定义抽象类和抽象类成员。抽象类和抽象类成员都使用 `abstract` 关键字来定义。
+
+##### 2.15.12.1 抽象类
+
+定义抽象类时，只需要在 class 关键字之前添加 `abstract` 关键字即可：
+
+```ts
+abstract class A {}
+```
+
+抽象类与具体类的一个重要区别是，抽象类不能被实例化。也就是说，不允许使用 new 运算符来创建一个抽象类的实例：
+
+```ts
+abstract class A {}
+const a = new A(); // 编译错误! 不能创建抽象类的实例
+```
+
+**抽象类的作用是作为基类使用，派生类可以继承抽象类**：
+
+```ts
+abstract class Base {}
+class Derived extends Base {}
+
+const derived = new Derived();
+```
+
+抽象类也可以继承其他抽象类：
+
+```ts
+abstract class Base {}
+abstract class Derived extends Base {}
+```
+
+抽象类中允许（通常）包含抽象成员，也允许包含非抽象成员：
+
+```ts
+abstract class Base {
+  abstract a: string;
+  b: string;
+}
+```
+
+##### 2.15.12.2 抽象成员
+
+在抽象类中允许声明抽象成员，抽象成员不允许包含具体实现代码：
+
+```ts
+// 以下用法均为正确用法
+abstract class A {
+  abstract a: string;
+  abstract b: number = 0;
+  abstract method(): string;
+
+  abstract get accessor(): string;
+  abstract set accessor(value: string);
+}
+
+abstract class B {
+  // 编译错误! 抽象方法不能带有具体实现
+  abstract method() {}
+
+  // 编译错误! 抽象存取器不能带有具体实现
+  abstract get c(): string {
+    return '';
+  }
+  abstract set c(value: string) {}
+}
+```
+
+如果一个具体类继承了抽象类，那么在具体的派生类中必须实现抽象类基类中的所有抽象成员。因此，**抽象类中的抽象成员不能声明为 private**，否则将无法在派生类中实现该成员：
+
+```ts
+abstract class Base {
+  abstract a: string;
+  abstract get accessor(): string;
+  abstract set accessor(value: string);
+
+  abstract method(): boolean;
+}
+
+class Derived extends Base {
+  // 实现抽象属性 a
+  a: string = '';
+
+  // 实现抽象存取器 accessor
+  private _accessor: string = '';
+  get accessor(): string {
+    return this._accessor;
+  }
+  set accessor(value: string) {
+    this._accessor = value;
+  }
+
+  // 实现抽象方法 method
+  method(): boolean {
+    return true;
+  }
+}
+```
+
+若没有正确地在具体的派生类中实现抽象成员，将产生编译错误。
+
+#### 2.15.13 this 类型
+
+在类中存在一种特殊的 this 类型，它表示当前 this 值的类型。可以在类的非静态成员的类型注解中使用 this 类型。例如，下例中 add() 方法和 subtract() 方法的返回值类型为 this 类型。下面可以链式调用 add() 方法和 subtract() 方法，因为它们返回的是当前实例对象：
+
+```ts
+class Counter {
+  private count: number = 0;
+  public add(): this {
+    this.count++;
+    return this;
+  }
+  public subtract(): this {
+    this.count--;
+    return this;
+  }
+
+  public getResult(): number {
+    return this.count;
+  }
+}
+
+const counter = new Counter();
+counter.add().add().subtract().getResult(); // 结果为 1
+```
+
+需要强调的是，this 类型是动态的，表示当前 this 值的类型。当前 this 值的类型不一定是引用了 this 类型的那个类，该差别主要体现在类之间有继承关系的时候。示例如下：
+
+```ts
+class A {
+  foo(): this {
+    return this;
+  }
+}
+class B extends A {
+  bar(): this {
+    return this;
+  }
+}
+
+const b = new B();
+const x = b.bar().foo(); // 类型为 B
+```
+
+> **注意**：this 类型不允许应用于类的静态成员。
+
+#### 2.15.14 类类型
+
+类声明将会引入一个新的命名类型，即与类同名的类类型。**类类型表示类的实例类型，它由类的实例成员类型构成**。例如，下例中 Circle 类声明同时也定义了 Circle 类类型，该类型包含 number 类型的 radius 属性和函数类型的 area 属性。该类类型与 CircleType 接口表示的对象类型是相同的类型：
+
+```ts
+class Circle {
+  radius: number;
+  area(): number {
+    return math.PI * this.radius * this.radius;
+  }
+}
+
+interface CircleType {
+  radius: number;
+  area(): number;
+}
+
+// 正确
+const a: Circle = new Circle();
+// 正确
+const b: CircleType = new Circle();
+```
+
+在定义一个类时，实际上定义了一个构造函数。随后，可以使用 new 运算符和该构造函数来创建类的实例。可以将该类型称作类的构造函数类型，在该类型中也包含了类的静态成员类型。
+
+例如，下例中常量 a 的类型是类类型 A，也就是类的实例类型。常量 b 的类型是类的构造函数类型，使用了包含构造签名的接口表示该类型，并将类 A 赋值给了常量 b。不难发现，类的静态成员 x 是类构造函数类型的一部分：
+
+```ts
+class A {
+  static x: number = 0;
+  y: number = 0;
+}
+
+// 类类型，即实例类型
+const a: A = new A();
+interface AConstructor {
+  new (): A;
+  x: number;
+}
+```
+
+## 三. 类型进阶
+
+主要内容：
+
+- 带有类型参数的泛型
+- 具有块级作用域的局部类型
+- 常用的联合类型和交叉类型
+- 实用的索引类型、映射对象类型以及条件类型
+- TypeScript 内置的实用工具类型
+- 能够获取表达式类型的类型查询
+- 类型断言与类型细化
+
+这些类型具有更加丰富的表达能力，并且在实际程序中是不可或缺的。本章中的大部分类型都是由基础类型构成的复合类型。
+
+### 3.1 泛型
+
+泛型程序设计是一种编程风格或编程范式，它允许在程序中定义形式类型参数，然后在泛型实例化时使用实际类型参数来替换形式类型参数。通过泛型，能够定义通用的数据结构或类型，这些数据结构或类型仅在它们操作的实际类型上有差别。泛型程序设计是实现可重用组件的一种手段。
+
+#### 3.1.1 泛型简介
+
+通过一个 identity 函数来介绍泛型的基本应用。identity 函数也叫作恒等函数，它的返回值永远等于传入的参数。
+
+首先，定义一个非泛型版本的 identity 函数。将 identity 函数的参数类型和返回值类型都定义为 number 类型：
+
+```ts
+function identity(arg: number): number {
+  return arg;
+}
+identity(0);
+```
+
+此例中，identity 函数的使用场景非常有限，它只能接受 number 类型的参数。如果想让 identity 函数能够接受任意类型的参数，那么就需要使用顶端类型。例如，下例中将 identic!函数的参数类型和返回值类型都声明为 unknown 类型，这样它就可以同时处理 number 类型、string 类型以及对象类型等的值：
+
+```ts
+function identity(arg: unknown): unknown {
+  return arg;
+}
+
+identity(0);
+identity('foo');
+identity({ x: 0, y: 0 });
+```
+
+虽然 any 类型或 unknown 类型能够让 identity 函数变得通用，使其能够接受任意类型的参数，但是却失去了参数类型与返回值类型相同这个重要信息。从 identity 函数声明中只能了解到该函数接受任意类型的参数并返回任意类型的值，参数类型与返回值类型之间并无联系。那么，需要有一种方式既能够捕获传入参数的类型，又能够使用捕获的传入参数类型作为函数返回值的类型。这样一来，identity 函数不但能够接受仼意类型的参数，还能够保证参数类型与返回值类型是一致的：
+
+接下来，尝试给 identity 函数添加一个类型参数：
+
+```ts
+function identity<T>(arg: T): T {
+  return arg;
+}
+```
+
+此例中，T 是 identity 函数的一个类型参数，它能够捕获 identity 函数的参数类型并用作返回值类型。从 identity 函数的类型注解中能够观察到，传入参数的类型与返回值类型是相同的类型，两者均为类型 T。称该版本的 identity 函数为泛型函数。
+
+在调用 identity 泛型函数时，能够为类型参数 T 传入一个实际类型：
+
+```ts
+function identity<T>(arg: T): T {
+  return arg;
+}
+const foo = identity<string>('foo'); // 能够推断出 'foo' 的类型为 string
+
+const bar = identity<string>(true); // 编译错误!
+```
+
+在大部分情况下，程序中不需要显式地指定类型参数的实际类型。TypeScript 编译器能够根据函数调用的实际参数自动地推断岀类型参数的实际类型。例如，下例中在调用 identity 型函数时没有指定类型参数 T 的实际类型，但是编译器能够根据传入的实际参数的类型推断出泛型类型参数 T 的实际类型，进而又能够推断岀 identity 泛型函数的返回值类型。示例如下：
+
+```ts
+function identity<T>(arg: T): T {
+  return arg;
+}
+
+const foo = identity('too'); // 能够推断出 foo 的类型为 string
+const bar = identity(true); // 能够推断出 bar 的类型为 true
+```
+
+#### 3.1.2 形式类型参数
+
+##### 3.1.2.1 形式类型参数声明
+
+泛型类型参数能够表示绑定到泛型类型或泛型函数调用的某个实际类型。在类声明、接口声明、类型别名声明以及函数声明中都支持定义类型参数。泛型形式类型参数列表定义的具体语法如下所示：
+
+```ts
+<TypeParameter, TypeParameter, ...>
+```
+
+在该语法中，TypeParameter 表示形式类型参数名，形式类型参数需要置于 `<` 和 `>` 符号之间。当同时存在多个形式类型参数时，类型参数之间需要使用逗号 `,` 进行分隔。
+
+形式类型参数名必须为合法的标识符。形式类型参数名通常以大写字母开头，因为它代表一个类型。在一些编程风格指南中，推荐给形式类型参数取一个具有描述性的名字，如 TResponse，同时还建议形式类型参数名以大写字母 T（Type 的首字母）作为前缀。另一种流行的命名方法是使用单个大写字母作为形式类型参数名。该风格的命名通常由字母 T 开始，并依次使用后续的 U、V 等大写字母。若形式类型参数列表中只存在一个或者少量的类型参数，可以考虑采用该风格，但前提是不能影响程序的可读性：
+
+```ts
+function assign<T, U>(target: T, source: U): T & U {
+  // ...
+}
+```
+
+##### 3.1.2.2 类型参数默认类型
+
+在声明形式类型参数时，可以为类型参数设置一个默认类型，这类似于函数默认参数。语法如下：
+
+```ts
+<T = DefaultType>
+```
+
+该语法中，T 为形式类型参数，DefaultType 为类型参数 T 的默认类型，两者之间使用等号连接。
+
+类型参数的默认类型也可以引用形式类型参数列表中的其他类型参数，但是只能引用在当前类型参数左侧（前面）定义的类型参数。例如，下例中类型参数 U 的默认类型为类型参数 T。因为类型参数 T 是在类型参数 U 之前定义的，所以是正确的定义方式：
+
+```ts
+<T, U = T>
+```
+
+##### 3.1.2.3 可选的类型参数
+
+如果一个形式类型参数没有定义默认类型，那么它是一个必选类型参数；反之，如果一个形式类型参数定义了默认类型，那么它是一个可选的类型参数。在形式类型参数列表中，必选类型参数不允许出现在可选类型参数之后。
+
+编译器以从左至右的顺序依次解析并设置类型参数的默认类型。若一个类型参数的默认类型引用了其左侧声明的类型参数，则没有问题；若一个类型参数的默认类型引用了其右侧声明的类型参数，则会产生编译错误，因为此时引用的类型参数处于未定义的状态。
+
+#### 3.1.3 实际类型参数
+
+在引用泛型类型时，可以传入一个实际类型参数作为形式类型参数的值，该过程称作泛型的实例化。传入实际类型参数的语法如下：
+
+```ts
+<Type, Type, ...>
+```
+
+在该语法中，实际类型参数列表置于 `<` 和 `>` 符号之间 Type 表示一个实际类型参数，如原始类型、接口类型等；多个实际类型参数之间使用逗号 `,` 分隔。示例如下：
+
+```ts
+function identity<T>(arg: T): T {
+  return arg;
+}
+
+identity<number>(1);
+identity<Date>(new Date());
+```
+
+当显式地传入实际类型参数时，只有必选类型参数是一定要提供的，可选类型参数可以被省略，这时可选类型参数将使用其默认类型，示例如下：
+
+```ts
+function f<T, U = boolean>() {}
+f<string>();
+f<string, string>();
+```
+
+#### 3.1.4 泛型约束
+
+##### 3.1.4.1 泛型约束声明
+
+在泛型的形式类型参数上允许定义一个约束条件，它能够限定类型参数的实际类型的最大范围。将类型参数的约束条件称为泛型约束。定义泛型约束的语法如下所示：
+
+```ts
+<TypeParameter extends ConstraintType>
+```
+
+该语法中，TypeParameter 表示形式类型参数名；extends 是关键字；ConstraintType 表示一个类型，该类型用于约束 TypeParameter 的可选类型范围。
+
+下例使用 Point 类型来约束形式类型参数 T。这意味着实际类型参数必须是 Point 类型的子类型。关于类型兼容性的详细介绍请参考 7.1 <!--TODO-->节。示例如下：
+
+```ts
+interface Point {
+  x: number;
+  y: number;
+}
+function identity<T extends Point>(x: T): T {
+  return x;
+}
+
+// 正确
+identity({ x: 0, y: 0 });
+identity({ x: 0, y: 0, z: 0 });
+identity({ x: 0 }); // 编译错误!类型 {x: number;} 不能赋值给类型 Point
+```
+
+对于一个形式类型参数，可以同时定义泛型约束和默认类型，但默认类型必须满足泛型约束。具体语法如下：
+
+```ts
+<TypeParameter extends ConstraintType = DefaultType>
+```
+
+如果泛型形式类型参数定义了泛型约束，那么传入的实际类型参数必须符合泛型约束，否则将产生错误：
+
+```ts
+function f<T extends boolean>() {}
+
+f<false>();
+f<boolean>();
+f<string>(); // 编译错误
+```
+
+##### 3.1.4.2 泛型约束引用类型参数
+
+在泛型约束中，约束类型允许引用当前形式类型参数列表中的其他类型参数。例如，下例中形式类型参数 U 引用了在其左侧定义的形式类型参数 T 作为约束类型：
+
+```ts
+<T, U extend T>
+```
+
+下例中，形式类型参数 T 引用了在其右侧定义的形式类型参数 U：
+
+```ts
+<T extends U, U>
+```
+
+> **注意**：一个形式类型参数不允许直接或间接地将其自身作为约束类型，否则将产生循环引用的编译错误。
+
+```ts
+<T extends T> // 错误
+<T extends U, U extends T> // 错误
+```
+
+##### 3.1.4.3 基约束
+
+本质上，每个类型参数都有一个基约束（Base Constraint），它与是否在形式类型参数上定义了泛型约束无关。类型参数的实际类型一定是其基约束的子类型。对于任意的类型参数 T，其基约束的计算规则有三个：
+
+1. 如果类型参数 T 声明了泛型约束，且泛型约束为另一个类型参数 U，那么类型参数 T 的基约束为类型参数 U：
+
+   ```ts
+   <T extends U> // 类型参数 T 的基约束为类型参数 U
+   ```
+
+2. 如果类型参数 T 声明了泛型约束，且泛型约束为某一具体类型 Type，那么类型参数 T 的基约束为类型 Type：
+
+   ```ts
+   <T extends boolean>
+   ```
+
+3. 如果类型参数 T 没有声明泛型约束，那么类型参数 T 的基约束为空对象类型字面量 `{}`。除了 undefined 类型和 null 类型外，其他任何类型都可以赋值给[空对象类型字面量](#21134-空对象类型字面量)：
+
+   ```ts
+   <T> // 类型参数 T 的基约束为 `{}` 类型
+   ```
+
+##### 3.1.4.4 常见错误
+
+下面的代码演示了在使用泛型约束时容易岀现的一个错误：
+
+```ts
+interface Point {
+  x: number;
+  y: number;
+}
+function f<T extends Point>(arg: T): T {
+  // 编译错误! 类型 {x: number, y: number} 不能赋值给类型 T
+  return { x: 0, y: 0 };
+}
+```
+
+第一感觉可能是这段代码没有错误，因为返回值 {x:0, y:0} 的类型是泛型约束 Point 类型的子类型。实际上，这段代码是错误的，因为 f 函数的返回值类型应该与传入参数 arg 的类型相同，而不能仅满足泛型约束。从下例中可以更容易地发现问题所在：
+
+```ts
+function f<T extends boolean>(obj: T): T {
+  return true;
+}
+f<false>(false); // 返回值类型应该为 false
+```
+
+此例中，泛型函数的泛型约束为 boolean 类型，函数 f 参数类型和返回值类型相同，均为类型参数 T，函数体中直接返回了 true 值。f 函数调用泛型函数付传入了实际类型参数为 false 类型。因此，函数的参数类型和返回值类型均为 false 类型。但实际上根据泛型函数 f 的实现，其返回值类型为 true。
+
+#### 3.1.5 泛型类型
+
+若一个函数的函数签名中带有类型参数，那么它是一个泛型函数。泛型函数中的类型参数用来描述不同参数之间以及参数和函数返回值之间的关系。泛型函数中的类型参数既可以用于形式参数的类型，也可以用于函数返回值类型。
+
+##### 3.1.5.1 泛型函数定义
+
+函数签名分为[调用签名](#2128-调用签名)和[构造签名](#21210-构造签名)。这两种函数签名都支持定义类型参数。定义泛型调用签名的语法如下：
+
+```ts
+<T>(x: T): T
+```
+
+定义泛型构造签名的语法如下：
+
+```ts
+new<T>():T[];
+```
+
+##### 3.1.5.2 泛型函数示例
+
+下面再列举一些泛型函数定义与使用的例子：
+
+```ts
+function f0<T>(x: T): T {
+  return x;
+}
+const a: string = f0<string>('a');
+const b: number = f0<number>(0);
+```
+
+```ts
+// f1 函数接受两个相同类型的参数，函数返回值类型是数组并且数组元素类型与参数类型相同。
+function f1<T>(X: T, y: T): T[] {
+  return [x, y];
+}
+
+const a: number[] = f1<number>(0, 1);
+const b: boolean[] = f1<boolean>(true, false);
+```
+
+```ts
+// f2 函数接受两个不同类型的参数，并且返回值类型为对象类型。返回值对象类型中 x 属性的类型与参数 x 类型相同，y 属性的类型与参数 y 类型相同。
+function f2<T, U>(x: T, y: U): { x: T; y: U } {
+  return { x, y };
+}
+
+const a: { x: string; y: number } = f2<string, number>('a', 0);
+const b: { x: string; y: string } = f2<string, string>('a', 'aa');
+```
+
+```ts
+// f3 函数接受两个参数，参数 a 为任意类型的数组；参数是一个函数，该函数的参数类型与参数 a 的类型相同，并返回任意类型。f3 函数的返回值类型为参数回值类型的数组
+function f3<T, U>(a: T[], f: (x: T) => U): U[] {
+  return a.map(f);
+}
+
+const a: boolean[] = f3<number, boolean>([0, 1, 2], n => !!n);
+```
+
+##### 3.1.5.3 泛型函数类型推断
+
+在上一节的所有示例中，在调用泛型函数时都显式地指定了实际类型参数。示例如下：
+
+```ts
+function f0<T>(x: T): T {
+  return x;
+}
+
+// 显式地传入了 string 类型作为实际类型参数
+const a: string = f0<string>('a');
+```
+
+在大部分情况下，TypeScript 编译器能够自动推断出泛型函数的实际类型参数。如果在上例中没有传入实际类型参数，编译器也能够推断出实际类型参数，甚至比显式指定实际类型参数更加精确：
+
+```ts
+function f0<T>(x: T): T {
+  return x;
+}
+const a = f0('a'); // 推断出实际类型参数为：'a'
+const b = f0('b'); // 推断出 b 的类型为 'b' 而不是 string
+```
+
+> **注意**：此例中编译器推断出的实际类型参数不是 string 类型，而是字符串字面量类型 “a” 和 “b”。因为 TypeScript 有一个原则，始终将字面量视为字面量类型，只在必要的时候才会将字面量类型放宽为某种基础类型，例如 string 类型。此例中，字符串字面量类型 “a” 是比 string 类型更加精确的类型。在实际使用中，也正是希望编译器能够尽可能地帮助细化类型。关于类型放宽的详细介绍请参考 7.4 节。<!--TODO-->
+
+##### 3.1.5.4 泛型函数注意事项
+
+有些泛型函数完全可以定义为非泛型函数，也就是说没有必要使用泛型函数。如果一个函数既可以定义为非泛型函数，又可以定义为泛型函数，那么推荐使用非泛型函数的形式，因为它会更简洁也更易于理解。
+
+当泛型函数的类型参数只在函数签名中出现了一次（自身定义除外）时，该泛型函数是非必要的。示例如下：
+
+```ts
+function f<T>(x: T): void {
+  console.log(x);
+}
+```
+
+首先，函数个是一个合法的泛型函数。此例中，在类型参数声明 `<T>` 之外，类型参数 T 只出现了一次，即 "(x:T)"。在这种情况下，泛型函数就不是必需的，完全可以通过非泛型函数来实现相同的功能。示例如下：
+
+```ts
+function f0(x: string): void {
+  console.log(x);
+}
+function f1(x: any): void {
+  console.log(x);
+}
+```
+
+该问题的实质是，**泛型函数的类型参数是用来关联多个不同值的类型的，如果一个类型参数只在函数签名中出现一次，则说明它与其他值没有关联，因此不需要使用类型参数，直接声明实际类型即可**。
+
+从技术上讲，几乎任何函数都可以声明为泛型函数。**若泛型函数的类型参数不表示参数之间或参数与返回值之间的某种关系，那么使用泛型函数可能是一种反模式**。
+
+#### 3.1.6 泛型接口
+
+若接口的定义中带有类型参数，那么它是泛型接口。在泛型接口定义中，形式类型参数列表紧随接口名之后。泛型接口定义的语法如下所示：
+
+```ts
+interface MyArray<T> extends Array<T> {
+  first: T | undefined;
+  last: T | undefined;
+}
+```
+
+此例中，定义了泛型接口 MyArray，它包含一个类型参数 T。类型参数既可以用在接口的 extends 语句中，如 `Array<T>`，也可以用在接口类型成员上，如 `first:T | undefined`。在引用泛型接口时，必须指定实际类型参数，除非类型参数定义了默认类型。示例如下：
+
+```ts
+const a: Array<number> = [0, 1, 2];
+```
+
+此例中，使用泛型声明了数组类型，常量 a 是一个数字数组。值得一提的是，另一种声明数组类型的方式为 `number[]`。
+
+使用泛型是声明数组类型的两种方式之一，例如：`Array<number>`。`Array<T>` 是 TypeScript 内置的泛型数组类型，它的定义如下所示（从 TypeScript 源码中摘取部分代码）：
+
+```ts
+interface Array<T> {
+  pop(): T | undefined;
+  push(...items: T[]): number;
+  reverse(): T[];
+  [n: number]: T;
+  // ...
+}
+```
+
+在 `Array<T>` 泛型接口类型中，类型参数 T 表示数组元素类型。在接口中的方法签名和索引签名中都引用了类型参数 T。例如，reverse 方法会反转数组元素，它的返回值仍为由原数组元素构成的数组。因此，reverse 方法的返回值类型是 “T[]”，即由原数组元素类型构成的数组类型。
+
+#### 6.1.7 泛型类型别名
+
+若类型别名的定义中带有类型参数，那么它是泛型类型别名。
+
+##### 6.1.7.1 泛型类型别名定义
+
+在泛型类型别名定义中，形式类型参数列表紧随类型别名的名字之后。泛型类型别名定义的语法如下所示：
+
+```ts
+type Nullable<T> = T | undefined | null;
+```
+
+此例中，定义了一个名为 Nullable 的泛型类型别名，它有一个形式类型参数 T。该泛型类型别名表示可以为空的 T 类型，即 `Nullable<T>` 类型的值也可以为 undefined 或 null。
+
+##### 3.1.7.2 泛型类型别名示例
+
+在引用泛型类型别名表示的类型时，必须指定实际类型参数。接下来，再列举一些泛型类型别名定义与使用的例子。
+
+```ts
+// 使用泛型类型别名定义简单容器类型
+type Container<T> = { value: T };
+const a: Container<number> = { value: 0 };
+const b: Container<string> = { value: 'b' };
+```
+
+```ts
+// 使用泛型类型别名定义树形结构
+type Tree<T> = {
+  left: Tree<T> | null;
+  right: Tree<T> | null;
+};
+
+const tree: Tree<number> = {
+  value: 0,
+  left: {
+    value: 1,
+    left: {
+      value: 3,
+      left: null,
+      right: null
+    },
+    right: {
+      value: 4,
+      left: null,
+      right: null
+    }
+  },
+
+  right: {
+    value: 2,
+    left: null,
+    right: null
+  }
+};
+```
+
+#### 3.1.8 泛型类
+
+**若类的定义中带有类型参数，那么它是泛型类**。在泛型类定义中，形式类型参数列表紧随类名之后。定义泛型类的语法如下所示：
+
+```ts
+// 定义了泛型类 Container<T>，它有一个类型参数 T。
+class Container<T> {
+  constructor(private readonly data: T) {}
+}
+const a = new Container<boolean>(true);
+const b = new Container<number>(0);
+```
+
+上例中，使用的是类声明，另一种定义类的方式是类表达式。同样地，类表达式也可以带有类型参数，语法如下所示：
+
+```ts
+const Container = class<T> {
+  constructor(private readonly data: T);
+};
+const a = new Container<boolean>(true);
+const b = new Container<number>(0);
+```
+
+泛型类中的类型参数允许在类的继承语句和接口实现语句中使用，即 extends 语句和 implements 语句。例如，下例中分别定义了泛型接口 A 和泛型类 Base、Derived。其中，泛型类 Derived 继承了泛型类 Base 并且实现了泛型接口 A。在泛型类 Derived 中定义的类型参数 T 允许在基类和实现的接口中引用。示例如下：
+
+```ts
+interface A<T> {
+  a: T;
+}
+class Base<T> {
+  b?: T;
+}
+class Derived<T> extends Base<T> implements A<T> {
+  constructor(public readonly a: T);
+}
+```
+
+[类类型](#21514-类类型)中介绍过，每个类声明都会创建两种类型，即类的实例类型和类的构造函数类型。泛型类描述的是类的实例类型。因为类的静态成员是类构造函数类型的一部分，所以泛型类型参数不能用于类的静态成员。也就是说，在类的静态成员中不允许引用类型参数：
+
+```ts
+class Container<T> {
+  static version: T;
+  // 编译错误！静态成员不允许引用类型参数
+  constructor(private readonly data: T);
+}
+```
+
+### 3.2 局部类型
+
+TypeScript 同样支持声明具有块级作用域的局部类型，主要包括：
+
+- 局部枚举类型
+- 局部类类型
+- 局部接口类型
+- 局部类型别名
+
+下例中在函数 f 内部分别声明了以上几种局部类型：
+
+```ts
+function f<T>() {
+  enum E {
+    A,
+    B
+  }
+
+  class C {
+    x: string | undefined;
+  }
+
+  // 允许带有泛型参数
+  interface I<T> {
+    x: T;
+  }
+
+  // 可以引用其他局部类型
+  type A = E.A | E.B;
+}
+```
+
+此例中，枚举类型 E、类类型 C、接口类型 I 和类型别名 A 都是局部类型。局部类型也允许带有类型参数，并且可以引用外层作用域中的类型参数。
+
+类似于 let 和 const，局部类型拥有块级作用域。例如下例中在 if 和 else 支持中均声明了接口 T，它们仅在各自所处的块级作用域内生效。因此，这两个接口 T 不会相互影响，并且 if 分支中的代码也无法引用 else 分支中的接口 T。示例如下：
+
+```ts
+function f(x: boolean) {
+  if (x) {
+    interface T {
+      x: number;
+    }
+    const v: T = { x: 0 };
+  } else {
+    interface T {
+      x: string;
+    }
+    const v: T = { x: 'foo' };
+  }
+}
+```
+
+### 3.3 联合类型
+
+**联合类型由一组有序的成员类型构成**。联合类型表示一个值的类型可以为若干种类型之一。例如，联合类型 "string|number" 表示一个值的类型既可以为 string 类型也可以为 number 类型。联合类型通过联合类型字面量来定义。
+
+#### 3.3.1 联合类型字面量
+
+联合类型由两个或两个以上的成员类型构成，各成员类型之间使用竖线符号 `|` 分隔：
+
+```ts
+// 定义了一个名为 NumericType 的联合类型。该联合类型由两个成员类型组成，即 number 类型和 bigint 类型。
+// 若一个值既可能为 number 类型又可能为 bigint 类型，那么说该值的类型为联合类型 "number | bigint"
+type NumericType = number | bigint;
+```
+
+联合类型的成员类型可以为任意类型，如原始类型、数组类型、对象类型，以及函数类型等：
+
+```ts
+type T = boolean | string[] | { x: number } | (() => void);
+```
+
+如果联合类型中存在相同的成员类型，那么相同的成员类型将被合并为单一成员类型。例如，下例中的类型别名 T0 和 T1 都表示 boolean 类型，类型别名 T2 和 T3 都表示同一种联合类型 "boolean | string"：
+
+```ts
+type T0 = boolean; // boolean
+type T2 = boolean | string; // boolean | string
+type T3 = boolean | string | boolean; // boolean | string
+```
+
+联合类型是有序的成员类型的集合。在绝大部分情况下，成员类型满足类似于数学中的 “加法交换律”，即改变成员类型的顺序不影响联合类型的结果类型。
+
+联合类型的成员类型可以进行化简。假设有联合类型 "U = T0 | T1"，如果 T1 是 T0 的子类型，那么可以将类型成员 T1 从联合类型 U 中消去。最后，联合类型 U 的结果类型为 “U = T0”。例如，有联合类型 "boolean | true | false"。其中，true 类型和 false 类型是 boolean 类型的子类型，因此可以将 true 类型和 false 类型从联合类型中消去。最终，联合类型 "boolean | true | false" 的结果类型为 boolean 类型。示例如下：
+
+```ts
+// true 和 false 类型是 boolean 类型的子类型
+type T0 = boolean | true | false;
+// 所以 T0 等同于 T1
+type T1 = boolean;
+```
+
+关于子类型的详细介绍请参考 7.1 节。<!--TODO-->
+
+#### 3.3.2 联合类型的类型成员
+
+像接口类型一样，联合类型作为一个整体也可以有类型成员，只不过联合类型的类型成员是由其成员类型决定的。
+
+##### 3.3.2.1 属性签名
+
+若联合类型 U 中的每个成员类型都包含一个同名的属性签名 M，那么联合类型 U 也包含属性签名 M。例如，有如下定义的 Circle 类型与 Rectangle 类型，以及由这两个类型构成的联合类型 Shape：
+
+```ts
+interface Circle {
+  area: number;
+  radius: number;
+}
+
+interface Rectangle {
+  area: number;
+  width: number;
+  height: number;
+}
+type Shape = Circle | Rectangle;
+```
+
+此例中，因为 Circle 类型与 Rectangle 类型均包含名为 area 的属性签名类型成员，所以联合类型 Shape 也包含名为 area 的属性签名类型成员。因此，允许访问 Shape 类型上的 area 属性。而 radius、width 和 height 类型成员不是 Circle 类型和 Rectangle 类型的共同类型成员，因此它们不是 Shape 联合类型的类型成员：
+
+```ts
+type Shape = Circle | Rectangle;
+declare const s: Shape;
+s.area; // number
+s.radius; // 错误
+s.width; // 错误
+```
+
+对于联合类型的属性签名，其类型为所有成员类型中该属性类型的联合类型。例如，下例中联合类型 "Circle | Rectangle" 具有属性签名 area，其类型为 Circle 类型中 area 属性的类型和 Rectangle 类型中 area 属性的类型组成的联合类型，即 "bigint | number" 类型：
+
+```ts
+interface Circle {
+  area: bigint;
+}
+interface Rectangle {
+  area: number;
+}
+
+declare const s: Circle | Rectangle;
+s.area; // bigint | number
+```
+
+如果联合类型的属性签名在某个成员类型中是可选属性签名，那么该属性签名在联合类型中也是可选属性签名；否则，该属性签名在联合类型中是必选属性签名：
+
+```ts
+interface Circle {
+  area: bigint;
+}
+interface Rectangle {
+  area?: number;
+}
+
+declare const s: Circle | Rectangle;
+
+s.area; // bigint | number | undefined
+```
+
+##### 3.3.2.2 索引签名
+
+索引签名包含两种，即字符串索引签名和数值索引签名。在联合类型中，这两种索引签名具有相似的行为。
+
+如果联合类型中每个成员都包含字符串索引签名，那么该联合类型也拥有了字符串索引签名，字符串索引签名中的索引值类型为每个成员类型中索引值类型的联合类型；否则，该联合类型没有字符串索引签名：
+
+```ts
+interface T0 {
+  [prop: string]: number;
+}
+interface T1 {
+  [prop: string]: bigint;
+}
+// 联合类型 T 相当于接口类型 T0T1
+type T = T0 | T1;
+
+interface T0T1 {
+  [prop: string]: number | bigint;
+}
+```
+
+如果联合类型中每个成员都包含数值索引签名，那么该联合类型也拥有了数值索引签名，数值索引签名中的索引值类型为每个成员类型中索引值类型的联合类型；否则，该联合类型没有数值索引签名：
+
+```ts
+interface T0 {
+  [prop: number]: number;
+}
+
+interface T1 {
+  [prop: number]: bigint;
+}
+
+// 联合类型 T 相当于接口类型 T0T1
+type T = T0 | T1;
+
+interface T0T1 {
+  [prop: number]: number | bigint;
+}
+```
+
+##### 3.3.2.3 调用签名与构造签名
+
+如果联合类型中每个成员类型都包含相同参数列表的调用签名，那么联合类型也拥有了该调用签名，其返回值类型为每个成员类型中调用签名返回值类型的联合类型；否则，该联合类型没有调用签名：
+
+```ts
+interface T0 {
+  (name: string): number;
+}
+interface T1 {
+  (name: string): bigint;
+}
+// 联合类型 T 相当于接口类型 T0T1
+type T = T0 | T1;
+
+interface T0T1 {
+  (name: string): number | bigint;
+}
+```
+
+同理，如果联合类型中每个成员都包含相同参数列表的构造签名，那么该联合类型也拥有了构造签名，其返回值类型为每个成员类型中构造签名返回值类型的联合类型；否则，该联合类型没有构造签名：
+
+```ts
+interface T0 {
+  new (name: string): Date;
+}
+interface T1 {
+  new (name: string): Error;
+}
+// 联合类型 T 相当于接口类型 T0T1
+type T = T0 | T1;
+
+interface T0T1 {
+  new (name: string): Date | Error;
+}
+```
+
+### 3.4 交叉类型
+
+交叉类型在逻辑上与联合类型是互补的。联合类型表示一个值的类型为多种类型之一，而**交叉类型则表示一个值同时属于多种类型**。交叉类型通过交叉类型字面量来定义。
+
+#### 3.4.1 交叉类型字面量
+
+交叉类型由两个或多个成员类型构成，各成员类型之间使用 `&` 符号分隔：
+
+```ts
+interface Clickable {
+  click(): void;
+}
+
+interface Focusable {
+  focus(): void;
+}
+type T = Clickable & Focusable;
+```
+
+此例中，定义了一个名为 T 的交叉类型。该交叉类型由两个成员类型组成，即 Clickable 类型和 Focusable 类型。若一个值既是 Clickable 类型又是 Focusable 类型，那么该值的类型为交叉类型 "Clickable & Focusable"。
+
+##### 3.4.1.1 成员类型的运算
+
+与联合类型相似，如果交叉类型中存在多个相同的成员类型，那么相同的成员类型将被合并为单一成员类型：
+
+```ts
+type T0 = boolean;
+type T1 = boolean & boolean;
+type T2 = boolean & boolean & boolean;
+```
+
+交叉类型是有序的成员类型的集合。在绝大部分情况下，成员类型满足类似于数学中的 “加法交换律”，即改变成员类型的顺序不影响交叉类型的结果类型。
+
+> **注意**：当交叉类型涉及调用签名重载或构造签名重载时便失去了 “加法交换律” 的性质。因为交叉类型中成员类型的顺序将决定重载签名的顺序，进而将影响重载签名的解析顺序。
+
+```ts
+interface Clickable {
+  register(x: any): void;
+}
+interface Focusable {
+  register(x: string): boolean;
+}
+// 使用不同的成员类型顺序定义了两个交叉类型
+type ClickableAndFocusable = Clickable & Focusable;
+type FocusableAndFocusable = Focusable & Clickable;
+
+function foo(clickFocus: ClickableAndFocusable, focusClick: FocusableAndFocusable) {
+  // 调用 register() 方法的返回值类型为 void，说明在 ClickableAndFocusable 类型中，Clickable 接口中定义的 register() 方法具有更高的优先级
+  let a: void = clickFocus.register('foo');
+  // 调用 register() 方法的返回值类型为 boolean，说明 FocusableAndFocusable 类型中 Focusable 接口中定义的 register() 方法具有更高的优先级
+  let b: boolean = focusClick.register('foo');
+  // 说明了调用签名重载的顺序与交叉类型中成员类型的定义顺序是一致的
+}
+```
+
+交叉类型中的类型成员同样满足类似于数学中的 “加法结合律”。对部分类型成员使用分组运算符不影响交叉类型的结果类型：
+
+```ts
+interface Clickable {
+  click(): void;
+}
+interface Focusable {
+  focus(): void;
+}
+interface Scrollable {
+  scroll(): void;
+}
+
+// T0 和 T1 类型是同一种类型
+type T0 = (Clickable & Focusable) & Scrollable;
+type T1 = Clickable & (Focusable & Scrollable);
+```
+
+##### 3.4.1.2 原始类型
+
+交叉类型通常与对象类型一起使用。虽然在交叉类型中也允许使用原始类型成员，但结果类型将成为 never 类型，因此在实际代码中并不常见。示例如下：
+
+```ts
+type T = boolean & number & string;
+```
+
+此例中，类型 T 是 boolean、number 和 string 类型组成的交叉类型。根据交叉类型的定义，若一个值是 T 类型，那么该值既是 boolean 类型，又是 number 类型，还是 string 类型。显然，不存在这样一个值，所以 T 类型为 never 类型。never 类型是[尾端类型](#28-尾端类型)，是一种不存在可能值的类型。
+
+#### 3.4.2 交叉类型的类型成员
+
+##### 3.4.2.1 属性签名
+
+只要交叉类型中任意一个成员类型包含了属性签名 M，那么交叉类型也包含属性签名 M。例如，有以下的接口类型 A 和 B：
+
+```ts
+interface A {
+  a: boolean;
+}
+interface B {
+  b: string;
+}
+```
+
+那么，接口类型 A 和 B 的交叉类型 “A & B” 为如下对象类型：
+
+```ts
+{
+  a: boolean;
+  b: string;
+}
+```
+
+对于交叉类型的属性签名，其类型为所有成员类型中该属性类型的交叉类型。例如，有以下接口类型 A 和 B：
+
+```ts
+interface A {
+  x: { a: boolean };
+}
+interface B {
+  x: { b: boolean };
+}
+```
+
+那么，接口类型 A 和 B 的交叉类型 “A & B” 为如下对象类型：
+
+```ts
+{
+  x: {a: boolean} & {b: boolean}
+}
+```
+
+该类型也等同于如下类型：
+
+```ts
+{
+  x: {
+    a: boolean;
+    b: boolean;
+  }
+}
+```
+
+若交叉类型的属性签名 M 在所有成员类型中都是可选属性，那么该属性签名在交叉类型中也是可选属性。否则，属性签名 M 是一个必选属性。例如，有以下接口类型 A 和 B：
+
+```ts
+interface A {
+  x: boolean;
+  y?: string;
+}
+interface B {
+  x?: boolean;
+  y?: string;
+}
+```
+
+那么，接口类型 A 和 B 的交叉类型 "A&B" 为如下对象类型：
+
+```ts
+{
+  x: boolean;
+  y?: string;
+}
+```
+
+##### 6.4.2.2 索引签名
+
+如果交叉类型中任何一个成员类型包含了索引签名，那么该交叉类型也拥有了索引签名；否则，该交叉类型没有索引签名。例如，有以下接口类型 A 和 B：
+
+```ts
+interface A {
+  [prop: string]: string;
+}
+interface B {
+  [prop: number]: string;
+}
+```
+
+那么，接口类型 A 和 B 的交叉类型 "A&B" 为如下对象类型，它同时包含了字符串索引签名和数值索引签名：
+
+```ts
+{
+  [prop: string]: string;
+  [prop: number]: string;
+}
+```
+
+交叉类型索引签名中的索引值类型为每个成员类型中索引值类型的交叉类型。例如，有以下接口类型 A 和 B：
+
+```ts
+interface A {
+  [prop: string]: { a: boolean };
+}
+interface B {
+  [prop: string]: { b: boolean };
+}
+```
+
+那么，接口类型 A 和 B 的交叉类型 “A&B” 为如下对象类型：
+
+```ts
+{
+  [prop: string]: {a: boolean} & {b: boolean};
+}
+```
+
+该类型也等同于如下类型：
+
+```ts
+{
+  [prop: string]: {
+    a: boolean;
+    b: boolean;
+  }
+}
+```
+
+##### 3.4.2.3 调用签名与构造签名
+
+若交叉类型的成员类型中含有调用签名或构造签名，那么这些调用签名和构造签名将以成员类型的先后顺序合并到交叉类型中。例如，有以下接口类型 A 和 B：
+
+```ts
+interface A {
+  (x: number): number;
+}
+interface B {
+  (x: string): string;
+}
+```
+
+那么交叉类型 “A&B” 为如下对象类型：
+
+```ts
+{
+  (x: boolean): boolean;
+  (x: string): string;
+}
+```
+
+同时，交叉类型 “B&A” 为如下对象类型：
+
+```ts
+{
+  (x: string): string;
+  (x: boolean): boolean;
+}
+```
+
+通过这两个例子能够看到，交叉类型中调用签名的顺序与交叉类型类型成员的顺序相同，构造签名同理。**当交叉类型中存在重载签名时，需要特别留意类型成员的定义顺序**。
+
+#### 3.4.3 交叉类型与联合类型
+
+##### 3.4.3.1 优先级
+
+当表示交叉类型的 `&` 符号与表示联合类型的 `|` 符号同时使用时，`&` 符号具有更高的优先级。`&` 符号如同数学中的乘法符号 "x"，而 `|` 符号则如同数学中的加法符号 "+"。例如，有如下复合类型：
+
+```txt
+A & B | C & D;
+// 等同于
+(A & B) | (C & D);
+```
+
+> **注意**：当表示交叉类型的 `&` 符号与表示联合类型的 `|` 符号与函数类型字面量同时使用时，`&` 符号和 `|` 符号拥有更高的优先级。
+
+```ts
+() => bigint | number;
+// 该类型等同于如下类型，即返回值类型为联合类型 "bigint|number" 的函数类型
+// () => (bigint | number);
+
+// 而不是函数类型和 number 类型的联合类型，如下所示：
+(() => bigint) | number;
+```
+
+在任何时候，都可以使用分组运算符 `()` 来明确指定优先级。
+
+##### 3.4.3.2 分配律性质
+
+由交叉类型和联合类型组成的类型满足类似于数学中乘法分配律的规则。表示交叉类型的 `&` 符号如同数学中的乘法符号 “×”，而表示联合类型的 `|` 符号则如同数学中的加法符号 “+”。下例中的 `≡` 符号是恒等号，表示符号两侧是恒等关系：
+
+```ts
+A & (B | C) ≡ (A & B) | (A & C)
+```
+
+另一个稍微复杂的示例如下所示：
+
+```ts
+
+(A | B) & (C | D) ≡ A & C | A & D | B & C | B & D
+```
+
+了解了交叉类型与联合类型的分配律性质后，就能够分析与理解一些复杂的类型。例如，有如下的复合类型：
+
+```ts
+T = (string | 0) & (number | 'a');
+```
+
+利用上文介绍的规则将该类型展开就能得到最终的结果类型，如下所示：
+
+```ts
+T = (string | 0) & (number | 'a') = (string & number) | (string & 'a') | (0 & number) | (0 & 'a');
+// 没有交集的原始类型的交叉类型是 never 类型
+= never | 'a' | 0 | never;
+// never 尾端类型是所有类型的子类型，并且若某成员是其他成员的子类型，则可以从联合类型中消去
+= 'a' | 0;
+```
