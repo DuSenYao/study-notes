@@ -4837,3 +4837,522 @@ T = (string | 0) & (number | 'a') = (string & number) | (string & 'a') | (0 & nu
 // never 尾端类型是所有类型的子类型，并且若某成员是其他成员的子类型，则可以从联合类型中消去
 = 'a' | 0;
 ```
+
+### 3.5 索引类型
+
+对于一个对象而言，可以使用属性名作为索引来访问属性值。相似地，对于一个对象类型而言，可以使用属性名作为索引来访问属性类型成员的类型。TypeScript 引入了两个新的类型结构来实现索引类型：
+
+- 索引类型查询
+- 索引访问类型
+
+#### 3.5.1 索引类型查询
+
+通过索引类型查询能够获取给定类型中的属性名类型。索引类型查询的结果是由字符串字面量类型构成的联合类型，该联合类型中的每个字符串字面量类型都表示一个属性名类型。语法如下所示：
+
+```ts
+keyof Type
+```
+
+在该语法中，keyof 是关键字，Type 表示任意一种类型。示例如下：
+
+```ts
+interface Point {
+  x: number;
+  y: number;
+}
+type T = keyof Point; // 'x' | 'y'
+```
+
+此例中，对 Point 类型使用索引类型查询的结果类型为联合类型 `"x" | "y"`，即由 Point 类型的属性名类型组成的联合类型。
+
+##### 3.5.1.1 索引类型查询解析
+
+JS 中的对象是键值对的数据结构，它只允许将字符串和 Symbol 值作为对象的键。索引类型查询获取的是对象的键的类型因此索引类型查询的结果类型是联合类型 "string|symbol" 的子类型，因为只有这两种类型的值才能作为对象的键。但由于数组类型十分常用且其索引值的类型为 number 类型，因此编译器额外将 number 类型纳入了索引类型查询的结果类型范围。于是，索引类型查询的结果类型是联合类型 "string|number|symbol" 的子类型，这是编译器内置的类型约束。例如，有如下索引类型查询：
+
+```ts
+type KeyofT = keyof T;
+```
+
+解析该索引类型查询的详细解析步骤：
+
+- 如果类型 T 中包含字符串索引签名，那么将 string 类型和 number 类型添加到结果类型 KeyofT。示例如下：
+
+  ```ts
+  interface T {
+    [prop: string]: number;
+  }
+
+  // string|number
+  type KeyofT = keyof T;
+  ```
+
+- 如果类型 T 中包含数值索引签名，那么将 number 类型添加到结果类型 KeyofT。示例如下：
+
+  ```ts
+  interface T {
+    [prop: number]: number;
+  }
+
+  // number
+  type KeyofT = keyof T;
+  ```
+
+- 如果类型 T 中包含属性名类型为 ["unique symbol"](#231-symbol-和-unique-symbol) 的属性，那么将该 "unique symbol" 类型添加到结果类型 KeyofT。
+
+  > **注意**：如果想要在对象类型中声明属性名为 symbol 类型的属性，那么属性名的类型必须为 "unique symbol" 类型，而不允许为 symbol 类型。
+
+  ```ts
+  const s: unique symbol = Symbol();
+  interface T {
+    [s]: boolean;
+  }
+  // typeof s
+  type KeyofT = keyof T;
+  ```
+
+  因为 "unique symbol" 类型是 symbol 类型的子类型，所以该索引类型查询的结果类型仍是联合类型 "string|number|symbol" 的子类型。
+
+- 最后，如果类型 T 中包含其他属性成员，那么将表示属性名的字符串字面量类型和数字字面量类型添加到结果类型 KeyofT。例如，下例的类型 T 中包含三个属性成员，它们的属性名分别为数字 0、字符串 "a" 和字符串 "b"。因此，KeyofT 类型为联合类型 "0|'a'|'b'"。示例如下：
+
+  ```ts
+  interface T {
+    0: boolean;
+    a: string;
+    b(): void;
+  }
+  // 0|'a'|'b'
+  type KeyofT = keyof T;
+  ```
+
+以上介绍了在对象类型上使用索引类型查询的解析过程。虽然在对象类型上使用索引类型查询更有意义，但是索引类型查询也允许在非对象类型上使用，例如原始类型、顶端类型等。
+
+- 当对 any 类型使用索引类型查询时，结果类型固定为联合类型 "string|number|symbol"。示例如下：
+
+  ```ts
+  type KeyofT = keyof any; // string | number | symbol
+  ```
+
+- 当对 unknown 类型使用索引类型查询时，结果类型固定为 never 类型。示例如下：
+
+  ```ts
+  type KeyofT = keyof unknown; // never
+  ```
+
+- 当对原始类型使用索引类型查询时，先查找与原始类型对应的内置对象类型，然后再进行索引类型查询。例如，与原始类型 boolean 对应的内置对象类型是 Boolean 对象类型，具体定义如下所示：
+
+  ```ts
+  interface Boolean {
+    valueOf(): boolean;
+  }
+
+  type KeyofT = keyof boolean; // valueOf
+  ```
+
+##### 3.5.1.2 联合类型
+
+在索引类型查询中，如果查询的类型为联合类型，那么先计算联合类型的结果类型，再执行索引类型查询。例如，有以下对象类型 A 和 B，以及索引类型查询 KeyofT：
+
+```ts
+type A = { a: string; z: boolean };
+type B = { b: string; z: boolean };
+type KeyofT = keyof (A | B); // 'z'
+```
+
+在计算 KeyofT 类型时，先计算联合类型 “A|B” 的结果类型：
+
+```ts
+type AB = A | B; // {z: boolean}
+```
+
+然后计算索引类型查询 KeyofT 的类型：
+
+```ts
+type KeyofT = keyof AB; // 'z'
+```
+
+##### 3.5.1.3 交叉类型
+
+在索引类型查询中，如果查询的类型为交叉类型，那么会将原索引类型查询展开为子索引类型查询的联合类型，展开的规则类似于数学中的 “乘法分配律”：
+
+```ts
+keyof(A & B) = keyofA | keyofB;
+```
+
+例如，有以下对象类型 A 和 B,以及索引类型查询 KeyofT：
+
+```ts
+type A = { a: string; x: boolean };
+type B = { b: string; y: number };
+type KeyofT = keyof (A & B); // 'a' | 'x' | 'b'| 'y'
+```
+
+在计算 KeyofT 类型时，先将索引类型查询展开为如下类型：
+
+```ts
+type KeyofT = keyof A | keyof B;
+```
+
+然后计算索引类型查询 KeyofT 的类型：
+
+```ts
+type KeyofT = ('a' | 'x') | ('b' | 'y');
+```
+
+#### 3.5.2 索引访问类型
+
+索引访问类型能够获取对象类型中属性成员的类型，语法如下所示：
+
+```ts
+T[K];
+```
+
+在该语法中，T 和 K 都表示类型，并且要求 K 类型必须能够赋值给 "keyof T" 类型。"T[K]" 的结果类型为 T 中 K 属性的类型。例如，有以下对象类型 T：
+
+```ts
+// 通过索引访问类型能够获取对象类型 T 中属性 x 和 y 的类型
+type T = { x: boolean; y: string };
+type Kx = 'x';
+type T0 = T[Kx]; // boolean
+type Ky = 'y';
+type T1 = T[Ky]; // string
+```
+
+下面深入介绍索引访问类型的详细解析步骤。假设有如下索引访问类型：
+
+```ts
+T[K];
+```
+
+若 K 是字符串字面量类型、数字字面量类型、枚举字面量类型或 "unique symbol" 类型，并且类型 T 中包含名为 K 的公共属性，那么 “T[K]” 的类型就是该属性的类型。示例如下：
+
+```ts
+const s: unique symbol = Symbol();
+enum E {
+  A = 10
+}
+
+type T = {
+  // 数字字面量属性名
+  0: string;
+  // 字符串字面量属性名
+  x: boolean;
+  // 枚举成员字面量属性名
+  [E.A]: number;
+
+  // unique symbol
+  [s]: bigint;
+};
+
+type TypeOfNumberLikeName = T[0]; // string
+type TypeOfStringLikeName = T['x']; // boolean
+type TypeOfEnumName = T[E.A]; // number
+type TypeOfSymbolName = T[typeof s]; // bigint
+```
+
+若 K 是联合类型 "K1|K2"，那么 "T[K]" 等于联合类型 "T[K1]|T[K2]"。例如，有以下类型 T 和 K，其中 K 是联合类型：
+
+```ts
+type T = { x: boolean; y: string };
+type K = 'x' | 'y';
+```
+
+那么，索引访问类型 "T[K]" 为如下类型：
+
+```ts
+// string | boolean
+type TK = T['x'] | T['y'];
+```
+
+若 K 类型能够赋值给 string 类型，且类型 T 中包含字符串索引签名，那么 “T[K]” 为字符串索引签名的类型。但如果类型 T 中包含同名的属性，那么同名属性的类型拥有更高的优先级：
+
+```ts
+interface T {
+  a: true;
+  [prop: string]: boolean;
+}
+type Ta = T['a']; // true
+type Tb = T['b']; // boolean
+```
+
+若 K 类型能够赋值给 number 类型，且类型 T 中包含数值索引签名，若 K 类型能够赋值给 number 类型，且类型 T 中包含数值索引签名，那么 “T[K]” 为数值索引签名的类型。但如果类型 T 中包含同名的属性，那么同名属性的类型拥有更高的优先级：
+
+```ts
+interface T {
+  0: true;
+  [prop: number]: boolean;
+}
+
+type T0 = T[0]; // true
+type T1 = T[1]; // boolean
+```
+
+#### 3.5.3 索引类型的应用
+
+通过结合使用索引类型查询和索引访问类型就能够实现类型安全的对象属性访问操作。例如，下例中定义了工具函数 getProperty，它能够返回对象的某个属性值：
+
+```ts
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];
+}
+
+interface Circle {
+  kind: 'circle';
+  radius: number;
+}
+
+function f(circle: Circle) {
+  // 正确，能够推断出 radius 的类型为 'Circle' 类型
+  const kind = getProperty(circle, 'kind');
+  // 正确，能够推断出 radius 的类型为 number 类型
+  const radius = getProperty(circle, 'radius');
+  // 编译错误：'unknown' 类型不能赋值给 'kind' | 'radius'
+  const unknown = getProperty(circle, 'unknown');
+}
+```
+
+### 3.6 映射对象类型
+
+映射对象类型是一种独特的对象类型，它能够将已有的对象类型映射为新的对象类型。例如，想要将已有对象类型 T 中的所有属性修改为可选属性，那么可以直接修改对象类型 T 的类型声明，将每个属性都修改为可选属性。除此之外，更好的方法是使用映射对象类型将原对象类型 T 映射为一个新的对象类型 T'，同时在映射过程中将每个属性修改为可选属性。
+
+#### 3.6.1 映射对象类型声明
+
+映射对象类型是一个类型运算符，它能够遍历联合类型并以该联合类型的类型成员作为属性名类型来构造一个对象类型。映射对象类型声明的语法如下所示：
+
+```ts
+{ readonly[P in K]?: T}
+```
+
+在该语法中，`readonly` 是关键字，表示该属性是否为只读属性，该关键字是可选的；`?` 修饰符表示该属性是否为可选属性，该修饰符是可选的；`in` 是遍历语法的关键字；K 表示要遍历的类型，由于遍历的结果类型将作为对象属性名类型，因此类型 K 必须能够赋值给联合类型 "string|number|symbol"，因为只有这些类型的值才能作为对象的键；P 是类型变量，代表每次遍历出来的成员类型；T 是任意类型，表示对象属性的类型，并且在类型 T 中允许使用类型变量 P。
+
+映射对象类型的运算结果是一个对象类型。映射对象类型的核心是它能够遍历类型 K 的所有类型成员，并针对每一个成员 P 都将它映射为类型 T：
+
+```ts
+type K = 'x' | 'y';
+type T = number;
+type MappedObjectType = { readonly [P in K]?: T };
+// 相当于如下对象类型
+type type = {
+  readonly x?: number;
+  readonly y?: number;
+};
+```
+
+#### 3.6.2 映射对象类型解析
+
+本节将深入映射对象类型的详细运算步骤。假设有如下映射对象类型：
+
+```ts
+{[P in K]: T}
+```
+
+首先要强调的是，类型 K 必须能够赋值给联合类型 "string|number|symbol"：
+
+```ts
+// 若当前遍历出来的类型成员 P 为字符串字面量类型，则在结果对象类型中创建一个新的属性成员，属性名类型为该字符串字面量类型且属性值类型为 T：
+type MappedObjectType = { [P in 'x']: boolean }; // {x: boolean}
+
+// 若当前遍历出来的类型成员 P 为数字字面量类型，则在结果对象类型中创建一个新的属性成员，属性名类型为该数字字面量类型且属性值类型为 T：
+type MappedObjectType = { [P in 0]: boolean }; // {0: boolean}
+
+// 若当前遍历出来的类型成员 P 为 "unique symbol" 类型，则在结果对象类型中创建一个新的属性成员，属性名类型为该 "unique symbol" 类型且属性值类型为 T：
+const s: unique symbol = Symbol();
+type MappedObjectType = { [P in typeof s]: boolean }; // {[s]: boolean}
+
+// 若当前遍历出来的类型成员 P 为 string 类型，则在结果对象类型中创建字符串索引签名：
+type MappedObjectType = { [P in string]: boolean }; // {[x: string]: boolean}
+
+// 若当前遍历出来的类型成员 P 为 number 类型，则在结果对象类型中创建数值索引签名：
+type MappedObjectType = { [P in number]: boolean }; // {[x: number]: boolean}
+```
+
+#### 3.6.3 映射对象类型应用
+
+将映射对象类型与索引类型查询结合使用就能够遍历已有对象类型的所有属性成员，并使用相同的属性来创建一个新的对象类型：
+
+```ts
+type T = { a: string; b: number };
+type M = { [P in keyof T]: boolean }; // {a: boolean; b: boolean;}
+```
+
+此例中，映射对象类型能够遍历对象类型 T 的所有属性成员，并在新的对象类型 M 中创建同名的属性成员 a 和 b，同时将每个属性成员的类型设置为 boolean 类型。使用了索引类型查询来获取类型 T 中所有属性名的类型并将其提供给映射对象类型进行遍历，两者能够完美地结合。
+
+将映射对象类型、索引类型查询以及索引访问类型三者结合才能够最大限度地体现映射对象类型的威力：
+
+```ts
+type T = { a: string; b: number };
+//{a:string;b:number;}
+type M = { [P in keyof T]: T[P] };
+```
+
+此例中，将对象类型 T 按原样复制了一份！在定义映射对象类型中的属性类型时，不再使用固定的类型，例如 boolean。借助于类型变量 P 和索引访问类型，能够动态地获取对象类型 T 中每个属性的类型。有了这个模板后，可以随意发挥，创建出一些有趣的类型。
+
+例如，将某个对象类型的所有属性成员修改为可选属性。借助于映射对象类型、索引类型查询以及索引访问类型可以很容易地创建出想要的对象类型：
+
+```ts
+type T = { a: string; b: number };
+//{a?: string; b?: number;}
+type OptionalT = { [P in keyof T]?: T[P] };
+```
+
+仅在映射对象类型中添加了 `?` 修饰符就实现了这个功能。由于这个功能十分常用，所以 TypeScript 内置了一个工具类型 `Partial<T>` 来实现这个功能，该工具类型是利用了映射对象类型的泛型类型别名，它有一个类型参数 T。该工具类型将传入的对象类型的所有属性标记为可选属性。内置的 `Partial<T>` 工具类型的定义如下所示：
+
+```ts
+/**
+ * 将 T 中的所有属性标记为可选属性
+ */
+type Partial<T> = {
+  [P in keyof T]?: T[P];
+};
+```
+
+接下来，再创建一个对象类型，将已有对象类型中所有属性标记为只读属性：
+
+```ts
+type T = { a: string; b: number };
+//{readonly a: string; readonly b: number;}
+type ReadonlyT = { readonly [P in keyof T]: T[P] };
+```
+
+此例中，使用 readonly 修饰符将所有属性标记为只读属性。由于这个功能十分常用，所以 TypeScript 内置了一个工具类型 `Readonly<T>` 来实现这个功能，该工具类型是利用了映射对象类型的泛型类型别名，它有一个类型参数 T。该工具类型将传入的对象类型的所有属性标记为只读属性。内置的 `Readonly<T>` 工具类型 6.8 <!--TODO--> 的定义如下所示：
+
+```ts
+// 将 T 中的所有属性标记为只读属性
+type Readonly<T> = {
+  readonly [P in keyof T]: T[P];
+};
+```
+
+#### 3.6.4 同态映射对象类型
+
+不论是 `Partial<T>` 映射对象类型还是 `Readonly<T>` 映射对象类型，都是将源对象类型 T 中的属性一一对应地映射到新的对象类型中。映射后的对象类型结构与源对象类型 T 的结构完全一致，将这种映射对象类型称为**同态映射对象类型**。同态映射对象类型与源对象类型之间有着相同的属性集合。
+
+如果映射对象类型中存在索引类型查询，那么 TypeScript 编译器会将该映射对象类型视为同态映射对象类型。更确切地说，同态映射对象类型具有如下语法形式：
+
+```ts
+{ readonly [P in keyof T]?: X}
+```
+
+在该语法中，`readonly` 关键字和 `?` 修饰符均为可选的：
+
+```ts
+type T = { a?: string; b: number };
+type K = keyof T;
+// 同态映射对象类型
+type HMOT = { [P in keyof T]: T[P] };
+
+// 非同态映射对象类型
+type MOT = { [P in K]: T[P] };
+```
+
+##### 3.6.4.1 修饰符拷贝
+
+同态映射对象类型的一个重要性质是，新的对象类型会默认拷贝源对象类型中所有属性的 readonly 修饰符和 `?` 修饰符：
+
+```ts
+type T = { a?: string; readonly b: number };
+// {a?: string; readonly b: number;}
+type HMOT = { [P in keyof T]: T[P] };
+```
+
+此例中，HMOT 是同态映射对象类型，它将源对象类型 T 的所有属性映射到新的对象类型 HMOT，同时保留了每个属性的修饰符。例如，HMOT 对象类型的属性 a 带有 `?` 修饰符，属性 b 带有 `readonly` 修饰符。
+
+如果是非同态映射对象类型，那么新的对象类型不会拷贝源对象类型 T 中属性的 `readonly` 修饰符和 `?` 修饰符：
+
+```ts
+type T = { a?: string; readonly b: number };
+type K = keyof T;
+
+//{a: string | undefined; b: number;}
+type MOT = { [P in K]: T[P] };
+```
+
+此例中，MOT 对象类型是映射对象类型但不是同态映射对象类型，因为它的语法中没有使用索引类型查询。非同态映射对象类型不会从源对象类型 T 中拷贝属性修饰符，因此在 MOT 对象类型中属性 a 和 b 都没有修饰符。
+
+##### 3.6.4.2 改进的修饰符拷贝
+
+为了改进映射对象类型中修饰符拷贝行为的一致性，TypeScript 特殊处理了映射对象类型中索引类型为类型参数的情况。假设有如下映射对象类型：
+
+```ts
+{[P in K]:X}
+```
+
+如果在该语法中，K 为类型参数且有泛型约束 "K extends keyof T"，那么编译器也会将对象类型 T 的属性修饰符拷贝到映射对象类型中，尽管该类型不是同态映射对象类型。换句话说，当映射对象类型在操作已知对象类型的所有属性或部分属性时会拷贝属性修饰符到映射对象类型中。例如，有如下定义的映射对象类型 Pick：
+
+```ts
+type Pick<T, K extends keyof T> = {
+  [P in K]: T[P];
+};
+```
+
+此例中，Pick 类型为非同态映射对象类型，因为它的语法中不包含索引类型查询。但是在 Pick 类型中，K 不是某一具体类型，而是一个类型参数，并且存在泛型约束 "K extends keyof T"。这时，TypeScript 会特殊处理这种形式的映射对象类型来保留属性修饰符：
+
+```ts
+type T = {
+  a?: string;
+  readonly b: number;
+  c: boolean;
+};
+// {a?: string; readonly b:number}
+type SomeOfT = Pick<T, 'a' | 'b'>;
+```
+
+此例中，SomeOfT 对象类型中的属性 a 和 b 保留了修饰符 `?` 和 `readonly`。
+
+此例中的 Pick 类型是十分常用的类型，它能够从已有对象类型中挑选一个或多个指定的属性并保留它们的类型和修饰符，然后构造出一个新的对象类型。因此，TypeScript 内置了该工具类型。关于工具类型的详细介绍请参考 6.8 节。<!--TODO-->
+
+##### 3.6.4.3 添加和移除修饰符
+
+不论是同态映射对象类型的修饰符拷贝规则还是改进的映射对象类型修饰符拷贝规则，它们都无法删除属性已有的修饰符。因此，TypeScript 引入了两个新的修饰符用来精确控制添加或移除映射属性的 `?` 和 `readonly` 修饰符：
+
+- `+`：为映射属性添加 `?` 或 `readonly` 修饰符
+- `-`：为映射属性移除 `?` 或 `readonly` 修饰符
+
+`+` 和 `-` 应用在 `?` 和 `readonly` 修饰符之前。语法如下所示：
+
+```ts
+{ -readonly [P in keyof T]-?: T[P]}
+{ +readonly [P in keyof T]+?: T[P]}
+```
+
+如果要将已有对象类型的所有属性转换为必选属性，则可以使用 `Required<T>` 工具类型。`Required<T>` 类型的定义如下所示：
+
+```ts
+type Required<T> = { [P in keyof T]-?: T[P] };
+```
+
+`Required<T>` 类型创建了对象类型 T 的同态映射对象类型，并且移除了每个属性上的可选属性修饰符 `?`。因此，同态映射对象类型中每一个映射属性都是必选属性：
+
+```ts
+type T = {
+  a?: string | undefined | null;
+  readonly b: number | undefined | null;
+};
+
+//{
+//  a: string | null;
+//  readonly b: number | undefined | null;
+//};
+type RequiredT = Required<T>;
+```
+
+> **注意**：`-` 修饰符仅作用于带有 `?` 和 `readonly` 修饰符的属性。编译器在移除属性 a 的 `?` 修饰符时，同时会移除属性类型中的 undefined 类型，但是不会移除 null 类型，因此 RequiredT 类型中属性 a 的类型为 "string|null" 类型。由于属性 b 不带有 `?` 修饰符，因此此例中的 `-` 修饰符对属性 b 不起作用，也不会移除属性 b 中的 undefined 类型。
+
+`Required<T>` 类型是 TypeScript 内置的工具类型之一。关于工具类型的详细介绍请参考 6.8 节。<!--TODO-->
+
+对于 `+` 修饰符，明确地添加它与省略它的作用是相同的，因此通常省略。例如，"+readonly" 等同于 "readonly"：
+
+```ts
+type ReadonlyPartial<T> = {
+  +readonly [P in keyof T]+?: T[P];
+};
+//等同于
+type ReadonlyPartial<T> = {
+  readonly [P in keyof T]?: T[P];
+};
+```
+
+##### 6.6.4.4 同态映射对象类型深入
+
+同态映射对象类型是一种能够维持对象结构不变的映射对象类型。同态映射对象类型 `{[P in keyof T]: X}` 与对象类型 T 是同态关系，它们包含了完全相同的属性集合。在默认情况下，同态映射对象类型会保留对象类型 T 中属性的修饰符。
+
+假设有如下同态映射对象类型，其中 T 和 X 为类型参数：
