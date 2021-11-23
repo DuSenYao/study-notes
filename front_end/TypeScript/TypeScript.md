@@ -2972,13 +2972,13 @@ const c = new Circle();
 与函数声明不同的是，类声明不会被提升，因此必须先声明后使用：
 
 ```ts
- const c0= new Circle();∥/错误
+const c0 = new Circle(); // 错误
 
- class circle
- radius: number.
+class circle {
+  radius: number;
+}
 
-
- const c1= new Circle(;∥l确
+const c1 = new Circle(); // 正确
 ```
 
 在使用类声明时，不允许声明同名的类，否则将产生错误：
