@@ -1,6 +1,4 @@
----
-title: CSS
----
+# CSS 层叠样式表
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -48,8 +46,6 @@ title: CSS
 
 <!-- /code_chunk_output -->
 
-# CSS 层叠样式表
-
 ---
 
 ## 一. CSS 语法
@@ -58,18 +54,16 @@ CSS 的顶层样式表由两种规则组成的规则列表构成，一种被称�
 
 ### 1.1 at-rule
 
-at-rule 由一个 `@` 关键字和后续的一个区块组成，如果没有区块，则以分号结束。这些 at-rule 在开发中使用的机会远远小于普通规则。
+at-rule 由一个 `@` 关键字和后续的一个区块组成，如果没有区块，则以分号结束。这些 at-rule 在开发中使用的机会远远小于普通规则。这些 at 规则是掌握 CSS 的一些高级特性所必须的内容。
 
-> 这些 at 规则是掌握 CSS 的一些高级特性所必须的内容。
-
-- **@charset**
+- `@charset`
   用于提示 CSS 文件使用的字符编码方式，它如果被使用，必须出现在最前面，这个规则只在给出语法解析阶段前使用，并不影响页面上的展示效果。
 
   ```css
   @charset "utf-8";
   ```
 
-- **@import**
+- `@import`
   用于引入一个 CSS 文件，除了 @charset 规则不会引入，@import 可以引入另一个文件的全部内容。
 
   ```css
@@ -853,13 +847,14 @@ RGBA 是代表 Red、Green、Blue 和 Alpha 的色彩空间。RGBA 被用来表�
 
   例：[CSS 渲染-渐变](./演示文件/CSS渲染-渐变.html)
 
-> 注释：CSS 中有四种角度单位
->
-> deg: 度(Degrees)，一个圆有 360 度。
-> grad: 梯度(gradients)，一个圆共 400 梯度。
-> rad: 弧度(radians)，一个圆有 2π 弧度。
-> turn: 圈(turns)，一个圆有一圈。
-> 90deg = 200grad = 0.25turn ≈ 1.570796326794897rad
+  CSS 中有四种角度单位：
+
+  - **deg**：度（Degrees），一个圆有 360 度。
+  - **grad**：梯度（gradients），一个圆共 400 梯度。
+  - **rad**：弧度（radians），一个圆有 2π 弧度。
+  - **turn**：圈（turns），一个圆有一圈。
+
+  90deg = 200grad = 0.25turn ≈ 1.570796326794897rad
 
 ## 六. 形状
 
@@ -869,4 +864,4 @@ CSS 中的很多属性还会产生形状，比如常见的属性：
 - box-shadow
 - border-radius
 
-> 建议，仅仅把它们用于基本的用途，把 border 用于边框、把阴影用于阴影，把圆角用于圆角，所有其它的场景，都有一个更好的替代品：**dataUri+svg**。
+> **建议**：仅仅把它们用于基本的用途，把 border 用于边框、把阴影用于阴影，把圆角用于圆角，所有其它的场景，都有一个更好的替代品：**dataUri+svg**。

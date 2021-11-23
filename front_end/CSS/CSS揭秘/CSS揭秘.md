@@ -1,6 +1,4 @@
----
-title: CSS 揭秘
----
+# CSS 揭秘
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -73,9 +71,7 @@ title: CSS 揭秘
 
 <!-- /code_chunk_output -->
 
-# CSS 揭秘
-
-下面的 JS 示例都是原生 JS，只会用到一个工具函数 $$()。它可以获取和遍历所有匹配特定 CSS 选择符的 DOM 元素，定语如下：
+下面的 JS 示例都是原生 JS，只会用到一个工具函数 $$()。它可以获取和遍历所有匹配特定 CSS 选择符的 DOM 元素，定义如下：
 
 ```js
 function $$(selector, context) {
@@ -328,15 +324,14 @@ background-color: rebeccapurple;
 展开式属性与简写属性的配合使用也是非常有用的，可以让代码更加 DRY。对于那些接受一个用逗号分隔的列表的属性（比如 background），尤其如此。下面的例子可以很好地解释这一点：
 
 ```css
-background: url(tr.png) no-repeat top right/ 2em 2em, url(br.png) no-repeat
-    bottom right / 2em 2em, url(bl.png) no-repeat bottom left / 2em 2em;
+background: url(tr.png) no-repeat top right/ 2em 2em, url(br.png) no-repeat bottom right / 2em 2em,
+  url(bl.png) no-repeat bottom left / 2em 2em;
 ```
 
 background-size 和 background-repeat 的值被重复了三遍，尽管每层背景的这两个值确实是相同的。其实可以从 CSS 的 “列表扩散规则” 那里得到好处。它的意思是说，**如果只为某个属性提供一个值，那它就会扩散并应用到列表中的每一项**。因此，可以把这些重复的值从简写属性中抽出来写成一个展开式属性：
 
 ```css
-background: url(tr.png) top right, url(br.png) bottom right,
-  url(bl.png) bottom left;
+background: url(tr.png) top right, url(br.png) bottom right, url(bl.png) bottom left;
 background-size: 2em 2em;
 background-repeat: no-repeat;
 ```
@@ -402,9 +397,8 @@ outline: 5px solid deeppink;
 ```css
 .pseudorandom-background {
   background: hsl(20, 40%, 90%);
-  background-image: linear-gradient(90deg, #fb3 10px, transparent 0),
-    linear-gradient(90deg, #ab4 20px, transparent 0), linear-gradient(90deg, #655
-        20px, transparent 0);
+  background-image: linear-gradient(90deg, #fb3 10px, transparent 0), linear-gradient(90deg, #ab4 20px, transparent 0),
+    linear-gradient(90deg, #655 20px, transparent 0);
   background-size: 80px 100%, 60px 100%, 40px 100%;
 }
 ```
@@ -420,8 +414,7 @@ outline: 5px solid deeppink;
 ```css
 .pseudorandom-background {
   background: hsl(20, 40%, 90%);
-  background-image: linear-gradient(90deg, #fb3 11px, transparent 0),
-    linear-gradient(90deg, #ab4 23px, transparent 0),
+  background-image: linear-gradient(90deg, #fb3 11px, transparent 0), linear-gradient(90deg, #ab4 23px, transparent 0),
     linear-gradient (90deg, #655 41px transparent 0);
   background-size: 41px 100%, 61px 100%, 83px 100%;
 }
@@ -488,8 +481,8 @@ background-origin: border-box;
 .envelope {
   padding: 1em;
   border: 16px solid transparent;
-  border-image: 16 repeating-linear-gradient(-45deg, red 0, red 1em, transparent
-        0, transparent 2em, #58a 0, #58a 3em, transparent 0, transparent 4em);
+  border-image: 16 repeating-linear-gradient(-45deg, red 0, red 1em, transparent 0, transparent 2em, #58a 0, #58a 3em, transparent
+        0, transparent 4em);
 }
 ```
 
@@ -567,7 +560,7 @@ transform: skewX(-45deg);
   /* 其他的文字颜色、内边距等样式 */
 }
 .button::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -584,7 +577,7 @@ transform: skewX(-45deg);
   /* 其他的文字颜色、内边距等样式…… */
 }
 .button::before {
-  content: ""; /* 用伪元素来生成一个矩形 */
+  content: ''; /* 用伪元素来生成一个矩形 */
   position: absolute;
   top: 0;
   right: 0;
@@ -663,18 +656,13 @@ background: linear-gradient(-45deg, transparent 15px, #58a 0);
 现在，假设想要两个角被切掉的效果，以底部的两个角为例。只用一层渐变是无法做到这一点的，因此要再加一层。最初的想法可能是这样的：
 
 ```css
-background: linear-gradient(-45deg, transparent 15px, #58a 0), linear-gradient(45deg, transparent
-      15px, #655 0);
+background: linear-gradient(-45deg, transparent 15px, #58a 0), linear-gradient(45deg, transparent 15px, #655 0);
 ```
 
 但这样写是行不通的。默认情况下，这两层渐变都会填满整个元素，因此它们会相互覆盖。需要让它们都缩小一些，于是使用 `background-size` 让每层渐变分别只占据整个元素一半的面积，这时还需要把 `background-repeat` 关掉：
 
 ```css
-background: linear-gradient(-45deg, transparent 15px, #58a 0) right, linear-gradient(
-      45deg,
-      transparent 15px,
-      #655 0
-    ) left;
+background: linear-gradient(-45deg, transparent 15px, #58a 0) right, linear-gradient(45deg, transparent 15px, #655 0) left;
 background-size: 50% 100%;
 background-repeat: no-repeat;
 ```
@@ -686,8 +674,11 @@ background: linear-gradient(135deg, transparent 15px, #58a 0) top left, linear-g
       -135deg,
       transparent 15px,
       #58a 0
-    ) top right, linear-gradient(-45deg, transparent 15px, #58a 0) bottom right,
-  linear-gradient(45deg, transparent 15px, #58a 0) bottom left;
+    ) top right, linear-gradient(-45deg, transparent 15px, #58a 0) bottom right, linear-gradient(
+      45deg,
+      transparent 15px,
+      #58a 0
+    ) bottom left;
 background-size: 50% 50%;
 background-repeat: no-repeat;
 ```
@@ -697,12 +688,12 @@ background-repeat: no-repeat;
 ```scss
 @mixin beveled-corners($bg, $tl: 0, $tr: $tl, $br: $tl, $bl: $tr) {
   background: $bg;
-  background: linear-gradient(135deg, transparent $tl, $bg 0) top left, linear-gradient(
-        225deg,
-        transparent $tr,
+  background: linear-gradient(135deg, transparent $tl, $bg 0) top left, linear-gradient(225deg, transparent $tr, $bg 0) top
+      right, linear-gradient(-45deg, transparent $br, $bg 0) bottom right, linear-gradient(
+        45deg,
+        transparent $bl,
         $bg 0
-      ) top right, linear-gradient(-45deg, transparent $br, $bg 0) bottom right,
-    linear-gradient(45deg, transparent $bl, $bg 0) bottom left;
+      ) bottom left;
   background-size: 50% 50%;
   background-repeat: no-repeat;
 }
@@ -721,10 +712,15 @@ background-repeat: no-repeat;
 上述渐变技巧还有一个变种，可以用来创建弧形切角（也称为“内凹圆角”，因为它看起来就像是圆角的反向版本）。唯一的区别在于，会用径向渐变来替代上述线性渐变：
 
 ```css
-background: radial-gradient(circle at top left, transparent 15px, #58a 0) top left,
-  radial-gradient(circle at top right, transparent 15px, #58a 0) top right,
-  radial-gradient(circle at bottom right, transparent 15px, #58a 0) bottom right,
-  radial-gradient(circle at bottom left, transparent 15px, #58a 0) bottom left;
+background: radial-gradient(circle at top left, transparent 15px, #58a 0) top left, radial-gradient(
+      circle at top right,
+      transparent 15px,
+      #58a 0
+    ) top right, radial-gradient(circle at bottom right, transparent 15px, #58a 0) bottom right, radial-gradient(
+      circle at bottom left,
+      transparent 15px,
+      #58a 0
+    ) bottom left;
 background-size: 50% 50%;
 background-repeat: no-repeat;
 ```
@@ -772,7 +768,7 @@ transform: perspective(0.5em) rotateX(5deg);
   color: white;
 }
 .tab::before {
-  content: ""; /* 用伪元素来生成一个矩形 */
+  content: ''; /* 用伪元素来生成一个矩形 */
   position: absolute;
   top: 0;
   right: 0;
@@ -905,19 +901,19 @@ circle {
 然后在每个 .pie 元素内部生成一个 SVG 图像，并添入所有必要的图形元件和属性。为确保可访问性，还可以在它内部增加 `<title>` 元素，这样屏幕阅读器的读者也可以知道这个图像显示的是什么比率了。这段脚本最终可能是这样的：
 
 ```js
-$$(".pie").forEach((pie) => {
+$$('.pie').forEach(pie => {
   let p = parseFloat(pie.textContent);
-  let NS = "http://www.w3.org/2000/svg";
-  let svg = document.createElementNS(NS, "svg");
-  let circle = document.createElementNS(NS, "circle");
-  let title = document.createElementNS(NS, "title");
-  circle.setAttribute("r", 16);
-  circle.setAttribute("cx", 16);
-  circle.setAttribute("cy", 16);
-  circle.setAttribute("stroke-dasharray", p + "100");
-  svg.setAttribute("viewBox", "0 0 32 32");
+  let NS = 'http://www.w3.org/2000/svg';
+  let svg = document.createElementNS(NS, 'svg');
+  let circle = document.createElementNS(NS, 'circle');
+  let title = document.createElementNS(NS, 'title');
+  circle.setAttribute('r', 16);
+  circle.setAttribute('cx', 16);
+  circle.setAttribute('cy', 16);
+  circle.setAttribute('stroke-dasharray', p + '100');
+  svg.setAttribute('viewBox', '0 0 32 32');
   title.textContent = pie.textContent;
-  pie.textContent = "";
+  pie.textContent = '';
   svg.appendChild(title);
   svg.appendChild(circle);
   pie.appendChild(svg);
@@ -1063,8 +1059,12 @@ background: linear-gradient(-135deg, transparent 2em, #58a 0);
 为了生成这个三角形，需要的就是一个有角度的线性渐变，而这个渐变的两个色标需要在正中央重合：
 
 ```css
-background: linear-gradient(225deg, transparent 50%, rgba(0, 0, 0, 0.4) 0) no-repeat
-    100% 0 / 2em 2em, linear-gradient(-135deg, transparent, 2em, #58a 0);
+background: linear-gradient(225deg, transparent 50%, rgba(0, 0, 0, 0.4) 0) no-repeat 100% 0 / 2em 2em, linear-gradient(
+    -135deg,
+    transparent,
+    2em,
+    #58a 0
+  );
 ```
 
 但这时它们的尺寸不匹配，原因在于第二层渐变中的 2em 折角尺寸是写在色标中的，因此它是沿着渐变轴进行度量的，是对角线尺寸。另一方面，在 background-size 中的 2em 长度是背景贴片的宽度和高度，是在水平和垂直方向上进行度量的。为了将这两者对齐，需要选择以下任意一项进行调整，选择哪一项取决于最终想保留哪一方的尺寸设置：
@@ -1076,8 +1076,12 @@ background: linear-gradient(225deg, transparent 50%, rgba(0, 0, 0, 0.4) 0) no-re
 
 ```css
 background: #58a; /* 回退样式 */
-background: linear-gradient(225deg, transparent 50%, rgba(0, 0, 0, 0.4) 0) no-repeat
-    100% 0 / 2em 2em, linear-gradient(-135deg, transparent, 2em, #58a 0);
+background: linear-gradient(225deg, transparent 50%, rgba(0, 0, 0, 0.4) 0) no-repeat 100% 0 / 2em 2em, linear-gradient(
+    -135deg,
+    transparent,
+    2em,
+    #58a 0
+  );
 ```
 
 #### 4.3.2 其他角度的解决方案
@@ -1092,16 +1096,11 @@ background: linear-gradient(225deg, transparent 50%, rgba(0, 0, 0, 0.4) 0) no-re
   border-radius: 0.5em;
 }
 .note::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
-  background: linear-gradient(
-      to left bottom,
-      transparent 50%,
-      rgba(0, 0, 0, 0.2) 0,
-      rgba(0, 0, 0, 0.4)
-    ) 100% 0 no-repeat;
+  background: linear-gradient(to left bottom, transparent 50%, rgba(0, 0, 0, 0.2) 0, rgba(0, 0, 0, 0.4)) 100% 0 no-repeat;
   width: 1.73em;
   height: 3em;
   transform: translateY(-1.3em) rotate(-30deg);
@@ -1169,8 +1168,7 @@ background-image: linear-gradient(rgba(0, 0, 0, 0.2) 50%, transparent 0);
 在 [CSS 字体(第三版)](https://w3.org/TR/css3-fonts)中，原有的 `font-variant` 被升级成了一个简写属性，由很多新的展开式属性组合而成。其中之一叫作 `font-variant-ligatures`，专门用来控制连字效果的开启和关闭。如果要启用所有可能的连字，需要同时指定这三个标识符：
 
 ```css
-font-variant-ligatures: common-ligatures discretionary-ligatures
-  historical-ligatures;
+font-variant-ligatures: common-ligatures discretionary-ligatures historical-ligatures;
 ```
 
 这个属性是可继承的。比如，发现酌情连字可能会干扰到正常文字的阅读效果时，可能希望把它单独关掉。在这种情况下，可能只想开启通用连字
@@ -1182,8 +1180,7 @@ font-variant-ligatures: common-ligatures;
 甚至可以显式地把其他两种连字关闭：
 
 ```css
-font-variant-ligatures: common-ligatures no-discretionary-ligatures
-  no-historical-ligatures;
+font-variant-ligatures: common-ligatures no-discretionary-ligatures no-historical-ligatures;
 ```
 
 > `font-variant-ligatures` 还接受 none 这个值，它会把所有的连字效果都关掉。千万不要使用 none，除非绝对清楚自己是在做什么。如果要把 `font-variant-ligatures` 属性复位为初始值，应该使用 normal 而不是 none。
@@ -1199,7 +1196,7 @@ font-variant-ligatures: common-ligatures no-discretionary-ligatures
 ```css
 @font-face {
   font-family: Ampersand;
-  src: url("fonts/ampersand.woff");
+  src: url('fonts/ampersand.woff');
 }
 h1 {
   font-family: Ampersand, Helvetica, sans-serif;
@@ -1213,7 +1210,7 @@ h1 {
 ```css
 @font-face {
   font-family: Ampersand;
-  src: local("Baskerville"), local("Goudy old Style"), local("Garamond"), local("Palatino");
+  src: local('Baskerville'), local('Goudy old Style'), local('Garamond'), local('Palatino');
 }
 ```
 
@@ -1238,7 +1235,7 @@ unicode-range: U+26;
 ```css
 @font-face {
   font-family: Ampersand;
-  src: local("Baskerville"), local("Goudy old Style"), local("Palatino"), local("Book Antiqua");
+  src: local('Baskerville'), local('Goudy old Style'), local('Palatino'), local('Book Antiqua');
   unicode-range: U+26;
 }
 h1 {
@@ -1308,15 +1305,13 @@ text-shadow: 0 -1px 1px black;
 ```css
 background: deeppink;
 color: white;
-text-shadow: 0.5px 0.5px black, -0.5px -0.5px black, 0.5px -0.5px black, -0.5px
-    0.5px black;
+text-shadow: 0.5px 0.5px black, -0.5px -0.5px black, 0.5px -0.5px black, -0.5px 0.5px black;
 ```
 
 除此以外，还可以重叠多层轻微模糊的投影来模拟描边。这种方法不需要设置偏移量：
 
 ```css
-text-shadow: 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black,
-  0 0 1px black, 0 0 1px black;
+text-shadow: 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black;
 ```
 
 不过，这种方法并不总是可以得到完美的效果，而且性能消耗较高。这是因为用了模糊算法。不幸的是，需要的描边越粗，这两种方案产生的结果就越差。
@@ -1410,8 +1405,8 @@ a:hover {
 ```css
 background: #58a;
 color: white;
-text-shadow: 0 1px hsl(0, 0%, 85%), 0 2px hsl(0, 0%, 80%), 0 3px hsl(0, 0%, 75%),
-  0 4px hsl(0, 0%, 70%), 0 5px hsl(0, 0%, 65%), 0 5px 10px black;
+text-shadow: 0 1px hsl(0, 0%, 85%), 0 2px hsl(0, 0%, 80%), 0 3px hsl(0, 0%, 75%), 0 4px hsl(0, 0%, 70%),
+  0 5px hsl(0, 0%, 65%), 0 5px 10px black;
 ```
 
 这种繁琐冗长的代码正是 CSS 预处理器的 mixin 功能所要解决的问题。在 SCSS 中可以这样来做：
@@ -1440,8 +1435,8 @@ h1 {
 ```css
 color: white;
 background: hsl(0, 50%, 45%);
-text-shadow: 1px 1px black, 2px 2px black, 3px 3px black, 4px 4px black,
-  5px 5px black, 6px 6px black, 7px 7px black, 8px 8px black;
+text-shadow: 1px 1px black, 2px 2px black, 3px 3px black, 4px 4px black, 5px 5px black, 6px 6px black, 7px 7px black, 8px
+    8px black;
 ```
 
 把这些代码转换成 mixin 甚至比前面的例子更加容易，不过在这个例子中用函数来组织代码可能更合适：
@@ -1587,9 +1582,7 @@ figure {
 ```html
 <label>
   Your username: <input id="username" />
-  <span class="callout">
-    Only letters，numbers，underscores (_) and hyphens (-) allowed!
-  </span>
+  <span class="callout"> Only letters，numbers，underscores (_) and hyphens (-) allowed! </span>
 </label>
 ```
 
@@ -1614,12 +1607,7 @@ input:not(:focus) + .callout {
   }
   70% {
     transform: scale(1.1);
-    animation-timing-function: cubic-bezier(
-      0.1,
-      0.25,
-      1,
-      0.25
-    ); /* 反向的 ease */
+    animation-timing-function: cubic-bezier(0.1, 0.25, 1, 0.25); /* 反向的 ease */
   }
 }
 input:not(:focus) + .callout {
@@ -1917,10 +1905,10 @@ h1 {
 这个动画现在的表现相当完美，不过还不是很易于维护：需要根据每个标题的字数来给它们分别指定不同的宽度样式，而且还需要在每次改变标题内容时同步更新这些宽度样式。显然，这种场景正是 JS 的用武之地：
 
 ```js
-$$("h1").forEach((h1) => {
+$$('h1').forEach(h1 => {
   let len = h1.textContent.length,
     s = h1.style;
-  s.width = len + "ch";
+  s.width = len + 'ch';
   s.animationTimingFunction = `steps(${len}), steps(1)`;
 });
 ```
@@ -1935,7 +1923,7 @@ $$("h1").forEach((h1) => {
 .panoramic {
   width: 150px;
   height: 150px;
-  background: url("img/naxos-greece.jpg");
+  background: url('img/naxos-greece.jpg');
   background-size: auto 100%;
 }
 ```
@@ -1951,7 +1939,7 @@ $$("h1").forEach((h1) => {
 .panoramic {
   width: 150px;
   height: 150px;
-  background: url("img/naxos-greece.jpg");
+  background: url('img/naxos-greece.jpg');
   background-size: auto 100%;
   animation: panoramic 10s linear infinite alternate;
 }
@@ -1963,7 +1951,7 @@ $$("h1").forEach((h1) => {
 .panoramic {
   width: 150px;
   height: 150px;
-  background: url("img/naxos-greece.jpg");
+  background: url('img/naxos-greece.jpg');
   background-size: auto 100%;
 }
 .panoramic:hover,
@@ -1987,7 +1975,7 @@ $$("h1").forEach((h1) => {
 .panoramic {
   width: 150px;
   height: 150px;
-  background: url("img/naxos-greece.jpg");
+  background: url('img/naxos-greece.jpg');
   background-size: auto 100%;
   animation: panoramic 10s linear infinite alternate;
   animation-play-state: paused;
@@ -2132,18 +2120,16 @@ transform-origin: 0 0;
 ```css
 @keyframes spin {
   from {
-    transform: translate(50%, 150px) rotate(0turn) translate(-50%, -150px) translate(
-        50%,
-        50%
-      )
-      rotate(1turn) translate(-50%, -50%);
+    transform: translate(50%, 150px) rotate(0turn) translate(-50%, -150px) translate(50%, 50%) rotate(1turn) translate(
+        -50%,
+        -50%
+      );
   }
   to {
-    transform: translate(50%, 150px) rotate(1turn) translate(-50%, -150px) translate(
-        50%,
-        50%
-      )
-      rotate(0turn) translate(-50%, -50%);
+    transform: translate(50%, 150px) rotate(1turn) translate(-50%, -150px) translate(50%, 50%) rotate(0turn) translate(
+        -50%,
+        -50%
+      );
   }
 }
 .avatar {
@@ -2156,16 +2142,10 @@ transform-origin: 0 0;
 ```css
 @keyframes spin {
   from {
-    transform: translateY(150px) translateY(-50%) rotate(0turn) translateY(
-        -150px
-      )
-      translateY(50%) rotate(1turn);
+    transform: translateY(150px) translateY(-50%) rotate(0turn) translateY(-150px) translateY(50%) rotate(1turn);
   }
   to {
-    transform: translateY(150px) translateY(-50%) rotate(1turn) translateY(
-        -150px
-      )
-      translateY(50%) rotate(0turn);
+    transform: translateY(150px) translateY(-50%) rotate(1turn) translateY(-150px) translateY(50%) rotate(0turn);
   }
 }
 .avatar {
