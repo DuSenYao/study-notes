@@ -3132,7 +3132,7 @@ class Circle {
 }
 ```
 
-此例中，area 是一个成员函数。在成员函数中，需要使用 ·this` 关键字来引用类的其他成员。
+此例中，area 是一个成员函数。在成员函数中，需要使用 `this` 关键字来引用类的其他成员。
 
 #### 2.15.4 成员存取器
 
@@ -5356,3 +5356,581 @@ type ReadonlyPartial<T> = {
 同态映射对象类型是一种能够维持对象结构不变的映射对象类型。同态映射对象类型 `{[P in keyof T]: X}` 与对象类型 T 是同态关系，它们包含了完全相同的属性集合。在默认情况下，同态映射对象类型会保留对象类型 T 中属性的修饰符。
 
 假设有如下同态映射对象类型，其中 T 和 X 为类型参数：
+
+```ts
+type HMOT<T, X> = { [P in keyof T]: X };
+```
+
+现在来看看同态映射对象类型 `HMOT<T, X>` 的具体映射规则：
+
+- 若 T 为原始类型，则不进行任何映射，同态映射对象类型 `HMOT<T, X>` 等于类型 T：
+
+  ```ts
+  type HMOT<T, X> = { [P in keyof T]: X };
+  type T = string;
+  type R = HMOT<T, boolean>; // 与 boolean 类型无关 = string
+  ```
+
+- 若 T 为联合类型，则对联合类型的每个成员类型求同态映射对象类型，并使用每个结果类型构造一个联合类型：
+
+  ```ts
+  type HMOT<T, X> = { [P in keyof T]: X };
+  type T = { a: string } | { b: number };
+  type R = HMOT<T, boolean>;
+  // = HMOT<{a: string}, boolean> | HMOT<{b: number}, boolean>;
+  // = {a: boolean} | {b: boolean};
+  ```
+
+- 若 T 为数组类型，则同态映射对象类型 `HMOT<T, X>` 也为数组类型：
+
+  ```ts
+  type HMOT<T, X> = { [P in keyof T]: X };
+  type T = number[];
+  type R = HMOT<T, string>; // = string[];
+  ```
+
+  此时，若映射属性类型 X 为索引访问类型 `T[P]`，则映射属性类型 X 等于数组 T 的成员类型：
+
+  ```ts
+  type HMOT<T> = { [P in keyof T]: T[P] };
+  type T = number[];
+  type R = HMOT<T>; // = number[];
+  ```
+
+- 若 T 为只读数组类型，则同态映射对象类型 `HMOT<T, X>` 也为只读数组类型：
+
+  ```ts
+  type HMOT<T, X> = { [P in keyof T]: X };
+  type T = readonly number[];
+  type R = HMOT<T, string>; // = readonly string[];
+  ```
+
+  此时，若映射属性类型 X 为索引访问类型 `T[P]`，则映射属性类型 X 等于数组 T 的成员类型：
+
+  ```ts
+  type HMOT<T> = { [P in keyof T]: T[P] };
+  type T = readonly number[];
+  type R = HMOT<T>; // = readonly number[];
+  ```
+
+- 若 T 为元组类型，则同态映射对象类型 `HMOT<T, X>` 也为元组类型：
+
+  ```ts
+  type HMOT<T, X> = { [P in keyof T]: X };
+  type T = [string, number];
+  type R = HMOT<T, boolean>; // = [boolean, boolean];
+  ```
+
+  此时，若映射属性类型 X 为索引访问类型 `T[P]`，则映射属性类型 X 等于元组 T 中对应成员的类型：
+
+  ```ts
+  type HMOT<T> = { [P in keyof T]: T[P] };
+  type T = [string, number];
+  type R = HMOT<T>; // = [string, number];
+  ```
+
+- 若 T 为只读元组类型，则同态映射对象类型 `HMOT<T, X>` 也为只读元组类型：
+
+  ```ts
+  type HMOT<T, X> = { [P in keyof T]: X };
+  type T = readonly [string, number];
+  type R = HMOT<T, boolean>; // = readonly [boolean, boolean];
+  ```
+
+  此时，若映射属性类型 X 为索引访问类型 `T[P]`，则映射属性类型 X 等于元组 T 中对应成员的类型：
+
+  ```ts
+  type HMOT<T>={[P in keyof T]:T[P]};
+  type T = readonly [string, number];
+  type R=HMOT<T>;
+  = readonly [string, number];
+  ```
+
+- 若 T 为数组类型或元组类型，且同态映射对象类型中使用了 readonly 修饰符，那么同态映射对象类型 `HMOT<T, X>` 的结果类型为只读数组类型或只读元组类型：
+
+  ```ts
+  type HMOT<T> = { readonly [P in keyof T]: T[P] };
+  type T0 = number[];
+  type R0 = HMOT<TO>; // = readonly number[];
+  type T1 = [string];
+  type R1 = HMOT<T1>; // = readonly [string];
+  ```
+
+- 若 T 为只读数组类型或只读元组类型，且同态映射对象类型中使用了 `-readonly` 修饰符，那么同态映射对象类型 `HMOT<T, X>` 的结果类型为非只读数组类型或非只读元组类型：
+
+  ```ts
+  type HMOT<T> = { -readonly [P in keyof T]: T[P] };
+  type T0 = readonly number[];
+  type R0 = HMOT<T0>; // = number[];
+  type T1 = readonly [string];
+  type R1 = HMOT<T1>;
+  ```
+
+- 若 T 为只读数组类型或只读元组类型，且同态映射对象类型中使用了 `-readonly` 修饰符，那么同态映射对象类型 `HMOT<T, X>` 的结果类型为非只读数组类型或非只读元组类型：
+
+  ```ts
+  type HMOT<T> = { -readonly [P in keyof T]: T[P] };
+  type T0 = readonly number[];
+  type R0 = HMOT<TO>; // = number[];
+  type T1 = readonly [string];
+  type R1 = HMOT<T1>; // = [string];
+  ```
+
+### 3.7 条件类型
+
+条件类型与条件表达式类似，它表示一种非固定的类型。条件类型能够根据条件判断从可选类型中选择其一作为结果类型。
+
+#### 3.7.1 条件类型的定义
+
+条件类型的定义借用了 JS 语言中的条件运算符，语法如下所示：
+
+```ts
+T extends U ? X : Y
+```
+
+在该语法中，`extends` 是关键字；T、U、X 和 Y 均表示一种类型。若类型 T 能够赋值给类型 U，则条件类型的结果为类型 X，否则条件类型的结果为类型 Y。条件类型的结果类型只可能为类型 X 或者类型 Y。
+
+例如，在下例的 T0 类型中，true 类型能够赋值给 boolean 类型，因此 T0 类型的结果类型为 string 类型。在下例的 T1 类型中，string 类型不能赋值给 boolean 类型，因此 T1 类型的结果类型为 number 类型：
+
+```ts
+type T0 = true extends boolean ? string : number; // string
+type T1 = string extends boolean ? string : number; // number
+```
+
+此例中的条件类型实际意义很小，因为条件类型中的所有类型都是固定的，因此结果类型也是固定的。在实际应用中，条件类型通常与类型参数结合使用。例如，下例中定义了泛型类型别名 `TypeName<T>`，它有一个类型参数 T。`TypeName<T>` 的值为条件类型，在该条件类型中根据不同的实际类型参数 T 将返回不同的类型：
+
+```ts
+type TypeName<T> = T extends string
+  ? 'string'
+  : T extends number
+  ? 'number'
+  : T extends boolear
+  ? 'boolean'
+  : T extends undefined
+  ? 'undefined'
+  : T extends Function
+  ? 'function'
+  : 'object';
+
+type T0 = TypeName<'a'>; // 'string'
+type T1 = TypeName<0>; // 'number'
+type T2 = TypeName<true>; // 'boolean'
+type T3 = TypeName<undefined>; // 'undefined'
+type T4 = TypeName<() => void>; // 'function'
+type T5 = TypeName<string[]>; // 'object'
+```
+
+#### 3.7.2 分布式条件类型
+
+在条件类型 `T extends U ? X : Y` 中，如果**类型 T 是一个裸（Naked）类型参数，那么该条件类型也称作分布式条件类型**。下面先了解一下什么是裸类型参数。
+
+##### 3.7.2.1 裸类型参数
+
+从字面上理解，裸类型参数是指裸露在外的没有任何装饰的类型参数。如果**类型参数不是复合类型的组成部分而是独立出现，那么该类型参数称作裸类型参数**。
+
+例如，在下例的 `T0<T>` 类型中，类型参数 T 是裸类型参数；但是在 `T1<T>` 类型中，类型参数 T 不是裸类型参数，因为它是元组类型的组成部分。因此，类型 `T0<T>` 是分布式条件类型，而类型 `T1<T>` 则不是分布式条件类型：
+
+```ts
+type TO<T> = T extends string ? true : false; // 裸类型参数
+type T1<T> = [T] extends [string] ? true : false; // 非裸类型参数
+```
+
+##### 3.7.2.2 分布式行为
+
+与常规条件类型相比，分布式条件类型具有一种特殊的行为，那就是在使用实际类型参数实例化分布式条件类型时，如果实际类型参数 T 为联合类型，那么会将分布式条件类型展开为由子条件类型构成的联合类型。
+
+例如，有如下分布式条件类型，其中 T 是类型参数：
+
+```ts
+T extends U ? X : Y;
+```
+
+如果实际类型参数 T 是联合类型 "A|B"，那么分布式条件类型会被展开：
+
+```ts
+T ≡ A | B
+T extends U ? X : Y ≡ (A extends U ? X : Y) | (B extends U ? X : Y)
+```
+
+前面介绍的 `TypeName<T>` 条件类型是分布式条件类型，因为其类型参数 T 是一个裸类型参数。因此，`TypeName<T>` 类型具有分布式行为：
+
+```ts
+type TypeName<T> = T extends string
+  ? 'string'
+  : T extends number
+  ? 'number'
+  : T extends boolean
+  ? 'boolean'
+  : T extends undefined
+  ? 'undefined'
+  : T extends Function
+  ? 'function'
+  : 'object';
+
+// 使用联合类型 "string | number" 来实例化泛型类型别名 TypeName<T>，它表示的分布式条件类型会被展开为联合类型 "TypeName<string> | TypeName<number>
+// 因此最终的结果类型为联合类型 "'string' | 'number'"
+type T = TypeName<string | number>; // 'string' | 'number'
+```
+
+##### 3.7.2.3 过滤联合类型
+
+在了解了分布式条件类型的分布式行为后，可以巧妙地利用它来过滤联合类型。在联合类型一节中介绍过，在联合类型 “U=U0|U1" 中，若 U1 是 U0 的子类型，那么联合类型可以化简为 "U=U0”。例如，true 类型和 false 类型都是 boolean 类型的子类型，因此联合类型最终可以化简为 boolean 类型。
+
+never 类型是[尾端类型](#28-尾端类型)，它是任何其他类型的子类型。因此，当 never 类型与其他类型组成联合类型时，可以直接将 never 类型从联合类型中 “消掉”：
+
+基于分布式条件类型和以上两个 “公式”，就能够从联合类型中过滤掉特定的类型。例如，下例中的 `Exclude<T,U>` 类型能够从联合类型 T 中删除符合条件的类型：
+
+```ts
+type Exclude<T, U> = T extends U ? never : T;
+```
+
+在分布式条件类型 `Exclude<T,U>` 中，若类型 T 能够赋值给类型 U，则返回 never 类型；否则，返回类型 T。这里巧妙地使用了 never 类型来从联合类型 T 中删除符合条件的类型。下面来详细分析 `Exclude<T,U>` 类型的实例化过程：
+
+```ts
+T = Exclude<string | undefined, null | undefined>
+= (string extends null | undefined ? never : string) | (null extends null | undefined ? never : null)
+= string | never
+= string
+```
+
+在了解了 `Exclude<T,U>` 类型的工作原理后，能够很容易地创建一个与之相反的 `Extract<T,U>` 类型。该类型能够从联合类型 T 中挑选符合条件的类型。若类型 T 能够赋值给类型 U，则返回 T 类型；否则，返回类型 never：
+
+```ts
+type Extract<T, U> = T extends U ? T : never;
+type T = Extract<string | number, number | boolean>; // 类型为 number
+```
+
+如果 `Exclude<T,U>` 类型中的类型参数 U 为联合类型 "null|undefined"，那么 `Exclude<T,U>` 类型就表示从联合类型 T 中去除 null 类型和 undefined 类型，也就是将类型 T 转换为一个非空类型。也可以直接创建一个非空类型 `NonNullable<T>`：
+
+```ts
+type NonNullable<T> = T extends null | undefined ? never : T;
+```
+
+事实上，上面介绍的三种分布式条件类型 `Exclude<T,U>`、`Extract<T,U>`、`NonNullable<T>` 都是 TypeScript 语言内置的工具类型。在 TypeScript 程序中允许直接使用而不需要自己定义。关于工具类型的详细介绍请参考 6.8 节。<!--TODO-->
+
+##### 3.7.2.4 避免分布式行为
+
+分布式条件类型的分布式行为通常是期望的行为，但也可能存在某些场景，想要禁用分布式条件类型的分布式行为。这就需要将分布式条件类型转换为非分布式条件类型。一种可行的方法是将分布式条件类型中的裸类型参数修改为非裸类型参数，这可以通过将 extends 两侧的类型包裹在元组类型中来实现。这样做之后，原本的分布式条件类型将变成非分布式条件类型，因此也就不再具有分布式行为。例如，有以下的分布式条件类型：
+
+```ts
+type CT<T> = T extends string ? true : false;
+type T = CT<string | number>; // boolean
+```
+
+可以通过如下方式将此例中的分布式条件类型转换为非分布式条件类型：
+
+```ts
+type CT<T> = [T] extends [string] ? true : false;
+type T = CT<string | number>; // false
+```
+
+#### 3.7.3 infer 关键字
+
+条件类型的语法如下所示：
+
+```ts
+T extends U ? X : Y
+```
+
+**在 `extends` 语句中类型 U 的位置上允许使用 `infer` 关键字来定义可推断的类型变量，可推断的类型变量只允许在条件类型的 true 分支中引用**，即类型 X 的位置上使用：
+
+```ts
+T extends infer U ? U : Y;
+```
+
+此例中，使用 `infer` 声明定义了可推断的类型变量 U。当编译器解析该条件类型时，会根据 T 的实际类型来推断类型变量 U 的实际类型：
+
+```ts
+type CT<T> = T extends Array<infer U> ? U : never;
+type T = CT<Array<number>>; // number
+```
+
+此例中，条件类型 `CT<T>` 定义了一个可推断的类型变量 U 它表示数组元素的类型。当使用数组类型 `Array<number>` 实例化 `CT<T>` 条件类型时，编译器将根据 `Array<number>` 类型来推断 `Array<infer U>`类型中类型变量 U 的实际类型，推断出来的类型变量 U 的实际类型为 number 类型。
+
+接下来再来看一个例子，可以使用条件类型和 `infer` 类型变量来获取某个函数的返回值类型。该条件类型 `ReturnType<T>` 的定义如下所示：
+
+```ts
+Type ReturnType<T extends (...args: any ) => any> = T extends (...args: any) => infer R ? R : any;
+```
+
+`ReturnType<T>` 类型接受函数类型的类型参数，并返回函数的返回值类型：
+
+```ts
+type F = (x: number) => string;
+type T = ReturnType<F>; // string
+```
+
+实际上，`ReturnType<T>` 类型是 TypeScript 语言的内置工具类型。在 TypeScript 程序中可以直接使用它。关于工具类型的详细介绍请参考 6.8 节。<!--TODO-->
+
+在条件类型中，允许定义多个 `infer` 声明。例如，下例中存在两个 infer 声明，它们定义了同一个推断类型变量 U：
+
+```ts
+type CT<T> = T extends { a: infer U; b: infer U } ? U : never;
+type T = CT<{ a: string; b: number }>; // string | number
+```
+
+同时，在多个 infer 声明中也可以定义不同的推断类型变量。例如，下例中的两个 infer 声明分别定义了两个推断类型变量 M 和 N：
+
+```ts
+type CT<T> = T extends { a: infer M; b: infer N } ? [M, N] : never;
+type T = CT<{ a: string; b: number }>; // [string, number]
+```
+
+### 3.8 内置工具类型
+
+在前面的章节中，已经陆续介绍了一些 TypeScript 内置的实用工具类型。这些工具类型的定义位于 TypeScript 语言安装目录下的 "lib/lib.es5.d.ts" 文件中。推荐去阅读这部分源代码，以便能够更好地理解工具类型，同时也能学习到一些类型定义的技巧。
+
+目前，TypeScript 提供的所有内置工具类型如下：
+
+- `Partial<T>`
+- `Required<T>`
+- `Readonly<T>`
+- `Record<K,T>`
+- `Pick<T,K>`
+- `Omit<T,K>`
+- `Exclude<T,U>`
+- `Extract<T,U>`
+- `NonNullable<T>`
+- `Parameters<T>`
+- `ConstructorParameters<T>`
+- `ReturnType<T>`
+- `InstanceType<T>`
+- `ThisParameterType<T>`
+- `OmitThisParameter<T>`
+- `ThisType<T>`
+
+#### 3.8.1 `Partial<T>`
+
+该工具类型能够构造一个新类型，并将实际类型参数 T 中的所有属性变为可选属性：
+
+```ts
+interface A {
+  y: number;
+}
+
+type T = Partial<A>; // {x?: number; y?: number;}
+```
+
+#### 3.8.2 `Required<T>`
+
+该工具类型能够构造一个新类型，并将实际类型参数 T 中的所有属性变为必选属性：
+
+```ts
+interface A {
+  x?: number;
+  y: number;
+}
+type T0 = Required<A>; // {x: number; y: number;}
+```
+
+#### 3.8.3 `Readonly<T>`
+
+该工具类型能够构造一个新类型，并将实际类型参数 T 中的所有属性变为只读属性：
+
+```ts
+interface A {
+  x: number;
+  y: number;
+}
+type T = Readonly<A>; // {readonly x: number; readonly y:number;}
+```
+
+#### 3.8.4 `Record<K,T>`
+
+该工具类型能够使用给定的对象属性名类型和对象属性类型创建一个新的对象类型。`Record<K,T>` 工具类型中的类型参数 K 提供了对象属性名联合类型，类型参数 T 提供了对象属性的类型：
+
+```ts
+type K = 'x' | 'y';
+type T = number;
+type R = Record<K, T>; // {x: number; y: number;}
+const a: R = { x: 0, y: 0 };
+```
+
+因为类型参数 K 是用作对象属性名类型的，所以实际类型参数 K 必须能够赋值给 "string|number|symbol" 类型，只有这些类型能够作为对象属性名类型。
+
+#### 3.8.5 `Pick<T,K>`
+
+该工具类型能够从已有对象类型中选取给定的属性及其类型，然后构建出一个新的对象类型。`Pick<T,K>` 工具类型中的类型参数 T 表示源对象类型，类型参数 K 提供了待选取的属性名类型，它必须为对象类型 T 中存在的属性：
+
+```ts
+interface A {
+  x: number;
+  y: number;
+}
+type T0 = Pick<A, 'x'>; // { x: number }
+type T1 = Pick<A, 'y'>; // { y: number }
+type T2 = Pick<A, 'x' | 'y'>; // {x: number; y: number}
+type T3 = Pick<A, 'z'>; // 编译错误：类型'A'中不存在属性'z'
+```
+
+#### 3.8.6 `Omit<T,K>`
+
+`Omit<T,K>` 工具类型与 `Pick<T,K>` 工具类型是互补的，它能够从已有对象类型中剔除给定的属性，然后构建出一个新的对象类型。`Omit<T,K>` 工具类型中的类型参数 T 表示源对象类型，类型参数 K 提供了待剔除的属性名类型，但它可以为对象类型 T 中不存在的属性：
+
+```ts
+interface A {
+  x: number;
+  y: number;
+}
+type T0 = Omit<A, 'x'>; // { y : number }
+type T1 = Omit<A, 'y'>; // { x: number }
+type T2 = Omit<A, 'x' | 'y'>; // {}
+type T3 = Omit<A, 'z'>; // {x: number; y: number}
+```
+
+#### 3.8.7 `Exclude<T,U>`
+
+该工具类型能够从类型 T 中剔除所有可以赋值给类型 U 的类型：
+
+```ts
+type T0 = Exclude<'a' | 'b' | 'c', 'a'>; // "b" | "c"
+type T1 = Exclude<'a' | 'b' | 'c', 'a' | 'b'>; // "c"
+type T2 = Exclude<string | (() => void), Function>; // string
+```
+
+#### 3.8.8 `Extract<T,U>`
+
+`Extract<T,U>` 工具类型与 `Exclude<T,U>` 工具类型是互补的，它能够从类型 T 中获取所有可以赋值给类型 U 的类型：
+
+```ts
+type T0 = Extract<'a' | 'b' | 'c', 'a' | 'f'>; // 'a'
+type T1 = Extract<string, () => void, Function>; // () => void
+type T2 = Extract<string | number, boolean>; // never
+```
+
+#### 3.8.9 `NonNullable<T>`
+
+该工具类型能够从类型 T 中剔除 null 类型和 undefined 类型并构造一个新类型，也就是获取类型 T 中的非空类型：
+
+```ts
+// string | number
+type T0 = NonNullable<string | number | undefined>;
+// string[]
+type T1 = NonNullable<string[] | null | undefined>;
+```
+
+#### 3.8.10 `Parameters<T>`
+
+该工具类型能够获取函数类型 T 的参数类型并使用参数类型构造一个元组类型：
+
+```ts
+type T0 = Parameters<() => string>; // []
+type T1 = Parameters<(s: string) => void>; // [string]
+type T2 = Parameters<<T>(arg: T) => T>; // [unknown]
+type T4 = Parameters<(x: { a: number; b: string }) => void>; // [{ a: number, b: string}]
+type T5 = Parameters<any>; // unknown[]
+type T6 = Parameters<never>; // never
+type T7 = Parameters<string>; // 编译错误！string 类型不符合约束 (...args: any) => any
+type T8 = Parameters<Function>; // 编译错误！Function 类型不符合约束 (...args: any) => any
+```
+
+#### 3.8.11 `ConstructorParameters<T>`
+
+该工具类型能够获取构造函数 T 中的参数类型，并使用参数类型构造一个元组类型。若类型 T 不是函数类型，则返回 never 类型：
+
+```ts
+// [string, number]
+type T0 = ConstructorParameters<new (x: string, y: number) => object>;
+// [(string | undefined)?]
+type T1 = ConstructorParameters<new (x?: string) => object>;
+type T2 = ConstructorParameters<string>; // 编译错误
+type T3 = ConstructorParameters<Function>; // 编译错误
+```
+
+#### 63.8.12 `ReturnType<T>`
+
+该工具类型能够获取函数类型 T 的返回值类型：
+
+```ts
+// string
+type T0 = ReturnType<() => string>;
+// {a: string; b: number}
+type T1 = ReturnType<() => { a: string; b: number }>;
+// void
+type T2 = ReturnType<(s: string) => void>;
+// {}
+type T3 = ReturnType<<T>() => T>;
+// number[]
+type T4 = ReturnType<<T extends U, U extends number[]>() => T>;
+// any
+type T5 = ReturnType<never>;
+
+type T6 = ReturnType<boolean>; //编译错误
+type T7 = ReturnType<Function>; //编译错误
+```
+
+#### 3.8.13 `InstanceType<T>`
+
+该工具类型能够获取构造函数的返回值类型，即实例类型：
+
+```ts
+class C {
+  x = 0;
+}
+type T0 = InstanceType<typeof C>; // C
+type T1 = InstanceType<new () => object>; // object
+type T2 = InstanceType<any>; // any
+type T3 = InstanceType<never>; // any
+type T4 = InstanceType<string>; // 编译错误
+type T5 = InstanceType<Function>; // 编译错误
+```
+
+#### 3.8.14 `ThisParameterType<T>`
+
+该工具类型能够获取函数类型 T 中 this 参数的类型，若函数类型中没有定义 this 参数，则返回 unknown 类型。
+
+> **注意**：在使用 `ThisParameterType<T>` 工具类型时需要启用 `--strictFunctionTypes` 编译选项。
+
+```ts
+function f0(this: object, x: number);
+function f1(x: number);
+type T0 = ThisParameterType<typeof f0>; // object
+type T1 = ThisParameterType<typeof f1>; // unknown
+type T2 = ThisParameterType<string>; // unknown
+```
+
+#### 3.8.15 `OmitThisParameter<T>`
+
+该工具类型能够从类型 T 中剔除 this 参数类型，并构造一个新类型。
+
+> **注意**：在使用 `OmitThisParameter<T>` 工具类型时需要启用 `--strictFunctionTypes` 编译选项。
+
+```ts
+function f0(this: object, x: number);
+function f1(x: number) {}
+// (x: number) => void
+type T0 = OmitThisParameter<typeof f0>;
+// (x: number) => void
+type T1 = OmitThisParameter<typeof f1>;
+// string
+type T2 = OmitThisParameter<string>;
+```
+
+#### 3.8.16 `ThisType<T>`
+
+该工具类型比较特殊，它不是用于构造一个新类型，而是用于定义对象字面量的方法中 this 的类型。如果对象字面量的类型是 `ThisType<T>` 类型或包含 `ThisType<T>` 类型的交叉类型，那么在对象字面量的方法中 this 的类型为 T。
+
+> **注意**：在使用 `ThisType<T>` 工具类型时需要启用 `--noImplicitThis` 编译选项。
+
+```ts
+let obj: ThisType<{ x: number }> & { getX: () => number };
+
+obj = {
+  getX() {
+    this; // {x: number; y: number;}
+    return this.x;
+  }
+};
+```
+
+此例中，使用交叉类型为对象字面量 obj 指定了 `ThisType<T>` 类型，因此 obj 中 getX 方法的 this 类型为 `{x: number;}` 类型。
+
+### 3.9 类型查询
+
+typeof 是 JS 语言中的一个一元运算符，它能够获取操作数的数据类型。例如，当对一个字符串使用该运算符时，将返回固定的值 "string""：
+
+```ts
+typeof foo; //'string'
+```
+
+TypeScript 对 JS 中的 typeof 运算符进行了扩展，使其能够在表示类型的位置上使用。当在表示类型的位置上使用 typeof 运算符
