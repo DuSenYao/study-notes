@@ -1,6 +1,4 @@
----
-title: 浏览器的实现原理与API
----
+# 浏览器的实现原理与 API
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -50,8 +48,6 @@ title: 浏览器的实现原理与API
     - [3.4 自定义事件](#34-自定义事件)
 
 <!-- /code_chunk_output -->
-
-# 浏览器的实现原理与 API
 
 ![浏览器的实现原理与API](./image/浏览器的实现原理与API.png)
 
@@ -293,41 +289,43 @@ CSS 有五种选择器和两种其他情况：
 
 - 空格: 后代，选中它的子节点
 
-  ```css
-  <!-- 可以把一个 CSS 选择器按照 compound-selector 来拆成数段，每当满足一段条件的时候，就前进一段。 -->
-  <!-- 找到了匹配 a#b 的元素时，才会开始检查它所有的子代是否匹配 .cls。 -->
-  a#b .cls {
-    width: 100px;
-  }
+  ```html
+  <style>
+    /* 可以把一个 CSS 选择器按照 compound-selector 来拆成数段，每当满足一段条件的时候，就前进一段。
+    找到了匹配 a#b 的元素时，才会开始检查它所有的子代是否匹配 .cls。 */
+    a#b .cls {
+      width: 100px;
+    }
+  </style>
 
-  <a id=b>
-    <span>1<span>
-    <span class=cls>2<span>
-  <!--
+  <a id="b">
+    <span>1</span>
+    <span class="cls">2</span>
+    <!--
     当遇到 </a> 时，必须使得规则 a#b .cls 回退一步，这样第三个 span 才不会被选中。
     后代选择器的作用范围是父节点的所有子节点，因此规则是在匹配到本标签的结束标签时回退。
-  -->
+    -->
   </a>
-  <span class=cls>3<span>
+  <span class="cls">3</span>
   ```
 
 - `>` : 子代，选中它的子节点
 
-  ```css
-  div>.cls {
-      border:solid 1px green;
-  }
-  <!--
-    当 DOM 树构造到 div 时，匹配了 CSS 规则的第一段，因为是子代选择器，激活后面的 .cls 选择条件，并且指定父元素必须是当前 div。
-    于是后续的构建 DOM 树构建过程中，span 2 就被选中了。
-  -->
+  ```html
+  <style>
+    div > .cls {
+      border: solid 1px green;
+    }
+  </style>
+  <!-- 当 DOM 树构造到 div 时，匹配了 CSS 规则的第一段，因为是子代选择器，激活后面的 .cls 选择条件，并且指定父元素必须是当前 div。于是后续的构建 DOM 树构建过程中，span 2 就被选中了。-->
+
   <div>
-    <span>1<span>
-    <span class=cls>2<span>
+    <span>1</span>
+    <span class="cls">2</span>
     <span>
-        3
-        <span>4</span>
-    <span>
+      3
+      <span>4</span>
+    </span>
     <span>5</span>
   </div>
   ```
@@ -336,18 +334,20 @@ CSS 有五种选择器和两种其他情况：
 
 - ~: 后继，选中它之后所有的相邻节点
 
-  ```css
-  .cls~* {
-    border:solid 1px green;
-  }
+  ```html
+  <style>
+    .cls ~ * {
+      border: solid 1px green;
+    }
+  </style>
   <!-- .cls 选中了 span 2 然后 span 3 是它的后继，但是 span 3 的子节点 span 4 并不应该被选中，而 span 5 也是它的后继，因此应该被选中。 -->
   <div>
-    <span>1<span>
-    <span class=cls>2<span>
+    <span>1</span>
+    <span class="cls">2</span>
     <span>
-        3
-        <span>4</span>
-    <span>
+      3
+      <span>4</span>
+    </span>
     <span>5</span>
   </div>
   ```
@@ -358,7 +358,7 @@ CSS 有五种选择器和两种其他情况：
 
 - 逗号分隔: CSS 选择器还支持逗号分隔，表示"或"的关系。这里最简单的实现是把逗号视为两条规则的一种简易写法。
 
-- 选择器重合: 选择器可能有重合，可以使用树形结构来进行一些合并，来提高效率，来提高效率。注意，这里的树，必须要带上连接符。
+- **选择器重合**：选择器可能有重合，可以使用树形结构来进行一些合并，来提高效率，来提高效率。注意，这里的树，必须要带上连接符。
 
   ```css
   #a .cls {
@@ -372,29 +372,30 @@ CSS 有五种选择器和两种其他情况：
 
   这里实际上可以把选择器构造成一棵树：
 
+  ```txt
   - #a
-    - < 空格 >.cls
-    - < 空格 >span
+    - .cls
+    - span
     - > span
+  ```
 
 ### 1.5 排版
 
 排版是确定每一个元素的位置。基本原则仍然不变，就是尽可能流式地处理上一步骤的输出。
 
-在构建 DOM 树和计算 CSS 属性这两个步骤，产出都是一个一个的元素，但是在排版这个步骤中，有些情况下，就没法做到这样了。
-尤其是表格相关排版、flex 排版和 Grid 排版，它们都有一个特点，那就是子元素之间具有关联性。
+在构建 DOM 树和计算 CSS 属性这两个步骤，产出都是一个一个的元素，但是在排版这个步骤中，有些情况下，就没法做到这样了。尤其是表格相关排版、flex 排版和 Grid 排版，它们都有一个特点，那就是子元素之间具有关联性。
 
 #### 1.5.1 基本概念
 
 浏览器确定 文字、图片、图形、表格等等 位置的过程，叫排版。
 
-浏览器最基本的排版方案是 **正常流排版**，它包含了 顺次排布 和 折行 等规则，这是一个跟印刷排版类似的排版方案，也跟平时的书写方向文字的方式一致，所以把它叫做正常流。
+浏览器最基本的排版方案是**正常流排版**，它包含了 顺次排布 和 折行 等规则，这是一个跟印刷排版类似的排版方案，也跟平时的书写方向文字的方式一致，所以把它叫做正常流。
 
 浏览器的文字排版遵循公认的文字排版规范，文字排版是一个复杂的系统，它规定了行模型和文字在行模型中的排布。行模型规定了行顶、行底、文字区域、基线等对齐方式。
 
 此外，浏览器还支持不同语言，因为不同语言的文字书写顺序不一致，所以浏览器的文字排版还支持双向文字系统。
 
-浏览器还支持元素和文字的混排，元素被定义为占据长方形的区域，还允许边框、边距和留白，这个就是 **盒模型**。
+浏览器还支持元素和文字的混排，元素被定义为占据长方形的区域，还允许边框、边距和留白，这个就是**盒模型**。
 
 在正常流的基础上，浏览器还支持两类元素：
 
@@ -470,7 +471,7 @@ CSS 的每一种排版都有一个很复杂的规定，实际实现形式也各�
 
 在最理想的情况下，渲染过程产生的位图尺寸跟它上一步排版时占据的尺寸相同，但是，很多属性会影响渲染位图的大小，比如阴影，它可能非常巨大或者渲染到非常远的位置，所以为了优化，浏览器实际上会把阴影作为一个单独的盒来处理。
 
-> 注意：这里的渲染过程，是不会把子元素渲染到位图上的，这样当父元素的相对位置发生变化时，可以保证渲染的结果能够被最大的缓存，减少重新渲染。
+> **注意**：这里的渲染过程，是不会把子元素渲染到位图上的，这样当父元素的相对位置发生变化时，可以保证渲染的结果能够被最大的缓存，减少重新渲染。
 
 ### 1.7 合成
 
@@ -534,7 +535,7 @@ DocumentType: <!DOCTYPE html> ProcessingInstruction:
 
 这里每天需要用到，要重点掌握的是：**Document、Element、Text 节点**。
 
-> DocumentFragment(文档片段)也非常有用，它常常被用来高性能的批量添加节点。Comment、DocumentType 和 ProcessingInstruction 很少需要运行时去修改和操作。
+> DocumentFragment（文档片段）也非常有用，它常常被用来高性能的批量添加节点。Comment、DocumentType 和 ProcessingInstruction 很少需要运行时去修改和操作。
 
 #### 2.1.2 Node
 
@@ -641,7 +642,7 @@ document 节点提供了查找元素的能力，有以下几种：
 - getElementsByTagName: 返回一个包含所有指定标签名的动态 HTML 集合 HTMLCollection
 - getElementsByClassName: 返回一个包含所有指定 class 的动态 HTML 集合 HTMLCollection
 
-> 注意：getElement 系列的几个 API 性能高于 querySelector，而且 getElement 系列获取的集合并非数组，而是一个能够动态更新的集合。浏览器内部有高速的索引机制，来动态更新这样的集合，所以应该**尽量使用 getElement 系列的 API**。
+> **注意**：getElement 系列的几个 API 性能高于 querySelector，而且 getElement 系列获取的集合并非数组，而是一个能够动态更新的集合。浏览器内部有高速的索引机制，来动态更新这样的集合，所以应该**尽量使用 getElement 系列的 API**。
 
 #### 2.1.5 Range
 
@@ -901,8 +902,7 @@ window.open('about:blank', '_blank', 'width=100,height=100,left=100,right=100');
    如果要获取相对坐标，或者包含滚动区域的坐标，需要一点小技巧：
 
    ```js
-   var offsetX =
-     document.documentElement.getBoundingClientRect().x - element.getBoundingClientRect().x;
+   var offsetX = document.documentElement.getBoundingClientRect().x - element.getBoundingClientRect().x;
    ```
 
    > 这两个 API 的兼容性非常好，定义又非常清晰，如果是用 JS 实现视觉效果时，尽量使用这两个 API。
