@@ -5933,4 +5933,307 @@ obj = {
 typeof foo; // 'string'
 ```
 
-TypeScript 对 JS 中的 typeof 运算符进行了扩展，使其能够在表示类型的位置上使用。当在表示类型的位置上使用 typeof 运算符
+TypeScript 对 JS 中的 typeof 运算符进行了扩展，使其能够在表示类型的位置上使用。当在表示类型的位置上使用 typeof 运算符时，它能够获取操作数的类型，称之为类型查询。语法如下：
+
+```ts
+typeof TypeQueryExpression;
+```
+
+在该语法中，typeof 是关键字；TypeQueryExpression 是类型查询的操作数，它必须为一个标识符或者为使用点号 `.` 分隔的多个标识符：
+
+```ts
+const a = { x: 0 };
+function b(x: string, y: number): boolean {
+  return true;
+}
+
+type T0 = typeof a; // {x: number}
+type T1 = typeof a.x; // number
+type T2 = typeof b; // (x: string, y: number) => boolean
+```
+
+每一个 "unique symbol" 类型都是唯一的，TypeScript 只允许使用 const 声明或 readonly 属性声明来定义 "unique symbol" 类型的值。若想要获取特定的 "unique symbol" 值的类型，则需要使用 typeof 类型查询，否则将无法引用其类型：
+
+```ts
+const a: unique symbol = Symbol();
+const b: typeof a = a;
+```
+
+### 3.10 类型断言
+
+TypeScript 程序中的每一个表达式都具有某种类型，编译器可以通过类型注解或者类型推断来确定表达式的类型。但有些时候，开发者比编译器更加清楚某个表达式的类型。例如，在 DOM 编程中经常会使用 `document.getElementById()` 方法，该方法用于获取网页中的某个元素。它的方法签名如下所示：
+
+```ts
+getElementById(elementId: string): HTMLElement | null;
+```
+
+假设有如下的 HTML 代码：
+
+```html
+<input type="text" id="username" name="username" />
+```
+
+当使用 getElementById 方法去查询并使用该 input 元素时可能会遇到一些麻烦。示例如下：
+
+```ts
+const username = document.getElementById('username');
+if (username) {
+  username.value; // 编译错误！属性 value 不存在于类型 'HTMLElement' 上
+}
+```
+
+此例中，编译器不允许访问 username 上的 value 属性。因为 username 的类型为通用的 HTMLElement，而 HTMLElement 类型上不存在 value 属性。但实际上，input 元素是具有 value 属性的。在这种情况下，就可以使用类型断言来告诉编译器 username 的具体类型。
+
+#### 3.10.1 `<T>` 类型断言
+
+`<T>` 类型断言的语法如下所示：
+
+```ts
+<T>expr;
+```
+
+在该语法中，T 表示类型断言的目标类型；`expr` 表示一个表达式。`<T>` 类型断言尝试将 expr 表达式的类型转换为 T 类型。
+
+例如，在上一节的例子中，username 的具体类型应该为表示 input 元素的 HTMLInputElement 类型。可以使用 `<T>` 类型断言将 username 的类型转换为 HTMLInputElement 类型。由于 HTMLInputElement 类型上定义了 value 属性，因此不再产生编译错误：
+
+```ts
+const username = document.getElementById('username');
+if (username) {
+  (<HTMLInputElement>username).value; // 正确
+}
+```
+
+在使用 `<T>` 类型断言时，需要**注意运算符的优先级**。在上例中，必须使用分组运算符来对 username 进行类型断言。如果没有使用分组运算符，那么是在对 username.value 进行类型断言：
+
+```ts
+const username = document.getElementById('username');
+if (username) {
+  <HTMLInputElement>username.value; // 编译错误！属性 value 不存在于类型 'HTMLElement' 上
+}
+```
+
+#### 3.10.2 as T 类型断言
+
+as T 类型断言与 `<T>` 类型断言的功能完全相同，两者只是在语法上有所区别：
+
+```ts
+expr as T;
+```
+
+在该语法中，`as` 是关键字；T 表示类型断言的目标类型；expr 表示一个表达式。as T 类型断言尝试将 expr 表达式的类型转换为 T 类型。
+
+还是以上一节的例子为例，通过 as T 类型断言来明确 username 的具体类型：
+
+```ts
+const username = document.getElementById('username');
+if (username) {
+  (username as HTMLInputElement).value; // 正确
+}
+```
+
+> **注意**：此例中还是需要使用分组运算符，否则在访问 value 属性时会有语法错误。
+
+最初，TypeScript 中只支持 `<T>` 类型断言。后来，React 框架开发团队在为 JSX 添加 TypeScript 支持时，发现 `<T>` 类型断言的语法与 JSX 的语法会产生冲突，因此，TypeScript 语言添加了新的 as T 类型断言语法来解决两者的冲突。
+
+当在 TypeScript 中使用 JSX 时，仅支持 as T 类型断言语法。除此之外，两种类型断言语法均可使用，开发者可以根据个人习惯或团队约定选择其一。目前主流的编码风格规范推荐使用 as T 类型断言语法。
+
+#### 3.10.3 类型断言的约束
+
+类型断言不允许在两个类型之间随意做转换而是需要满足一定的前提。假设有如下 as T 类型断言（`<T>`断言同理）:
+
+```ts
+expr as T;
+```
+
+若想要该类型断言能够成功执行，则需要满足下列两个条件之一：
+
+- expr 表达式的类型能够赋值给 T 类型
+- T 类型能够赋值给 expr 表达式的类型
+
+以上两个条件意味着，在执行类型断言时编译器会尝试进行双向的类型兼容性判定，允许将一个类型转换为更加精的类型或者更加宽泛的类型。例如，下例中定义了一个二维的点和一个三维的点。通过类型断言既允许将二维的点转换为三维的点，也允许将三维的点转换为二维的点：
+
+```ts
+interface Point2d {
+  x: number;
+  y: number;
+}
+
+interface Point3d {
+  x: number;
+  y: number;
+  z: number;
+}
+
+const p2d: Point2d = { x: 0, y: 0 };
+const p3d: Point3d = { x: 0, y: 0, z: 0 };
+
+// 可以将 'Point2d' 类型转换为 'Point3d' 类型
+const p0 = p2d as Point3d;
+p0.x;
+p0.y;
+p0.z;
+
+//可以将Point3d'类型转换为'Point2d类型
+const p1 = p3d as Point2d;
+p1.x;
+p1.y;
+```
+
+此例中，将三维的点转换为二维的点可能不会有什么问题，但是编译器也允许将二维的点转换为三维的点，这可能导致产生错误的结果，因为在 Point2d 类型上不存在属性 z。在程序中使用类型断言时，就相当于开发者在告诉编译器 “我清楚我在做什么”，因此开发者也需要对类型断言的结果负责。
+
+如果两个类型之间完全没有关联，也就是不满足上述的两个条件，那么编译器会拒绝执行类型断言：
+
+```ts
+let a: boolean = 'hello' as boolean; // 编译错误！'string' 类型与 'boolean' 类型没有关联
+```
+
+少数情况下，在两个复杂类型之间进行类型断言时，编译器可能会无法识别出正确的类型，因此错误地拒绝了类型断言操作，又或者因为某些特殊原因而需要进行强制类型转换。那么在这些特殊的场景中可以使用如下变通方法来执行类型断言。该方法先后进行了两次类型断言，先将 expr 的类型转换为顶端类型 unknown，而后再转换为目标类型。因为任何类型都能够赋值给顶端类型，它满足类型断言的条件，因此允许执行类型断言：
+
+```ts
+expr as unknown as T;
+```
+
+除了使用 unknown 类型外，也可以使用 any 类型。但因为 unknown 类型是更加安全的顶端类型，因此推荐优先使用 unknown 类型：
+
+```ts
+const a = 1 as unknown as number;
+```
+
+#### 3.10.4 const 类型断言
+
+const 类型断言是一种特殊形式的 `<T>` 类型断言和 as T 类型断言，它能够将某一类型转换为不可变类型。const 类型断言有以下两种语法形式：
+
+```ts
+expr as const
+<const>expr
+```
+
+在该语法中，`const` 是关键字，它借用了 const 声明的关键字；expr 则要求是以下字面量中的一种：
+
+- boolean 字面量
+- string 字面量
+- number 字面量
+- bigint 字面量
+- 枚举成员字面量
+- 数组字面量
+- 对象字面量
+
+const 类型断言会将 expr 表达式的类型转换为不可变类型，具体的规则如下：
+
+- 如果 expr 为 boolean 字面量、string 字面量、number 字面量、bigint 字面量或枚举成员字面量，那么转换后的结果类型为对应的字面量类型：
+
+  ```ts
+  let a1 = true; // boolean
+  let a2 = true as const; // true
+  let b1 = 'hello'; // string
+  let b2 = 'hello' as const; // 'hello'
+  let c1 = 0; // number
+  let c2 = 0 as const; // number
+  let d1 = 1n; // number
+  let d2 = 1n as const; // 1n
+  enum Foo {
+    X,
+    Y
+  }
+  let e1 = Foo.X; // Foo
+  let e2 = Foo.X as const; // Foo.X
+  ```
+
+- 如果 expr 为数组字面量，那么转换后的结果类型为只读元组类型：
+
+  ```ts
+  let a1 = [0, 0]; // number[]
+  let a2 = [0, 0] as const; // readonly [0, 0]
+  ```
+
+- 如果 expr 为对象字面量，那么转换后的结果类型会将对象字面量中的属性全部转换成只读属性：
+
+  ```ts
+  //{x: number; y: number;}
+  let a1 = { x: 0, y: 0 };
+  //{ readonly x:0; readonly y:0;}
+  let a2 = { x: 0, y: 0 } as const;
+  ```
+
+在可变值的位置上，编译器会推断出放宽的类型。例如，let 声明属于可变值，而 const 声明则不属于可变值；非只读数组和对象属于可变值，因为允许修改元素和属性：
+
+```ts
+function add(x: number, y: number) {
+  return x + y;
+}
+const nums = [1, 2]; // 推断出的类型为 number[]
+const total = add(...nums); // 编译错误：应有 2 个参数，但获得 0 个或多个
+```
+
+此例中，产生了一个编译错误，传入的实际参数数量与期望的参数数量不匹配。这是因为编译器推断出 nums 常量为 number[] 类型，而不是有两个固定元素的元组类型。展开 "number[]" 类型的值可能得到零个或多个元素，而 add 函数则明确声明需要两个参数，所以产生编译错误。若想要解决这个问题，只需让编译器知道 nums 是有两个元素的元组类型即可，使用 const 断言是一种简单可行的方案：
+
+```ts
+function add(x: number, y: number) {
+  return x + y;
+}
+const nums = [1, 2] as const; // 推断出的类型为 readonly[1, 2]
+const total = add(...nums); // 正确
+```
+
+使用 const 断言后，推断的 nums 类型为包含两个元素的元组类型，因此编译器有足够的信息能够判断出 add 函数调用是正确的。
+
+#### 3.10.5 !类型断言
+
+非空类型断言运算符 `!` 是 TypeScript 特有的类型运算符，它是非空类型断言的一部分。非空类型断言能够从某个类型中剔除 undefined 类型和 null 类型，语法如下：
+
+```ts
+expr!;
+```
+
+在该语法中，expr 表示一个表达式，非空类型断言尝试从 expr 表达式的类型中剔除 undefined 类型和 null 类型。
+
+当代码中使用了非空类型断言时，相当于在告诉编译器 expr 的值不是 undefined 值和 null 值：
+
+```ts
+// --strictNullChecks=true
+function getLength(v: string | undefined) {
+  // 使用工具函数 isDefined 来判断参数 v 是否为 undefined 值或 null 值。
+  // 如果参数 v 的值为 undefined 或 null，那么直接返回 0;否则，返回 v 的长度。
+  if (!lisDefined(v)) {
+    return 0;
+  }
+  // 由于一些限制，编译器无法识别出 v 的类型为 string 类型，而是仍然认为 v 的类型为 "string|undefined"。
+  // 此时，需要使用非空类型断言来告诉编译器参数 v 的类型不是 undefined 类型，这样就可以避免编译器报错。
+  return v!.length;
+}
+function isDefined(value: any) {
+  return (value !== undefined) & (value !== null);
+}
+```
+
+当编译器遇到非空类型断言时，就会无条件地相信表达式的类型不是 undefined 类型和 null 类型。因此，不应该滥用非空类型断言，应当只在确定一个表达式的值不为空时才使用它，否则将存在安全隐患。
+
+虽然非空类型断言也允许在非 `--strictNullChecks` 模式下使用，但没有实际意义。因为在非严格模式下，编译器不会检查 undefined 值和 null 值。
+
+### 3.11 类型细化
+
+类型细化是指 TypeScript 编译器通过分析特定的代码结构，从而得出代码中特定位置上表达式的具体类型。细化后的表达式类型通常比其声明的类型更加具体。类型细化最常见的表现形式是从联合类型中排除若干个成员类型。例如，表达式的声明类型为联合类型 "string | number"，经过类型细化后其类型可以变得更加具体。
+
+TypeScript 编译器主要能够识别以下几类代码结构并进行类型细化：
+
+- 类型守卫
+- 可辨识联合类型
+- 赋值语句
+- 控制流语句
+- 断言函数
+
+#### 3.11.1 类型守卫
+
+类型守卫是一类特殊形式的表达式，具有特定的代码编写模式。编译器能够根据已知的模式从代码中识别出这些类型守卫表达式，然后分析类型守卫表达式的值，从而能够将相关的变量、参数或属性等的类型细化为更加具体的类型。实际上，类型守卫早已经融入代码当中，通常不需要为类型守卫做额外的编码工作，它们已经在默默地发挥作用。TypeScript 支持多种形式的类型守卫。
+
+##### 3.11.1.1 typeof 类型守卫
+
+typeof 运算符用于获取操作数的数据类型。typeof 运算符的返回值是一个字符串，该字符串表明了操作数的数据类型。由于支持的数据类型的种类是固定的，因此 typeof 运算符的返回值也是一个有限集合，具体如下图所示。
+
+![typeof类型守卫](./image/typeof类型守卫.png)
+
+typeof 类型守卫能够根据 typeof 表达式的值去细化 typeof 操作数的类型。例如，如果 "typeof x" 的值为字符串 "number"，那么编译器就能够将 x 的类型细化为 number 类型。
+
+从上图能够看到，对 null 值使用 typeof 运算符的返回值不是字符串 “null”，而是字符串 “object”。因此，typeof 类型守卫在细化运算结果为 "object" 的类型时，会包含 null 类型。
+
+虽然函数也是一种对象类型，但函数特殊的地方在于它是可以调用的对象。typeof 运算符为函数类型定义了一个单独的 "function"返回值，使用了 “function” 的 typeof 类型守卫会将操作数的类型细化为函数类型。
