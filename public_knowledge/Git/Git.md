@@ -30,7 +30,7 @@
         - [1.2.4.3 `git pull` [<远程主机名> <远程分支名>:<本地分支名>]](#1243-git-pull-远程主机名-远程分支名本地分支名)
         - [1.2.4.4 `git push <远程主机名> <本地分支名>:<远程分支名>`](#1244-git-push-远程主机名-本地分支名远程分支名)
       - [1.2.5 分支操作](#125-分支操作)
-        - [1.2.5.1 `git branch` [branchName]](#1251-git-branch-branchname)
+        - [1.2.5.1 git branch](#1251-git-branch)
         - [1.2.5.2 `git checkout` [分支名]](#1252-git-checkout-分支名)
         - [1.2.5.3 `git merge <branchName>`](#1253-git-merge-branchname)
       - [1.2.6 版本操作](#126-版本操作)
@@ -352,17 +352,25 @@ git push origin master
 git push origin master:master
 ```
 
-- `-f`: 本地版本与远程版本有差异时，可以使用这个参数强制推送，多人合作禁用，如果要用可以使用 `git push --force-with-lease`，相对安全
-- `-d`: 删除远程主机的分支
-- `--all`: 推送全部分支
-- `-u` : 如果当前分支与多个主机存在追踪关系，则可以使用 `-u` 参数指定一个默认主机，这样后面就可以不加任何参数使用 git push，不带任何参数的 git push，默认只推送当前分支。如果想更改设置，可以使用 git config 命令。`git config --global push.default matching` 或 `git config --global push.default simple`
+- `-f`：本地版本与远程版本有差异时，可以使用这个参数强制推送，多人合作禁用，如果要用可以使用 `git push --force-with-lease`，相对安全
+
+- `-d`：删除远程主机的分支
+
+   ```sh
+   git push origin -d branch
+   ```
+
+- `--all`：推送全部分支
+
+- `-u`：如果当前分支与多个主机存在追踪关系，则可以使用 `-u` 参数指定一个默认主机，这样后面就可以不加任何参数使用 git push，不带任何参数的 git push，默认只推送当前分支。如果想更改设置，可以使用 git config 命令。`git config --global push.default matching` 或 `git config --global push.default simple`
+
 - 使用`ssh`协议推送: `gitHub: git push git@github.com:DuSenYao/Learning-notes-and-materials.git`
 
 > **注意**: 需要 [配置公私钥](#211-配置公私钥)
 
 #### 1.2.5 分支操作
 
-##### 1.2.5.1 `git branch` [branchName]
+##### 1.2.5.1 git branch
 
 不加 name 是列出本地分支，加 name 是创建分支
 
@@ -373,7 +381,9 @@ git push origin master:master
   ```
 
 - `-a`: 查看所有分支
-- `-d/D <branchName>`: 删除分支，`-D` 是强制删除
+- `-d <branchName>`：-d 是 `--delete` 的缩写，在使用 -d 删除分支时，该分支必须完全和它的上游分支 merge 完成，如果没有上游分支，必须要和 HEAD 完全 merge
+- `-f`：是 `--force` 的缩写，作用是将当前 branch 重置到初始点（startpoint），如果不使用 -f 的话，git 分支无法修改一个已经存在的分支
+- `-D <branchName>`：-D 是 `--delete --force` 的缩写，这样写可以在不检查 merge 状态的情况下删除分支
 - `-v`: 查看分支版本
 
 ##### 1.2.5.2 `git checkout` [分支名]

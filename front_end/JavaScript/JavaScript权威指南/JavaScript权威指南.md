@@ -11577,7 +11577,7 @@ CSS 也定义了 `::first-line` 和 `::first-letter` 伪元素。在 CSS 中，�
 let hyperlink = event.target.closest('a[href]');
 ```
 
-下面是使用 closest() 的另一个例子：
+下面是使用 `closest()` 的另一个例子：
 
 ```js
 // 如果 e 被包含在一个 HTML 列表元素内则返回 true
@@ -11710,7 +11710,7 @@ HTML 元素的 `class` 属性特别重要。它的值是空格分隔的 CSS 类�
 为此，Element 对象定义了 `classList` 属性，支持将 `class` 属性作为一个列表来操作。`classList` 属性的值是一个迭代的类数组对象。虽然这个属性的名字叫 `classList`，但它的行为更像类名的集合，而且定义了 `add()`、`remove()`、`contains()` 和 `toggle()` 方法。
 
 **dataset 属性**
-有时候在 HTML 元素上附加一些信息很有用，因为 JS 代码在选择并操作相应的元素时可以使用这些信息。在 HTML 中，任何以前缀 `data-` 开头的小写属性都被认为是有效的，可以将它们用于任何目的。这些 “数据集”（ dataset）属性不影响它们所在元素的展示，在保证文档正确性的前提下定义了一种附加额外数据的标准方式。
+有时候在 HTML 元素上附加一些信息很有用，因为 JS 代码在选择并操作相应的元素时可以使用这些信息。在 HTML 中，任何以前缀 `data-` 开头的小写属性都被认为是有效的，可以将它们用于任何目的。这些 “数据集”（dataset）属性不影响它们所在元素的展示，在保证文档正确性的前提下定义了一种附加额外数据的标准方式。
 
 在 DOM 中，Element 对象有一个 `dataset` 属性，该属性引用的对象包含与 HTML 中的 `data-` 属性对应的属性，但不带这个前缀。也就是说，`dataset.x` 中保存的是 HTML 中 `data-x` 属性的值。连字符分隔的属性将映射为驼峰式属性名：HTML 中的 data-sectlon-number 会变成 JS 中的 dataset.sectionNumber。
 

@@ -1,6 +1,4 @@
----
-title: 精通CSS-高级Web标准解决方案
----
+# 精通 CSS-高级 Web 标准解决方案
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -220,8 +218,6 @@ title: 精通CSS-高级Web标准解决方案
       - [12.2.5 管理复杂性](#1225-管理复杂性)
 
 <!-- /code_chunk_output -->
-
-# 精通 CSS-高级 Web 标准解决方案
 
 ## 一. 基础知识
 
@@ -477,11 +473,7 @@ _目前最广泛采用的扩展 HTML 语义的方式是微格式_。微格式是
 ```html
 <section itemscope itemtype="http://schema.org/person">
   <p><a itemprop="name" href="http://thatemil.com/">Emil B</a></p>
-  <span
-    itemprop="affiliation"
-    itemscope
-    itemtype="http://schema.org/organization"
-  >
+  <span itemprop="affiliation" itemscope itemtype="http://schema.org/organization">
     <span itemprop="name">inUse Experience AB</span>
   </span>
   <a itemprop="email" href="mailto:emil@thatemil.com">emil@thatemil.com</a>
@@ -545,7 +537,7 @@ CSS 也是可以验证的。W3C 的 [CSS 验证器](http://jigsaw.w3.org/css-val
      cursor: help;
    }
 
-   input[type="submit"] {
+   input[type='submit'] {
      cursor: pointer;
    }
    ```
@@ -608,11 +600,11 @@ CSS 也是可以验证的。W3C 的 [CSS 验证器](http://jigsaw.w3.org/css-val
 
    ```css
    /* 如果输入框包含有效的电子邮件地址 */
-   input[type="email"]:valid {
+   input[type='email']:valid {
      border-color: green;
    }
    /* 如果输入框中的内容不是有效的电子邮件地址 */
-   input[type="email"]:invalid {
+   input[type='email']:invalid {
      border-color: red;
    }
    ```
@@ -690,7 +682,7 @@ CSS 也是可以验证的。W3C 的 [CSS 验证器](http://jigsaw.w3.org/css-val
 
 ```html
 <style>
-  @import url("/c/modules.css");
+  @import url('/c/modules.css');
 </style>
 ```
 
@@ -837,7 +829,7 @@ HTML 元素可以嵌套，元素盒子当然也可以嵌套。多数盒子都是
 
 ```css
 .block:after {
-  content: " ";
+  content: ' ';
   display: block;
   clear: both;
 }
@@ -1214,7 +1206,7 @@ article {
 @font-face {
   font-family: Vollkorn;
   font-weight: bold;
-  src: url("fonts/vollkorn/Vollkorn-Bold.woff") format("woff");
+  src: url('fonts/vollkorn/Vollkorn-Bold.woff') format('woff');
 }
 
 h1 {
@@ -1239,9 +1231,9 @@ h1 {
    ```css
    @font-face {
      font-family: Vollkorn;
-     src: url("fonts/Vollkorn-Regular.eot#?ie") format("embedded-opentype"), url("fonts/Vollkorn-Regular.woff2")
-         format("woff2"), url("fonts/Vollkorn-Regular.woff") format("woff"), url("fonts/Vollkorn-Regular.ttf")
-         format("truetype"), url("fonts/Vollkorn-Regular.svg") format("svg");
+     src: url('fonts/Vollkorn-Regular.eot#?ie') format('embedded-opentype'), url('fonts/Vollkorn-Regular.woff2') format('woff2'),
+       url('fonts/Vollkorn-Regular.woff') format('woff'), url('fonts/Vollkorn-Regular.ttf') format('truetype'),
+       url('fonts/Vollkorn-Regular.svg') format('svg');
    }
    ```
 
@@ -1265,23 +1257,21 @@ h1 {
    ```css
    @font-face {
      font-family: AlegreyaSans;
-     src: url("fonts/alegreya/AlegreyaSans-Regular.woff2") format("woff2"), url("fonts/alegreya/AlegreyaSans-Regular.woff")
-         format("woff");
+     src: url('fonts/alegreya/AlegreyaSans-Regular.woff2') format('woff2'), url('fonts/alegreya/AlegreyaSans-Regular.woff')
+         format('woff');
      /* 字体粗细和样式都为默认值 normal */
    }
 
    @font-face {
      font-family: Vollkorn;
-     src: url("fonts/vollkorn/Vollkorn-Medium.woff2") format("woff2"), url("fonts/vollkorn/Vollkorn-Medium.woff")
-         format("woff");
+     src: url('fonts/vollkorn/Vollkorn-Medium.woff2') format('woff2'), url('fonts/vollkorn/Vollkorn-Medium.woff') format('woff');
      font-weight: 500;
    }
 
    @font-face {
      font-family: Vollkorn;
      font-weight: bold;
-     src: url("fonts/vollkorn/Vollkorn-Bold.woff2") format("woff2"), url("fonts/vollkorn/Vollkorn-Bold.woff")
-         format("woff");
+     src: url('fonts/vollkorn/Vollkorn-Bold.woff2') format('woff2'), url('fonts/vollkorn/Vollkorn-Bold.woff') format('woff');
    }
    ```
 
@@ -1293,7 +1283,7 @@ h1 {
    }
 
    p {
-     font-family: Vollkorn, Georgia, Times, "Times New Roman", serif;
+     font-family: Vollkorn, Georgia, Times, 'Times New Roman', serif;
      font-weight: bold; /* 使用 Vollkorn bold 字体 */
    }
 
@@ -1336,17 +1326,17 @@ Web Font Loader 为以下事件提供了接入点：
 <script type="text/javascript">
   WebFontConfig = {
     custom: {
-      families: ["AlegreyaSans:n4,i4", "Vollkorn:n6,n5,n7"],
-      urls: ["css/alegreya-vollkorn.css"],
-    },
+      families: ['AlegreyaSans:n4,i4', 'Vollkorn:n6,n5,n7'],
+      urls: ['css/alegreya-vollkorn.css']
+    }
   };
 
   void (() => {
-    let wf = document.createElement("script");
-    wf.src = "https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js";
-    wf.type = "text/javascript";
+    let wf = document.createElement('script');
+    wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+    wf.type = 'text/javascript';
     wf.async = true;
-    let s = document.getElementsByTagName("script")[0];
+    let s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(wf, s);
   })();
 </script>
@@ -1402,7 +1392,7 @@ CSS 字体规范中也有许多与 OpenType 对应的属性，比如 font-kernin
 ```css
 p {
   font-variant-ligatures: common-ligatures discretionary-ligatures;
-  font-feature-settings: "liga", "dlig";
+  font-feature-settings: 'liga', 'dlig';
 }
 ```
 
@@ -1411,10 +1401,10 @@ p {
 ```css
 p {
   font-variant-ligatures: discretionary-ligatures;
-  -webkit-font-feature-settings: "liga", "dlig";
-  -moz-font-feature-settings: "liga", "dlig";
-  -moz-font-feature-settings: "liga=1, dlig=1";
-  font-feature-settings: "liga", "dlig";
+  -webkit-font-feature-settings: 'liga', 'dlig';
+  -moz-font-feature-settings: 'liga', 'dlig';
+  -moz-font-feature-settings: 'liga=1, dlig=1';
+  font-feature-settings: 'liga', 'dlig';
 }
 ```
 
@@ -1439,11 +1429,11 @@ p {
 ```css
 .lining-nums {
   font-variant-numeric: lining-nums;
-  font-feature-settings: "lnum";
+  font-feature-settings: 'lnum';
 }
 .old-style {
   font-variant-numeric: oldstyle-nums;
-  font-feature-settings: "onum";
+  font-feature-settings: 'onum';
 }
 ```
 
@@ -1454,7 +1444,7 @@ p {
 ```css
 table {
   font-variant-numeric: tabular-nums lining-nums;
-  font-feature-settings: "tnum", "lnum";
+  font-feature-settings: 'tnum', 'lnum';
 }
 ```
 
@@ -1469,7 +1459,7 @@ table {
 ```css
 .kern {
   font-kerning: normal;
-  font-feature-settings: "kern";
+  font-feature-settings: 'kern';
 }
 ```
 
@@ -1517,14 +1507,13 @@ h1 {
 
 ```css
 h1 {
-  font-family: Nunito, "Arial Rounded MT Bold", "Helvetica Rounded", Arial,
-    sans-serif;
+  font-family: Nunito, 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
   color: #d0bb78;
   text-transform: uppercase;
   font-weight: 700;
   /* 以 1px 为单位累加 */
-  text-shadow: -1px 1px 0 #743132, -2px 2px 0 #743132, -3px 3px 0 #743132, /* ... */ -22px
-      22px 0 #743132, -23px 23px 0 #743132;
+  text-shadow: -1px 1px 0 #743132, -2px 2px 0 #743132, -3px 3px 0 #743132, /* ... */ -22px 22px 0 #743132,
+    -23px 23px 0 #743132;
 }
 ```
 
@@ -1536,12 +1525,10 @@ h1 {
 h1 {
   /* 省略了一些属性 */
   /* 首先，各个方向上的白色阴影构成轮廓 */
-  text-shadow: -2px 2px 0 #fff, 0 -2px 0 #fff, 0 3px 0 #fff, 3px 0 0 #fff,
-    -3px 0 0 #fff, 2px 2px 0 #fff, 2px -2px 0 #fff, -2px -2px 0 #fff,
-    /* 其次，交错叠加的阴影让颜色沿两个方向凸显 */ -3px 3px 0 #743b34, -4px 3px
-      0 #a8564d, -4px 5px 0 #743b34, -5px 4px 0 #a8564d, -5px 6px 0 #743b34, /* 继续叠加 */ -22px
-      21px 0 #a8564d, -22px 23px 0 #743b34, -23px 22px 0 #a8564d,
-    -23px 24px 0 #743b34;
+  text-shadow: -2px 2px 0 #fff, 0 -2px 0 #fff, 0 3px 0 #fff, 3px 0 0 #fff, -3px 0 0 #fff, 2px 2px 0 #fff,
+    2px -2px 0 #fff, -2px -2px 0 #fff, /* 其次，交错叠加的阴影让颜色沿两个方向凸显 */ -3px 3px 0 #743b34, -4px 3px 0
+      #a8564d, -4px 5px 0 #743b34, -5px 4px 0 #a8564d, -5px 6px 0 #743b34, /* 继续叠加 */ -22px 21px 0 #a8564d,
+    -22px 23px 0 #743b34, -23px 22px 0 #a8564d, -23px 24px 0 #743b34;
 }
 ```
 
@@ -1818,8 +1805,7 @@ CSS 背景有一个 `background` 简写属性，可以同时设置一堆背景�
 
 ```css
 .profile-box {
-  background: url(img/cat.jpg) 50% 50% / cover no-repeat padding-box content-box
-    #bada55;
+  background: url(img/cat.jpg) 50% 50% / cover no-repeat padding-box content-box #bada55;
 }
 ```
 
@@ -1831,8 +1817,7 @@ CSS 背景有一个 `background` 简写属性，可以同时设置一堆背景�
 
 ```css
 .multi-bg {
-  background-image: url(img/spades.png), url(img/hearts.png),
-    url(img/diamonds.png), url(img/clubs.png);
+  background-image: url(img/spades.png), url(img/hearts.png), url(img/diamonds.png), url(img/clubs.png);
   background-position: left top, right top, left bottom, right bottom;
   background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
   background-color: pink;
@@ -1849,9 +1834,8 @@ CSS 背景有一个 `background` 简写属性，可以同时设置一堆背景�
 
 ```css
 .multi-bg-shorthand {
-  background: url(img/spades.png) left top no-repeat, url(img/hearts.png) right
-      top no-repeat, url(img/diamonds.png) left bottom no-repeat, url(img/clubs.png)
-      right bottom no-repeat, pink;
+  background: url(img/spades.png) left top no-repeat, url(img/hearts.png) right top no-repeat,
+    url(img/diamonds.png) left bottom no-repeat, url(img/clubs.png) right bottom no-repeat, pink;
 }
 ```
 
@@ -1859,8 +1843,8 @@ CSS 背景有一个 `background` 简写属性，可以同时设置一堆背景�
 
 ```css
 .multi-bg-shorthand {
-  background: url(img/spades.png) left top, url(img/hearts.png) right top,
-    url(img/diamonds.png) left bottom, url(img/clubs.png) right bottom, pink;
+  background: url(img/spades.png) left top, url(img/hearts.png) right top, url(img/diamonds.png) left bottom, url(img/clubs.png)
+      right bottom, pink;
 
   background-repeat: no-repeat; /* 用于 4 张图片 */
 }
@@ -2017,8 +2001,7 @@ box-shadow 的另一个比 text-shadow 更为灵活之处是可以使用 `inset`
 
 ```css
 .profile-photo {
-  box-shadow: 0 0 0 10px #1c318d, 0 0 0 20px #3955c7, 0 0 0 30px #546dc7, 0 0 0
-      40px #7284d8;
+  box-shadow: 0 0 0 10px #1c318d, 0 0 0 20px #3955c7, 0 0 0 30px #546dc7, 0 0 0 40px #7284d8;
 }
 ```
 
@@ -2095,11 +2078,7 @@ box-shadow 的另一个比 text-shadow 更为灵活之处是可以使用 `inset`
 
 ```css
 .profile-box {
-  background-image: radial-gradient(
-    circle closest-corner at 20% 30%,
-    #cfdfee,
-    #2c56a1
-  );
+  background-image: radial-gradient(circle closest-corner at 20% 30%, #cfdfee, #2c56a1);
 }
 ```
 
@@ -2111,14 +2090,7 @@ box-shadow 的另一个比 text-shadow 更为灵活之处是可以使用 `inset`
 
 ```css
 .profile-box {
-  background-image: radial-gradient(
-    #cfdfee,
-    #2c56a1,
-    #cfdfee,
-    #2c56a1,
-    #cfdfee,
-    #2c56a
-  );
+  background-image: radial-gradient(#cfdfee, #2c56a1, #cfdfee, #2c56a1, #cfdfee, #2c56a);
 }
 ```
 
@@ -2151,11 +2123,7 @@ box-shadow 的另一个比 text-shadow 更为灵活之处是可以使用 `inset`
 ```css
 body {
   background-color: #fff;
-  background-image: linear-gradient(
-    transparent,
-    transparent 50%,
-    rgba(55, 118, 176, 0.3) 50%
-  );
+  background-image: linear-gradient(transparent, transparent 50%, rgba(55, 118, 176, 0.3) 50%);
   background-size: 40px 40px;
 }
 ```
@@ -2170,16 +2138,8 @@ body {
 .body {
   margin: 0;
   background-color: #fff;
-  background-image: linear-gradient(
-      transparent,
-      transparent 50%,
-      rgba(55, 110, 176, 0.3) 50%
-    ), linear-gradient(to right, transparent, transparent 50%, rgba(
-          55,
-          110,
-          176,
-          0.3
-        ) 50%);
+  background-image: linear-gradient(transparent, transparent 50%, rgba(55, 110, 176, 0.3) 50%), linear-gradient(to right, transparent, transparent
+        50%, rgba(55, 110, 176, 0.3) 50%);
   background-size: 40px 40px;
 }
 ```
@@ -2400,7 +2360,7 @@ iframe {
    ```css
    .comment:after {
      position: absolute;
-     content: "";
+     content: '';
      display: block;
      width: 0;
      height: 0;
@@ -2422,19 +2382,11 @@ iframe {
 
    ```html
    <header class="photo-header">
-     <img
-       src="images/big_spaceship.jpg"
-       alt="An artist's mockup of the “Dragon” spaceship"
-     />
+     <img src="images/big_spaceship.jpg" alt="An artist's mockup of the “Dragon” spaceship" />
 
      <div class="photo-header-plate">
        <h1>SpaceX unveil the Crew Dragon</h1>
-       <p>
-         photo from SpaceX on<a
-           href="https://www.flickr.com/photos/spacexphotos/16787988882/"
-           >Flickr</a
-         >
-       </p>
+       <p>photo from SpaceX on<a href="https://www.flickr.com/photos/spacexphotos/16787988882/">Flickr</a></p>
      </div>
    </header>
    ```
@@ -2492,15 +2444,10 @@ iframe {
 ```html
 <p>You may think[...]</p>
 <figure>
-  <img
-    src="images/spaceship.jpg"
-    alt="The Dragon spaceship in orbit around Earth."
-  />
+  <img src="images/spaceship.jpg" alt="The Dragon spaceship in orbit around Earth." />
   <figcaption>
     The "dragon" spaceship, created by SpaceX.image from
-    <a href="https://www.flickr.com/photos/spacexphotos16787988882/"
-      >Flickr.com</a
-    >
+    <a href="https://www.flickr.com/photos/spacexphotos16787988882/">Flickr.com</a>
   </figcaption>
 </figure>
 <p>There's various [...]</p>
@@ -2542,9 +2489,7 @@ figure {
   <img class="author-image" src="images/author.jpg" alt="Arthur C.Lark" />
   <span class="author-info">
     <span class="author-name">Written by Arthur C. Lark</span>
-    <a class="author-email" href="mailto:arthur.c.lark@example.com"
-      >arthur.c.lark@example.com</a
-    >
+    <a class="author-email" href="mailto:arthur.c.lark@example.com">arthur.c.lark@example.com</a>
   </span>
 </p>
 ```
@@ -2600,7 +2545,7 @@ figure {
 
    ```css
    .author-meta:before {
-     content: "";
+     content: '';
      display: inline-block;
      vertical-align: middle;
      height: 100%;
@@ -3023,7 +2968,7 @@ Flexbox 支持对元素大小的灵活控制。这一点既是实现精确内容
 }
 .tags a:before {
   position: absolute;
-  content: "";
+  content: '';
   width: 0;
   height: 0;
   border: 1em solid transparent;
@@ -3101,10 +3046,7 @@ Flexbox 支持对元素大小的灵活控制。这一点既是实现精确内容
   <div class="article-teaser-text">
     <p>There are actual spaceships.</p>
   </div>
-  <img
-    src="images/medium_spaceship.jpg"
-    alt="The Dragon spaceship in orbit around Earth."
-  />
+  <img src="images/medium_spaceship.jpg" alt="The Dragon spaceship in orbit around Earth." />
   <p class="article-teaser-more">
     <a href="/spaceships">Read the whole Spaceship article</a>
   </p>
@@ -3384,7 +3326,7 @@ body 元素默认是有外边距的，为避免不必要的干扰，得去掉它
 
 ```css
 .row:after {
-  content: "";
+  content: '';
   display: block;
   clear: both;
   height: 0;
@@ -3997,7 +3939,7 @@ CSS Grid Layout 的 “命名模板区”（named template area）也许是其�
 .grid-b {
   display: grid;
   grid-template-columns: 20% 1fr 1fr 1fr;
-  grid-template-areas: "hd st1 . st2" "hd st1 . st2";
+  grid-template-areas: 'hd st1 . st2' 'hd st1 . st2';
 }
 ```
 
@@ -4031,7 +3973,7 @@ CSS Grid Layout 的 “命名模板区”（named template area）也许是其�
 .grid-b {
   display: grid;
   grid-auto-columns: 1fr;
-  grid-template-areas: "hd ... ... ..." "hd st1 ... st2" "hd ... ... ...";
+  grid-template-areas: 'hd ... ... ...' 'hd st1 ... st2' 'hd ... ... ...';
 }
 ```
 
@@ -4074,7 +4016,7 @@ iPhone 在 2007 年的首次亮相，标志着移动设备上网体验的巨大�
   margin: 0 -0.6875em;
 }
 .row:after {
-  content: "";
+  content: '';
   display: block;
   clear: both;
   box-sizing: border-box;
@@ -4219,10 +4161,7 @@ initial-scale 的值大于 1，表示要放大布局，实际会导致布局视�
 可以通过在视口 meta 标签中设置 maximum-scale 和 minimum-scale 属性（为数值）锁定缩放范围。通过设置 user-scalable=no 也可以完全禁用缩放。如下视口 meta 标签并不少见：
 
 ```html
-<meta
-  name="viewport"
-  content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
-/>
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
 ```
 
 这样用户在移动设备上就不能缩放网页了，因此网页的适应性会变差。即使在设计网页时会考虑给文本和可操作的部分（如链接和按钮）应用较大和较明显的样式，视力或行动有障碍的用户可能仍然会感到不便。
@@ -4442,18 +4381,18 @@ CSS 文件中的第一批规则，既针对最小的屏幕，也针对那些不�
 
 ```css
 body {
-  font-family: "Open Sans", Helvetica Neue, Arial, sans-serif;
+  font-family: 'Open Sans', Helvetica Neue, Arial, sans-serif;
 }
 h1,
 h2,
 h3 {
-  font-family: "Open Sans Condensed", "Arial Narrow", Arial, sans-serif;
+  font-family: 'Open Sans Condensed', 'Arial Narrow', Arial, sans-serif;
 }
 @media only screen and (min-width: 37.5em) {
   h1,
   h2,
   h3 {
-    font-family: "Open Sans,Helvetica Neue", Arial, sans-serif;
+    font-family: 'Open Sans,Helvetica Neue', Arial, sans-serif;
   }
 }
 ```
@@ -4462,13 +4401,13 @@ h3 {
 
 ```css
 body {
-  font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
 }
 @media only screen and (max-width: 37.5em) {
   h1,
   h2,
   h3 {
-    font-family: "Open Sans Condensed", "Arial Narrow", Arial, sans-serif;
+    font-family: 'Open Sans Condensed', 'Arial Narrow', Arial, sans-serif;
   }
 }
 ```
@@ -4531,12 +4470,8 @@ Flexbox 也是 CSS 中具有某种响应式特质的规范。无须使用媒体�
   <li class="item">
     <span class="item-name">Flux capacitor regulator</span>
     <span class="item-controls">
-      <button class="item-control item-increase" aria-label="Increase">
-        +
-      </button>
-      <button class="item-control item-decrease" aria-label="Decrease">
-        -
-      </button>
+      <button class="item-control item-increase" aria-label="Increase">+</button>
+      <button class="item-control item-decrease" aria-label="Decrease">-</button>
     </span>
   </li>
   <!-- 省略其他代码 -->
@@ -4552,7 +4487,7 @@ Flexbox 也是 CSS 中具有某种响应式特质的规范。无须使用媒体�
   list-style: none;
   margin: 0;
   padding: 0;
-  font-family: "Avenir Next", Avenir, SegoeUI, sans-serif;
+  font-family: 'Avenir Next', Avenir, SegoeUI, sans-serif;
 }
 ```
 
@@ -4666,7 +4601,7 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
 .grid-b {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-areas: "hd" "st1" "." "st2" ".";
+  grid-template-areas: 'hd' 'st1' '.' 'st2' '.';
 }
 ```
 
@@ -4676,7 +4611,7 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
 @media only screen and (min-width: 37.5em) {
   .grid-b {
     grid-template-columns: 1fr 1fr;
-    grid-template-areas: "hd hd " "st1 ...", "... st2";
+    grid-template-areas: 'hd hd ' 'st1 ...', '... st2';
   }
 }
 ```
@@ -4687,7 +4622,7 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
 @media only screen and( min-width: 55em) {
   .grid-b {
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-areas: "hd hd hd" "st1 .. st2", "st2 .. st2";
+    grid-template-areas: 'hd hd hd' 'st1 .. st2', 'st2 .. st2';
   }
 }
 ```
@@ -4698,7 +4633,7 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
 @media only screen and (min-width: 70em) {
   .grid-b {
     grid-template-columns: 20% 1fr 1fr 1fr;
-    grid-template-areas: "hd st1 . st2", "hd st1 . st2";
+    grid-template-areas: 'hd st1 . st2', 'hd st1 . st2';
   }
 }
 ```
@@ -4805,11 +4740,7 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
    WebKit 系浏览器最早实现了 `srcset` 的一个版本。这个版本能针对目标分辨率和物理像素与 CSS 像素的比例（x-descriptor）指定可替换的图片。对于新闻页面中的专题报道而言，可以让默认分辨率或不支持的浏览器加载 600 像素 × 300 像素的图片，但在像素比高的时候加载两倍大的图片。
 
    ```html
-   <img
-     src="img/600x300 png"
-     srcset="img/1200X600.png 1.5x"
-     alt="Dummy image"
-   />
+   <img src="img/600x300 png" srcset="img/1200X600.png 1.5x" alt="Dummy image" />
    ```
 
    根据分辨率只能切换图片，不能控制图片的显示尺寸。为此，可以添加 `sizes` 属性，声明图片显示宽度，而不是检测像素比。
@@ -4819,13 +4750,7 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
    ```html
    <img
      src="img/small.png"
-     srcset="
-       img/xsmall.png  300w,
-       img/small.png   400w,
-       img/medium.png  600w,
-       img/large.png   800w,
-       img/xlarge.png 1200w
-     "
+     srcset="img/xsmall.png 300w, img/small.png 400w, img/medium.png 600w, img/large.png 800w, img/xlarge.png 1200w"
      sizes="(min-width: 70em) 12.6875em,
        (min-width: 50em) calc(25vw * 0.95 - 2.75em),
        (min-width: 35em) calc(95vw / 2 - 4.125em),
@@ -4911,10 +4836,7 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
 
    ```html
    <picture>
-     <source
-       media="(min-width: 70em) and (min-resolution: 3dppx)"
-       srcset="..."
-     />
+     <source media="(min-width: 70em) and (min-resolution: 3dppx)" srcset="..." />
      <img src="..." alt="..." />
    </picture>
    ```
@@ -4946,10 +4868,7 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
    要判断某种距离关系下的屏幕大小与字体大小是否匹配，可以使用设计师 Trent Walton 的一个技巧。他在可接受范围的起始位置上各加人了一个特殊字符，然后再到设备上[测试相应段落](https://trentwalton.com/2012/06/19/fluid-type/)。
 
    ```html
-   <p>
-     Lorem ipsum dolor sit amet, consectetur adip *isicing elit, sed do eius
-     mod* tempor incidid.
-   </p>
+   <p>Lorem ipsum dolor sit amet, consectetur adip *isicing elit, sed do eius mod* tempor incidid.</p>
    ```
 
    上面段落中的星号所在位置是第 45 个和第 70 个字符。意思是，如果第一行出现了两个星号，那说明这一行太长了。而在移动设备上测试时，第一行折行的地方应该在第一个星号之前一点。在找到适合最小和最大屏幕的字体大小后，就可以在此基础上进行网站的其他响应式排版了。下一步就是实现，实现的方式当然不止一种，但其中有一些是相对比较灵活的。
@@ -5133,7 +5052,7 @@ CSS 标准规定了两种表格边框模型：分离型和折叠型。在分离�
   table-layout: fixed;
   width: 100%;
   max-width: 25em;
-  font-family: "Lucida Grande", Verdana, Arial, sans-serif;
+  font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
   text-align: center;
 }
 ```
@@ -5282,7 +5201,7 @@ CSS 标准规定了两种表格边框模型：分离型和折叠型。在分离�
 
    ```css
    .cars {
-     font-family: "Lucida Sans", Verdana, Arial, sans-serif;
+     font-family: 'Lucida Sans', Verdana, Arial, sans-serif;
      width: 100%;
      border-collapse: collapse;
    }
@@ -5401,8 +5320,7 @@ CSS 标准规定了两种表格边框模型：分离型和折叠型。在分离�
    第二种是显式的，把 label 的 `for` 属性设为与相关表单控件的 id 属性相同的值：
 
    ```html
-   <label for="comment-email">Email</label>
-   <input name="comment-email" id="comment-email" type="email" />
+   <label for="comment-email">Email</label> <input name="comment-email" id="comment-email" type="email" />
    ```
 
    这里表单示例主要采用第二种方式，因此每个表单控件几乎都会有 name 和 id 属性。id 属性是在表单输入字段与 label 元素间建立联系的关键，name 属性则是表单正确地将数据提交给服务器的关键。id 和 name 的值可以不一样，但为了保持一致性，让它们相同比较好。
@@ -5414,12 +5332,7 @@ CSS 标准规定了两种表格边框模型：分离型和折叠型。在分离�
    在前面简单的例子中，使用了两种表单控件：input 和 textarea。后者主要用于输人多行文本，比如留言。可以通过 cols 和 rows 设置文本区默认的宽度和高度，这两个属性可以近似对应期望内容的长度。通过 CSS 可以进一步控制文本区的样式：
 
    ```html
-   <textarea
-     name="comment-text"
-     id="comment-text"
-     cols="20"
-     rows="10"
-   ></textarea>
+   <textarea name="comment-text" id="comment-text" cols="20" rows="10"></textarea>
    ```
 
    input 元素是个多面手。默认情况下，它被浏览器渲染为一个单行文本输人框，即其 `type` 属性的默认值是 text。除了 text，`type` 属性还支持很多其他的值。比如，password 可以让输入框中的内容被其他符号代替，达到保密的效果，而 checkbox 顾名思义就是显示为复选框。HTML5 扩展了 `type` 属性，为它增加了很多值，其中一些主要是对文本输入框的扩展，但相应地在后台会有不同的交互行为，比如 email、url 和 search。还有一些值会让 input 显示为不同的界面控件，比如 checkbox、radio、color、range 和 file。除了 type 属性，输入字段还有些其他属性，用于说明期待的格式。
@@ -6237,7 +6150,7 @@ body {
 
    ![透视原点](./image/透视原点.jpg)
 
-2. **perspective()变换函数**
+2. **perspective() 变换函数**
 
    在父元素上设置 `perspective` 属性，可以让其中所有元素的三维变换共享同样的透视关系。这通常都是希望的，因为它很接近现实效果。
 
@@ -6547,7 +6460,7 @@ CSS 形状虽然可以影响周围文本流，却不允许修改元素自身的�
    最后，就可以在 CSS 中引用 clip.svg 中的这个剪切路径了：
 
    ```css
-   .nav-section [href="#planets"] {
+   .nav-section [href='#planets'] {
      clip-path: url(img/clip.svg#saturnclip);
    }
    ```
@@ -6568,27 +6481,16 @@ CSS 形状虽然可以影响周围文本流，却不允许修改元素自身的�
 
    <!-- 在同一个HTML文件中，包含了CSS -->
    <style>
-     .nav-section [href="#planets"] {
+     .nav-section [href='#planets'] {
        clip-path: url(img/clip.svg#saturnclip);
      }
    </style>
 
    <!-- 还是同一个HTML文件中，内嵌了SVG作为剪切路径 -->
-   <svg
-     xmlns="http://www.w3.org/2000/svg"
-     width="100px"
-     height="100px"
-     viewbox="0 0 100 100"
-   >
+   <svg xmlns="http://www.w3.org/2000/svg" width="100px" height="100px" viewbox="0 0 100 100">
      <clipPath id="saturnclip">
        <circle cx="50" cy="50" r="45" />
-       <ellipse
-         transform="matrix(-0.7553 0.6554 -0.6554 -0.7553 -12.053 54.99)"
-         cx="50"
-         cy="50"
-         rx="63.9"
-         ry="12.8"
-       />
+       <ellipse transform="matrix(-0.7553 0.6554 -0.6554 -0.7553 -12.053 54.99)" cx="50" cy="50" rx="63.9" ry="12.8" />
      </clipPath>
    </svg>
    ```
@@ -6612,13 +6514,7 @@ CSS 形状虽然可以影响周围文本流，却不允许修改元素自身的�
 ```html
 <clipPath id="staturnclip" clipPathUnits="objectBoundingBox">
   <circle cx="0.5" cy="0.5" r="0.45" />
-  <ellipse
-    transform="matrix(-0.7553 0.6554 -0.6554 -0.7553 1.2053 9.5499)"
-    cx="8.5"
-    cy="8.5"
-    rx="0.639"
-    ry="0.125"
-  />
+  <ellipse transform="matrix(-0.7553 0.6554 -0.6554 -0.7553 1.2053 9.5499)" cx="8.5" cy="8.5" rx="0.639" ry="0.125" />
 </clipPath>
 ```
 
@@ -6634,11 +6530,7 @@ Safari 早在 2008 年就实现了蒙版，使用的是非标准属性 `-webkit-
 
 ```css
 .header-title {
-  mask-image: radial-gradient(
-    ellipse 90% 30% at 50% 50%,
-    rgba(0, 0, 0, 0) 45%,
-    #000 76%
-  );
+  mask-image: radial-gradient(ellipse 90% 30% at 50% 50%, rgba(0, 0, 0, 0) 45%, #000 76%);
   mask-size: 100% 200%;
 }
 ```
@@ -7303,7 +7195,7 @@ CSS 的设计反映了几个设计原理，其中最重要的原理之一就是�
      padding: 0;
    }
    .row:after {
-     content: "";
+     content: '';
      display: block;
      clear: both;
    }
