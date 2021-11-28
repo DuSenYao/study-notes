@@ -212,6 +212,25 @@
     - [3.11 类型细化](#311-类型细化)
       - [3.11.1 类型守卫](#3111-类型守卫)
         - [3.11.1.1 typeof 类型守卫](#31111-typeof-类型守卫)
+        - [3.11.1.2 instanceof 类型守卫](#31112-instanceof-类型守卫)
+        - [3.11.1.3 in 类型守卫](#31113-in-类型守卫)
+        - [3.11.1.4 逻辑与、或、非类型守卫](#31114-逻辑与-或-非类型守卫)
+        - [3.11.1.5 等式类型守卫](#31115-等式类型守卫)
+        - [3.11.1.6 自定义类型守卫函数](#31116-自定义类型守卫函数)
+        - [3.11.1.7 this 类型守卫](#31117-this-类型守卫)
+      - [3.11.2 可辨识联合类型](#3112-可辨识联合类型)
+        - [3.11.2.1 判别式属性](#31121-判别式属性)
+        - [3.11.2.2 判别式属性类型守卫](#31122-判别式属性类型守卫)
+        - [3.11.2.3 可辨识联合完整性检查](#31123-可辨识联合完整性检查)
+      - [3.11.3 赋值语句分析](#3113-赋值语句分析)
+      - [3.11.4 基于控制流的类型分析](#3114-基于控制流的类型分析)
+      - [3.11.5 断言类型](#3115-断言类型)
+        - [3.11.5.1 asserts x is T](#31151-asserts-x-is-t)
+        - [3.11.5.2 asserts X](#31152-asserts-x)
+        - [3.11.5.3 断言函数的返回值](#31153-断言函数的返回值)
+        - [3.11.5.4 断言函数的应用](#31154-断言函数的应用)
+  - [四. 类型深入](#四-类型深入)
+  - [](#)
 
 <!-- /code_chunk_output -->
 
@@ -6306,3 +6325,544 @@ typeof 类型守卫能够根据 typeof 表达式的值去细化 typeof 操作数
 从上图能够看到，对 null 值使用 typeof 运算符的返回值不是字符串 “null”，而是字符串 “object”。因此，typeof 类型守卫在细化运算结果为 "object" 的类型时，会包含 null 类型。
 
 虽然函数也是一种对象类型，但函数特殊的地方在于它是可以调用的对象。typeof 运算符为函数类型定义了一个单独的 "function"返回值，使用了 “function” 的 typeof 类型守卫会将操作数的类型细化为函数类型。
+
+##### 3.11.1.2 instanceof 类型守卫
+
+`instanceof` 运算符能够检测实例对象与构造函数之间的关系。instanceof 运算符的左操作数为实例对象，右操作数为构造函数，若构造函数的 prototype 属性值存在于实例对象的原型链上，则返回 true；否则，返回 false。
+
+instanceof 类型守卫会根据 instanceof 运算符的返回值将左操作数的类型进行细化。例如，下例中如果参数 x 是使用 Date 构造函数创建出来的实例，如 "new Date()"，那么将 x 的类型细化为 Date 类型。同理，如果参数 x 是一个正则表达式实例，那么将 x 的类型细化为 RegExp 类型：
+
+```ts
+function f(x: Date | RegExp) {
+  if (x instanceof Date) {
+    x; // Date
+  }
+  if (x instanceof RegExp) {
+    x; // RegExp
+  }
+}
+```
+
+instanceof 类型守卫同样适用于自定义构造函数，并对其实例对象进行类型细化。例如，下例中定义了两个类 A 和 B，通过 instanceof 类型守卫能够将实例对象细化为类型 A 或 B：
+
+```ts
+class A {}
+class B {}
+function f(x: A | B) {
+  if (x instanceof A) {
+    x; // A
+  }
+  if (x instanceof B) {
+    X; // B
+  }
+}
+```
+
+##### 3.11.1.3 in 类型守卫
+
+`in` 运算符是 JS 中的关系运算符之一，用来判断对象自身或其原型链中是否存在给定的属性，若存在则返回 true，否则返回 false。in 运算符有两个操作数，左操作数为待测试的属性名，右操作数为测试对象。
+
+in 类型守卫根据 in 运算符的测试结果，将右操作数的类型细化为具体的对象类型：
+
+```ts
+interface A {
+  x: number;
+}
+interface B {
+  y: string;
+}
+
+function f(x: A | B) {
+  if ('x' in x) {
+    x; // A
+  } else {
+    x; // B
+  }
+}
+```
+
+##### 3.11.1.4 逻辑与、或、非类型守卫
+
+逻辑与表达式、逻辑或表达式和逻辑非表达式也可以作为类型守卫。逻辑表达式在求值时会判断操作数的真与假。如果一个值转换为布尔值后为 true，那么该值为真值；如果一个值转换为布尔值后为 false，那么该值为假值。
+
+不仅是逻辑表达式会进行真假值比较，JS 中的很多语法结构也都会进行真假值比较。例如，if 条件判断语句。
+
+逻辑非运算符 `!` 是一元运算符，它只有一个操作数。若逻辑非运算符的操作数为真，那么逻辑非表达式的值为 false；反之，若逻辑非运算符的操作数为假，则逻辑非表达式的值为 true。逻辑非类型守卫将根据逻辑非表达式的结果对操作数进行类型细化。
+
+逻辑与运算符 `&&` 是二元运算符，它有两个操作数。若左操作数为假，则返回左操作数；否则，返回右操作数。逻辑与类型守卫将根据逻辑与表达式的结果对操作数进行类型细化。
+
+逻辑或运算符 `||` 是二元运算符，它有两个操作数。若左操作数为真，则返回左操作数；否则，返回右操作数。同逻辑与类型守卫类似，逻辑或类型守卫将根据逻辑或表达式的结果对操作数进行类型细化。
+
+逻辑与、或、非类型守卫也支持在操作数中使用对象属性访问表达式，并且能够对对象属性进行类型细化。
+
+##### 3.11.1.5 等式类型守卫
+
+等式表达式是十分常用的代码结构，同时它也是一种类型守卫，即等式类型守卫。等式表达式可以使用四种等式运算符 `===` `!==` `==` `!=`，它们能够将两个值进行相等性比较并返回一个布尔值编译器能够对等式表达式进行分析，从而将等式运算符的操作数进行类型细化。
+
+当等式运算符的操作数之一是 undefined 值或 null 值时，该等式类型守卫也是一个空值类型守卫。空值类型守卫能够将一个值的类型细化为空类型或非空类型。
+
+除了 undefined 值和 null 值之外，等式类型守卫还支持以下种类的字面量：
+
+- boolean 字面量
+- string 字面量
+- number 字面量和 bigint 字面量
+- 枚举成员字面量
+
+当等式类型守卫中出现以上字面量时，会将操作数的类型细化为相应的字面量类型。
+
+##### 3.11.1.6 自定义类型守卫函数
+
+除了内置的类型守卫之外，TypeScript 允许自定义类型守卫函数。类型守卫函数是指在函数返回值类型中使用了类型谓词的函数。语法如下所示：
+
+```ts
+x is T
+```
+
+在该语法中，x 为类型守卫函数中的某个形式参数名；T 表示任意的类型。从本质上讲，类型谓词相当于 boolean 类型。
+
+类型谓词表示一种类型判定，即判定 x 的类型是否为 T。当在 if 语句中或者逻辑表达式中使用类型守卫函数时，编译器能够将 x 的类型细化为 T 类型。例如，下例中定义了两个类型守卫函数 isTypeA 和 isTypeB，两者分别能够判定函数参数 x 的类型是否为类型 A 和 B：
+
+```ts
+type A = { a: string };
+type B = { b: string };
+function isTypeA(x: A | B): x is A {
+  return (x as A).a !== undefined;
+}
+
+function isTypeB(x: A | B): x is B {
+  return (x as B).b !== undefined;
+}
+
+function f(x: A | B) {
+  if (isTypeA(x)) {
+    x; // A
+  } else {
+    x; // B
+  }
+  if (isTypeB(x)) {
+    x; // B
+  } else {
+    x; // A
+  }
+}
+```
+
+##### 3.11.1.7 this 类型守卫
+
+在类型谓词 “x is T” 中，x 可以为关键字 `this`，这时它叫作 this 类型守卫。this 类型守卫主要用于类和接口中，它能够将方法调用对象的类型细化为 T 类型：
+
+```ts
+class Teacher {
+  isStudent(): this is Student {
+    return false;
+  }
+}
+
+class Student {
+  grade: string;
+  isStudent(): this is Student {
+    return true;
+  }
+}
+
+function f(person: Teacher | Student) {
+  if (person.isStudent()) {
+    person.grade; // Student
+  }
+}
+```
+
+此例中，isStudent 方法是 this 类型守卫，能够判定 this 对象是否为 Student 类的实例对象。
+
+> **注意**：类型谓词 “this is T” 只能作为函数和方法的返回值类型，而不能用作属性或存取器的类型。在 TypeScript 的早期版本中曾支持在属性上使用 "this is T" 类型谓词，但是在之后的版本中移除了该特性。
+
+#### 3.11.2 可辨识联合类型
+
+在程序中，通过结合使用联合类型、单元类型和类型守卫能够创建出一种高级应用模式，这称作**可辨识联合**。
+
+可辨识联合也叫作标签联合或变体类型，是一种数据结构，该数据结构中存储了一组数量固定且种类不同的类型，还存在一个标签字段，该标签字段用于标识可辨识联合中当前被选择的类型，在同一时刻只有一种类型会被选中。
+
+可辨识联合在函数式编程中比较常用，TypeScript 基于现有的代码结构和编码模式提供了对可辨识联合的支持。根据可辨识联合的定义，TypeScript 中的可辨识联合类型由以下几个要素构成：
+
+- 一组数量固定且种类不同的对象类型。这些对象类型中含有共同的判别式属性，判别式属性就是可辨识联合定义中的标签属性。若一个对象类型中包含判别式属性，则该对象类型是可辨识对象类型。
+
+- 由可辨识对象类型组成的联合类型即可辨识联合，通常会使用类型别名为可辨识联合类型命名。
+
+- 判别式属性类型守卫。判别式属性类型守卫的作用是从可辨识联合中选取某一特定类型。
+
+接下来，通过一个例子来介绍可辨识联合的构造及使用方式：
+
+1. 第一步，先创建两个可辨识对象类型。下例中，使用接口定义了两个对象类型 Square 和 Circle。这两个对象类型中包含了共同的判别式属性 kind：
+
+   ```ts
+   interface Square {
+     kind: 'square';
+     size: number;
+   }
+   interface Circle {
+     kind: 'circle';
+     radius: number;
+   }
+   ```
+
+2. 第二步，创建可辨识对象类型 Square 和 Circle 的联合类型，即可辨识联合。使用类型别名为该可辨识联合类型命名，以方便在程序中使用：
+
+   ```ts
+   type Shape = Square | Circle;
+   ```
+
+   此例中，类型别名 Shape 引用了可辨识联合类型。
+
+3. 最后，将所有代码合并在一起。在程序中使用判别式属性类型守卫从可辨识联合类型中选取某一特定类型：
+
+   ```ts
+   interface Square {
+     kind: 'square';
+     size: number;
+   }
+
+   interface Circle {
+     kind: 'circle';
+     radius: number;
+   }
+   type Shape = Square | Circle;
+   function f(shape: Shape) {
+     // 使用了判别式属性类型守卫去检查判别式属性的值
+     if (shape.kind === 'square') {
+       shape; // 根据判别式属性值 square 呢能够将可辨识联合细化为具体的 Square 对象类型
+     }
+     if (shape.kind === 'circle') {
+       shape; // Circle
+     }
+   }
+   ```
+
+##### 3.11.2.1 判别式属性
+
+对于可辨识联合类型整体来讲，其判别式属性的类型是一个联合类型，该联合类型的成员类型是由每一个可辨识对象类型中该判别式属性的类型所组成。TypeScript 要求在**判别式属性的联合类型中至少有一个[单元类型](#26-单元类型)**。
+
+按照判别式属性的定义，可辨识联合类型中**可以同时存在多个判别式属性**。
+
+通常情况下，判别式属性的类型都是单元类型，因为这样做方便在判别式属性类型守卫中进行比较。但在实际代码中事情往往没有这么简单，有些时候判别式属性不全是单元类型。因此，TypeScript 也适当放宽了限制，不要求可辨识联合中每一个判别式属性的类型都为单元类型，而是要求至少存在一个单元类型的判别式属性。例如，下例中的 Result 是可辨识联合类型，判别式属性 error 的类型为联合类型 "null|Error"，其中，null 类型是单元类型，而 Error 类型不是单元类型：
+
+```ts
+interface Success {
+  error: null;
+  value: number;
+}
+
+interface Failure {
+  error: Error;
+}
+
+type Result = Success | Failure;
+
+function f(result: Result) {
+  if (result.error) {
+    result; // Failure
+  }
+  if (!result.error) {
+    result; // Success
+  }
+}
+```
+
+##### 3.11.2.2 判别式属性类型守卫
+
+判别式属性类型守卫表达式支持以下几种形式：
+
+判别式属性类型守卫表达式支持以下几种形式：
+
+- x.p
+- !x.p
+- x.p==v
+- x.p===v
+- x.p!=v
+- x.p!==v
+
+其中，x 代表可辨识联合对象；p 为判别式属性名；v 若存在，则为一个表达式。判别式属性类型守卫能够对可辨识联合对象 × 进行类型细化。
+
+除了使用判别式属性类型守卫和语句之外，还可以使用 switch 语句来对可辨识联合类型进行类型细化。在每个 case 语句中，都会根据判别式属性的类型来细化可辨识联合类型：
+
+##### 3.11.2.3 可辨识联合完整性检查
+
+回到可辨识联合的定义，可辨识联合是由一组数量固定且种类不同的对象类型构成。编译器能够利用该性质并结合 switch 语句来对可辨识联合进行完整性检查。编译器能够分析出 switch 语句是否处理了可辨识联合中的所有可辨识对象。
+
+例如，在下例的可辨识联合 Shape 中包含了 Circle 和 Square 两种类型。在 switch 语句中，两个 case 分支分别匹配了 Circle 和 Square 类型并返回。编译器能够检测出 switch 语句已经处理了所有可能的情况并退出函数，同时第 21 行的代码不可能被执行到。在这种情况下，编译器会给出提示 “存在执行不到的代码”：
+
+```ts
+interface Circle {
+  kind: 'circle';
+  radius: number;
+}
+interface Square {
+  kind: 'square';
+  size: number;
+}
+type Shape = Circle | Square;
+function area(s: Shape): number {
+  switch (s.kind) {
+    case 'square':
+      return s.size * s.size;
+    case 'circle':
+      return Math.Pl * s.radius * s.radius;
+  }
+  console.log(foo); // 检测到此行为不可达的代码
+}
+```
+
+更通用的完整性检查方法是给 switch 语句添加 default 分支，并在 default 分支中使用一个特殊的辅助函数来帮助进行完整性检查：
+
+```ts
+interface Circle {
+  kind: 'circle';
+  radius: number;
+}
+interface Square {
+  kind: 'square';
+  size: number;
+}
+type Shape = Circle | Square;
+function area(s: Shape): number {
+  switch (s.kind) {
+    case 'square':
+      return s.size * s.size;
+    default:
+      assertNever(s); // 编译
+  }
+}
+
+function assertNever(x: never): never {
+  throw new Error('Unexpected object：' + x);
+}
+```
+
+此例中的方法是一种变通方法，它需要定义一个额外的 assertNever() 函数并声明它的参数类型为 never 类型。该方法能够帮助进行完整性检查的原因是，如果 switch 语句的 case 分支没有匹配到所有可能的可辨识对象类型，那么在 default 分支中 s 的类型为某一个或多个可辨识对象类型，而对象类型不允许赋值给 never 类型，因此会产生编译错误。但如果 case 语句匹配了全部的可辨识对象类型，那么 default 分支中 s 的类型为 never 类型，因此也就不会产生编译错误。
+
+#### 3.11.3 赋值语句分析
+
+除了利用类型守卫去细化类型，TypeScript 编译器还能够分析代码中的赋值语句，并根据等号右侧操作数的类型去细化左侧操作数的类型。例如，当给变量赋予一个字符串值时，编译器可以将该变量的类型细化为 string 类型。
+
+如果在变量或参数声明中包含了类型注解，那么在进行类型细化时同样会参考变量声明的类型。
+
+#### 3.11.4 基于控制流的类型分析
+
+TypeScript 编译器能够分析程序代码中所有可能的执行路径，从而得到在代码中某一特定位置上的变量类型和参数类型等，将这种类型分析方式叫作基于控制流的类型分析。常用的控制流语句有 if 语句、switch 语句以及 return 语句等。在使用类型守卫时，已经在使用基于控制流的类型分析了：
+
+```ts
+function f0(x: string | number | boolean) {
+  if (typeof x === 'string') {
+    x; //string
+  }
+  x; // number|boolean
+}
+function f1(x: string | number) {
+  if (typeof x === 'number') {
+    return;
+  }
+  x; // string
+}
+```
+
+通过基于控制流的类型分析，编译器还能够对变量进行确切赋值分析。确切赋值分析能够对数据流进行分析，其目的是确保变量在使用之前已经被赋值：
+
+```ts
+function f(check: boolean) {
+  x; // 编译错误！变量 'x' 在赋值之前使用
+  if (check) {
+    x = 1;
+    x; // number
+  }
+}
+```
+
+#### 3.11.5 断言类型
+
+在程序设计中，断言表示一种判定。如果对断言求值后的结果为 false，则意味着程序出错。TypeScript 3.7 引入了断言函数功能。断言函数用于检查实际参数的类型是否符合类型判定。若符合类型判定，则函数正常返回；若不符合类型判定，则函数抛出异常。基于控制流的类型分析能够识别断言函数并进行类型细化。
+
+断言函数有以下两种形式：
+
+```ts
+function assert(x: unknown): asserts x is T {}
+// 或
+function assert(x: unknown): asserts x {}
+```
+
+在该语法中，"asserts x is T" 和 "asserts ×" 表示类型判定，它只能作为函数的返回值类型。`asserts` 和 `is` 是关键字；x 必须为函数参数列表中的一个形式参数名；T 表示任意的类型；"is T" 部分是可选的。若一个函数带有 asserts 类型判定，那么该函数就是一个断言函数。接下来将分别介绍这两种断言函数。
+
+##### 3.11.5.1 asserts x is T
+
+对于 "asserts x is T" 形式的断言函数，它只有在实际参数 x 的类型为 T 时才会正常返回，否则将抛出异常。例如，下例中定义了 assertsBoolean 断言函数，它的类型判定为 "asserts x is boolean"。这表示只有在参数 x 的值是 boolean 类型时，该函数才会正常返回，如果参数 x 的值不是 boolean 类型，那么 assertsBoolean 函数将抛出异常：
+
+```ts
+function assertsBoolean(x: unknown): asserts x is boolean {
+  if (typeof x !== 'boolean') {
+    throw new TypeError('Boolean type expected.');
+  }
+}
+```
+
+在 assertsBoolean 断言函数的函数体中，开发者需要按照约定的断言函数语义去实现断言函数。
+
+##### 3.11.5.2 asserts X
+
+对于 "asserts x" 形式的断言函数，它只有在实际参数 x 的值为真时才会正常返回，否则将抛出异常。例如，下例中定义了 assertTruthy 断言函数，它的类型判定为 "asserts x"。这表示只有在参数 × 是真值时，该函数才会正常返回，如果参数 × 不是真值，那么 assertTruthy 函数将抛出异常：
+
+```ts
+function assertTruthy(x: unknown): asserts x {
+  if (!x) {
+    throw new TypeError(`${x} should be a truthy value.`);
+  }
+}
+```
+
+在 assertTruthy 断言函数的函数体中，开发者需要按照约定的断言函数语义去实现断言函数。
+
+##### 3.11.5.3 断言函数的返回值
+
+在定义断言函数时，需要将函数的返回值类型声明为 asserts 类型判定。编译器将 asserts 类型判定视为 void 类型，这意味着断言函数的返回值类型是 void。从类型兼容性的角度来考虑：undefined 类型可以赋值给 void 类型；never 类型是尾端类型，也可以赋值给 void 类型；当然，还有无所不能的 any 类型也可以赋值给 void 类型。除此之外，任何类型都不能作为断言函数的返回值类型（在严格类型检查模式下）。
+
+下例中，f0 断言函数和 f1 断言函数都是正确的使用方式。如果函数抛出异常，那么相当于函数返回值类型为 never 类型；如果函数没有使用 return 语句，那么在正常退出函数时相当于返回了 undefined 值。
+
+f2 断言函数和 f3 断言函数是错误的使用方式，因为它们的返回值类型与 void 类型不兼容：
+
+```ts
+function f0(x: unknown): asserts x {
+  if (!x) {
+    // 相当于返回 never 类型，与 void 类型兼容
+    throw new TypeError(`${x} should be a truthy value.`);
+  }
+  // 正确，隐式地返回 undefined 类型，与 void 类型兼容
+}
+
+function f1(x: unknown): asserts x {
+  if (!x) {
+    throw new TypeError(`${x} should be a truthy value.`);
+  }
+  // 正确
+  return undefined; // 返回 undefined 类型，与 void 类型兼容
+}
+
+function f2(x: unknown): asserts x {
+  if (!x) {
+    throw new TypeError(`${x} should be a truthy value.`);
+  }
+  return false; // 编译错误！类型 false 不能赋值给类型 void
+}
+function f3(x: unknown): asserts x {
+  if (!x) {
+    throw new TypeError(`${x} should be a truthy value.`);
+  }
+  return null; // 编译错误！类型 null 不能赋值给类型 void
+}
+```
+
+##### 3.11.5.4 断言函数的应用
+
+当程序中调用了断言函数后，其结果一定为以下两种情况之一：
+
+- 断言判定失败，程序抛出异常并停止继续向后执行代码
+- 断言判定成功，程序继续向后执行代码
+
+基于控制流的类型分析能够利用以上的事实对调用断言函数之后的代码进行类型细化：
+
+```ts
+function assertsNumber(x: unknown): asserts x is number {
+  if (typeof x !== 'number') {
+    throw new TypeError(`${x} should be a number.`);
+  }
+}
+function f(x: any, y: any) {
+  x; // any
+  y; // any
+  assertsNumber(x);
+  assertsNumber(y);
+  x; // number
+  y; // number
+}
+```
+
+如果一个函数抛出了异常或者陷入了死循环，那么该函数无法正常返回一个值，因此该函数的返回值类型为 [never 类型](#281-never)。如果程序中调用了一个返回值类型为 never 的函数，那么就意味着程序会在该函数的调用位
+置终止，永远不会继续执行后续的代码。
+
+类似于对断言函数的分析，编译器同样能够分析出返回值类型为 never 类型的函数对控制流的影响以及对变量或参数等类型的影响。例如，在下例的函数 f 中，编译器能够推断出在语句之外的参数 x 的类型为 string 类型。因为如果 x 的类型为 undefined 类型，那么函数将：
+
+```ts
+function neverReturns(): never {
+  throw new Error();
+}
+function f(x: string | undefined) {
+  if (x === undefined) {
+    neverReturns();
+  }
+  x; // string
+}
+```
+
+## 四. 类型深入
+
+本章主要内容：
+
+- TypeScript 中的两种兼容性，即子类型兼容性和赋值兼容性
+- TypeScript 中的类型推断功能以及类型放宽行为
+- 能够帮助组织代码的命名空间与模块
+- TypeScript 声明文件的书写与应用
+- TypeScript 模块解析流程
+- TypeScript 特有的声明合并功能
+
+本章将深入 TypeScript 类型系统的内部来探索类型的工作方式与原理。本章中的部分内容是在语言背后默默地发挥作用的，如兼容性、类型推断、类型放宽和声明合并等。这部分内容不包含新的语法，也不会直接影响编写的程序，
+
+### 4.1 子类型兼容性
+
+在编程语言理论中，子类型与超（父）类型是类型多态的一种表现形式。子类型与超类型都有其各自的数据类型，将两者关联在一起的是它们之间的可替换关系。面向对象程序设计中的里氏替换原则描述了**程序中任何使用了超类型的地方都可以用其子类型进行替换，并且在替换后程序的行为保持不变**。当使用子类型替换超类型时，不需要修改任何其他代码，程序依然能够正常工作。
+
+#### 4.1.1 类型系统可靠性
+
+如果一个类型系统能够识别并拒绝程序中所有可能的类型错误，那么称该类型系统是可靠的。TypeScript 中的类型系统允许一些未知操作通过类型检查。因此，TypeScript 的类型系统不总是可靠的。
+
+例如，可以使用类型断言来改写一个值的类型，尽管提供的类型是错误的，编译器也不会报错：
+
+```ts
+const a: string = 1 as unknown as string;
+```
+
+TypeScript 类型系统中的不可靠行为大多经过了严格的设计考量来适配 JS 程序中早已广泛使用的编码模式。TypeScript 也提供了一些严格类型检查的编译选项，例如 `--strictNullChecks` 等，通过启用这些编译选项可以有选择地逐渐增强类型系统的可靠性。
+
+#### 4.1.2 子类型的基本性质
+
+##### 4.1.2.1 符号约定
+
+在深入探讨子类型关系之前，先约定一下表示子类型和超类型关系的符号以便于之后的描述。若类型 A 是类型 B 的子类型，则记作：
+
+```txt
+A <: B
+反之，若类型 A 是类型 B 的超类型，则记作：
+A :> B
+```
+
+##### 4.1.2.2 自反性
+
+**子类型关系与超类型关系具有自反性，即任意类型都是其自身的子类型和超类型**。自反性可以使用如下符号表示：
+
+```txt
+A <: A 且 A :> A
+```
+
+##### 4.1.2.3 传递性
+
+子类型关系与超类型关系也具有传递性。若类型 A 是类型 B 的子类型，且类型 B 是类型 C 的子类型，那么类型 A 也是类型 C 的子类型。传递性可以使用如下符号表示：
+
+```txt
+如果：
+A <: B <: C
+那么：
+A <: C
+```
+
+#### 7.1.3 顶端类型与尾端类型
+
+顶端类型与尾端类型的概念来自类型论，它们是独立于编程语言而存在的。依据类型论中的描述，顶端类型是一种通用超类型，所有类型都是顶端类型的子类型；同时，尾端类型是所有类型的子类型。
+
+TypeScript 中存在两种顶端类型，即 any 类型和 unknown 类型。因此，所有类型都是 any 类型和 unknown 类型的子类型。
+
+TypeScript 中仅存在一种尾端类型，即 never 类型。因此，never 类型是所有类型的子类型。
