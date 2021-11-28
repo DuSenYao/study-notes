@@ -1,6 +1,4 @@
----
-title: Vue-router
----
+# Vue-router
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -62,8 +60,6 @@ title: Vue-router
       - [2.7.3 导航故障的属性](#273-导航故障的属性)
 
 <!-- /code_chunk_output -->
-
-# Vue-router
 
 ## 一. 基础
 

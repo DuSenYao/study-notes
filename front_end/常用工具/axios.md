@@ -1,6 +1,4 @@
----
-title: axios
----
+# Axios
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -34,8 +32,6 @@ title: axios
     - [12.2 Node.js](#122-nodejs)
 
 <!-- /code_chunk_output -->
-
-# Axios
 
 Axios 是一个基于 promise 的 HTTP 库，可以用在浏览器和 node.js 中。
 
@@ -402,8 +398,7 @@ axios.get('/user/12345').then(function (response) {
 ```js
 axios.defaults.baseURL = 'https://api.example.com';
 axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
-axios.defaults.headers.post['Content-Type'] =
-  'application/x-www-form-urlencoded';
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 ```
 
 ### 8.2 自定义实例默认值

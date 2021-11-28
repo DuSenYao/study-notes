@@ -1,6 +1,4 @@
----
-title: JS小技巧
----
+# JS 开发优化技巧
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -29,8 +27,6 @@ title: JS小技巧
     - [3.15 查找数组的最大值和最小值](#315-查找数组的最大值和最小值)
 
 <!-- /code_chunk_output -->
-
-# JS 开发优化技巧
 
 ## 一. 功能类
 

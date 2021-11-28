@@ -1,6 +1,4 @@
----
-title: Vue风格指南
----
+# 风格指南
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -44,7 +42,6 @@ title: Vue风格指南
 
 <!-- /code_chunk_output -->
 
-# 风格指南
 
 ## 一. 必要的 (规避错误)
 

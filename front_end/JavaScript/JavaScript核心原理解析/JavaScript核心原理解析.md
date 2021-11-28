@@ -1,6 +1,4 @@
----
-title: JavaScript核心原理解析
----
+# JavaScript 核心原理解析
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -9,8 +7,6 @@ title: JavaScript核心原理解析
 - [JavaScript 核心原理解析](#javascript核心原理解析)
 
 <!-- /code_chunk_output -->
-
-# JavaScript 核心原理解析
 
 **JS 是一门多范型语言，也称为混合范型语言**。JavaScript 的简单来自于此，复杂也来自于此；生存能力来自于此，抨击诟病也来自于此。
 

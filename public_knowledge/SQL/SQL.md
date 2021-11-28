@@ -1,7 +1,4 @@
----
-title: SQL
-keyword: SQL
----
+# SQL
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -10,5 +7,3 @@ keyword: SQL
 - [SQL](#sql)
 
 <!-- /code_chunk_output -->
-
-# SQL

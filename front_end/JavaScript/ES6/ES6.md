@@ -1,6 +1,4 @@
----
-title: ES6
----
+# ES6
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -15,8 +13,6 @@ title: ES6
     - [1.6 Babel 转码器](#16-babel-转码器)
 
 <!-- /code_chunk_output -->
-
-# ES6
 
 ## 一. ECMAScript 6 简介
 

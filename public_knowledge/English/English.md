@@ -1,6 +1,4 @@
----
-title: 英语学习
----
+# 英语
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -12,8 +10,6 @@ title: 英语学习
     - [1.2 英语学习三要素](#12-英语学习三要素)
 
 <!-- /code_chunk_output -->
-
-# 英语
 
 ---
 

@@ -1,6 +1,4 @@
----
-title: Vue-CLI
----
+# Vue-CLI
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -98,8 +96,6 @@ title: Vue-CLI
         - [3.7.2.3 GitHub Pages](#3723-github-pages)
 
 <!-- /code_chunk_output -->
-
-# Vue-CLI
 
 ## 一. 介绍
 

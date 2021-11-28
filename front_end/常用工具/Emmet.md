@@ -1,6 +1,4 @@
----
-title: Emmet
----
+# Emmet
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -32,8 +30,6 @@ title: Emmet
     - [2.4 渐变](#24-渐变)
 
 <!-- /code_chunk_output -->
-
-# Emmet
 
 ## 一. 缩写
 

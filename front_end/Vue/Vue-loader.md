@@ -1,6 +1,4 @@
----
-title: Vue-loader
----
+# Vue-loader
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -55,8 +53,6 @@ title: Vue-loader
   - [十二. 测试](#十二-测试)
 
 <!-- /code_chunk_output -->
-
-# Vue-loader
 
 ## 一. 介绍
 

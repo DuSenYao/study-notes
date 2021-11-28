@@ -1,12 +1,4 @@
----
-title: Chrome DevTools
-date: 2020-12-10 9:22:34
-author: 杜森垚
-keywords: "Chrome DevTools"
-categories: Chrome DevTools
-tags:
-  - Chrome DevTools
----
+# Chrome DevTools
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -88,8 +80,6 @@ tags:
       - [7.1.3 为新选择器选择目标位置](#713-为新选择器选择目标位置)
 
 <!-- /code_chunk_output -->
-
-# Chrome DevTools
 
 ---
 

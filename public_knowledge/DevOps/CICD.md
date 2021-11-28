@@ -1,6 +1,4 @@
----
-title: CI/CD
----
+# CI/CD
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -12,8 +10,6 @@ title: CI/CD
     - [1.2 服务器搭配方案](#12-服务器搭配方案)
 
 <!-- /code_chunk_output -->
-
-# CI/CD
 
 ## 一. 简介
 

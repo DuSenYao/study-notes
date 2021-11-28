@@ -1,8 +1,4 @@
----
-title: Vocabulary Manual
-author: DSY
-keyword: Vocabulary
----
+# Vocabulary Manual
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -13,8 +9,6 @@ keyword: Vocabulary
   - [二. Computer terminology](#二-computer-terminology)
 
 <!-- /code_chunk_output -->
-
-# Vocabulary Manual
 
 ---
 

@@ -1,7 +1,4 @@
----
-title: Node.js
-author: dsy
----
+# Node.js
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -65,8 +62,6 @@ author: dsy
       - [2.2.2 创建一个最简单的 HTTP 服务](#222-创建一个最简单的-http-服务)
 
 <!-- /code_chunk_output -->
-
-# Node.js
 
 ---
 

@@ -478,7 +478,7 @@ git merge dev
   git reset HEAD -- index.html
   ```
 
-##### 1.2.6.3 `git rebase`
+##### 1.2.6.3 git rebase
 
 合并提交记录
 

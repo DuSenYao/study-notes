@@ -1,10 +1,6 @@
----
-title: JS设计模式
----
+# JS 设计模式
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
-
-# JS设计模式
 
 在软件工程中，设计模式（design pattern）是对软件设计中普遍存在（反复出现）的各种问题，所提出的解决方案。
 

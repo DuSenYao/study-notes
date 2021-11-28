@@ -1,6 +1,4 @@
----
-title: 微信小程序API
----
+# 微信小程序 API
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -157,8 +155,6 @@ title: 微信小程序API
     - [15.2 RewardedVideoAd](#152-rewardedvideoad)
 
 <!-- /code_chunk_output -->
-
-# 微信小程序 API
 
 ## 一. 基础
 

@@ -1,6 +1,4 @@
----
-title: clean code
----
+# 代码整洁之道
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -28,8 +26,6 @@ title: clean code
       - [2.4.1](#241)
 
 <!-- /code_chunk_output -->
-
-# 代码整洁之道
 
 ## 一. 有意义的命名
 

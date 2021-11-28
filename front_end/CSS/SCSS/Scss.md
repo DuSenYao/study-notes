@@ -1,6 +1,4 @@
----
-title: scss
----
+# SCSS
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -85,8 +83,6 @@ title: scss
       - [2.8.4 `:compressed`](#284-compressed)
 
 <!-- /code_chunk_output -->
-
-# SCSS
 
 ## 一. 介绍
 

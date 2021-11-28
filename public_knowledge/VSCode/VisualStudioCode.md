@@ -1,7 +1,4 @@
----
-title: VSCode Editor
-keyword: VSCode operation
----
+# VSCode 编辑器
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -145,8 +142,6 @@ keyword: VSCode operation
 
 <!-- /code_chunk_output -->
 
-# VSCode 编辑器
-
 ---
 
 ## 一. 常用命令
@@ -228,16 +223,16 @@ keyword: VSCode operation
 
 单击全部搜索输入框下方的省略号或使用 `Ctrl + Shift + J` 快捷键，可以调出高级搜索选项: **要包含的文件**和**排除的文件**，需要以 `.` 开头并且全拼，文件后缀名用 `,` 分隔。
 
-### 2.2 编程语言定义代码块的起始和结束区域的 标记
+### 2.2 编程语言定义代码块的起始和结束区域的标记
 
 | 编程语言      | 起始区域                       | 结束区域                           |
 | ------------- | ------------------------------ | ---------------------------------- |
-| CSS/Less/SCSS | /\*#region\*/                  | /\*#endregion\*/                   |
-| CSS/Less/SCSS | /\*#region\*/                  | /\*#endregion\*/                   |
+| CSS/Less/SCSS | /\* #region \*/                | /\* #endregion \*/                 |
+| CSS/Less/SCSS | /\* #region \*/                | /\* #endregion \*/                 |
 | C/C++         | #pragma region                 | #pragma endregion                  |
 | Java          | //#region 或 `//<editor-fold>` | //#endregion 或 `//</editor-fold>` |
 | Python        | #region                        | #endregion                         |
-| TypeScript/JS | //#region                      | //#endregion                       |
+| TypeScript/JS | // #region                     | // #endregion                      |
 | Markdown      | \<!--#region-->                | \<!--endregion-->                  |
 
 ### 2.3 自动检测代码缩进

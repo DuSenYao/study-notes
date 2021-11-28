@@ -1,6 +1,4 @@
----
-title: JS代码规范
----
+# JS 代码规范
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -42,8 +40,6 @@ title: JS代码规范
     - [3.10 自执行函数前面必须加分号](#310-自执行函数前面必须加分号)
 
 <!-- /code_chunk_output -->
-
-# JS 代码规范
 
 ## 一. 命名规范
 
@@ -252,7 +248,7 @@ function returnItself(o) {
 
 returnItself(() => console.log(1));
 
-;(() => {
+(() => {
   console.log(2);
 })();
 ```

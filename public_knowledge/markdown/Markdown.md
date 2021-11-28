@@ -1,16 +1,5 @@
----
-title: Markdown知识
-date: 2020-12-10 11:22:34
-author: 杜森垚
-keywords: "Markdown markdown-preview-enhanced"
-categories: Markdown
-mathjax: false
-tags:
-  - markdown-preview-enhanced
-  - Markdown
----
+# Markdown
 
-<!-- 文件最上方以 --- 分隔的区域是Front-matter，用于指定个别文件的变量 -->
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
@@ -48,8 +37,6 @@ tags:
       - [导入外部文件](#导入外部文件)
 
 <!-- /code_chunk_output -->
-
-# Markdown
 
 ## 一.Markdown 基本要素
 
