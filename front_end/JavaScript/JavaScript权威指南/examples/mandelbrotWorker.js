@@ -1,6 +1,6 @@
 // 示例15-14：用于计算曼德布洛特集合区域的工作线程代码
 // 这是一个简单的工作线程，它从父线程接收消息执行消息所描述的计算，然后再把计算结果发送回父线程
-onmessage = function (message) {
+onmessage = message => {
   // 首先，分拆接收到的消息
   // - tile是具有 width 和 height 属性的对象，表示需要计算其中包含的曼德布洛特集合成员的像素矩形的大小
   // - (x0, y0) 是复平面上的一个点，对应切片（tile）的左上角位置的像素
@@ -30,10 +30,10 @@ onmessage = function (message) {
       //   z(0) = c
       //   z(n+1) = z(n)^2 + c
       // 如果 |z(n)|（z(n)的大小）大于2，则像素不属于集合，在 ∩ 次迭代后停止
-      let n; // 目前为止迭代的次数
+      let n = 0; // 目前为止迭代的次数
       let r = x;
       let i = y; // 从把 z(0) 设置为 c 开始
-      for (n = 0; n < maxIterations; n++) {
+      for (n; n < maxIterations; n++) {
         let rr = r * r;
         let ii = i * i; // 计算 z(n) 两部分的平方
         if (rr + ii > 4) {
@@ -43,7 +43,7 @@ onmessage = function (message) {
         i = 2 * r * i + y; // 计算 z(n+1) 的虚数部分
         r = rr - ii + x; // 及 z(n+1) 的实数部分
       }
-      iterations[index++] = n; // 记录每个像素的迭代次数
+      iterations[index + 1] = n; // 记录每个像素的迭代次数
       if (n > max) max = n; // 记录目前为目的最大值
       if (n < min) min = n; // 同时记录最小值
     }
