@@ -7405,4 +7405,1054 @@ f(s);
   const t: T = s;
   ```
 
-  此例中，类型 S 能够赋值给类型 T，但是类型 S 不是类型 T 的子类型，因为类型 T 中的属性 y 不能够在类型 S 中找到对应定义。
+  此例中，类型 S 能够赋值给类型 T，但是类型 S 不是类型 T 的子类型，因为类型 T 中的属性 y 不能够在类型 S 中找到对应的属性定义。
+
+### 4.3 类型推断
+
+在 TypeScript 程序中，每一个表达式都具有一种类型，表达式类型的来源有以下两种：
+
+- 类型注解
+- 类型推断
+
+类型注解是最直接地定义表达式类型的方式，而类型推断是指在没使用类型注解的情况下，编译器能够自动地推导出表达式的类型。
+
+在绝大部分场景中，TypeScript 编译器都能够正确地推断出表达式的类型。类型推断在一定程度上简化了代码，避免了在程序中为每一个表达式添加类型注解。
+
+#### 4.3.1 常规类型推断
+
+当程序中声明了一个变量并且给它赋予了初始值，那么编译器能够根据变量的初始值推断出变量的类型。示例如下：
+
+```ts
+let x = 0; // 推断类型为：number
+```
+
+如果声明了一个常量，那么编译器能够推断出更加精确的类型。示例如下：
+
+```ts
+const x = 0; // 推断类型为：数字字面量类型 0
+```
+
+因为常量的值在初始化后不允许修改，因此编译器推断出常量 x 的类型为数字字面量类型 0，它比 number 类型更加精确。
+
+如果声明变量时没有设置初始值，那么编译器将推断出变量的类型为 any 类型：
+
+```ts
+let x; // 推断类型为：any
+```
+
+推断函数返回值的类型是另一个典型的类型推断场景，编译器能够根据函数中的 return 语句来推断出函数的返回值类型：
+
+```ts
+function f() {
+  return 0; // 推断返回值类型为：number
+}
+```
+
+同时，如果将函数的返回值赋值给一个变量，编译器也能够推断出该变量的类型：
+
+```ts
+function f() {
+  return 0; // 推断返回值类型为：number
+}
+let x = f(); // 推断类型为：number
+```
+
+**最佳通用类型**
+在编译器进行类型推断的过程中，有可能推断出多个可能的类型。例如，有如下的数组定义，该数组中既有 number 类型的元素，也有 string 类型的元素。编译器在推断数组的类型时，会参考每一个数组元素的类型。因此，编译器最终推断出的数组类型为联合类型 "number|string"：
+
+```ts
+let x = [0, 'one']; // (number|string)[]
+```
+
+此例中，每一种可能的数组元素类型都会作为类型推断的候选类型。编译器会从所有的候选类型中计算出最佳通用类型作为类型推断的结果类型。此例中，number 类型和 string 类型的最佳通用类型是联合类型 "number|string"，因为这两个类型之间没有子类型关系。
+
+下面的例子能够更好地体现最佳通用类型的计算。此例中，zoo 数组有三个元素，分别为 Dog、Cat 和 Animal 类的实例对象。其中，Dog 类和 Cat 类是 Animal 类的子类。最终，编译器推断出来的 zoo 数组的类型为 "Animal[]"类型。因为 Dog 和 Cat 的类型是 Animal 类型的子类型，因此 Animal 类型是最佳通用类型：
+
+```ts
+class Animal {}
+class Dog extends Animal {}
+class Cat extends Animal {}
+const zoo = [new Dog(), new Cat(), new Animal()]; // 推断类型为：Animal[]
+```
+
+但如果 zoo 数组中只包含了 Dog 和 Cat 类的实例对象，而没有包含 Animal 类的实例对象，那么推断出来的 zoo 数组类型为联合类型 "(Dog|Cat)]"。这是因为最佳通用类型算法只会从候选类型中做出选择。如果数组中没有 Animal 类型的元素，那么候选类型中只有 Dog 类型和 Cat 类型，最佳通用类型算法只会从这两种类型中做出选择：
+
+```ts
+class Animal {}
+class Dog extends Animal {}
+class Cat extends Animal {}
+const zoo = [new Dog(), new Cat()]; // 推断类型为：(Dog|Cat)[]
+```
+
+如果编译器自动推断出来的类型不是想要的类型，那么可以给表达式添加明确的类型注解或者使用类型断言：
+
+```ts
+class Animal {}
+class Dog extends Animal {}
+class Cat extends Animal {}
+const zoo0: AnimalD = [new Dog(), new Cat()];
+const zoo1 = [new Dog(), new Cat()] as Animal[];
+```
+
+#### 4.3.2 按上下文归类
+
+在常规类型推断中，编译器能够在变量声明语句中由变量的初始值类型推断出变量的类型。这是一种由右向左或者自下而上的类型推断。
+
+反过来，编译器还能够由变量的类型来推断出变量初始值的类型。这是一种由左向右或者自上而下的类型推断。这种类型推断被称作**按上下文归类**。
+
+下例中，AddFunction 接口带有调用签名，因此它表示函数类型。声明了 AddFunction 类型的常量 add，其类型是使用类型注解明确定义的。常量 add 的初始值是箭头函数 "(x,y)=>x+y"。编译器能够由 AddFunction 类型推断出箭头函数中参数 x 和 y 的类型以及其返回值类型均为 number 类型：
+
+```ts
+interface AddFunction {
+  (a: number, b: number): number;
+}
+const add: AddFunction = (x, y) => x + y;
+```
+
+在常规类型推断一节中，介绍了使用类型注解来 “修正” Animal 数组的类型推断结果，这正是按上下文归类的应用：
+
+```ts
+class Animal {}
+class Dog extends Animal {}
+class Cat extends Animal {}
+const zoo: Animal[] = [new Dog(), new Cat()];
+```
+
+当给常量 zoo 添加了类型注解 "Animal[]" 后，由于按上下文归类的作用，Animal 类型也成了类型推断的候选类型之一。因此，由 Animal 类型、Dog 类型和 Cat 类型计算得出的最佳通用类型为 Animal 类型。
+
+### 4.4 类型放宽
+
+在编译器进行类型推断的过程中，有时会将放宽的源类型作为推断的结果类型。例如，源类型为数字字面量类型 0，放宽后的类型为原始类型 number：
+
+```ts
+let zero = 0; // 推断出的类型为放宽的 number 类型
+```
+
+类型放宽是 TypeScript 语言的内部行为，它并非是提供给开发者的某种功能特性，因此只需了解即可。TypeScript 语言内部的类型放宽分为以下两类：
+
+- 常规类型放宽
+- 字面量类型放宽
+
+#### 4.4.1 常规类型放宽
+
+常规类型放宽相对简单，是指编译器在进行类型推断时会将 undefined 类型和 null 类型放宽为 any 类型。常规类型放宽是在 TypeScript 语言早期版本中就已经存在的行为。在 TypeScript 2.0 版本之前，undefined 类型和 nul 类型是内部类型，没有开放给开发者使用，因此编译器需要将它们放宽为 any 类型来方便用户使用以及在面板中显示相关类型信息。但自从 TypeScript2.0 引入了 `--strictNullChecks` 模式后，常规类型放宽的规则也有所变化。
+
+##### 4.4.1.1 非严格类型检查模式
+
+在非严格类型检查模式下，即没有启用 `--strictNullChecks` 编译选项时，undefined 类型和 null 类型会被放宽为 any 类型。可以在 tsconfig.json 配置文件中禁用严格类型检查模式，如下所示：
+
+```json
+{
+  "compilerOptions": {
+    "strictNullChecks": false
+  }
+}
+```
+
+下例中，所有变量的推断类型均为 any 类型。需要理解的是即便在非严格类型检查模式下，undefined 值的类型依然是 undefined 类型（null 值同理），只是编译器在类型推断时将 undefined 类型放宽为了 any 类型：
+
+```ts
+let a = undefined; // any
+const b = undefined; //any
+
+let c = null; // any
+const d = null; // any
+```
+
+##### 4.4.1.2 严格类型检查模式
+
+在启用了 `--strictNullChecks` 编译选项时，编译器不再放宽 undefined 类型和 null 类型，它们将保持各自的类型。可以在 tsconfig.json 配置文件中启用严格类型检查模式，如下所示：
+
+```json
+{
+  "compilerOptions": {
+    "strictNullChecks": true
+  }
+}
+```
+
+下例中，变量 a 和 b 推断出的类型为 undefined 类型，变量 c 和 d 推断出的类型为 null 类型，编译器不会将它们的类型放宽：
+
+```ts
+let a = undefined; // undefined
+const b = undefined; // undefined
+
+let c = null; // null
+const d = null; // null
+```
+
+#### 4.4.2 字面量类型放宽
+
+字面量类型放宽是指编译器在进行类型推断时会将字面量类型放宽为基础原始类型，例如将数字字面量类型 0 放宽为原始类型 number。但实际上，字面量类型放宽远不是像描述的这样简单。
+
+##### 4.4.2.1 细分字面量类型
+
+对于每一个字面量类型可以再将其细分为两种：
+
+- 可放宽的字面量类型
+- 不可放宽的字面量类型
+
+每个字面量类型都通过一些内部标识来表示其是否为可放宽的字面量类型。在一个字面量类型被创建时，就已经确定了其是否为可放宽的字面量类型，并且不能再改变。判断是否为可放宽的字面量类型的规则如下：
+
+- 若字面量类型源自类型，那么它是不可放宽的字面量类型。
+- 若字面量类型源自表达式，那么它是可放宽的字面量类型。
+
+在下例中，常量 zero 的类型为数字字面量类型 0，该类型是通过类型注解定义的，即源自类型。因此，类型注解中的数字字面量类型 0 是不可放宽的字面量类型：
+
+```ts
+const zero: 0 = 0; // 类型为：数字字面量类型 0
+```
+
+下例中，赋值运算符右侧为数字字面量 0，它是一个表达式并且其类型为数字字面量类型 0。因为该数字字面量类型 0 源自表达式，所以它是可放宽的字面量类型：
+
+```ts
+const zero = 0; // 类型为：数字字面量类型 0
+```
+
+##### 4.4.2.2 放宽的字面量类型
+
+放宽的字面量类型指的是对字面量类型执行放宽操作后得到的结果类型。若字面量类型是不可放宽的字面量类型，那么对其执行放宽操作的结果不变，仍为字面量类型本身；若字面量类型是可放宽的字面量类型，那么对其执行放宽操作的结果为相应的基础原始类型。
+
+##### 4.4.2.3 字面量类型放宽的场景
+
+当编译器进行类型推断时，如果当前表达式的值是可变的，那么将推断出放宽的字面量类型；反之，如果当前表达式的值是不可变的，那么不放宽字面量类型。
+
+在 var 声明和 let 声明中，若给变量赋予了初始值，那么推断出的变量类型为放宽的初始值类型。下例中，变量 a 和变量 b 的初始值类型为可放宽的数字字面量类型 0。因为变量 a 和变量 b 的值是可变的，所以两者的推断类型为放宽的字面量类型，即 number 类型：
+
+```ts
+var a = 0; // 推断的类型为：number
+let b = 0; // 推断的类型为：number
+```
+
+在 const 声明中，由于常量的值一经设置就不允许再修改，因此在推断 const 声明的类型时不会执行类型放宽操作。下例中，编译器在推断常量 a 的类型时不会执行类型放宽操作，而是直接使用初始值的类型作为常量 a 的类型：
+
+```ts
+const a = 0; // 推断的类型为：可放宽的数字字面量类型 0
+```
+
+数组字面量中的元素是可以修改的，因此数组字面量元素的推断类型为放宽的字面量类型。下例中，foo 数组元素 0 的推断类型为放宽的数字字面量类型，即 number 类型。因此，foo 数组的类型为 "number[]"。同理，bar 数组元素的推断类型为联合类型 "string|number"。因此，bar 数组的推断类型为 "(string|number)[]" 类型。
+
+```ts
+const foo = [0]; // 推断的类型为：number[]
+const bar = ['foo', 0]; // 推断的类型为：(string|number)[]
+```
+
+在对象字面量中，属性值是可变的，因此对象字面量属性的推断类型为放宽的字面量类型。下例中，常量 foo 的值是对象字面量，属性 a 的推断类型为放宽的数字字面量类型，即 number 类型；属性 b 的推断类型为放宽的字符串字面量类型，即 string 类型。最终，推断的常量 foo 的类型为 "{a:number;b:string;}" 类型：
+
+```ts
+const foo = {
+  a: 0, // 推断的类型为：number
+  b: 'b' // 推断的类型为：string
+};
+```
+
+在类的定义中，若非只读属性具有初始值，那么推断出的属性类型为初始值的放宽的字面量类型。下例中，Foo 类的属性 a 是非只读属性，并且带有初始值 0。因此，属性 a 的推断类型为放宽的数字字面量类型，即 number 类型。属性 b 是只读属性，在推断类型时不执行放宽操作，因此推断类型为其初始值的类型，即可放宽的数字字面量类型 0：
+
+```ts
+class Foo {
+  a = 0; // 推断的类型为：number
+  readonly b = 0; // 推断的类型为：0
+}
+```
+
+在函数或方法的参数列表中，若形式参数定义了默认值，那么推断出的参数类型为默认值的放宽的字面量类型。下例中，foo 函数和 baz 方法都定义了一个形式参数 x 并且默认值为 0。因此参数 x 的推断类型为放宽的数字字面量类型，即 number 类型：
+
+```ts
+function foo(x = 0) {
+  // 推断的类型为：number
+}
+const bar = {
+  baz(x = 0) {
+    // 推断的类型为：number
+  }
+};
+```
+
+在函数或方法中，若返回值的类型为字面量类型（不包含字面量类型的联合类型），那么推断的返回值类型为放宽的字面量类型。下例中，foo 函数返回值的类型为数字字面量类型 0。因此，foo 函数的推断返回值类型为放宽的数字字面量类型，即 number 类型。bar 函数的返回值类型为字面量类型联合类型 “0|1”。因此，bar 函数的推断返回值类型不进行放宽操作，仍为字面量类型联合类型 “0|1”：
+
+```ts
+function foo() {
+  return 0; // 推断的返回值类型为：number
+}
+function bar() {
+  return Math.random() < 0.5 ? 0 : 1; // 推断的返回值类型为：0|1
+}
+```
+
+##### 4.4.2.4 全新的字面量类型
+
+每个字面量类型都有一个内置属性表示其是否可以被放宽。在 TypeScript 语言的内部实现中，将源自表达式的字面量类型标记为全新的（fresh）字面量类型，只有全新的字面量类型才是可放宽的字面量类型。
+
+当全新的字面量类型出现在代码中可变值的位置时才会执行类型放宽操作：
+
+```ts
+const a = 0; // 推断的类型为：0
+// 常量 a 的类型为全新的可放宽的数字字面量类型 0 并且 let 声明属于可变的值。
+// 因此，推断变量 b 的类型时将进行字面量类型放宽操作，变量 b 的推断类型为放宽的全新的可放宽数字字面量类型 0，即 number 类型。
+let b = a; // 推断的类型为：number
+```
+
+下面再来看另一个例子，如下所示：
+
+```ts
+const c: 0 = 0; // 类型为：0
+// 虽然let声明属于可变位置，但是常量c的类型为非全新的字面量类型
+// 因此，推断变量 d 的类型时不进行字面量类型放宽操作，变量 d 的推断类型与常量 c 的类型相同，均为非全新的不可放宽的数字字面量类型 0。
+let d = c; // 推断的类型为：0
+```
+
+如果在代码中可变的位置上使用了 "as const" 断言，那么可变位置将变成不可变位置，同时也不再进行字面量类型放宽操作：
+
+```ts
+let a = 0; // 推断的类型为：number
+let b = 0 as const; // 推断的类型为：0
+```
+
+### 4.5 命名空间
+
+在 ES6 之前，JS 语言没有内置的模块支持。在 JS 程序中，通常使用 “命名空间” 来组织并隔离代码以免产生命名冲突等问题。最为流行的实现命名空间的方法是使用立即执行的函数表达式。这是因为立即执行的函数表达式能够创建出一个新的作用域并且不会对外层作用域产生影响。
+
+下例中，使用立即执行的函数表达式定义了两个命名空间，在这两个命名空间中定义的变量 x 不会相互冲突：
+
+```ts
+(function () {
+  const x = 0;
+})();
+(function () {
+  const x = { message: 'hello world' };
+})();
+```
+
+TypeScript 利用了这个经典的命名空间实现方式并提供了声明命名空间的简便语法。
+
+#### 4.5.1 命名空间声明
+
+命名空间通过 `namespace` 关键字来声明，它相当于一种语法糖：
+
+```ts
+namespace Utils {
+  function isString(value: any) {
+    return typeof value === 'string';
+  }
+}
+```
+
+此例中，声明了一个名为 Utils 的命名空间。这段 TypeScript 代码在编译后将生成如下 JS 代码：
+
+```ts
+// output.js
+'use strict';
+var Utils;
+(function (Utils) {
+  function isString(value) {
+    return typeof value === 'string';
+  }
+})(Utils || (Utils = {}));
+```
+
+能够看到命名空间被转换成了立即执行的函数表达式。在定义命名空间的名字时允许使用以点符号 `.` 分隔的名字，这与其他编程语言中的命名空间声明类似：
+
+```ts
+namespace System.Utils {
+  function isString(value: any) {
+    return typeof value === 'string';
+  }
+}
+```
+
+此例中定义的命名空间相当于两个嵌套的命名空间声明，它等同于如下的代码：
+
+```ts
+namespace System {
+  export namespace Utils {
+    function isString(value: any) {
+      return typeof value === 'string';
+    }
+  }
+}
+```
+
+在命名空间内部可以使用绝大多数语言功能，如变量声明、函数声明、接口声明和命名空间声明等。
+
+#### 4.5.2 导出命名空间内的声明
+
+默认情况下，在命名空间内部的声明只允许在该命名空间内部使用，在命名空间之外访问命名空间内部的声明会产生错误：
+
+```ts
+namespace Utils {
+  function isString(value: any) {
+    return typeof value === 'string';
+  }
+  isString('yes'); // 正确
+}
+
+Utils.isString('no'); // 编译错误！Utils 中不存在 isString 属性
+```
+
+如果查看由此例中的 TypeScript 代码生成的 JS 代码，那么就能够明白为什么这段代码会产生错误：
+
+```ts
+// output.js
+var Utils;
+(function (Utils) {
+  function isString(value) {
+    return typeof value === 'string';
+  }
+  isString('yes');
+})(Utils || (Utils = {}));
+Utils.isString('no'); // 运行错误
+```
+
+通过分析生成的 JS 代码能够发现 isString 仅存在于立即执行的函数表达式的内部作用域，在外部作用域不允许访问内部作用域中的声明。
+
+如果想要让命名空间内部的某个声明在命名空间外部也能够使用，则需要使用导出声明语句明确地导出该声明。导出命名空间内的声明需要使用 `export` 关键字：
+
+```ts
+namespace Utils {
+  export function isString(value: any) {
+    return typeof value === 'string';
+  }
+  isString('yes'); // 正确
+}
+// 正确
+Utils.isString('yes');
+```
+
+此例中，使用 `export` 关键字导出了 isString 函数声明。因此，在 Utils 外部也可以使用 isString 函数。此例中的代码生成的 JS 代码如下所示：
+
+```ts
+// output.js
+var Utils;
+(function (Utils) {
+  function isString(value) {
+    return typeof value === 'string';
+  }
+  Utils.isString = isString;
+  isString('yes');
+})(Utils || (Utils = {}));
+Utils.isString('yes');
+```
+
+在访问导出的命名空间声明时，需要使用命名空间名和导出声明名并用点符号连接，这类似于对象属性访问的语法。
+
+#### 4.5.3 别名导入声明
+
+可以使用 `import` 语句为命名空间的导出声明起一个别名。当命名空间名字比较长时，使用别名能够有效地简化代码：
+
+```ts
+namespace Utils {
+  export function isString(value: any) {
+    return typeof value === 'string';
+  }
+}
+namespace App {
+  import isString = Utils.isString;
+  isString('yes');
+  Utils.isString('yes');
+}
+```
+
+别名导入本质上 “相当于” 新声明了一个变量并将导出声明赋值给该变量。例如，上例中的代码编译后生成的 JS 代码如下所示：
+
+```ts
+'use strict';
+var Utils;
+(function (Utils) {
+  function isString(value) {
+    return typeof value === 'string';
+  }
+  Utils.isString = isString;
+})(Utils || (Utils = {}));
+var App;
+(function (App) {
+  var isString = Utils.isString; // 别名导入声明
+  isString('yes');
+  Utils.isString('yes');
+})(App || (App = {}));
+```
+
+需要注意的是，别名导入只是相当于新声明了一个变量而已，实际上不完全是这样的，因为别名导入对类型也有效：
+
+```ts
+namespace Utils {
+  export interface Point {
+    x: number;
+    y: number;
+  }
+}
+namespace App {
+  import Point = Utils.Point;
+  const p: Point = { x: 0, y: 0 };
+}
+```
+
+此例中的代码编译后生成的 JS 代码如下所示：
+
+```ts
+// output.js
+'use strict';
+var App;
+(function (App) {
+  const p = { x: 0, y: 0 };
+})(App || (App = {}));
+```
+
+#### 4.5.4 在多文件中使用命名空间
+
+在实际工程中，代码不可能都放在同一个文件中，一定会拆分到不同的源代码文件。也可以将同一个命名空间声明拆分到不同的文件中，TypeScript 最终会将同名的命名空间声明合并在一起。例如，在如下两个文件中声明了同名的命名空间：
+
+```ts
+// a.ts
+namespace Utils {
+  export function isString(value: any) {
+    return typeof value === 'string';
+  }
+  export interface Point {
+    x: number;
+    y: number;
+  }
+}
+```
+
+```ts
+// b.ts
+namespace Utils {
+  export function isNumber(value: any) {
+    return typeof value === 'number';
+  }
+}
+```
+
+最终，合并后的 Utils 命名空间中存在三个导出声明 isString、isNumber 和 Point。
+
+##### 4.5.4.1 文件间的依赖
+
+当将命名空间拆分到不同的文件后，需要注意文件的加载顺序，因为文件之间可能存在依赖关系。例如，有两个拆分后的文件 a.ts 和 b.ts。
+
+```ts
+// a.ts
+namespace App {
+  export function isString(value: any) {
+    return typeof value === 'string';
+  }
+}
+```
+
+```ts
+// b.ts
+namespace App {
+  const a = isString('foo');
+}
+```
+
+这两个文件中，"b.ts"依赖于"a.ts"。因为 "b.ts" 中调用了 "a.ts" 中定义的方法。需要保证 "a.ts" 先于 "b.ts" 被加载，否则在执行 “b.ts” 中的代码时将产生 isString 未定义的错误。
+
+定义文件间的依赖关系有多种方式，本节将介绍以下两种：
+
+- 使用 tsconfig.json 文件
+- 使用三斜线指令
+
+##### 4.5.4.2 tsconfig.json
+
+通过 "tsconfig.json" 配置文件能够定义文件间的加载顺序。例如，通过如下的配置文件能够定义 "a.ts" 先于 "b.ts" 被加载，这里主要配置了 `outFile` 和 `files` 两个选项：
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ESNext",
+    "outFile": "main.js"
+  },
+  "files": ["a.ts ", "b.ts"]
+}
+```
+
+首先，outFile 选项指定了编译后输出的文件名。在指定了该选项后，编译后的 "a.ts" 和 "b.ts" 文件将被合并成一个 "main.js" 文件。其次，files 选项指定了工程中包含的所有源文件。files 文件列表是有序列表，正是通过它来保证 "a.ts" 先于 "b.ts" 被加载。最终编译后输出的 "main.js" 内容如下：
+
+```ts
+'use strict';
+//a.ts
+var App;
+(function (App) {
+  function isString(value) {
+    return typeof value === 'string';
+  }
+  App.isString = isString;
+})(App || (App = {}));
+// b.ts
+var App;
+(function (App) {
+  const a = App.isString('foo');
+})(App || (App = {}));
+```
+
+关于 tsconfig.json 的详细介绍请参考 8.3 节。<!--TODO-->
+
+##### 4.5.4.3 三斜线指令
+
+三斜线指令是 TypeScript 早期版本中就支持的一个特性，可以通过它来**定义文件间的依赖**。形式如下所示：
+
+```ts
+///<reference path="a.ts"/>
+```
+
+此例中的三斜线指令声明了对 "a.ts" 文件的依赖。
+
+可以在 "b.ts" 中使用三斜线指令来声明对 "a.ts" 文件的依赖。
+
+```ts
+// a.ts
+namespace App {
+  export function isString(value: any) {
+    return typeof value === 'string';
+  }
+}
+```
+
+```ts
+// b.ts
+///<reference path="a.ts"/>
+namespace App {
+  const a = isString('foo');
+}
+```
+
+在使用了三斜线指令后，编译器能够识别出 “b.ts” 依赖于 "a.ts"。在编译 "b.ts" 之前，编译器会确保先编译 "a.ts"。就算在 tsconfig.json 配置文件的 files 选项中将 "b.ts" 放在了 "a.ts" 之前，编译器也能够识别出正确的依赖顺序。甚至都不需要在 files 选项中包含 "a.ts" 文件，只需要包含 "b.ts" 即可。因为在编译 "b.ts" 时，编译器将保证依赖的文件会一同被编译。
+
+### 4.6 模块
+
+模块化编程是一种软件设计方法，它强调将程序按照功能划分为独立可交互的模块。一个模块是一段可重用的代码，它将功能的实现细节封装在模块内部。模块也是一种组织代码的方式。一个模块可以声明对其他模块的依赖，且模块之间只能通过模块的公共 API 进行交互。在新的工程或代码中，应该优先使用模块来组织代码，因为**模块提供了更好的封装性和可重用性**。
+
+#### 4.6.1 模块简史
+
+自 1996 年 JS 诞生到 2015 年 ECMAScript 2015 发布，在将近 20 年的时间里 JS 语言始终缺少原生的模块功能。在这 20 年间，社区的开发者们设计了多种模块系统来帮助进行 JS 模块化编程。其中较为知名的模块系统有以下几种：
+
+- CommonJS 模块
+- AMD 模块
+- UMD 模块
+
+##### 4.6.1.1 CommonJS
+
+CommonJS 是一个主要用于服务器端 JS 程序的模块系统。CommonJS 使用 `require` 语句来声明对其他模块的依赖，同时使用 `exports` 语句来导出当前模块内的声明。CommonJS 的典型应用场景是在 Node.js 程序中。在 Node.js 中，每一个文件都会被视为一个模块。例如，有如下目录结构的工程：
+
+C:\app
+|--index.js
+`--utils.js
+
+此例中，"utils.js" 和 "index.js" 是两个 CommonJS 模块文件。其中，"index.js" 模块文件声明了对 "utils.js" 模块文件的依赖：
+
+```ts
+// utils.js
+exports.add = function (x, y) {
+  return x + y;
+};
+```
+
+```ts
+// index.js
+const utils = require('./utils');
+const total = utils.add(1, 2);
+console.log(total);
+```
+
+##### 4.6.1.2 AMD
+
+CommonJS 模块系统在服务器端 JS 程序中取得了成功，但无法给浏览器端 JS 程序带来帮助。主要原因有以下两点：
+
+- 浏览器环境中的 JS 引擎不支持 CommonJS 模块，因此无法直接运行使用了 CommonJS 模块的代码。
+
+- CommonJS 模块采用同步的方式加载模块文件，这种加载方式不适用于浏览器环境。因为在浏览器中同步地加载模块文件会阻塞用户操作，从而带来不好的用户体验。
+
+基于以上原因，CommonJS 的设计者又进一步设计了适用于浏览器环境的 AMD 模块系统。AMD 是 "Asynchronous Module Definition" 的缩写，表示异步模块定义。AMD 模块系统不是将一个文件作为一个模块，而是使用特殊的 `define` 函数来注册一个模块。因此，在一个文件中允许同时定义多个模块。AMD 模块系统中也提供了 `require` 函数用来声明对其他模块的依赖，同时还提供了 `exports` 语句用来导出当前模块内的声明。
+
+例如，有如下目录结构的工程：
+
+C:\app
+|--index.js
+`--utils.js
+
+```js
+// utils.js
+define(['require', 'exports'], function (require, exports) {
+  function add(x, y) {
+    return x + y;
+  }
+  exports.add = add;
+});
+```
+
+```js
+// index.js
+define(['require', 'exports', './utils'], function (require, exports, utils) {
+  var total = utils.add(1, 2);
+  console.log(total);
+});
+```
+
+##### 4.6.1.3 UMD
+
+虽然 CommonJS 模块和 AMD 模块有着紧密的内在联系和相似的定义方式，但是两者不能互换使用。CommonJS 模块不能在浏览器中使用，AMD 模块也不能在 Node.js 中使用。如果一个功能模块既要在浏览器中使用也要在 Node.js 环境中使用，就需要分别使用 CommonJS 模块和 AMD 模块的格式编写两次。
+
+UMD 模块的出现解决了这个问题。UMD 是 "Universal Module Definition" 的缩写，表示通用模块定义。一个 UMD 模块既可以在浏览器中使用，也可以在 Node.js 中使用。UMD 模块是基于 AMD 模块的定义，并且针对 CommonJS 模块定义进行了适配。因此，编写 UMD 模块会稍显复杂。
+
+例如，有如下目录结构的工程：
+
+C:\app
+--index.js
+`--utils.js
+
+```ts
+// utils.js
+(function (factory) {
+  if ((typeof module === 'object') & (typeof module.exports === 'object')) {
+    var v = factory(require, exports);
+    if (v !== undefined) module.exports = V;
+  } else if (typeof define === 'function' && define.amd) {
+    define(['require', 'exports'], factory);
+  }
+})(function (require, exports) {
+  function add(x, y) {
+    return x + y;
+  }
+  exports.add = add;
+});
+```
+
+```ts
+// index.js
+(function (factory) {
+  if (typeof module === 'object' && typeof module.exports === 'object') {
+    var v = factory(require, exports);
+    if (v !== undefined) module.exports = v;
+  } else if (typeof define === 'function' && define.amd) {
+    define(['require', 'exports', '!/utils'], factory);
+  }
+})(function (require, exports) {
+  var utils_1 = require('./utils');
+  var total = utils_1.add(1, 2);
+  console.log(total);
+});
+```
+
+此例中，在 "utils.js" 和 "index.js" 文件中分别定义了两个 UMD 模块。其中，"index.js" 文件中的模块文件声明了对 "utils.js" 文件中的模块的依赖。
+
+##### 4.6.1.4 ESM
+
+在经过了将近 10 年的标准化设计后，JS 语言的官方模块标准终于确定并随着 ECMAScript 2015 一同发布。它就是 ECMAScript 模块，简称为 ES 模块或 ESM。ECMAScript 模块是正式的语言内置模块标准，而前面介绍的 CommonJS、AMD 等都属于非官方模块标准。在未来，标准的 ECMAScript 模块将能够在任何 JS 运行环境中使用，例如浏览器环境和服务器端环境等。实际上，在最新版本的 Chrome、Firefox 等浏览器上以及 Node.js 环境中已经能够支持 ECMAScript 模块。ECMAScript 模块使用 `import` 和 `export` 等关键字来定义。
+
+例如，有如下目录结构的工程：
+
+C:\app
+|--index.js
+`--utils.js
+
+```js
+// utils.js
+export function add(x: number, y: number) {
+  return x + y;
+}
+```
+
+```js
+// index.js
+ import { add } from ' /utils;
+ const total = add(1,2);
+```
+
+#### 4.6.2 ECMAScript 模块
+
+ECMAScript 模块是 JS 语言的标准模块，因此 TypeScript 也支持 ECMAScript 模块。
+
+每个模块都拥有独立的模块作用域，模块中的代码在其独立的作用域内运行，而不会影响模块外的作用域（有副作用的模块除外，后文将详细介绍）。模块通过 `import` 语句来声明对其他模块的依赖；同时，通过 `export` 语句将模块内的声明公开给其他模块使用。
+
+模块不是使用类似于 module 的某个关键字来定义，而是以文件为单位。一个模块对应一个文件，同时一个文件也只能表示一个模块，两者是一对一的关系。若一个 TypeScript 文件中带有顶层的 `import` 或 `export` 语句，那么该文件就是一个模块，术语为 "Module"。若一个 TypeScript 文件中既不包含 import 语句，也不包含 export 语句，那么该文件称作脚本，术语为 "Script"。脚本中的代码全部是全局代码，它直接存在于全局作用域中。因此，模块中的代码能够访问脚本中的代码，因为在模块作用域中能够访问外层的全局作用域。
+
+#### 4.6.3 模块导出
+
+默认情况下，在模块内部的声明不允许在模块外部访问。若想将模块内部的声明开放给模块外部访问，则需要使用模块导出语句将模块内的声明导出。模块导出语句包含以下两类：
+
+- **命名模块导出**
+
+  命名模块导出使用自定义的标识符名来区分导出声明。在一个模块中，可以同时存在多个命名模块导出。在常规的声明语句中添加 `export` 关键字，即可定义命名模块导出。
+
+  进行命名模块导出时，一次只能导出一个声明，而命名模块导出列表能够一次性导出多个声明。命名模块导出列表使用 `export` 关键字和一对大括号将所有导出的声明名称包含在内：
+
+  ```ts
+  function f0() {}
+  function f1() {}
+  export { f0, f1 };
+  ```
+
+  在一个模块中，可以同时存在多个命名模块导出列表语句：
+
+  ```ts
+  const a = 0;
+  const b = 0;
+  export { a, b };
+  function f0();
+  function f1();
+  export { f0, f1 };
+  ```
+
+  命名模块导出语句和命名模块导出列表语句也可以同时使用：
+
+  ```ts
+  export const a = 0;
+  function f0() {}
+  function f1() {}
+  export { f0, f1 };
+  ```
+
+- **默认模块导出**
+
+为了与现有的 CommonJS 模块和 AMD 模块兼容，ECMAScript 模块提供了默认模块导出的功能。对于一个 CommonJS 模块或 AMD 模块来讲，模块中的 `exports` 对象就相当于默认模块导出。
+
+默认模块导出是一种特殊形式的模块导出，它等同于名字为 "default" 的命名模块导出。因此，一个模块中只允许存在一个默认模块导出。默认模块导出使用 `export default` 关键字来定义。
+
+```ts
+export default function f()
+// 默认导出类声明
+export default class C
+```
+
+因为默认模块导出不依赖于声明的名字而是统一使用 "default" 作为导出名，因此默认模块导出可以导出匿名的函数和类等。
+
+```ts
+// 默认导出匿名函数
+export default function ();
+// 默认导出匿名类
+export default class {}
+// 默认导出任意表达式的值
+export default 0;
+```
+
+由于默认模块导出相当于名为 "default" 的命名模块导出，因此，默认模块导出也可以写为如下形式：
+
+```ts
+function f() {}
+// as 关键字的作用是重命名模块导出，它将 f 重命名为 default
+export { f as default };
+// 等同于
+export default function f() {}
+```
+
+##### 4.6.3.4 聚合模块
+
+聚合模块是指将其他模块的模块导出作为当前模块的模块导出。聚合模块使用 `export ... from ...` 语法并包含以下形式：
+
+- 从模块 mod 中选择部分模块导出作为当前模块的模块导出：
+
+  ```ts
+  export { a, b, c } from 'mod';
+  ```
+
+- 从模块 mod 中选择默认模块导出作为当前模块的默认模块导出。默认模块导出相当于名为 "default" 的命名模块导出：
+
+  ```ts
+  export { default } from 'mod';
+  ```
+
+- 从模块 mod 中选择某个非默认模块导出作为当前模块的默认模块导出。默认模块导出相当于名为 “default” 的命名模块导出：
+
+  ```ts
+  export { a as default } from ' mod';
+  ```
+
+- 从模块 mod 中选择所有非默认模块导出作为当前模块的模块导出：
+
+  ```ts
+  export * from 'mod';
+  ```
+
+- 从模块 mod 中选择所有非默认模块导出，并以 ns 为名作为当前模块的模块导出：
+
+  ```ts
+  export * as ns from 'mod';
+  ```
+
+> **注意**：在聚合模块时不会引入任何本地声明。例如，下例从模块 mod 中重新导出了声明 a，但是在当前模块中是不允许使用声明 a 的，因为没有导入声明 a：
+
+```ts
+export { a } from 'mod';
+console.log(a); // 编译错误！找不到名字"a"
+```
+
+#### 4.6.4 模块导入
+
+如果想要使用一个模块的导出声明，则需要使用 `import` 语句来导入它。
+
+##### 4.6.4.1 导入命名模块导出
+
+对于一个模块的命名模块导出，可以通过其导出的名称来导入它，具体语法如下所示：
+
+```ts
+import { a, b, c } from 'mod';
+```
+
+在该语法中，`import` 关键字后面的大括号中列出了 mod 模块中的命名模块导出；`from` 关键字的后面是模块名，模块名不包含文件扩展名，如 ".ts"。
+
+例如，有如下目录结构的工程：
+
+C:\app
+|--index.ts
+`--utils.ts
+
+```ts
+// utils.ts
+export let a = 0;
+export let b = 0;
+export let c = 0;
+```
+
+```ts
+// index.ts
+import { a, b } from './utils';
+console.log(a);
+console.log(b);
+```
+
+此例中，在 "index.ts" 模块中导入了 "utils.ts" 模块中的导出变量声明 a 和 b。
+
+##### 4.6.4.2 导入整个模块
+
+可以将整个模块一次性地导入，语法如下所示：
+
+```ts
+import * as ns from ' mod ';
+```
+
+在该语法中，`from` 后面是要导入的模块名，它将模块 mod 中的所有命名模块导出导入到对象 ns 中。例如，有如下目录结构的工程：
+
+C:\app
+|--index.ts
+`--utils.ts
+
+```ts
+// utils.ts
+export let a = 0;
+export let b = 0;
+export let c = 0;
+```
+
+```ts
+// index.ts
+import * as utils from './utils';
+console.log(utils.a);
+console.log(utils.b);
+```
+
+此例中，在 "index.ts" 模块中将 "utils.ts" 模块中的命名模块导出 a 和 b 导入了对象 utils 中，然后通过访问 utils 对象的属性来访问 "utils.ts" 模块的命名模块导出。
+
+##### 4.6.4.3 导入默认模块导出
+
+导入默认模块导出需要使用如下语法：
+
+```ts
+import modDefault from 'mod';
+```
+
+在该语法中，modDefault 可以为任意标识符名，表示导入的默认模块导出在当前模块中所绑定的标识符。在当前模块中，将使用 modDefault 这个名字来访问 mod 模块中的默认模块导出。例如，有如下目录结构的工程：
+
+C:\app
+|--index.ts
+`--utils.ts
+
+```ts
+// utils.ts
+export default function () {
+  console.log(0);
+}
+```
+
+```ts
+// index.ts
+import utils from './utils';
+utils();
+```
+
+此例中，在 "index.ts" 模块中导入了 "utils.ts" 模块中的默认模块导出并将其绑定到标识符 utils。在 "index.ts" 模块中，标识符 utils 表示 "utils.ts" 模块中默认导出的函数声明。
+
+##### 4.6.4.4 空导入
+
+空导入语句不会导入任何模块导出，它只是执行模块内的代码。空导入的用途是 “导入” 模块的副作用。
+
+在计算机科学中，**“副作用” 指的是某个操作会对外部环境产生影响**。例如，有一个获取时间的函数，如果该函数除了会返回当前时间，同时还会修改操作系统的时间设置，那么可以说该函数具有副作用。对于模块来讲，模块有其独立的模块作用域，但是在模块作用域中也能够访问并修改全局作用域中的声明。有些模块从设计上就是用来与全局作用域进行交互的，如监听全局事件或设置某个全局变量等。除此之外，应尽量保持模块与外部环境的隔离，将模块的实现封闭在模块内部，并通过导入和导出语句与模块外部进行交互。空导入的语法如下所示：
+
+```ts
+import 'mod';
+```
+
+例如，有如下目录结构的工程：
+
+C:\app
+|--index.ts
+`--utils.ts
+
+```ts
+// utils.ts
+globalThis.mode = 'dev';
+```
+
+```ts
+// index.ts
+import './utils';
+console.log(globalThis.mode);
+```
+
+此例中，使用空导入语句导入了 "utils.ts" 模块，这会执行 "utils.ts" 文件中的代码并设置全局作用域中 mode 属性的值。因此，在 "index.ts" 模块中能够读取并打印全局作用域中 mode 属性的值。
+
+#### 4.6.5 重命名模块导入和导出
+
+为了解决模块导入和导出的命名冲突问题，ECMAScript 模块允许重命名模块的导入和导出声明。重命名模块导入和导出通过 `as` 关键字来定义。
+
+##### 4.6.5.1 重命名模块导出
+
+重命名模块导出的语法如下所示：
+
+```ts
+export { oldName as newName };
+```
+
+例如，有如下目录结构的工程：
+
+C:\app
+|--index.ts
+`--utils.ts
+
+```ts
+// utils.ts
+const a = 0;
+// 导出了常量声明 a，并将其重命名为 x
+export { a as x };
+```
+
+```ts
+// index.ts
+import { x } from './utils';
+console.log(x);
+```
+
+##### 4.6.5.2 重命名聚合模块
+
+重命名聚合模块的语法如下所示：
+
+```ts
+export { oldName as newName } from 'mod';
+```
+
+在该语法中，将导出 mod 模块内的 oldName 声明，并将其重命名为 newName。例如，有如下目录结构的工程：
+
+C:\app
+|--index.ts
+`--utils.ts
+
+```ts
+// utils.ts
+export const a = 0;
+```
+
+```ts
+// index.ts
+export { a as utilsA } from './utils';
+export const b = 0;
+```
