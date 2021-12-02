@@ -233,7 +233,7 @@ nvm 的默认远端下载地址是 `https://nodejs.org/dist` ，大部分开发�
 
 #### 2.1.2 npm
 
-npm，通常称为 Node.js 包管理器，它的主要功能是管理 Node.js 包，包括安装、卸载、更新、查看、搜索、发布等。可以实现 JS、React、移动开发、Angular、浏览器、JQuery、Cordova、Bower、Gulp、Gunt、Browserify、Docpad 等包或模块管理，是目前开源世界里最大、生态最健全的包管理器。
+npm，通常称为 Node.js 包管理器，它的主要功能是管理 Node.js 包，包括安装、卸载、更新、查看、搜索、发布等。可以实现 JS、React、移动开发、Angular、浏览器、JQuery、Cordova、Bower、Gulp、Grunt、Browserify、Docpad 等包或模块管理，是目前开源世界里最大、生态最健全的包管理器。
 
 npm 是随 Node.js 一起安装的包管理器，能解决 Node.js 在模块管理上的许多问题，常见的应用场景有以下几种。
 

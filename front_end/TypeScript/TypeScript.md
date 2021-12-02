@@ -94,7 +94,7 @@
         - [2.15.1.1 类声明](#21511-类声明)
         - [2.15.1.2 类表达式](#21512-类表达式)
       - [2.15.2 成员变量](#2152-成员变量)
-        - [5.15.2.1 --strictPropertyInitialization](#51521-strictpropertyinitialization)
+        - [2.15.2.1 --strictPropertyInitialization](#21521-strictpropertyinitialization)
         - [2.15.2.2 readonly 属性](#21522-readonly-属性)
       - [2.15.3 成员函数](#2153-成员函数)
       - [2.15.4 成员存取器](#2154-成员存取器)
@@ -139,8 +139,8 @@
         - [3.1.5.3 泛型函数类型推断](#3153-泛型函数类型推断)
         - [3.1.5.4 泛型函数注意事项](#3154-泛型函数注意事项)
       - [3.1.6 泛型接口](#316-泛型接口)
-      - [6.1.7 泛型类型别名](#617-泛型类型别名)
-        - [6.1.7.1 泛型类型别名定义](#6171-泛型类型别名定义)
+      - [3.1.7 泛型类型别名](#317-泛型类型别名)
+        - [3.1.7.1 泛型类型别名定义](#3171-泛型类型别名定义)
         - [3.1.7.2 泛型类型别名示例](#3172-泛型类型别名示例)
       - [3.1.8 泛型类](#318-泛型类)
     - [3.2 局部类型](#32-局部类型)
@@ -176,7 +176,7 @@
         - [3.6.4.1 修饰符拷贝](#3641-修饰符拷贝)
         - [3.6.4.2 改进的修饰符拷贝](#3642-改进的修饰符拷贝)
         - [3.6.4.3 添加和移除修饰符](#3643-添加和移除修饰符)
-        - [6.6.4.4 同态映射对象类型深入](#6644-同态映射对象类型深入)
+        - [3.6.4.4 同态映射对象类型深入](#3644-同态映射对象类型深入)
     - [3.7 条件类型](#37-条件类型)
       - [3.7.1 条件类型的定义](#371-条件类型的定义)
       - [3.7.2 分布式条件类型](#372-分布式条件类型)
@@ -197,7 +197,7 @@
       - [3.8.9 `NonNullable<T>`](#389-nonnullablet)
       - [3.8.10 `Parameters<T>`](#3810-parameterst)
       - [3.8.11 `ConstructorParameters<T>`](#3811-constructorparameterst)
-      - [63.8.12 `ReturnType<T>`](#63812-returntypet)
+      - [3.8.12 `ReturnType<T>`](#3812-returntypet)
       - [3.8.13 `InstanceType<T>`](#3813-instancetypet)
       - [3.8.14 `ThisParameterType<T>`](#3814-thisparametertypet)
       - [3.8.15 `OmitThisParameter<T>`](#3815-omitthisparametert)
@@ -334,6 +334,36 @@
         - [4.9.7.2 使用通配符](#4972-使用通配符)
       - [4.9.8 rootDirs](#498-rootdirs)
       - [4.9.9 导入外部模块声明](#499-导入外部模块声明)
+      - [4.9.10 --traceResolution](#4910-traceresolution)
+    - [4.10 声明合并](#410-声明合并)
+      - [4.10.1 接口声明合并](#4101-接口声明合并)
+      - [4.10.2 枚举声明合并](#4102-枚举声明合并)
+      - [4.10.3 类声明合并](#4103-类声明合并)
+      - [4.10.4 命名空间声明合并](#4104-命名空间声明合并)
+        - [4.10.4.1 命名空间与命名空间合并](#41041-命名空间与命名空间合并)
+        - [4.10.4.2 命名空间与函数合并](#41042-命名空间与函数合并)
+        - [4.10.4.3 命名空间与类合并](#41043-命名空间与类合并)
+        - [4.10.4.4 命名空间与枚举合并](#41044-命名空间与枚举合并)
+      - [4.10.5 扩充模块声明](#4105-扩充模块声明)
+      - [4.10.6 扩充全局声明](#4106-扩充全局声明)
+  - [五. TypeScript 配置管理](#五-typescript-配置管理)
+    - [5.1 编译器](#51-编译器)
+      - [5.1.1 安装编译器](#511-安装编译器)
+      - [5.1.2 编译程序](#512-编译程序)
+        - [5.1.2.1 编译单个文件](#5121-编译单个文件)
+        - [5.1.2.2 编译多个文件](#5122-编译多个文件)
+        - [5.1.2.3 --watch 和 -w](#5123-watch-和-w)
+        - [5.1.2.4 --preserveWatchOutput](#5124-preservewatchoutput)
+    - [5.2 编译选项](#52-编译选项)
+      - [5.2.1 编译选项风格](#521-编译选项风格)
+      - [5.2.2 使用编译选项](#522-使用编译选项)
+      - [5.2.3 严格类型检查](#523-严格类型检查)
+        - [5.2.3.1--strict](#5231-strict)
+        - [5.2.3.2 --noImplicitAny](#5232-noimplicitany)
+        - [5.2.3.3--strictNullChecks](#5233-strictnullchecks)
+        - [5.2.3.4 --strictFunctionTypes](#5234-strictfunctiontypes)
+        - [5.2.3.5 --strictBindCallApply](#5235-strictbindcallapply)
+        - [5.2.3.6 --strictPropertyInitialization](#5236-strictpropertyinitialization)
 
 <!-- /code_chunk_output -->
 
@@ -3236,7 +3266,7 @@ class Circle {
 
 此例中，在构造函数里将 radius 成员变量的值初始化为 1。同时，在构造函数中引用成员变量时需要使用 `this` 关键字。
 
-##### 5.15.2.1 --strictPropertyInitialization
+##### 2.15.2.1 --strictPropertyInitialization
 
 虽然类的成员变量设置初始值是可选的，但是对成员变量进行初始化是一个好的编程实践，它能够有效避免使用未初始化的值而引发的错误。因此，TypeScript 提供了 `--strictPropertyInitialization` 编译选项来帮助严格检査未经初始化的成员变量。当启用了该编译选项时，成员变量必须在声明时进行初始化或者在构造函数中进行初始化，否则将产生编译错误。
 
@@ -4396,11 +4426,11 @@ interface Array<T> {
 
 在 `Array<T>` 泛型接口类型中，类型参数 T 表示数组元素类型。在接口中的方法签名和索引签名中都引用了类型参数 T。例如，reverse 方法会反转数组元素，它的返回值仍为由原数组元素构成的数组。因此，reverse 方法的返回值类型是 “T[]”，即由原数组元素类型构成的数组类型。
 
-#### 6.1.7 泛型类型别名
+#### 3.1.7 泛型类型别名
 
 若类型别名的定义中带有类型参数，那么它是泛型类型别名。
 
-##### 6.1.7.1 泛型类型别名定义
+##### 3.1.7.1 泛型类型别名定义
 
 在泛型类型别名定义中，形式类型参数列表紧随类型别名的名字之后。泛型类型别名定义的语法如下所示：
 
@@ -5542,7 +5572,7 @@ type ReadonlyPartial<T> = {
 };
 ```
 
-##### 6.6.4.4 同态映射对象类型深入
+##### 3.6.4.4 同态映射对象类型深入
 
 同态映射对象类型是一种能够维持对象结构不变的映射对象类型。同态映射对象类型 `{[P in keyof T]: X}` 与对象类型 T 是同态关系，它们包含了完全相同的属性集合。在默认情况下，同态映射对象类型会保留对象类型 T 中属性的修饰符。
 
@@ -6028,7 +6058,7 @@ type T2 = ConstructorParameters<string>; // 编译错误
 type T3 = ConstructorParameters<Function>; // 编译错误
 ```
 
-#### 63.8.12 `ReturnType<T>`
+#### 3.8.12 `ReturnType<T>`
 
 该工具类型能够获取函数类型 T 的返回值类型：
 
@@ -10514,3 +10544,988 @@ f.bind({})('param');
 ```
 
 如果启用了 "--strictBindCallApply" 编译选项，那么编译器将对以上三个内置方法的 this 类型以及参数类型进行严格的类型检查。示例如下：
+
+```ts
+/**
+ * --strictBindCallApply=true
+ */
+function f(this: Window, str: string) {
+  return this.alert(str);
+}
+f.call(document, 'foo'); // 编译错误！'document' 类型的值不能赋值给 window 类型的参数
+f.call(window, false); // 编译错误！false 类型的值不能赋值给 'string' 类型的参数
+f.apply(document, ['foo']); // 编译错误！'document'类型的值不能赋值给 window 类型的参数
+f.apply(window, [false]); // 编译错误！false 类型的值不能赋值给 'string' 类型的参数
+f.bind(document); // 编译错误！'document' 类型的值不能赋值给 window 类型的参数
+
+// 正确的用法
+f.call(window, 'foo');
+f.apply(window, ['foo']);
+f.bind(window);
+```
+
+##### 5.2.3.6 --strictPropertyInitialization
+
+该编译选项用于配置编译器对[类属性](#2152-成员变量)的初始化检查。
+
+如果启用了 `--strictPropertyInitialization` 编译选项，那么当类的属性没有进行初始化时将产生编译错误。类的属性既可以在声明时直接初始化，例如下例中的属性 x，也可以在构造函数中初始化，例如下例中的属性 y。如果一个属性没有使用这两种方式之一进行初始化，那么会产生编译错误，例如下例中的属性 z：
+
+```ts
+/**
+ * --strictPropertyInitialization = true
+ */
+class Point {
+  x: number = 0;
+  y: number;
+  z: number; // 编译错误！属性之没有初始值，也没有在构造函数中初始化
+  constructor() {
+    this.y = 0;
+  }
+}
+```
+
+若没有启用 "--strictPropertyInitialization" 编译选项，那么上例中的代码不会产生编译错误。也就是说，允许未初始化的属性 z 存在。
+
+使用该编译选项时需要注意一种特殊情况，有时候会在构造函数中调用其他方法来初始化类的属性，而不是在构造函数中直接进行初始化。目前，编译器无法识别出这种情况，依旧会认为类的属性没有被初始化，进而产生编译错误。可以使用 `!` 类型断言来解决这个问题：
+
+```ts
+/**
+ * --strictPropertyInitialization = true
+ */
+class Point {
+  x: number; // 编译错误：属性 x 没有初始值，也没有在构造函数中初始化
+  y!: number; // 正确
+  constructor() {
+    this.initX();
+    this.initY();
+  }
+  private initX() {
+    this.x = 0;
+  }
+  private initY() {
+    this.y = 0;
+  }
+}
+```
+
+##### 5.2.3.7 --noImplicitThis
+
+与 `--noImplicitAny` 编译选项类似，在启用了 "--noImplicitThis" 编译选项时，如果程序中的 [this 值](#21213-函数中-this-值的类型)隐式地获得了 any 类型，那么将产生编译错误：
+
+```ts
+/**
+ * --noImplicitThis=true
+ */
+class Rectangle {
+  width: number;
+  height: number;
+
+  constructor(width: number, height: number) {
+    this.width = width;
+    this.height = height;
+  }
+  getAreaFunctionWrong() {
+    return function () {
+      return this.width * this.height; // 编译错误：this 隐式地获得了 any 类型，因为不存在类型注解
+    };
+  }
+  getAreaFunctionCorrect() {
+    return function (this: Rectangle) {
+      return this.width * this.height;
+    };
+  }
+}
+```
+
+##### 5.2.3.8 --alwaysStrict
+
+ECMAScript 5 引入了一个称为严格模式的新特性。在全局 JS 代码或函数代码的开始处添加 "use strict" 指令就能够启用 JS 严格模式。在模块和类中则会始终启用 JS 严格模式。JS 严格模式不是本节所讲的 TypeScript 严格类型检查模式。
+
+在 JS 严格模式下，JS 有着更加严格的语法要求和一些新的语义。例如，implements、interface、let、package、private、protected、public、static 和 yield 都成了保留关键字；在函数的形式参数列表中，不允许出现同名的形式参数等。
+
+若启用了 `--alwaysStrict` 编译选项，则编译器总是以 JS 严格模式的要求来检查代码，并且在编译生成 JS 代码时会在代码的开始位置添加 "use strict" 指令：
+
+```ts
+/**
+ *--alwaysStrict=true
+ */
+function outer() {
+  if (true) {
+    function inner() {
+      // 编译错误！当编译目标为 ES3 或 ES5 时
+      // 在严格模式下的语句块中不允许使用函数声明
+    }
+  }
+}
+```
+
+#### 5.2.4 编译选项列表
+
+随着 TypeScript 版本的更新，提供的编译选项列表也会有所变化。例如，一些编译选项会被废弃，也会有一些新加入的编译选项。推荐到 TypeScript 官方网站上的 ["Compiler Options"][https://www.typescriptlang.org/docs/handbook/compiler-options.html] 页面中了解最新的编译选项列表。
+
+### 5.3 tsconfig.json
+
+在 TypeScript 1.5 版本之前缺少一种内置的方法能够管理 TypeScript 工程的配置。在 TypeScript 1.5 版本中，提供了使用 tsconfig.json 配置文件来管理 TypeScript 工程的功能，从而弥补了这个不足。
+
+tsconfig.json 配置文件能够管理如下种类的工程配置：
+
+- 编译文件列表
+- 编译选项
+- tsconfig.json 配置文件间的继承关系（TypeScript2.1）
+- 工程间的引用关系（TypeScript 3.0）
+
+本节中将介绍如何为 TypeScript 工程添加 tsconfig.json 配置文件，并使用该配置文件来管理工程中的编译文件列表和声明文件列表。在本节的最后将介绍 tsconfig.json 配置文件的继承，它允许重用配置文件，同时也遵循了 DRY（Don't repeat yourself）原则。
+
+#### 5.3.1 使用配置文件
+
+"tsconfig.json" 配置文件是一个 JSON 格式的文件。若一个目录中存在 "tsconfig.json" 文件，那么该目录将被编译器视作 TypeScript 工程的根目录。
+
+假设当前工程目录结构如下：
+
+C:\app
+|--src
+|--|--index.ts
+`--tsconfig.json
+
+此例中，"C:\app" 目录下包含了一个 "tsconfig.json" 文件，因此 "C:\app" 成了一个 TypeScript 工程，并且 "C:\app" 目录将被视为工程的根目录。
+
+在编写好 "tsconfig.json" 配置文件之后，有以下两种方式来使用它：
+
+- 运行 tsc 命令时，让编译器自动搜索"tsconfig.json"配置文件。
+- 运行 tsc 命令时，使用"--project"或"-p"编译选项指定使用的 "tsconfig.json" 配置文件。
+
+> **注意**：如果运行 tsc 命令时指定了输入文件，那么编译器将忽略 tsconfig.json 配置文件，既不会自动搜索配置文件，也不会使用指定的配置文件。
+
+##### 5.3.1.1 自动搜索配置文件
+
+在运行 tsc 命令时，若没有使用 "--project" 或 "-p" 编译选项，那么编译器将在 tsc 命令的运行目录下查找是否存在文件名为 "tsconfig.json" 的配置文件。若存在 "tsconfig.json" 配置文件，则使用该配置文件来编译工程；若不存在，则继续在父级目录下查找 tsconfig.json 配置文件，直到搜索到系统根目录为止；如果最终也未能找到一个可用的 tsconfig.json 配置文件，那么就会停止编译工程。假设当前工程目录结构如下：
+
+C:\app
+|--src
+|--|--index.ts
+·--tsconfig.json
+
+当在 "C:\app\src" 目录下运行 tsc 命令时，编译器搜索 tsconfig.json 配置文件的流程如下：
+
+1. 搜索 "C:\app\src\tsconfig.json"
+2. 搜索 "C:\app\tsconfig.json"
+3. 搜索 "C:\tsconfig.json"
+4. 退出 tsc 编译命令，不进行编译
+
+一旦编译器找到了匹配的 tsconfig.json 配置文件，就会终止查找过程并使用找到的配置文件。此例中，在第 2 步能够找到匹配的"tsconfig.json"配置文件，于是使用该配置文件来编译工程，并终止后续的查找。
+
+##### 5.3.1.2 指定配置文件
+
+在运行 tsc 命令时，可以使用 "--project" 编译选项（短名字为 "-p"）来指定使用的配置文件。"--project" 编译选项的参数是一个路径，它的值可以为：
+
+- 指向某个具体的配置文件。在这种情况下，配置文件的文件名不限，例如可以使用名为 "app.config.json" 的配置文件。
+- 指向一个包含了 "tsconfig.json" 配置文件的目录。在这种情况下，该目录中必须包含一个名为 tsconfig.json 的配置文件。
+
+#### 5.3.2 编译选项列表
+
+在 tsconfig.json 配置文件中使用顶层的 `compilerOptions` 属性能够设置编译选项。对于同一个编译选项而言，不论是在命令行上指定还是在 "tsconfig.json" 配置文件中指定，它们都具有相同的效果并且使用相同的名称：
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES5"
+  }
+}
+```
+
+> **注意**：不是所有的编译选项都能够在 tsconfig.json 配置文件中指定。例如，"--help" 和 "--version" 编译选项不支持在 tsconfig.json 配置文件中使用。
+
+TypeScript 提供了一个 `--init` 编译选项，在命令行上运行 tsc 命令并使用 -init 编译选项会初始化一个 "tsconfig.json" 配置文件。在生成的 "tsconfig.json" 配置文件中会自动添加一些常用的编译选项并将它们分类。假设当前工程目录结构如下：
+
+C:\app
+`--index.ts
+
+在 "C:\app" 目录下运行 tsc 命令并使用 "--init" 编译选项：
+
+```sh
+tsc --init
+```
+
+tsc 命令的运行结果是在 "C:\app" 目录下新生成了一个 "tsconfig.json" 配置文件。该文件的内容如下：
+
+```json
+{
+  "compilerOptions": {
+    /* 基础选项 */
+    "incremental": true,
+    "target": "es5",
+    "module": "commonjs",
+    "lib": [],
+    "allowJs": true,
+    "checkJs": true,
+    "jsx": "preserve",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir ": "./",
+    "rootDir": "./",
+    "composite": true,
+    "tsBuildInfoFile": "./",
+    "removeComments": true,
+    "noEmit": true,
+    "importHelpers": true,
+    "downLevelIteration": true,
+    "isolatedModules": true,
+    /* 严格类型检查选项 */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    /* 额外检查选项 */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    /* 模块解析选项 */
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {},
+    "rootDirs": [],
+    "typeRoots": [],
+    "types": [],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "preserveSymlinks": true,
+    "allowUmdGlobalAccess": true,
+    /* SourceMap 选项*/
+    "sourceRoot": "",
+    "mapRoot": "",
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    /*实验性选项*/
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    /*高级选项*/
+    "forceConsistentCasingInFileNames": true
+  }
+}
+```
+
+#### 5.3.3 编译文件列表
+
+"tsconfig.json" 配置文件的另一个主要用途是配置待编译的文件列表。
+
+##### 5.3.3.1 --listFiles 编译选项
+
+TypeScript 提供了一个 `--listFiles` 编译选项，如果启用了该编译选项，那么在编译工程时，编译器将打印出参与本次编译的文件列表。该编译选项既可以在命令行上使用，也可以在 "tsconfig.json" 配置文件中使用。假设当前工程目录结构如下：
+
+C:\app
+|--src
+|--|--a.ts
+`--|--b.ts
+
+在命令行上使用 "--listFiles" 编译选项，示例如下：
+
+```sh
+tsc --listFiles
+```
+
+在 "tsconfig.json" 配置文件中使用 "--listFiles" 编译选项，示例如下：
+
+```json
+{
+  "compilerOptions": {
+    "listFiles": true,
+    "strict": true,
+    "target": "ES5"
+  }
+}
+```
+
+在使用上例中的 "tsconfig.json" 配置文件编译工程时，编译器将输出编译文件列表。示例如下：
+
+...\typescript\lib\lib.d.ts
+...\typescript\lib\lib.es5.d.ts
+...\typescript\lib\lib.dom.d.ts
+...\typescript\lib\lib.webworker.importscripts.d.ts
+...\typescript\lib\lib.scripthost.d.ts
+C:\app\src\a.ts
+C:\app\src\b.ts
+
+通过以上运行结果能够看到，编译文件列表除了包含工程内的源文件外还包含了 TypeScript 内置的一些声明文件。
+
+##### 5.3.3.2 默认编译文件列表
+
+如果工程中含有一个 "tsconfig.json" 配置文件，那么在默认情况下 "tsconfig.json" 配置文件所在目录及其子目录下的所有 ".ts"、".d.ts"、".tsx" 文件都会被添加到编译文件列表。假设当前工程目录结构如下：
+
+C:\app
+|--a.ts
+|--src
+|--|--b.ts
+|--|--c.ts
+`--tsconfig.json
+
+"tsconfig.json"配置文件内容如下：
+
+```json
+{{
+ "compilerOptions":{
+ "listFiles": true
+ }
+}
+```
+
+在 “C:\app” 目录下运行 tsc 编译命令，示例如下：
+
+```sh
+tsc
+
+```
+
+tsc 命令的运行结果如下：
+
+```txt
+<此处省略了内置的声明文件列表>
+C:\app\a.ts
+C:\app\src\b.ts
+C:\app\src\c.ts
+```
+
+通过以上运行结果能够看到，"C:\app" 目录与其子目录 "C:\app\src" 下的所有 TypeScript 源文件都参与了本次编译。
+
+##### 5.3.3.3 files 属性
+
+在 "tsconfig.json" 配置文件中，使用顶层的 `files` 属性能够定义编译文件列表。`files` 属性的值是由待编译文件路径所构成的数组。假设当前工程目录结构如下：
+
+C:\app
+|--a.ts
+|--src
+|--|--b.ts
+|--|--c.ts
+`--tsconfig.json
+
+"tsconfig.json"配置文件内容如下：
+
+```json
+{
+  "compilerOptions": {
+    "listFiles": true,
+    "files": ["src/b.ts", "src/c.ts"]
+  }
+}
+```
+
+在 "C:\app" 目录下运行 tsc 命令，运行结果如下：
+
+```sh
+<此处省略了内置的声明文件列表>
+C:\app\src\b.ts
+C:\app\src\c.ts
+```
+
+通过以上运行结果能够看到，只有 files 属性中指定的 "C:\app\src\b.ts" 和 "C:\app\src\c.ts" 文件参与了本次编译，而 "C:\app\a.ts" 文件则没有参与编译。
+
+> 在使用 files 属性设置编译文件列表时必须逐一地列出每一个文件，该属性**不支持进行模糊的文件匹配**。因此，files 属性适用于待编译文件数量较少的情况。当待编译文件数量较多时，使用 `include` 和 `exclude` 属性是更好的选择。
+
+##### 5.3.3.4 include 属性
+
+在 tsconfig.json 配置文件中，使用顶层的 `include` 属性能够定义编译文件列表。include 属性的功能包含了 files 属性的功能，它既支持逐一地列出每一个待编译的文件，也支持使用通配符来模糊匹配待编译的文件。
+
+`include` 属性支持使用三种通配符来匹配文件，具体参考[编译多个文件](#5122-编译多个文件)。假设当前工程目录结构如下：
+
+C:\app
+|--bar
+|--|--c.ts
+|--foo
+|--|--a.spec.ts
+|--|--a.ts
+|--|--b.spec.ts
+|--|--b.ts
+`--tsconfig.json
+
+如果 tsconfig.json 配置文件的内容如下：
+
+```json
+{
+  "include": ["foo/*.spec.ts"]
+}
+```
+
+那么只有 "C:\app\foo\a.spec.ts" 和 "C:\app\foo\b.spec.ts" 文件会被添加到编译文件列表。如果 tsconfig.json 配置文件的内容如下：
+
+```json
+{
+  "include": ["foo/?.ts"]
+}
+```
+
+那么只有 "C:\app\foo\a.ts" 和 "C:\app\foo\b.ts" 文件会被添加到编译文件列表。如果 tsconfig.json 配置文件的内容如下：
+
+```json
+{
+  "include": ["bar/**/*.ts"]
+}
+```
+
+那么只有 "C:\app\bar\c.ts" 文件会被添加到编译文件列表。
+
+##### 5.3.3.5 exclude 属性
+
+在 tsconfig.json 配置文件中，`exclude` 属性需要与 `include` 属性一起使用，它的作用是从 `include` 属性匹配到的文件列表中去除指定的文件。exclude 属性也支持和 include 属性相同的通配符。假设当前工程目录结构如下：
+
+C:\app
+|--bar
+|--|--c.ts
+|--foo
+|--|--a.spec.ts
+|--|--a.ts
+|--|--b.spec.ts
+|--|--b.ts
+`--tsconfig.json
+
+"tsconfig.json"配置文件的内容如下：
+
+```json
+{
+  "compilerOptions": {
+    "listFiles": true
+  },
+  "include": ["**/*"],
+  "exclude": ["**/*.spec.ts"]
+}
+```
+
+在 "C:\app" 目录下运行 tsc 命令，运行结果如下：
+
+```txt
+<此处省略了内置的声明文件列表>
+C:\app\bar\c.ts
+C:\app\foo\a.ts
+C:\app\foo\b.ts
+```
+
+此例中，include 属性将 "C:\app" 目录下所有的 ".ts" 文件添加到编译文件列表，然后 exclude 属性则将所有的 ".spec.ts" 文件从编译文件列表中移除。
+
+#### 5.3.4 声明文件列表
+
+在 TypeScript 工程中 "node_modules/@types" 目录是一个特殊的目录，TypeScript 将其视为第三方声明文件的根目录，因为在安装 DefinitelyTyped 提供的声明文件时，它会被安装到 "node_modules/@types" 目录下。在默认情况下，编译器会将安装在 "node_modules/@types" 目录下的所有声明文件添加到编译文件列表。该默认行为可以使用 `--typeRoots` 和 `--types` 编译选项设置。
+
+##### 5.3.4.1 --typeRoots 编译选项
+
+`--typeRoots` 编译选项用来设置声明文件的根目录。当配置了 --typeRoots 编译选项时，只有该选项指定的目录下的声明文件会被添加到编译文件列表，而 "node_modules/@types" 目录下的声明文件将不再被默认添加到编译文件列表。
+
+"tsconfig.json"配置文件的内容如下：
+
+```json
+{
+  "compilerOptions": {
+    "listFiles": true,
+    "typeRoots": ["./typings"]
+  }
+}
+```
+
+> **注意**：typeRoots 属性中的路径是相对于当前 tsconfig.json 配置文件的路径来进行解析的。
+
+##### 5.3.4.2 --types 编译选项
+
+`--types` 编译选项也能够用来指定使用的声明文件。"--typeRoots" 编译选项配置的是含有声明文件的目录，而 --types 编译选项则配置的是**具体的声明文件**。
+
+```json
+{
+  "compilerOptions": {
+    "listFiles": true,
+    "types": ["jquery"]
+  }
+}
+```
+
+这时只有 types 属性中定义的 jQuery 声明文件被添加到了编译文件列表。
+
+#### 5.3.5 继承配置文件
+
+一个 tsconfig.json 配置文件可以继承另一个 tsconfig.json 配置文件中的配置。当一个项目中包含了多个 TypeScript 工程时，可以将工程共同的配置提取到 tsconfig.base.json 配置文件中，其他的 tsconfig.json 配置文件继承 tsconfig.base.json 配置文件中的配置。这种方式避免了重复配置同一属性并且能够增强可维护性，当需要修改某一共通属性时，仅需要修改一处即可。
+
+在 tsconfig.json 配置文件中，使用顶层的 `extends` 属性来设置要继承的 tsconfig.json 配置文件。在 `extends` 属性中指定的路径既可以是相对路径，也可以是绝对路径，但路径解析规则有所不同。
+
+##### 5.3.5.1 --showConfig 编译选项
+
+在介绍配置文件的继承之前，先介绍一下 `--showConfig` 编译选项。在使用该编译选项后，编译器将显示出编译工程时使用的所有配置信息。当在调试工程配置的时候，该编译选项是非常有帮助的。
+
+> **注意**：若启用了 --showConfig 编译选项，那么编译器将不会真正编译一个工程，而只是显示工程的配置。
+
+假设当前工程目录结构如下：
+
+C:\app
+|--src
+|--|--index.ts
+`--tsconfig.json
+
+tsconfig.json 配置文件的内容如下：
+
+```json
+{
+  "compilerOptions": {
+    "listFiles": true,
+    "target": "ES6"
+  }
+}
+```
+
+在 "C:\app" 目录下运行 tsc 命令，运行结果如下：
+
+```json
+{
+  "compilerOptions": {
+    "target": "es6",
+    "files": ["./src/index.ts"]
+  }
+}
+```
+
+该结果显示了在编译工程时最终使用的配置信息，它不但包含了 tsconfig.json 配置文件中的配置信息，还包含了待编译的文件列表。
+
+> **注意**：`--showConfig` 编译选项只能在命令行上使用，在 tsconfig.json 配置文件中不能使用该编译选项。
+
+##### 5.3.5.2 使用相对路径
+
+若 extends 属性中指定的路径是以 `.` 或 `../` 作为起始的，那么编译器在解析相对路径时将参照当前 tsconfig.json 配置文件所在的目录。
+
+假设当前工程目录结构如下：
+
+C:\app
+|--src
+|--|--index.ts
+|--tsconfig.app.json
+|--tsconfig.base.json
+`--tsconfig.spec.json
+
+在 tsconfig.base.json 配置文件中包含了共同的配置，而 tsconfig.app.json 配置文件和 tsconfig.spec.json 配置文件继承了 tsconfig.base.json 配置文件中的配置。
+
+tsconfig.base.json 文件的内容如下：
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES6"
+  }
+}
+```
+
+tsconfig.app.json 文件的内容如下：
+
+```json
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "strict": true
+  },
+  "files": ["./src/index.ts"]
+}
+```
+
+tsconfig.spec.json 文件的内容如下：
+
+```json
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "strict": false
+  }
+}
+```
+
+在 "C:\app" 目录下运行 tsc 命令，并使用 tsconfig.app.json 配置文件来编译该工程。示例如下：
+
+```sh
+tsc --showConfig -p tsconfig.app.json
+```
+
+运行结果如下：
+
+```json
+{
+  "compilerOptions": {
+    "target": "es6",
+    "strict": true
+  },
+  "files": ["./src/index.ts"]
+}
+```
+
+在 "C:\app" 目录下运行 tsc 命令，并使用 tsconfig.spec.json 配置文件来编译该工程。示例如下：
+
+```sh
+tsc--showConfig -p tsconfig.spec.json
+```
+
+运行结果如下：
+
+```json
+{
+  "compilerOptions": {
+    "target": "es6",
+    "strict": false
+  },
+  "files": ["./src/index.spec.ts"]
+}
+```
+
+通过以上运行结果能够看到，tsconfig.app.json 配置文件和 tsconfig.spec.json 配置文件都继承了 tsconfig.base.json 配置文件中的 target 编译选项。
+
+##### 5.3.5.3 使用非相对路径
+
+若 `extends` 属性指定的路径不是以 `.` 或 `../` 作为起始的，那么编译器将在 node_modules 目录下查找指定的配置文件。
+
+编译器首先在 tsconfig.json 配置文件所在目录的 node_modules 子目录下查找，若该目录下包含了指定的配置文件，则使用该配置文件；否则，继续在父级目录下的 node_modules 子目录下查找，直到搜索到系统根目录为止。若最终未能找到指定的配置文件，则产生编译错误。
+
+### 5.4 工程引用
+
+随着工程规模的扩大，一个工程中的代码量可能会达到数十万行的级别。当 TypeScript 编译器对数十万行代码进行类型检查时可能会遇到性能问题。“分而治之” 是解决该问题的一种策略，可以将一个较大的工程拆分为独立的子工程，然后将多个子工程关联在一起。
+
+工程引用是 TypeScript 3.0 引入的新功能。它允许一个 TypeScript 工程引用一个或多个其他的 TypeScript 工程。借助于工程引用，可以将一个原本较大的 TypeScript 工程拆分成多个 TypeScript 工程并设置它们之间的依赖关系。每个 TypeScript 工程都可以进行独立的配置与类型检查。当修改其中一个工程的代码时，会按需对其他工程进行类型检查，因此能够显著地提高类型检查的效率。同时，使用工程引用还能够更好地组织代码结构，从逻辑上将软件拆分为可以重用的组件，将实现细节封装在组件内部，并通过定义好的接口与外界交互。
+
+本节将通过一个具体示例来介绍如何使用 tsconfig.json 配置文件来配置不同 TypeScript 工程之间的引用。在本节的最后会介绍一种 "solution 模式"，它能够帮助很好地管理包含多个 TypeScript 工程的项目。
+
+#### 5.4.1 使用工程引用
+
+若一个目录中包含 tsconfig.json 配置文件，那么该目录将被视为 TypeScript 工程的根目录。在使用工程引用时，需要在 tsconfig.json 配置文件中进行以下配置：
+
+- 使用 `references` 属性配置当前工程所引用的其他工程
+- 被引用的工程必须启用 `composite` 编译选项
+
+##### 5.4.1.1 references
+
+tsconfig.json 配置文件有一个顶层属性 `references`。它的值是对象数组，用于设置引用的工程：
+
+```json
+{
+  "references": [{ "path": "../pkg1" }, { "path": "../pkg2/tsconfig.release.json" }]
+}
+```
+
+其中，`path` 的值既可以是指向含有 tsconfig.json 配置文件的目录，也可以直接指向某一个配置文件，此时配置文件名可以不为 tsconfig.json。此例中的工程引用了两个工程。
+
+##### 5.4.1.2 --composite
+
+`--composite` 编译选项的值是一个布尔值。通过启用该选项，TypeScript 编译器能够快速地定位依赖工程的输出文件位置。如果一个工程被其他工程所引用，那么必须将该工程的 --composite 编译选项设置为 true。
+
+当启用了该编译选项时，它会影响以下的配置：
+
+- 如果没有设置 `--rootDir` 编译选项，那么它将会被设置为包含 tsconfig.json 配置文件的目录。
+- 如果设置了 `include` 或 `files` 属性，那么所有的源文件必须被包含在内，否则将产生编译错误。
+- 必须启用 `--declaration` 编译选项
+
+##### 5.4.1.3 --declarationMap
+
+`--declarationMap` 是推荐启用的编译选项。如果启用了该选项，那么在生成 ".d.ts" 声明文件时会同时生成对应的 "Source Map" 文件。这样在代码编辑器中使用 “跳转到定义” 的功能时，编辑器会自动跳转到代码实现的位置，而不是跳转到声明文件中类型声明的位置：
+
+```json
+{
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true
+  }
+}
+```
+
+#### 5.4.2 工程引用示例
+
+该示例项目由 "C:\app\src" 和 "C:\app\test" 两个工程组成，其目录结构如下：
+
+C:\app
+|--src
+|--|--index.ts
+|--|--tsconfig.json
+|--test
+|--|--index.spec.ts
+`--|--tsconfig.json
+
+```ts
+// index.ts
+export function add(x: number, y: number) {
+  return x + y;
+}
+```
+
+```ts
+// index.spec.ts
+import { add } from '../src/index';
+if (add(1, 2) === 3) {
+  console.log('pass');
+} else {
+  console.log('failed');
+}
+```
+
+##### 5.4.2.1 配置 references
+
+在该项目中，"C:\app\test" 工程依赖于 "C:\app\src" 工程中的模块。因此，"C:\app\test" 工程依赖于 "C:\app\src" 工程。
+
+在 "C:\app\test" 工程的 tsconfig.json 配置文件中设置对 "C:\app\src" 工程的依赖。"C:\app\test\tsconfig.json" 配置文件的内容如下：
+
+```json
+{
+  "references": [
+    {
+      "path": "../src"
+    }
+  ]
+}
+```
+
+此例中，通过 references 属性设置了对 "C:\app\src" 工程的引用。
+
+##### 5.4.2.2 配置 composite
+
+在该项目中，"C:\app\src" 工程被 "C:\app\test" 工程所依赖。因此，必须在 "C:\app\src" 工程的 tsconfig.json 配置文件中将 "--composite" 编译选项设置为 true。
+
+"C:\app\src\tsconfig.json" 配置文件的内容如下：
+
+```json
+{
+  "compilerOptions": {
+    "composite": true,
+    "declarationMap": true
+  }
+}
+```
+
+至此，所有必须的工程引用配置已经设置完毕。
+
+#### 5.4.3 --build
+
+TypeScript 提供了一种新的构建模式来配合工程引用的使用，它就是 "--build" 模式（简写为 "-b"）。在该模式下，编译器能够进行增量构建。
+
+当使用该命令构建 TypeScript 工程时，编译器会执行如下操作：
+
+- 查找当前工程所引用的工程
+- 检查当前工程和引用的工程是否有更新
+- 若工程有更新，则根据依赖顺序重新构建它们；若没有更新，则不进行重新构建。
+
+下面还是以上一节中的示例项目为例，目录结构如下：
+
+C:\app
+|--src
+|--|--index.ts
+|--tsconfig.app.json
+|--tsconfig.base.json
+`--tsconfig.spec.json
+
+在 "C:\app" 目录下使用 "--build" 模式首次构建 "C:\app\test" 工程：
+
+```sh
+tsc --build test --verbose
+```
+
+tsc 命令的运行结果如下：
+
+```sh
+[6:00:00PM]Projectsinthisbuild:
+          *src/tsconfig.json
+          *test/tsconfig.json
+[6:00:00PM]Project'src/tsconfig.json'is out of date because
+          output file 'src/index.js' does not exist
+[6:00:00 PM] Building project 'src/tsconfig.json'.
+[6:00:00PM]Project'test/tsconfig.json'is out of date because
+           output file 'test/index.spec.js' does not exist
+[6:00:00 PM] Building project 'test/tsconfig.json'...
+```
+
+通过以上运行结果能够看到，当构建 "C:\app\test" 工程时，编译器先确定参与本次构建的所有工程，然后根据引用顺序对待编译的工程进行排序。此例中的顺序为先编译 "C:\app\src" 工程，后编译 "C:\app\test" 工程。接下来开始尝试编译 "C:\app\src" 工程。由于之前没有编译过该工程，它不处于最新状态，因此编译器会编译 "C:\app\src" 工程。同理，在编译完 "C:\app\src" 工程后会接着编译 "C:\app\test" 工程。
+
+假设自上一次编译完 "C:\app\test" 工程之后，没有对 "C:\app\src" 工程和 "C:\app\test" 工程做任何修改。当再一次使用 --build 模式构建 "C:\app\test" 工程时，运行结果如下：
+
+```sh
+[6:00:01PM]Projectsinthisbuild:
+          *src/tsconfig.json
+          *test/tsconfig.json
+[6:00:01PM]Project'src/tsconfig.json'is up to date because
+         newest input 'src/index.ts' is older than oldest
+         output'src/index.js'
+[6:00:01 PM] Project test/tsconfig.json'is up to date because
+         newest input test/index.spec.ts'is older than
+         oldest output 'test/index.spec.js'
+```
+
+通过以上运行结果能够看到，编译器能够检测出 "C:\app\src" 工程和 "C:\app\test" 工程没有发生变化，因此也就没有重新编译这两个工程。
+
+"C:\app\src" 工程和 "C:\app\test" 工程编译后的目录结构如下：
+
+C:\app
+|--src
+|--|--index.d.ts
+|--|--index.js
+|--|--index.ts
+|--|--tsconfig.tsbuildinfo
+|--|--tsconfig.json
+|--test
+|--|--index.spec.ts
+|--|--index.spec.js
+`--|--tsconfig.json
+
+在 "C:\app\src" 工程和 "C:\app\test" 工程中都编译生成了对应的 ".js" 文件。
+
+在 "C:\app\src" 工程中，由于启用了 --composite 编译选项，它会自动启用 --declaration 编译选项，因此编译后生成了 index.d.ts 声明文件。
+
+在 "C:\app\src" 工程中还生成了 "tsconfig.tsbuildinfo" 文件，它保存了该工程本次构建的详细信息，编译器正是通过查看该文件来判断当前工程是否需要重新编译。
+
+TypeScript 还提供了以下一些仅适用于 --build 模式的编译选项：
+
+- **--verbose**：打印构建的详细日志信息，可以与以下编译选项一起使用。
+- **--dry**：打印将执行的操作，而不进行真正的构建。
+- **--clean**：删除工程中编译输出的文件，可以与 `--dry` 一起使用。
+- **--force**：强制重新编译工程，而不管工程是否有更新。
+- **--watch**：观察模式，执行编译命令后不退出，等待工程有更新后自动地再次编译工程。
+
+#### 5.4.4 solution 模式
+
+当一个项目由多个工程组成时，可以新创建一个 "solution" 工程来管理这些工程。"solution" 工程本身不包含任何实际代码，它只是引用了项目中所有的工程并将它们关联在一起。在构建项目时，只需要构建 "solution" 工程就能够构建整个项目。
+
+接下来，将之前的 "C:\app\src" 工程和 "C:\app\test" 工程重构为 "solution" 模式。修改后的目录结构如下：
+
+C:\app
+|--src
+|--|--index.ts
+|--|--tsconfig.json
+|--test
+|--|--index.spec.ts
+|--|--tsconfig.json
+`--tsconfig.json
+
+在 "C:\app" 目录下新建了一个 "tsconfig.json" 配置文件，目的是让 "C:\app" 成为一个 "solution" 工程。tsconfig.json 配置文件的内容如下：
+
+```json
+{
+  "files": [],
+  "include": [],
+  "references": [{ "path": "src" }, { "path": "test" }]
+}
+```
+
+在该配置文件中同时将 "C:\app\src" 工程和 "C:\app\test" 工程设置为引用工程。此外，必须将 `files` 和 `include` 属性设置为空数组，否则编译器将会重复编译 "C:\app\src" 工程和 "C:\app\test" 工程。
+
+在 "C:\app" 目录下使用 "--build" 模式来编译该工程：
+
+```sh
+tsc --build --verbose
+```
+
+### 5.5 JS 类型检查
+
+由于 TypeScript 语言是 JS 语言的超集，因此 JS 程序是合法的 TypeScript 程序。TypeScript 编译器能够像处理 TypeScript 程序一样去处理 JS 程序，例如对 JS 程序执行类型检查和编译 JS 程序。
+
+本节将介绍如何配置 TypeScript 编译器，使其能够对 JS 程序执行类型检查以及编译 JS 程序。此外，还会介绍 TypeScript 编译器是如何从 JS 文档工具 JSDoc 中提供类型信息的。
+
+#### 5.5.1 编译 JS
+
+在一个工程中可能既存在 TypeScript 代码也存在 JS 代码。例如，一个 TypeScript 工程依赖于某个 JS 代码库，又或者一个工程正在从 JS 向 TypeScript 进行迁移。如果 TypeScript 工程中的 JS 程序也是工程的一部分，那么就需要使用 `--allowJs` 编译选项来配置 TypeScript 编译器。
+
+在默认情况下，编译器只会将 ".ts" 和 ".tsx" 文件添加到编译文件列表，而不会将 ".js" 和 ".jsx" 文件添加到编译文件列表。如果想要让编译器去编译 JS 文件，那么就需要启用 `--allowJs` 编译选项。在启用 --allowJs 编译选项后，工程中的 "js" 和 ".jsx" 文件也会被添加到编译文件列表。
+
+假设当前工程目录结构如下：
+
+C:\app
+|--src
+`--|--index.js
+
+在 "C:\app" 目录下，运行 tsc 命令来编译 "index.js" 文件。运行 tsc 命令时会出现如下错误，因为在默认情况下，编译器不支持编译 JS 文件。
+
+在 "C:\app" 目录下，运行 tsc 命令来编译 "index.js" 文件，并启用 --allowJs 编译选项：
+
+```sh
+tsc src/index.js --allowJs --outDir dist
+```
+
+在启用了 --allowJs 编译选项后，编译器能够像编译 TypeScript 文件一样去编译 JS 文件。此例中，还必须指定一个除 "C:\app\src" 之外的目录作为输出文件目录，否则编译器将报错。因为如果在 "C:\app\src" 目录下生成编译后的 "index.js" 文件，那么它将会覆盖源 "index.js" 文件，这是不允许的。
+
+#### 5.5.2 JS 类型检查
+
+在默认情况下，TypeScript 编译器不会对 JS 文件进行类型检查。就算启用了 `--allowJs` 编译选项，编译器依然不会对 JS 代码进行类型检查。
+
+##### 5.5.2.1 --checkJs
+
+TypeScript 2.3 提供了一个 `--checkJs` 编译选项。当启用了该编译选项时，编译器能够对 ".js" 和 ".jsx" 文件进行类型检查。`--checkJs` 编译选项必须与 `--allowJs` 编译选项一起使用。
+
+假设当前工程目录结构如下：
+
+C:\app
+|--src
+`--|--index.js
+
+"index.js"文件的内容如下：
+
+```js
+// index.js
+const element = document.getElementById(123); // 参数类型错误，应该为 string 类型
+```
+
+在此例的 JS 代码中存在一个类型错误，那就是 getElementById 方法的参数类型应该为字符串类型，而实际参数的类型为数字类型。
+
+在 "C:\app" 目录下，运行 tsc 命令来编译 "index.js" 文件。若不启用 "--checkJs" 编译选项，则不会产生编译错误：
+
+```sh
+tsc src/index.js --allowJs --outDir dist
+```
+
+在 "C:\app" 目录下，运行 tsc 命令来编译 "index.js" 文件。若启用了 --checkJs 编译选项和 --allowJs 编译选项，则会产生编译错误：
+
+```sh
+tsc src/index.js --allowJs --checkJs --outDir dist
+```
+
+编译器能够检查出 "getElementById" 方法的参数类型错误。
+
+##### 5.5.2.2 // @ts-nocheck
+
+`// @ts-nocheck` 是一个注释指令，如果为 JS 文件添加该注释，那么相当于告诉编译器不对该 JS 文件进行类型检查。此外，该指令也可以在 TypeScript 文件中使用。假设当前工程目录结构如下：
+
+C:\app
+|--src
+`--|--index.js
+
+```js
+// index.js
+//@ts-nocheck
+const element = document.getElementById(123); // 参数类型错误，应该为 string 类型
+```
+
+在 "C:\app" 目录下，运行 tsc 命令来编译 "index.js" 文件，并启用 --checkJs 编译选项和 --allowJs 编译选项。虽然 "index.js" 存在类型错误，但是编译器不会报错。因为使用 "// @ts-nocheck" 注释指令禁用了对"index.js" 文件的类型检查。
+
+##### 5.5.2.3 // @ts-check
+
+如果一个 JS 文件中添加了 `// @ts-check` 注释指令，那么编译器将对该 JS 文件进行类型检查，不论是否启用了 `--checkJs` 编译选项。假设当前工程目录结构如下：
+
+C:\app
+|--src
+`--|--index.js
+
+```js
+// index.js
+//@ts-check
+const element = document.getElementByld(123); // 参数类型错误，应该为string类型
+```
+
+在 "C:\app" 目录下，运行 tsc 命令来编译 "index.js" 文件，但不启用 --checkJs 编译选项。示例如下：
+
+```sh
+tsc src/index.js --allowJs --outDir dist
+```
+
+此例中，虽然没有启用 --checkJs 编译选项，但是编译器仍然会对 index.js 文件进行类型检查并显示错误提示。
+
+##### 5.5.2.4 // @ts-ignore
+
+`//@ts-ignore` 注释指令的作用是忽略对某一行代码进行类型检查。当在代码中使用 `// @ts-ignore` 注释指令时，编译器不会对与该指令相邻的后面一行代码进行类型检查。此外，该指令也可以在 TypeScript 文件中使用。假设当前工程目录结构如下：
+
+C:\app
+|--src
+`--|--index.js
+
+```js
+// index.js
+// @ts-ignore
+const element1 = document.getElementById(123); // 参数类型错误，应该为 string 类型，不会对此行进行类型检查
+const element2 = document.getElementById(456); // 参数类型错误，应该为string类型
+```
+
+#### 5.5.3 JSDoc 与 类型

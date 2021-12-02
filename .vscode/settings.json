@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["EDVAC", "Gunt", "Kubernetes", "MISP", "SSIM", "Skia", "ation", "gitk", "lval", "vorbis"],
+  "cSpell.words": ["EDVAC", "Kubernetes", "MISP", "SSIM", "Skia", "ation", "gitk", "lval", "vorbis"],
   "html.customData": [".vscode/html.html-data.json"],
   "css.customData": [".vscode/css.css-data.json"],
   "todo-tree.tree.scanMode": "workspace only",
