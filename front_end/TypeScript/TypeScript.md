@@ -253,6 +253,87 @@
         - [4.1.6.6 类实例类型](#4166-类实例类型)
       - [4.1.7 泛型](#417-泛型)
         - [4.1.7.1 泛型对象类型](#4171-泛型对象类型)
+        - [4.1.7.2 泛型函数类型](#4172-泛型函数类型)
+      - [4.1.8 联合类型](#418-联合类型)
+      - [4.1.9 交叉类型](#419-交叉类型)
+    - [4.2 赋值兼容性](#42-赋值兼容性)
+    - [4.3 类型推断](#43-类型推断)
+      - [4.3.1 常规类型推断](#431-常规类型推断)
+      - [4.3.2 按上下文归类](#432-按上下文归类)
+    - [4.4 类型放宽](#44-类型放宽)
+      - [4.4.1 常规类型放宽](#441-常规类型放宽)
+        - [4.4.1.1 非严格类型检查模式](#4411-非严格类型检查模式)
+        - [4.4.1.2 严格类型检查模式](#4412-严格类型检查模式)
+      - [4.4.2 字面量类型放宽](#442-字面量类型放宽)
+        - [4.4.2.1 细分字面量类型](#4421-细分字面量类型)
+        - [4.4.2.2 放宽的字面量类型](#4422-放宽的字面量类型)
+        - [4.4.2.3 字面量类型放宽的场景](#4423-字面量类型放宽的场景)
+        - [4.4.2.4 全新的字面量类型](#4424-全新的字面量类型)
+    - [4.5 命名空间](#45-命名空间)
+      - [4.5.1 命名空间声明](#451-命名空间声明)
+      - [4.5.2 导出命名空间内的声明](#452-导出命名空间内的声明)
+      - [4.5.3 别名导入声明](#453-别名导入声明)
+      - [4.5.4 在多文件中使用命名空间](#454-在多文件中使用命名空间)
+        - [4.5.4.1 文件间的依赖](#4541-文件间的依赖)
+        - [4.5.4.2 tsconfig.json](#4542-tsconfigjson)
+        - [4.5.4.3 三斜线指令](#4543-三斜线指令)
+    - [4.6 模块](#46-模块)
+      - [4.6.1 模块简史](#461-模块简史)
+        - [4.6.1.1 CommonJS](#4611-commonjs)
+        - [4.6.1.2 AMD](#4612-amd)
+        - [4.6.1.3 UMD](#4613-umd)
+        - [4.6.1.4 ESM](#4614-esm)
+      - [4.6.2 ECMAScript 模块](#462-ecmascript-模块)
+      - [4.6.3 模块导出](#463-模块导出)
+        - [4.6.3.4 聚合模块](#4634-聚合模块)
+      - [4.6.4 模块导入](#464-模块导入)
+        - [4.6.4.1 导入命名模块导出](#4641-导入命名模块导出)
+        - [4.6.4.2 导入整个模块](#4642-导入整个模块)
+        - [4.6.4.3 导入默认模块导出](#4643-导入默认模块导出)
+        - [4.6.4.4 空导入](#4644-空导入)
+      - [4.6.5 重命名模块导入和导出](#465-重命名模块导入和导出)
+        - [4.6.5.1 重命名模块导出](#4651-重命名模块导出)
+        - [4.6.5.2 重命名聚合模块](#4652-重命名聚合模块)
+        - [4.6.5.3 重命名模块导入](#4653-重命名模块导入)
+      - [4.6.6 针对类型的模块导入与导出](#466-针对类型的模块导入与导出)
+        - [4.6.6.1 背景介绍](#4661-背景介绍)
+        - [4.6.6.2 导入与导出类型](#4662-导入与导出类型)
+        - [4.6.6.3 --importsNotUsedAsValues](#4663-importsnotusedasvalues)
+      - [4.6.7 动态模块导入](#467-动态模块导入)
+      - [4.6.8 --module](#468-module)
+    - [4.7 外部声明](#47-外部声明)
+      - [4.7.1 外部类型声明](#471-外部类型声明)
+        - [4.7.1.1 外部变量声明](#4711-外部变量声明)
+        - [4.7.1.2 外部函数声明](#4712-外部函数声明)
+        - [4.7.1.3 外部类声明](#4713-外部类声明)
+        - [4.7.1.4 外部枚举声明](#4714-外部枚举声明)
+        - [4.7.1.5 外部命名空间声明](#4715-外部命名空间声明)
+      - [4.7.2 外部模块声明](#472-外部模块声明)
+    - [4.8 使用声明文件](#48-使用声明文件)
+      - [4.8.1 语言内置的声明文件](#481-语言内置的声明文件)
+      - [4.8.2 第三方声明文件](#482-第三方声明文件)
+        - [4.8.2.1 含有内置声明文件](#4821-含有内置声明文件)
+        - [4.8.2.2 typings 与 types](#4822-typings-与-types)
+        - [4.8.2.3 typesVersions](#4823-typesversions)
+      - [4.8.3 自定义声明文件](#483-自定义声明文件)
+    - [4.9 模块解析](#49-模块解析)
+      - [4.9.1 相对模块导入](#491-相对模块导入)
+      - [4.9.2 非相对模块导入](#492-非相对模块导入)
+      - [4.9.3 模块解析策略](#493-模块解析策略)
+      - [4.9.4 模块解析策略之 Classic](#494-模块解析策略之-classic)
+        - [4.9.4.1 解析相对模块导入](#4941-解析相对模块导入)
+        - [4.9.4.2 解析非相对模块导入](#4942-解析非相对模块导入)
+      - [4.9.5 模块解析策略之 Node](#495-模块解析策略之-node)
+        - [4.9.5.1 解析相对模块导入](#4951-解析相对模块导入)
+        - [4.9.5.2 解析非相对模块导入](#4952-解析非相对模块导入)
+      - [4.9.6 --baseUrl](#496-baseurl)
+        - [4.9.6.1 设置 --baseUrl](#4961-设置-baseurl)
+        - [4.9.6.2 解析 --baseUrl](#4962-解析-baseurl)
+      - [4.9.7 paths](#497-paths)
+        - [4.9.7.1 设置 paths](#4971-设置-paths)
+        - [4.9.7.2 使用通配符](#4972-使用通配符)
+      - [4.9.8 rootDirs](#498-rootdirs)
+      - [4.9.9 导入外部模块声明](#499-导入外部模块声明)
 
 <!-- /code_chunk_output -->
 
@@ -8456,3 +8537,1980 @@ export const a = 0;
 export { a as utilsA } from './utils';
 export const b = 0;
 ```
+
+##### 4.6.5.3 重命名模块导入
+
+重命名模块导入的语法如下所示：
+
+```TS
+import{oldName as newName}from"mod";
+```
+
+在该语法中，将导入 mod 模块内的 oldName 声明，并重命名为 newName。在当前模块中需要使用 newName 这个名字来访问 mod 模块中的 oldName 声明。
+
+例如，有如下目录结构的工程：
+
+C:\app
+|-index.ts
+`-utils.ts
+
+```ts
+// utils.ts
+export const a = 0;
+```
+
+```ts
+// index.ts
+import { a as utilsA } from './utils';
+utilsA.a;
+```
+
+#### 4.6.6 针对类型的模块导入与导出
+
+类和枚举既能表示一个值也能表示一种类型。在使用 import 和 export 语句来导入和导出类和枚举时，会同时导入和导出它们所表示的值和类型。因此，在代码中可以将导入的类和枚举同时用作值和类型。在 TypeScript 3.8 版本中，引入了只针对类型的导入导出语句。当在类和枚举上使用针对类型的导入导出语句时，只会导入和导出类和枚举所表示的类型，而不会导入和导出它们表示的值。延伸来看，在变量声明、函数声明上使用针对类型的导入导出语句时只会导入导出变量类型和函数类型，而不会导入导出变量的值和函数值。
+
+##### 4.6.6.1 背景介绍
+
+TypeScript 为 JS 添加了额外的静态类型，与类型相关的代码在编译生成 JS 代码时会被完全删除，因为 JS 本身并不支持静态类型。例如，在 TypeScript 程序中定义了一个接口，那么该接口声明在编译生成 JS 时会被直接删除。该规则同样适用于模块导入导出语句。在默认情况下，如果模块的导入导出语句满足如下条件，那么在编译生成 JS 时编译器会删除相应的导入导出语句，具体的条件如下：
+
+- 模块导入或导出的标识符仅被用在类型的位置上
+- 模块导入或导出的标识符没有被用在表达式的位置上，即没有作为一个值使用
+
+例如，有如下目录结构的工程：
+
+C:\app
+|--index.ts
+`---utils.ts
+
+```ts
+// utils.ts
+export const a = 0;
+export interface Point {
+  x: number;
+  y: number;
+}
+```
+
+```ts
+// index.ts
+import { Point } from './utils';
+const p: Point = { x: 0, y: 0 };
+```
+
+使用 tsc 命令来编译以上两个文件，将生成 “utils.js” 和 “index.js” 文件。
+
+```js
+// utils.js
+export const a = 0;
+```
+
+```js
+// index.js
+const p = { x: 0, y: 0 };
+```
+
+此例中，"utils.ts" 模块导出的 Point 接口在生成的 "utils.js" 文件中被删除，因为接口只能表示一种类型。在 "index.ts" 文件中，导入 Point 接口的语句在生成的 "index.js" 文件中也被删除了，因为在 "index.ts" 中 Point 作为类型来使用，它不影响生成的 JS 代码。
+
+虽然在大部分情况下，编译器删除针对类型的导入导出语句不会影响生成的 JS 代码，但有时候也会给开发者带来困扰。一个典型的例子是使用了带有副作用的模块。如果一个模块只从带有副作用的模块中导入了类型，那么这条导入语句将会被编译器删除。因此，带有副作用的模块代码将不会被执行，这有可能不是期望的行为。例如，有如下目录结构的工程：
+
+C:\app
+|--index.ts
+`--utils.ts
+
+```ts
+// utils.ts
+globalThis.mode = 'dev';
+export interface Point {
+  x: number;
+  y: number;
+}
+```
+
+```ts
+// index.ts
+import { Point } from './utils';
+const p: Point = { x: 0, y: 0 };
+if (globalThis.mode === 'dev') {
+  console.log(p);
+}
+```
+
+由于在 "index.ts" 文件中只导入了 "utils.ts" 模块中的接口类型，因此在编译生成的 JS 文件中会删除导入 “utils.ts” 模块的语句，生成的 "index.js" 文件的内容如下：
+
+```ts
+const p = { x: 0, y: 0 };
+if (globalThis.mode === 'dev') {
+  console.log(p);
+}
+```
+
+而事实上，此例中的 "index.ts" 模块依赖于 "utils.ts" 模块中的副作用，即设置全局的 mode 属性。因此，期望生成的 “index.js” 文件的内容如下：
+
+```ts
+import './utils';
+const p = { x: 0, y: 0 };
+if (globalThis.mode === 'dev') {
+  console.log(p);
+}
+```
+
+在 TypeScript 3.8 版本中，引入了只针对类型的模块导入导出语句以及 `--importsNotUsedAsValues` 编译选项来帮助缓解上述问题。
+
+##### 4.6.6.2 导入与导出类型
+
+总的来说，针对类型的模块导入导出语法是在前面介绍的模块导入导出语法中添加 `type` 关键字。
+
+从模块中导出类型使用 `export type` 关键字，具体语法如下所示：
+
+```ts
+export type { Type };
+export type { Type } from 'mod';
+```
+
+该语法中，Type 表示类型名。从模块中导入默认模块导出类型的语法如下所示：
+
+```ts
+import type DefaultType from 'mod';
+```
+
+该语法中，DefaultType 可以为任意的标识符名，表示导入的默认模块导出类型在当前模块中所绑定的标识符。在当前模块中，将使用 DefaultType 这个名字来访问 mod 模块中的默认模块导出类型。从模块中导入命名类型的语法如下所示：
+
+```ts
+import type { Type } from 'mod';
+```
+
+该语法中，Type 表示 mod 模块中导出的类型名。
+
+从模块中导入所有导出的命名类型的语法如下所示：
+
+```ts
+import type * as TypeNS from 'mod';
+```
+
+该语法中，TypeNS 可以为任意标识符名，它将 mod 模块中的所有命名模块导出类型放在命名空间 TypeNS 下。例如，有如下目录结构的工程：
+
+C:lapp
+|--index.ts
+`--utils.ts
+
+```ts
+// utils.ts
+class Point {
+  x: number;
+  y: number;
+}
+export type { Point };
+```
+
+TypeScript 中的类既能表示一个值，又能表示一种类类型。此例中，只导出了 Point 类表示的类型。
+
+```ts
+// index.ts
+import type { Point } from './utils';
+const p: Point = { x: 0, y: 0 };
+```
+
+此例中，从 "utils.ts" 模块中导入了 Point 类型。需要注意的是，若将 Point 当作一个值来使用，则会产生编译错误：
+
+```ts
+import type { Point } from './utils';
+const p = new Point(); // 编译错误：Point'不能作为值来使用，因为它使用了import type导入语句
+```
+
+此外，就算在 "index.ts" 文件中不是使用 "import type" 来导入 Point，而是使用常规的 import 语句，也不能将 Point 作为一个值来使用，因为在"utils.ts" 模块中只导出了 Point 类型，而没有导出 Point 值：
+
+```ts
+import { Point } from './utils';
+const p = new Point(); // 编译错误：'Point'不能作为值来使用，因为它是由 export type 语句导出的
+```
+
+##### 4.6.6.3 --importsNotUsedAsValues
+
+针对类型的模块导入与导出的一个重要性质是，在编译生成 JS 代码时，编译器一定会删除 "import type" 和 "export type" 语句，因为能够完全确定它们只与类型相关。
+
+```ts
+// utils.ts
+class A {
+  x: number = 0;
+}
+class B {
+  x: number = 0;
+}
+export { A };
+export type { B };
+```
+
+```js
+// 编译后生成的 utils.js
+class A {
+  constructor() {
+    this.x = 0;
+  }
+}
+class B {
+  constructor() {
+    this.x = 0;
+  }
+}
+export { A };
+```
+
+此例中，对类型 B 的导出语句被编译器删除了。
+
+对于常规的 import 语句，编译器提供了 `--importsNotUsedAsValues` 编译选项来精确控制在编译时如何处理它们。该编译选项接受以下三个可能的值：
+
+- **remove**（默认值）：该选项是编译器的默认行为，它自动删除只和类型相关的 import 语句。
+- **preserve**：该选项会保留所有 import 语句。
+- **error**：该选项会保留所有 import 语句，发现可以改写为 "import type" 的 import 语句时会报错。
+
+#### 4.6.7 动态模块导入
+
+动态模块导入允许在一定条件下按需加载模块，而不是在模块文件的起始位置一次性导入所有依赖的模块。因此，动态模块导入可能会提升一定的性能。动态模块导入通过调用特殊的 `import()` 函数来实现。该函数接受一个模块路径作为参数，并返回 Promise 对象。
+
+如果能够成功加载模块，那么 Promise 对象的完成值为模块对象。动态模块导入语句不必出现在模块的顶层代码中，它可以被用在任意位置，甚至可以在非模块中使用。例如，有如下目录结构的工程：
+
+C:\app
+|--index.ts
+`--utils.ts
+
+```ts
+// utils.ts
+export function add(x: number, y: number) {
+  return x + y;
+}
+```
+
+```ts
+// index.ts
+setTimeout(() => {
+  import('/utils')
+    .then(utils => {
+      console.log(utils.add(1, 2));
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}, 1000);
+```
+
+在 "index.ts" 中使用了 setTimeout 函数实现了在延迟 1 秒之后动态地导入 "utils.ts" 模块，然后调用了 "utils.ts" 模块中导出的 add 函数。
+
+#### 4.6.8 --module
+
+TypeScript 编译器提供了 `--module` 编译选项来设置编译生成的 JS 代码使用的模块格式。在 TypeScript 程序中，推荐使用标准的 ECMAScript 模块语法来进行编码，然后通过编译器来生成其他模块格式的代码。
+
+该编译选项的可选值如下：
+
+- None(非模块代码）
+- CommonJS
+- AMD
+- System
+- UMD
+- ES6
+- ES2015
+- ES2020
+- ESNext
+
+下面将配置编译器来生成符合 CommonJS 模块格式的代码。例如，有如下目录结构的工程：
+
+C:\app
+|--index.ts
+`--utils.ts
+
+```ts
+// utils.ts
+export function add(x: number, y: number) {
+  return x + y;
+}
+```
+
+```ts
+// index.ts
+import { add } from './utils';
+const total = add(1, 2);
+```
+
+在 "C:\app" 目录下运行 tsc 命令并指定"--module"编译选项来编译"index.ts"，示例如下：
+
+```sh
+tsc index.ts --module CommonJS
+```
+
+关于 tsc 命令的详细介绍请参考 8.1 节。<!--TODO-->
+
+运行 tsc 命令后，编译会分别生成 index.js 文件和 utils.js 文件，示例如下：
+
+C:\app
+|--index.js
+|--index.ts
+|--utils.js
+`--utils.ts
+
+```js
+// utils.js
+'use strict', Object.defineProperty(exports, '_esModule', { value: true });
+function add(x, y) {
+  return x + y;
+}
+exports.add = add;
+```
+
+```js
+// index.js
+'use strict', Object.defineProperty(exports, '_esModule', { value: true });
+const utils_1 = require('./utils');
+const total = utils_1.add(1, 2);
+```
+
+此例中，编译生成的"index.js"文件和"utils.js"文件都是符合 CommonJS 模块格式的代码。代码中的 "\_esModule" 属性表示该文件是由 ECMAScript 模块代码编译而来的。如果想要生成符合其他模块格式的代码，只需要传入不同的 `--module` 值即可。
+
+### 4.7 外部声明
+
+TypeScript 语言主要有两种类型的源文件：
+
+- 文件扩展名为 ".ts" 或 ".tsx" 的文件
+- 文件扩展名为 ".d.ts" 的文件
+
+".ts" 或 ".tsx" 文件中包含了应用的实现代码，它也是开发者日常编写的代码。".ts" 和 ".tsx" 文件中既可以包含类型声明又可以包含可执行代码。在编译 TypeScript 程序的过程中，".ts" 和 ".tsx" 文件会生成对应的 ".js" 和 ".jsx" 文件。值得一提的是，".tsx"文件中包含了使用 JSX 语法编写的代码。JSX 采用了类似于 XML 的语法，JSX 因知名的 React 框架而流行，因为 React 框架推荐使用 JSX 来编写应用程序。
+
+".d.ts" 文件是类型声明文件，其中字母 "d" 表示 "declaration"，即声明的意思。".d.ts" 文件只提供类型声明，不提供任何值，如字符串和函数实现等。因此，在编译 TypeScript 程序的过程中，".d.ts"文件不会生成对应的".js"文件。
+
+假设有如下目录结构的工程：
+
+C:\app
+|--index.ts
+|--typings.d.ts
+`--tsconfig.json
+
+在编译后，工程的目录结构如下：
+
+C:\app
+|--index.js
+|--index.ts
+|--typings.d.ts
+`--tsconfig.json
+
+能够看到，只有 "index.ts" 文件编译生成了对应的 "index.js" 文件，而 "typings.d.ts" 声明文件没有生成对应的 JS 文件。该行为与两个文件中是否包含代码无关。
+
+可以将 “.d.ts” 文件称作外部声明文件或简称为**声明文件**。声明文件中的内容是外部声明。外部声明用于为已有代码提供静态类型信息以供 TypeScript 编译器使用。例如，jQuery 的外部声明文件提供了 jQuery API 的类型信息。TypeScript 编译器能够利用该类型信息进行代码静态类型检查以及代码自动补全等操作。
+
+外部声明是 TypeScript 语言规范中使用的术语。不必纠结于如何划分外部和内部，它是一个相对概念。外部声明也可以出现在 ".ts" 文件中，只需明确**外部声明是类型声明而不是具体实现，外部声明在编译后不会输出任何可执行代码**即可。外部声明包含以下两类：
+
+- 外部类型声明
+- 外部模块声明
+
+#### 4.7.1 外部类型声明
+
+外部类型声明通过 `declare` 关键字来定义，包含外部变量声明、外部函数声明、外部类声明、外部枚举声明和外部命名空间声明。
+
+##### 4.7.1.1 外部变量声明
+
+外部变量声明定义了一个变量类型，语法如下所示：
+
+```ts
+declare var a: boolean;
+declare let b: boolean;
+declare const c: boolean;
+```
+
+此例中定义了三个外部变量声明。**外部变量声明不允许定义初始值**，因为它只表示一种类型，而不能够表示一个值。如果外部变量声明中没有使用类型注解，那么变量的类型为 any 类型。例如，有如下目录结构的工程：
+
+C:\app
+|--index.ts
+|--typings.d.ts
+`--tsconfig.json
+
+```ts
+// typings.d.ts
+declare var Infinity: number;
+```
+
+```ts
+// index.ts
+const x = 10 ** 10000;
+if (x === Infinity) {
+  console.log('Infinity');
+}
+```
+
+此例中，编译器能够从 “typings.d.ts” 文件中获取 Infinity 变量的类型。Infinity 是 JS 语言内置的一个全局属性，它表示一个无穷大的数值。
+
+##### 4.7.1.2 外部函数声明
+
+外部函数声明定义了一个函数类型，语法如下所示：
+
+```ts
+declare function f(a: string, b: boolean): void;
+```
+
+外部函数声明使用 `declare function` 关键字来定义。**外部函数声明中不允许带有函数实现，只能定义函数类型**。例如，有如下目录结构的工程：
+
+C:\app
+|--index.ts
+|--typings.d.ts
+`--tsconfig.json
+
+```ts
+// typings.d.ts
+declare function alert(message?: any): void;
+```
+
+```ts
+// index.ts
+alert('Hello,World!');
+```
+
+此例中，编译器能够从 “typings.d.ts” 文件中获取 alert 函数的类型。alert 函数是 JS 语言内置的一个全局函数，它能够在浏览器中显示一个弹窗消息。
+
+##### 4.7.1.3 外部类声明
+
+外部类声明定义了一个类类型，语法如下所示：
+
+```ts
+declare class C {
+  //静态成员声
+  public static s0(): string;
+  private static s1: string;
+  // 属性声明
+  public a: number;
+  private b: number;
+  // 构造函数声明
+  constructor(arg: number);
+  // 方法声明
+  m(x: number, y: number): number;
+  // 存取器声明
+  get c(): number;
+  set c(value: number);
+  // 索引签名声明
+  [index: string]: any;
+}
+```
+
+外部类声明使用 `declare class` 关键字来定义。**外部类声明中的成员不允许带有具体实现，只允许定义类型**。例如，类的方法和构造函数不允许带有具体实现，类的属性声明不允许定义初始值等。例如，有如下目录结构的工程：
+
+C:\app
+|--index.ts
+|--typings.d.ts
+`--tsconfig.json
+
+```ts
+// typings.d.ts
+declare class Circle {
+  readonly radius: number;
+  constructor(radius: number);
+  area(): number;
+}
+```
+
+```ts
+// index.ts
+const circle = new Circle(10);
+const area: number = circle.area();
+```
+
+此例中，编译器能够从 "typings.d.ts" 文件中获取 Circle 类的类型。若想要实际运行此例中的代码，还需要给出 Circle 类的具体定义。"typings.d.ts" 中只声明了 Circle 类的类型，而没有提供具体定义。
+
+##### 4.7.1.4 外部枚举声明
+
+外部枚举声明定义了一个枚举类型。外部枚举声明与常规的枚举声明的语法是相同的，具体如下所示：
+
+```ts
+declare enum Foo {
+  A,
+  B
+}
+declare enum Bar {
+  A = 0,
+  B = 1
+}
+declare const enum Baz {
+  A,
+  B
+}
+declare const enum Qux {
+  A = 0,
+  B = 1
+}
+```
+
+外部枚举声明与常规枚举声明主要有以下两点不同：
+
+- 在外部枚举声明中，枚举成员的值必须为常量枚举表达式，例如数字字面量、字符串字面量或简单算术运算等。
+
+- 在使用了 "declare enum" 的外部枚举中，若枚举成员省略了初始值，则会被视为计算枚举成员，因此不会被赋予一个自增长的初始值，如 0、1 和 2 等。
+
+例如，有如下目录结构的工程：
+
+C:\app
+|--index.ts
+|--typings.d.ts
+·---tsconfig.json
+
+```ts
+// typings.d.ts
+declare enum Direction {
+  Up,
+  Down,
+  Left,
+  Right
+}
+```
+
+```ts
+// index.ts
+let direction: Direction = Direction.Up;
+```
+
+此例中，编译器能够从 "typings.d.ts" 文件中获取 Direction 枚举的类型。若想要实际运行此例中的代码，还需要给出 Direction 枚举的具体定义。"typings.d.ts" 中只声明了 Direction 枚举的类型，而没有提供具体定义。
+
+##### 4.7.1.5 外部命名空间声明
+
+外部命名空间声明定义了一个命名空间类型，语法如下所示：
+
+```ts
+declare namespace Foo {
+  // 外部变量声明
+  var a: boolean;
+
+  // 嵌套的外部命名空间声明
+  namespace inner {
+    function foo(bar: string): void;
+  }
+}
+```
+
+外部命名空间的成员默认为导出成员，不需要使用 export 关键字来明确地导出它们，但使用了 export 关键字也没有错误。
+
+#### 4.7.2 外部模块声明
+
+外部模块声明定义了一个模块类型。**外部模块声明只能在文件的顶层定义，并且存在于全局命名空间当中**。语法如下所示：
+
+```ts
+declare module 'io' {
+  export function readFile(filename: string): string;
+}
+```
+
+在该语法中，`declare module` 是关键字，它后面跟着一个表示模块名的字符串，模块名中不能使用路径。例如，有如下目录结构的工程：
+
+C:\app
+|--index.ts
+|--typings.d.ts
+`--tsconfig.json
+
+```ts
+// typings.d.ts
+declare module 'io' {
+  export function readFile(filename: string): string;
+}
+```
+
+```ts
+// index.ts
+import { readFile } from 'io';
+const content: string = readFile('hello.ts');
+```
+
+### 4.8 使用声明文件
+
+TypeScript 中的 ".d.ts" 声明文件主要有以下几种来源：
+
+- TypeScript 语言内置的声明文件
+- 安装的第三方声明文件
+- 自定义的声明文件
+
+#### 4.8.1 语言内置的声明文件
+
+在计算机中安装了 TypeScript 语言后，同时也安装了一些语言内置的声明文件，它们位于 TypeScript 语言安装目录下的 lib 文件夹中。
+
+TypeScript 语言内置的声明文件统一使用 "lib.[description].d.ts" 命名方式，其中，description 部分描述了该声明文件的内容。在这些声明文件中，既定义了标准的 JS API，如 Array API、MathAPI 以及 Date API 等，也定义了特定于某种 JS 运行环境的 API，如 DOM API 和 Web Workers API 等。
+
+TypeScript 编译器在编译代码时能够自动加载内置的声明文件。因此，可以在代码中直接使用那些标准 API，而不需要进行特殊的配置。例如，可以在代码里直接使用标准的 DOM 方法，TypeScript 能够从内置的声明文件 "lib.dom.d.ts" 中获取该方法的类型信息并进行类型检查。示例如下：
+
+```ts
+const button = document getElementById('btn');
+```
+
+#### 4.8.2 第三方声明文件
+
+如果工程中使用了某个第三方代码库，例如 jQuery，通常也想要安装该代码库的声明文件。这样，TypeScript 编译器就能够对代码进行类型检查，同时代码编辑器也能够根据声明文件中的类型信息来提供代码自动补全等功能。
+
+在尝试安装某个第三方代码库的声明文件时，可能会遇到以下三种情况，下面以 jQuery 为例：
+
+- 在安装 jQuery 时，jQuery 的代码包中已经内置了它的声明文件。
+- 在安装 jQuery 时，jQuery 的代码包中没有内置的声明文件，但是在 DefinitelyTyped 网站上能够找到 jQuery 的声明文件。
+- 通过以上方式均找不到 jQuery 的声明文件，需要自定义 jQuery 的声明文件。
+
+##### 4.8.2.1 含有内置声明文件
+
+实际上，在 jQuery 的代码包中没有包含内置的声明文件。本节将以 RxJS 代码库为例，在 RxJS 的代码包中内置了 TypeScript 声明文件。RxJS 是一个支持响应式编程的代码库，主要用于处理基于事件的异步数据流。在开始之前需要安装 Node.js 并对工程进行简单的初始化。关于 Node.js 环境配置的详细介绍请参考第 9 章。<!--TODO-->
+
+假设当前工程目录结构如下：
+
+C:\app
+|--index.ts
+|--package.json
+`--tsconfig.json
+
+在 “C:\app” 目录下运行 npm 命令来安装 RXJS。在安装后，工程目录结构如下：
+
+C:\app
+|--index ts
+|--node_modules
+|--rxjs
+|--|--<省略了部分文件>
+|--|--index.d.ts
+|--|--index.js
+|--package.json
+`--tsconfig.json
+
+在 “C:\app\node_modules\rxjs” 目录中存在一个 "index.d.ts" 文件，它就是 RxJS 代码库内置的 TypeScript 声明文件。通常来讲，若代码库的安装目录中包含 ".d.ts" 文件，则说明该代码库提供了内置的声明文件。
+
+在 “C:\app\index.ts” 中使用 RxJS 时，编译器能够正确地进行类型检查并提供智能提示功能：
+
+```ts
+// 从 rxjs 模块中导入了 Observable 对象，编译器能够自动地从 “C:\app\node_modules\rxjs\index.d.ts” 文件中读取 Observable 的类型声明。
+import { Observable } from 'rxjs';
+const observable = new Observable(subscriber => {
+  subscriber.next(1);
+  setTimeout(() => {
+    subscriber.next(2);
+    subscriber.complete();
+  }, 1000);
+});
+
+observable.subscribe({
+  next(x) {
+    console.log('got value' + x);
+  },
+  error(err) {
+    console.error('something wrong occurred:' + err);
+  },
+  complete() {
+    console.log('done');
+  }
+});
+```
+
+[DefinitelyTyped](https://definitelytyped.org/)是一个公开的集中式的 TypeScript 声明文件代码仓库，该仓库中包含了数千个代码库的声明文件。DefinitelyTyped 托管在 GitHub 网站上，由开源社区和 TypeScript 开发团队共同维护。如果正在使用的第三方代码库没有内置的声明文件，那么可以尝试在 DefinitelyTyped 仓库中搜索声明文件。
+
+##### 4.8.2.2 typings 与 types
+
+每个 npm 包都有一个标准的 “package.json” 文件，该文件描述了当前 npm 包的基础信息。该文件中比较重要的属性有表示包名的 name 属性、表示版本号的 version 属性和表示入口脚本的 main 属性等。
+
+TypeScript 扩展了 "package.json" 文件，增加了 `typings` 属性和 `types` 属性。虽然两者的名字不同，但是作用相同，它们都用于指定当前 npm 包提供的声明文件。假设有如下目录结构的工程：
+
+C:\my-package
+|--index.js
+|--index.d.ts
+`--package.json
+
+"package.json" 文件的内容如下：
+
+```json
+{
+  "name": "my-package",
+  "main": "index.js",
+  "typings": "index.d.ts"
+}
+```
+
+此例中，使用 typings 属性定义了 "my-package" 包的声明文件为 "index.d.ts" 文件。当 TypeScript 编译器进行模块解析时，将会读取该属性的值并使用指定的 “index.d.ts” 文件作为声明文件。这里也可以将 typings 属性替换为 types 属性，两者是等效的。关于模块解析的详细介绍请参考 7.9 节。<!--TODO-->
+
+如果一个 npm 包的声明文件为 "index.d.ts" 且位于 npm 包的根目录下，那么在 "package.json" 文件中也可以省略 typings 属性和 types 属性，因为编译器在进行模块解析时，若在 "package.json" 文件中没有找到 typings 属性和 types 属性，则将默认使用名为 "index.d.ts" 的文件作为声明文件。
+
+##### 4.8.2.3 typesVersions
+
+每个声明文件都有其兼容的 TypeScript 语言版本。例如，如果一个声明文件中使用了 TypeScript 3.0 才开始支持的 unknown 类型，那么在使用该声明文件时，需要安装 TypeScript 3.0 或以上的版本。
+
+在 TypeScript 3.1 版本中，编译器能够根据当前安装的 TypeScript 版本来决定使用的声明文件，该功能是通过 “package.json” 文件中的 `typesVersions` 属性来实现的。假设有如下目录结构的工程：
+
+C:\my-package
+|--ts3.1
+|--|--index.d.ts
+|--ts3.7
+|--|--index.d.ts
+|--index.d.ts
+`--index.js
+
+"package.json" 文件的内容如下：
+
+```json
+{
+  "name": "my-package",
+  "version": "1.0.0",
+  "main": "index.js",
+  "typings": "index.d.ts",
+  "typesVersions": {
+    ">=3.7": {
+      "*": ["ts3.7/*"]
+    },
+    ">=3.1": {
+      "*": ["ts3.1/*"]
+    }
+  }
+}
+```
+
+需要注意的是，typesVersions 中的声明顺序很关键，编译器将从第一个声明（此例中为 “>=3.7”）开始尝试匹配，若匹配成功，则应用匹配到的值并退出。因此，若将此例中的两个声明调换位置，则会产生不同的结果。
+
+此外，如果 typesVersions 中不存在匹配的版本，如当前安装的是 TypeScript 2.0 版本，那么编译器将使用 typings 属性和 types 属性中定义的声明文件。
+
+#### 4.8.3 自定义声明文件
+
+如果使用的第三方代码库没有提供内置的声明文件，而且在 DefinitelyTyped 仓库中也没有对应的声明文件，那么就需要开发者自己编写一个声明文件。
+
+在[外部声明](#47-外部声明)中介绍了如何编写声明文件，但如果不想编写一个详尽的声明文件，而只是想要跳过对某个第三方代码库的类型检查，则可以使用下面介绍的方法。
+
+以 jQuery 为例自定义一个 jQuery 声明文件，让编译器不对 jQuery 进行类型检查。假设当前工程目录结构如下：
+
+C:\app
+|--index.ts
+|--package.json
+`--tsconfig.json
+
+接下来，在 “C:\app” 目录下创建一个 “.d.ts” 声明文件，例如 "jquery.d.ts"。"jquery.d.ts" 声明文件的内容如下：
+
+```ts
+ declare module jquery;
+```
+
+此例中的代码是外部模块声明，该声明会将 jquery 模块的类型设置为 any 类型。在 “C:\applindex.ts” 文件中，可以通过如下方式使用 jQuery 声明文件：
+
+```ts
+import * as $ from 'jquery';
+$('p').show(); // 类型为：any
+```
+
+此例中，jquery 模块中所有成员的类型都成了 any 类型，这等同于不对 jQuery 进行类型检查。
+
+### 4.9 模块解析
+
+当在程序中导入了一个模块时，编译器会去查找并读取导入模块的定义，将该过程叫作模块解析。模块解析的过程受以下因素影响：
+
+- 相对模块导入与非相对模块导入
+- 模块解析策略
+- 模块解析编译选项
+
+本节将先介绍如何判断相对模块导入与非相对模块导入，然后介绍 TypeScript 中的两种模块解析策略是如何解析相对模块导入和非相对模块导入的，最后还会介绍一些与模块解析相关的编译选项，这些编译选项能够配置模块解析的具体行为。
+
+#### 4.9.1 相对模块导入
+
+在模块导入语句中，若模块名以下列符号开始，那么它就是相对模块导入:
+
+- **/**：表示系统根目录
+- **./**：表示当前目录
+- **../**：表示上一级目录
+
+在解析相对模块导入语句中的模块名时，将参照当前模块文件所在的目录位置。
+
+#### 4.9.2 非相对模块导入
+
+在模块导入语句中，若模块名不是以 “/”、“./” 和 “../” 符号开始，那么它就是非相对模块导入。例如，下面的两个导入语句都是非相对模块导入：
+
+```ts
+import { Observable } from 'rxjs';
+import { Component } from '@angular/core';
+```
+
+#### 4.9.3 模块解析策略
+
+TypeScript 提供了两种模块解析策略，分别是：
+
+- Classic 策略。
+- Node 策略。
+
+模块解析策略可以使用 `--moduleResolution` 编译选项来指定，示例如下：
+
+```sh
+tsc --moduleResolution Classic
+```
+
+模块解析策略也可以在 “tsconfig.json” 配置文件中使用 `moduleResolution` 属性来设置，示例如下：
+
+```json
+{
+  "compilerOptions": {
+    "moduleResolution": "Node"
+  }
+}
+```
+
+当没有设置模块的解析策略时，默认的模块解析策略与 “--module" 编译选项的值有关。["--module"](#468-module) 编译选项用来设置编译生成的 JS 代码使用的模块格式。
+
+若 "--module" 编译选项的值为 CommonJS，则默认的模块解析策略为 Node。示例如下：
+
+```sh
+tsc --module CommonJS
+# 等同于：
+tsc --module CommonJS --moduleResolution Node
+```
+
+若 "--module" 编译选项的值不为 CommonJS，则默认的模块解析策略为 Classic。示例如下：
+
+```sh
+tsc --module ES6
+# 等同于：
+tsc --module ES --moduleResolution Classic
+```
+
+#### 4.9.4 模块解析策略之 Classic
+
+Classic 模块解析策略是 TypeScript 最早提供的模块解析策略，它尝试将模块名视为一个文件进行解析。
+
+##### 4.9.4.1 解析相对模块导入
+
+在 Classic 模块解析策略下，相对模块导入的解析过程包含以下两个阶段：
+
+1. 将导入的模块名视为文件，并在指定目录中查找 TypeScript 文件。
+
+2. 将导入的模块名视为文件，并在指定目录中查找 JS 文件。
+
+假设有如下目录结构的工程：
+
+C:\app
+`--a.ts
+
+在 "a.ts" 模块文件中使用相对模块导入语句导入了模块 b：
+
+```ts
+import * as B from './b';
+```
+
+在 Classic 模块解析策略下，模块 b 的解析过程如下：
+
+1. 查找 “C:/app/b.ts"
+2. 查找 “C:/app/b.tsx"
+3. 查找 “C:/app/b.d.ts"
+4. 查找 “C:/app/b.js"
+5. 查找 “C:/app/b.jsx"
+
+在查找模块文件的过程中，一旦找到匹配的文件，就会停止搜索。
+
+##### 4.9.4.2 解析非相对模块导入
+
+在 Classic 模块解析策略下，非相对模块导入的解析过程包含以下三个阶段：
+
+1. 将导入的模块名视为文件，从当前目录开始向上遍历至系统根目录，并查找 TypeScript 文件。
+2. 将导入的模块名视为安装的声明文件，从当前目录开始向上遍历至系统根目录，并在每一级目录下的 "node_modules/@types" 文件夹中查找安装的声明文件。
+3. 将导入的模块名视为文件，从当前目录开始向上遍历至系统根目录，并查找 JS 文件。
+
+在 Classic 模块解析策略下，非相对模块导入的解析与相对模块导入的解析相比较有以下几点不同：
+
+- 解析相对模块导入时只会查找指定的一个目录；解析非相对模块导入时会向上遍历整个目录树。
+- 解析非相对模块导入比解析相对模块导入多了一步，即在每一层目录的 "node_modules/@types" 文件夹中查找是否安装了要导入的声明文件。
+
+例如，有如下目录结构的工程：
+
+C:\app
+`--a.ts
+
+在 “a.ts” 模块文件中使用非相对模块导入语句导入了模块 b，下面分别介绍在 Classic 模块解析策略下，模块 b 的解析过程：
+
+1. 第一阶段，遍历目录树并查找 TypeScript 文件。具体步骤如下：
+
+   1. 查找文件 "C:/app/b.ts"
+   2. 查找文件 "C:/app/b.tsx"
+   3. 查找文件 "C:/app/b.d.ts"
+   4. 查找文件 "C:/b.ts"
+   5. 查找文件 "C:/b.tsx"
+   6. 查找文件 "C:/b.d.ts"
+
+2. 第二阶段，遍历目录树并在每一级目录下查找是否在 "node_modules/@types" 文件夹中安装了要导入的声明文件。具体步骤如下：
+
+   1. 查找文件 "C:/app/node_modules/@types/b.d.ts"
+   2. 如果 "C:/app/node_modules/@types/b/package.json" 文件存在，且包含了 typings 属性或 types 属性（假设属性值为 "typings.d.ts"），那么：
+
+      1. 查找文件 "C:/app/node_modules/@types/b/typings.d.ts"
+      2. 查找文件 "C:/app/node_modules/@types/b/typings.d.ts.ts"（注意，尝试添加 “.ts” 文件扩展名）。
+      3. 查找文件 "C:/app/node_modules/@types/b/typings.d.ts.tsx"（注意，尝试添加 “.tsx” 文件扩展名）。
+      4. 查找文件 "C:/app/node_modules/@types/b/typings.d.ts.d.ts"（注意，尝试添加 ".d.ts" 文件扩展名）。
+      5. 若存在目录 "C:/app/node_modules/@types/b/typings.d.ts/"，则：
+
+      - 查找文件 "C:/app/node_modules/@types/b/typings.d.ts/index.ts"
+      - 查找文件 "C:/app/node_modules/@types/b/typings.d.ts/index.tsx"
+      - 查找文件 "C:/app/node_modules/@types/b/typings.d.ts/index.d.ts"
+
+   3. 查找文件 "C:/app/node_modules/@types/b/index.d.ts"
+   4. 查找文件 "C:/node_modules/@types/b.d.ts"（注意，第 4~6 步与第 1~3 步的流程相同，区别是在上一级目录 “C:/” 中继续搜索）
+   5. 如果文件 "C:/node_modules/@types/b/package.json" 存在，且包含了 typings 属性或 types 属性（假设属性值为 "./typings.d.ts"），那么：
+      1. 查找文件 "C:/node_modules/@types/b/typings.d.ts"
+      2. 查找文件 "C:/node_modules/@types/b/typings.d.ts.ts"（注意，尝试添加 “.ts” 文件扩展名）。
+      3. 查找文件 "C:/node_modules/@types/b/typings.d.ts.tsx"（注意，尝试添加 “.tsx” 文件扩展名）。
+      4. 查找文件 "C:/node_modules/@types/b/typings.d.ts.d.ts"（注意，尝试添加 “.d.ts” 文件扩展名）。
+      5. 若存在目录 "C:/node_modules/@types/b/typings.d.ts/"，则：
+         - 查找文件 "C:/node_modules/@types/b/typings.d.ts/index.ts"
+         - 查找文件 "C:/node_modules/@types/b/typings.d.ts/index.tsx"
+         - 查找文件 "C:/node_modules/@types/b/typings.d.ts/index.d.ts"
+   6. 查找文件 "C:/node_modules/@types/b/index.d.ts"
+
+3. 第三阶段，遍历目录树并查找 JS 文件。具体步骤如下：
+
+   1. 查找文件 "C:/app/b.js"
+   2. 查找文件 "C:/app/b.jsx"
+   3. 查找文件 "C:/b.js"
+   4. 查找文件 "C:/b.jsx"
+
+在查找模块文件的过程中，一旦找到匹配的文件，就会停止搜索。
+
+#### 4.9.5 模块解析策略之 Node
+
+Node 模块解析策略是 TypeScript1.6 版本中引入的，它因模仿了 Node.js 的模块解析策略而得名。在实际工程中，可能更想要使用 Node 模块解析策略，因为它的功能更加丰富。
+
+##### 4.9.5.1 解析相对模块导入
+
+在 Node 模块解析策略下，相对模块导入的解析过程包含以下几个阶段：
+
+1. 将导入的模块名视为文件，并在指定目录中查找 TypeScript 文件
+2. 将导入的模块名视为目录，并在该目录中查找 "package.json" 文件，然后解析 "package.json" 文件中的 typings 属性和 types 属性
+3. 将导入的模块名视为文件，并在指定目录中查找 JS 文件
+4. 将导入的模块名视为目录，并在该目录中查找 "package.json" 文件，然后解析 "package.json" 文件中的 main 属性。
+
+假设有如下目录结构的工程：
+
+C:\app
+`--a.ts
+
+在 “a.ts” 模块文件中使用相对模块导入语句导入了模块 b。示例如下：
+
+```ts
+import * as B from './b';
+```
+
+下面分别介绍在 Node 模块解析策略下，模块 b 的解析过程。
+
+1. 第一阶段，将导入的模块名视为文件，并在指定目录中依次查找 TypeScript 文件。具体步骤如下：
+
+   1. 查找文件 "C:/app/b.ts"
+   2. 查找文件 "C:/app/b.tsx"
+   3. 查找文件 "C:/app/b.d.ts"。
+
+2. 第二阶段，将导入的模块名视为目录，并在该目录中查找 "package.json" 文件，然后解析 "package.json" 文件中的 typings 属性和 types 属性。具体步骤如下：
+
+   1. 如果 "C:/app/b/package.json" 文件存在，且包含了 typings 属性或 types 属性（假设属性值为 "typings.d.ts"），那么：
+      1. 查找文件 "C:/app/b/typings.d.ts"
+      2. 查找文件 "C:/app/b/typings.d.ts.ts"（注意，尝试添加 ".ts" 文件扩展名）。
+      3. 查找文件 "C:/app/b/typings.d.ts.tsx"（注意，尝试添加 ".tsx" 文件扩展名）。
+      4. 查找文件 "C:/app/b/typings.d.ts.d.ts"（注意，尝试添加 ".d.ts" 文件扩展名）。
+      5. 如果存在目录 "C:/app/b/typings.d.ts/"，那么：
+         1. 查找文件 "C:/app/b/typings.d.ts/index.ts"。
+         2. 查找文件 "C:/app/b/typings.d.ts/index.tsx"。
+         3. 查找文件 "C:/app/b/typings.d.ts/index.d.ts"。
+   2. 查找文件 "C:/app/b/index.ts"
+   3. 查找文件 "C:/app/b/index.tsx"
+   4. 查找文件 "C:/app/b/index.d.ts"
+
+3. 第三阶段，将导入的模块名视为文件，并在指定目录中依次查找 JS 文件。具体步骤如下：
+
+   1. 查找文件 "C:/app/b.js"
+   2. 查找文件 "C:/app/b.jsx"
+
+4. 第四阶段，将导入的模块名视为目录，并在该目录中查找 "package.json" 文件，然后解析 "package.json" 文件中的 main 属性，具体步骤如下：
+
+   1. 如果 "C:/app/b/package.json" 文件存在，且包含了 main 属性（假设属性值为 "main.js"），那么：
+
+      1. 查找文件 "C:/app/b/main.js"
+      2. 查找文件 "C:/app/b/main.js.js"（注意，尝试添加 ".js" 文件扩展名）。
+      3. 查找文件 "C:/app/b/main.js.jsx”（注意，尝试添加 ".jsx" 文件扩展名）。
+      4. 查找文件 "C:/app/b/main.js”（注意，尝试删除文件扩展名后再添加 “js” 文件扩展名）。
+      5. 查找文件 "C:/app/b/main.jsx"（注意，尝试删除文件扩展名后再添加 “jsx” 文件扩展名）。
+      6. 如果存在目录 "C:/app/b/main.js/"，那么：
+         1. 查找文件 "C:/app/b/main.js/index.js"
+         2. 查找文件 "C:/app/b/main.js/index.jsx"
+
+   2. 查找文件 "C:/app/b/index.js"
+   3. 查找文件 "C:/app/b/index.jsx"
+
+在查找模块文件的过程中，一旦找到匹配的文件，就会停止搜索。
+
+##### 4.9.5.2 解析非相对模块导入
+
+在 Node 模块解析策略下，非相对模块导入的解析过程包含以下几个阶段：
+
+1. 将导入的模块名视为文件，并在当前目录下的 "node_modules" 文件夹中查找 TypeScript 文件。
+
+2. 将导入的模块名视为目录，并在当前目录下的 "node_modules" 文件夹中查找给定目录下的 "package.json" 文件，然后解析 "package.json" 文件中的 typings 属性和 types 属性。
+
+3. 将导入的模块名视为安装的声明文件，并在当前目录下的 "node_modules/@types" 文件夹中查找安装的声明文件。
+
+4. 重复第 1~3 步的查找过程，从当前目录开始向上遍历至系统根目录。
+
+5. 将导入的模块名视为文件，并在当前目录下的 "node_modules" 文件夹中查找 JS 文件。
+
+6. 将导入的模块名视为目录，并在当前目录下的 "node_modules" 文件夹中查找给定目录下的"package.json"文件，然后解析"package.json"文件中的 main 属性。
+
+7. 重复第 5~6 步的查找过程，从当前目录开始向上遍历至系统根目录。
+
+假设有如下目录结构的工程：
+
+C:\app
+`--a.ts
+
+在 "a.ts" 模块文件中使用非相对模块导入语句导入了模块 b。下面分别介绍在 Node 模块解析策略下，模块 b 的解析过程：
+
+1. 第一阶段，将导入的模块名视为文件，并在当前目录下的 "node_modules" 文件夹中查找 TypeScript 文件。具体步骤如下：
+
+   1. 查找文件 "C:/app/node_modules/b.ts"
+   2. 查找文件 "C:/app/node_modules/b.tsx"
+   3. 查找文件 "C:/app/node_modules/b.d.ts"
+
+2. 第二阶段，将导入的模块名视为目录，并在当前目录下的 "node_modules" 文件夹中查找给定目录下的 "package.json" 文件，然后解析 “package.json” 文件中的 typings 属性和 types 属性。具体步骤如下：
+
+   1. 如果 "C:/app/node_modules/b/package.json" 文件存在，且包含了 typings 属性或 types 属性（假设属性值为"typings.d.ts"），那么：
+      1. 查找文件 "C:/app/node_modules/b/typings.d.ts"
+      2. 查找文件 "C:/app/node_modules/b/typings.d.ts.ts"（注意，尝试添加 “.ts” 文件扩展名）。
+      3. 查找文件 "C:/app/node_modules/b/typings.d.ts.tsx"（注意，尝试添加 “.tsx” 文件扩展名）。
+      4. 查找文件 “C:/app/node_modules/b/typings.d.ts.d.ts"（注意，尝试添加 ".d.ts" 文件扩展名）。
+      5. 若存在目录 "C:/app/node_modules/b/typings.d.ts/"，则：
+         1. 查找文件 "C:/app/node_modules/b/typings.d.ts/index.ts"
+         2. 查找文件 "C:/app/node_modules/b/typings.d.ts/index.tsx"
+         3. 查找文件 "C:/app/node_modules/b/typings.d.ts/index.d.ts"
+   2. 查找文件 "C:/app/node_modules/b/index.ts"
+   3. 查找文件 "C:/app/node_modules/b/index.tsx"
+   4. 查找文件 "C:/app/node_modules/b/index.d.ts"
+
+3. 第三阶段，将导入的模块名视为安装的声明文件，并在当前目录下的 "node_modules/@types" 文件夹中查找安装的声明文件。具体步骤如下：
+
+   1. 查找文件 "C:/app/node_modules/@types/b.d.ts"
+   2. 如果 "C:/app/node_modules/@types/b/package.json" 文件存在，且包含了 typings 属性或 types 属性（假设属性值为 "typings.d.ts"），那么：
+      1. 查找文件 "C:/app/node_modules/@types/b/typings.d.ts"
+      2. 查找文件 "C:/app/node_modules/@types/b/typings.d.ts.ts"（注意，尝试添加 ".ts" 文件扩展名）。
+      3. 查找文件 "C:/app/node_modules/@types/b/typings.d.ts.tsx"（注意，尝试添加 ".tsx" 文件扩名）。
+      4. 查找文件 "C:/app/node_modules/@types/b/typings.d.ts.d.ts"（注意，尝试添加 ".d.ts" 文件扩展名）。
+      5. 如果存在目录 "C:/app/node_modules/@types/b/typings.d.ts/"，那么
+         1. 查找文件 "C:/app/node_modules/@types/b/typings.d.ts/index.ts"
+         2. 查找文件 "C:/app/node_modules/@types/b/typings.d.ts/index.tsx"
+         3. 查找文件“C:/app/node_modules/@types/b/typings.d.ts/index.d.ts"
+   3. 查找文件 "C:/app/node_modules/@types/b/index.d.ts"
+
+4. 第四阶段，重复第一阶段至第三阶段的查找步骤，只不过是在上一级目录 “C:/” 下继续搜索。
+
+5. 第五阶段，将导入的模块名视为文件，并在当前目录中的 "node_modules" 文件夹下查找 JS 文件：
+
+   1. 查找文件 "C:/app/node_modules/b.js"
+   2. 查找文件 "C:/app/node_modules/b.jsx"
+
+6. 第六阶段，将导入的模块名视为目录，并在当前目录下的 "node_modules" 文件夹中查找给定目录下的 "package.json" 文件，然后解析"package.json"文件中的 main 属性。具体步骤如下：
+
+   1. 如果 "C:/app/node_modules/b/package.json" 文件存在，且包含了 main 属性（假设属性值为"main.js"），那么：
+      1. 查找文件 "C:/app/node_modules/b/main.js"
+      2. 查找文件 "C:/app/node_modules/b/main.js.js"（注意，尝试添加 ".js" 文件扩展名）。
+      3. 查找文件 "C:/app/node_modules/b/main.js.jsx”（注意，尝试添加 ".jsx" 文件扩展名）。
+      4. 查找文件 "C:/app/node_modules/b/main.js"（注意，尝试删除文件扩展名后再添加 “.js” 文件扩展名）。
+      5. 查找文件 "C:/app/node_modules/b/main.jsx"（注意，尝试删除文件扩展名后再添加 “.jsx” 文件扩展名）。
+      6. 如果存在目录 "C:/app/node_modules/b/main.js/"，那么：
+         1. 查找文件 "C:/app/node_modules/b/main.js/index.js"
+         2. 查找文件 "C:/app/node_modules/b/main.js/index.jsx"
+   2. 查找文件 "C:/app/node_modules/b/index.js"
+   3. 查找文件 "C:/app/node_modules/b/index.jsx"
+
+7. 第七阶段，重复第五阶段至第六阶段的查找步骤，只不过是在上一级目录 “C:/” 下继续搜索。
+
+在查找模块文件的过程中，一旦找到匹配的文件，就会停止搜索。
+
+#### 4.9.6 --baseUrl
+
+`--baseUrl` 编译选项用来设置非相对模块导入的基准路径。在解析相对模块导入时，将不受 `--baseUrl` 编译选项值的影响。
+
+##### 4.9.6.1 设置 --baseUrl
+
+该编译选项既可以在命令行上指定，也可以在 "tsconfig.json" 配置文件中进行设置。
+
+在命令行上使用 `--baseUrl` 编译选项，示例如下：
+
+```ts
+tsc --baseUrl ./
+```
+
+此例中，将 `--baseUrl` 编译选项的值设置为当前目录 "./"，参照的是执行 tsc 命令时所在的目录。
+
+在 "tsconfig.json" 配置文件中使用 baseUrl 属性来设置 "--baseUrl" 编译选项：
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": "./"
+  }
+}
+```
+
+此例中，将 baseUrl 设置为当前目录 "./"，参照的是 "tsconfig.json" 配置文件所在的目录。
+
+##### 4.9.6.2 解析 --baseUrl
+
+当设置了 --baseUrl 编译选项时，非相对模块导入的解析过程包含以下几个阶段：
+
+1. 根据 "--baseUrl" 的值和导入的模块名，计算出导入模块的路径。
+2. 将导入的模块名视为文件，并查找 TypeScript 文件。
+3. 将导入的模块名视为目录，在该目录中查找 "package.json" 文件，然后解析 "package.json" 文件中的 typings 属性和 types 属性。
+4. 将导入的模块名视为目录，在该目录中查找 "package.json" 文件，然后解析 "package.json" 文件中的 main 属性。
+5. 忽略 "--baseUrl" 的设置并回退到使用 Classic 模块解析策略或 Node 模块解析策略来解析模块。
+
+当设置了 "--baseUrl" 编译选项时，相对模块导入的解析过程不受影响，将使用设置的 Classic 模块解析策略或 Node 模块解析策略来解析模块。假设有如下目录结构的工程：
+
+C:\app
+|--bar
+|--|--b.ts
+|--foo
+|--|--a.ts
+`--tsconfig.json
+
+"tsconfig.json" 文件的内容如下：
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": "./"
+  }
+}
+```
+
+此例中，将 "--baseUrl" 编译选项的值设置为 "tsconfig.json" 配置文件所在的目录，即 "C:\app"。
+
+```ts
+// a.ts
+import * as B from 'bar/b';
+```
+
+在解析非相对模块导入 "bar/b" 时，编译器会使用 "--baseUrl" 编译选项设置的基准路径 “C:\app” 计算出目标路径 “C:\app\bar\b”，然后根据上文列出的具体步骤去解析该模块。因此，最终能够成功地将模块 "bar/b" 解析为 "C:\app\bar\b.ts"。
+
+#### 4.9.7 paths
+
+paths 编译选项用来设置模块名和模块路径的映射，用于设置非相对模块导入的规则。
+
+##### 4.9.7.1 设置 paths
+
+`paths` 编译选项只能在 "tsconfig.json" 配置文件中设置，不支持在命令行上使用。由于 paths 是基于 "--baseUrl" 进行解析的，所以必须同时设置 "--baseUrl" 和 paths 编译选项。
+
+假设有如下目录结构的工程：
+
+C:\app
+|--bar
+|--|--b.ts
+|--foo
+|--|--a.ts
+`--tsconfig.json
+
+"tsconfig.json" 文件的内容如下：
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "b": ["bar/b"]
+    }
+  }
+}
+```
+
+此例中的 paths 设置会将对模块 b 的非相对模块导入映射到 "C:\app\bar\b" 路径。"a.ts" 文件的内容如下：
+
+```ts
+import * as B from 'b';
+```
+
+编译器在解析非相对模块导入 b 时，发现存在匹配的 paths 路径映射，因此会使用路径映射中的地址 “C:\app\bar\b” 作为模块路径去解析模块 b。
+
+##### 4.9.7.2 使用通配符
+
+在设置 paths 时，还可以使用通配符 `*`，它能够匹配任意路径。
+
+假设有如下目录结构的工程：
+
+C:\app
+|--bar
+|--|--b.ts
+|--foo
+|--|--a.ts
+`--tsconfig.json
+
+"tsconfig.json" 文件的内容如下：
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@bar/": ["bar/*"]
+    }
+  }
+}
+```
+
+此例中的 paths 设置会将对模块 “@bar/...” 的导入映射到 “C:\app\bar\...” 路径下。两个星号通配符代表相同的路径。"a.ts" 文件的内容如下：
+
+```ts
+import * as B from '@bar/b';
+```
+
+编译器在解析非相对模块导入 “@bar/b” 时，发现存在匹配的 paths 路径映射，因此会使用路径映射后的地址 “C:\app\bar\b” 作为模块路径去解析模块 b。
+
+#### 4.9.8 rootDirs
+
+`rootDirs` 编译选项能够使用不同的目录创建出一个虚拟目录，在使用时就好像这些目录被合并成了一个目录一样。在解析相对模块导入时，编译器会在 rootDirs 编译选项构建出来的虚拟目录中进行搜索。
+
+rootDirs 编译选项需要在 "tsconfig.json" 配置文件中设置，它的值是由路径构成的数组。
+
+假设有如下目录结构的工程：
+
+C:\app
+|--bar
+|--|--b.ts
+|--foo
+|--|--a.ts
+`--tsconfig.json
+
+"tsconfig.json" 文件的内容如下：
+
+```json
+{
+  "compilerOptions": {
+    "rootDirs": ["bar", "foo"]
+  }
+}
+```
+
+此例中的 rootDirs 创建了一个虚拟目录，它包含了 "C:\app\bar" 和 "C:\app\foo" 目录下的内容。"a.ts"文件的内容如下：
+
+```ts
+// a.ts
+import * as B from './b';
+```
+
+编译器在解析相对模块导入 "./b" 时，将会同时查找 “C:\app\bar” 目录和 “C:\app\foo” 目录。
+
+#### 4.9.9 导入外部模块声明
+
+在 Classic 模块解析策略和 Node 模块解析策略中，编译器都是在尝试查找一个与导入模块相匹配的文件。但如果最终未能找到这样的模块文件并且导入语句是非相对模块导入，那么编译器将继续在[外部模块声明](#47-外部声明)中查找导入的模块。
+
+例如，有如下目录结构的工程：
+
+C:\app
+|--foo
+|--|---a.ts
+|--|--typings.d.ts
+`--tsconfig.json
+
+```ts
+// typings.d.ts
+declare module 'mod' {
+  export function add(x: number, y: number): number;
+}
+```
+
+```ts
+// a.ts
+// 使用非相对模块导入语句来导入外部模块 "mod"
+import * as Mod from 'mod';
+Mod.add(1, 2);
+```
+
+> **注意**：在 “a.ts” 文件中无法使用相对模块导入来导入外部模块 "mod"。
+
+#### 4.9.10 --traceResolution
+
+在启用了 `--traceResolution` 编译选项后，编译器会打印出模块解析的具体步骤。不论是在学习 TypeScript 语言的过程中还是在调试代码的过程中，都可以通过启用该选项来了解编译器解析模块时的具体行为。随着 TypeScript 版本的更新，模块解析算法也许会有所变化，而 `--traceResolution` 的输出结果能够真实反映当前使用的 TypeScript 版本中的模块解析算法。
+
+该编译选项可以在命令行上指定，也可以在 "tsconfig.json" 配置文件中设置。
+
+在命令行上使用 "--traceResolution" 编译选项：
+
+```sh
+tsc --traceResolution
+```
+
+在 "tsconfig.json" 配置文件中使用 `traceResolution` 属性来设置：
+
+```json
+{
+  "compilerOptions": {
+    "traceResolution": true
+  }
+}
+```
+
+### 4.10 声明合并
+
+声明是编程语言中的基础结构，它描述了一个标识符所表示的含义。在 TypeScript 语言中，一个标识符总共可以有以下三种含义：
+
+- 表示一个值
+- 表示一个类型
+- 表示一个命名空间
+
+下例中，分别定义了值、类型和命名空间。其中，常量 zero 属于值，接口 Point 属于类型，而命名空间 Utils 则属于命名空间：
+
+```ts
+const zero = 0;
+interface Point {
+  x: number;
+  y: number;
+}
+namespace Utils {}
+```
+
+对于同一个标识符而言，它可以同时具有上述多种含义。例如，有一个标识符 A，它可以同时表示一个值、一种类型和一个命名空间。
+
+在同一声明空间内使用的标识符必须唯一。TypeScript 语言中的大部分语法结构都能够创建出新的声明空间，例如函数声明和类声明都能够创建出一个新的声明空间。最典型的声明空间是全局声明空间和模块声明空间。当编译器**发现同一声明空间内存在同名的声明时，会尝试将所有同名的声明合并为一个声明，即声明合并**；若发现无法进行声明合并，则会产生编译错误。声明合并是 TypeScript 语言特有的行为。在进行声明合并时，编译器会按照标识符的含义进行分组合并，即值和值合并、类型和类型合并以及命名空间和命名空间合并。但是并非所有同名的声明都允许进行声明合并，例如，常量声明 a 和函数声明 a 之间不会进行声明合并。
+
+接下来，将具体介绍 TypeScript 语言中的声明合并，包括接口声明、枚举声明、类声明、命名空间声明、扩充模块声明、扩充全局声明。
+
+#### 4.10.1 接口声明合并
+
+接口声明为标识符定义了类型含义。在同一声明空间内声明的多个同名接口会合并成一个接口声明。下例中，存在两个 A 接口声明，它们属于同一声明空间。编译器会将两个 A 接口声明中的类型成员合并到一起，合并后的接口 A 等同于接口 MergedA：
+
+```ts
+interface A {
+  a: string;
+}
+interface A {
+  b: number;
+}
+interface MergedA {
+  a: string;
+  b: number;
+}
+```
+
+若待合并的接口中存在同名的属性签名类型成员，那么这些同名的属性签名必须是相同的类型，否则会因为合并冲突而产生编译错误。例如，在下例的两个接口 A 中，属性成员 a 的类型分别为 number 类型和 string 类型，在合并接口时会发生冲突。示例如下：
+
+```ts
+interface A {
+  a: number;
+}
+
+interface A {
+  a: string; // 编译错误
+}
+```
+
+若待合并的接口中存在同名的方法签名类型成员，那么同名的方法签名类型成员会被视为函数重载，并且靠后定义的方法签名具有更高的优先级。例如，下例的两个 A 接口声明中都定义了方法签名类型成员 f。在合并后的接口 A 中，方法签名具有两个重载签名并且后声明的方法（第 6 行）具有更高的优先级。示例如下：
+
+```ts
+interface A {
+  f(x: any): void;
+}
+interface A {
+  f(x: string): boolean;
+}
+interface MergedA {
+  f(x: string): boolean;
+  f(x: any): void;
+}
+```
+
+合并重载签名的基本原则是后声明的重载签名具有更高优先级。但也存在一个例外，若重载签名的参数类型中包含字面量类型，则该重载签名具有更高的优先级：
+
+```ts
+interface A {
+  f(x: 'foo'): boolean;
+}
+interface A {
+  f(x: any): void;
+}
+
+interface MergedA {
+  f(x: 'foo'): boolean; // 先定义但有更高的优先级
+  f(x: any): void;
+}
+```
+
+若待合并的接口中存在多个调用签名类型成员或构造签名类型成员，那么它们将被视作函数重载和构造函数重载。与合并方法签名类型成员相同，后声明的调用签名类型成员和构造签名类型成员具有更高的优先级，同时也会参考参数类型中是否包含字面量类型：
+
+```ts
+interface A {
+  new (x: any): object;
+  (x: any): any;
+}
+interface A {
+  new (x: string): Date;
+  (x: string): string;
+}
+interface MergedA {
+  new (x: string): Date;
+  new (x: any): object;
+  (x: string): string;
+  (x: any): any;
+}
+```
+
+当涉及重载时，接口合并的顺序变得尤为重要，因为它将影响重载的解析顺序。
+
+若待合并的接口中存在多个字符串索引签名或数值索引签名，则将产生编译错误。在合并接口时，所有的接口中只允许存在一个字符串索引签名和一个数值索引签名：
+
+```ts
+interface A {
+  [prop: string]: string;
+}
+interface A {
+  [prop: number]: string;
+}
+interface MergedA {
+  [prop: string]: string;
+  [prop: number]: string;
+}
+```
+
+若待合并的接口是泛型接口，那么所有同名接口必须有完全相同的类型参数列表。若待合并的接口存在继承的接口，那么所有继承的接口会被合并为单一的父接口。在实际程序中，应避免复杂接口的合并行为，因为这会让代码变得难以理解。
+
+#### 4.10.2 枚举声明合并
+
+多个同名的枚举声明会合并成一个枚举声明。在合并枚举声明时，只允许其中一个枚举声明的首个枚举成员省略初始值：
+
+```ts
+enum E {
+  A // 首个枚举成员省略了初始值，因此 TypeScript会自动计算初始值
+}
+
+enum E {
+  B = 1 // 必须为首个枚举成员定义初始值，否则将产生编译错误，因为编译器无法在多个同名枚举声明之间自动地计算枚举值
+}
+
+let e: E;
+e = E.A;
+e = E.B;
+```
+
+枚举声明合并的另外一点限制是，多个同名的枚举声明必须同时为 const 或非 const 声明，不允许混合使用。
+
+#### 4.10.3 类声明合并
+
+TypeScript 不支持合并同名的类声明，但是外部类声明可以与接口声明进行合并，合并后的类型为类类型：
+
+```ts
+declare class C {
+  x: string;
+}
+interface C {
+  y: number;
+}
+
+let c: C = new C();
+c.x;
+c.y;
+```
+
+#### 4.10.4 命名空间声明合并
+
+命名空间的声明合并会稍微复杂一些，它可以与命名空间、函数、类和枚举进行合并。
+
+##### 4.10.4.1 命名空间与命名空间合并
+
+与合并接口类似，同名的命名空间也会进行合并。例如，编译器会将下例中的两个 Animals 命名空间进行合并，合并后的命名空间等同于命名空间 MergedAnimals：
+
+```ts
+namespace Animals {
+  export class Bird {}
+}
+namespace Animals {
+  export interface CanFly {
+    canFly: boolean;
+  }
+  export class Dog {}
+}
+
+namespace MergedAnimals {
+  export interface CanFly {
+    canFly: boolean;
+  }
+  export class Bird {}
+  export class Dog {}
+}
+```
+
+如果存在嵌套的命名空间，那么在合并外层命名空间时，同名的内层命名空间也会进行合并：
+
+```ts
+namespace outer {
+  export namespace inner {
+    export var x = 10;
+  }
+}
+namespace outer {
+  export namespace inner {
+    export var y = 20;
+  }
+}
+
+namespace MergedOuter {
+  export namespace inner {
+    export var x = 10;
+    export var y = 20;
+  }
+}
+```
+
+在**合并命名空间声明时，命名空间中的非导出成员不会被合并**，它们只能在各自的命名空间中使用：
+
+```ts
+namespace NS {
+  const a = 0;
+  export function foo() {
+    a; // 正确
+  }
+}
+
+namespace NS {
+  export function bar() {
+    foo(); // 正确
+    a; // 编译错误，找不到 a
+  }
+}
+```
+
+##### 4.10.4.2 命名空间与函数合并
+
+同名的命名空间声明与函数声明可以进行合并，但是要求函数声明必须位于命名空间声明之前，这样做能够确保先创建出一个函数对象。函数与命名空间合并就相当于给函数对象添加额外的属性：
+
+```ts
+function f() {
+  return f.version;
+}
+
+namespace f {
+  export const version = '1.0';
+}
+
+f(); // '1.0'
+f.version; //'1.0'
+```
+
+##### 4.10.4.3 命名空间与类合并
+
+同名的命名空间声明与类声明可以进行合并，但是要求类声明必须位于命名空间声明之前，这样做能够确保先创建出一个构造函数对象。命名空间与类的合并提供了一种创建内部类的方式：
+
+```ts
+class Outer {
+  inner: Outer.Inner = new Outer.Inner();
+}
+namespace Outer {
+  export class Inner {}
+}
+```
+
+也可以利用命名空间与类的声明合并来为类添加静态属性和方法：
+
+```ts
+class A {
+  foo: string = A.bar;
+}
+namespace A {
+  export let bar = 'A';
+  export function create() {
+    return new A();
+  }
+}
+
+const a: A = A.create();
+a.foo; // 'A'
+A.bar; // 'A'
+```
+
+##### 4.10.4.4 命名空间与枚举合并
+
+同名的命名空间声明与枚举声明可以进行合并。这相当于将枚举成员与命名空间的导出成员进行合并：
+
+```ts
+enum E {
+  A,
+  B,
+  C
+}
+namespace E {
+  export function foo() {
+    E.A;
+    E.B;
+    E.C;
+  }
+}
+
+E.foo();
+E.A;
+```
+
+> **注意**：枚举成员名与命名空间导出成员名不允许出现同名的情况。
+
+#### 4.10.5 扩充模块声明
+
+对于任意模块，通过模块扩充语法能够对模块内的已有声明进行扩展。例如，在 "a.ts" 模块中定义了一个接口 A，在 "b.ts" 模块中可以对 “a.ts” 模块中定义的接口 A 进行扩展，为其增加新的属性。假设有如下目录结构的工程：
+
+C:\app
+|--a.ts
+`--b.ts
+
+```ts
+// a.ts
+export interface A {
+  x: number;
+}
+```
+
+```ts
+// b.ts
+import { A } from './a';
+// 使用模块扩充语法对导入模块 "./a" 进行了扩充
+declare module './a' {
+  interface A {
+    y: number;
+  }
+}
+// 接口 A 增加了一个属性成员 y
+const a: A = { x: 0, y: 0 };
+```
+
+此例中，`declare module './a' {}` 是模块扩充语法。其中，"./a" 表示要扩充的模块名，它与第一行模块导入语句中的模块名一致。
+
+在进行模块扩充时有以下两点需要注意：
+
+- 不能在模块扩充语法中增加新的顶层声明，只能扩充现有的声明。也就是说，只能对 "./a" 模块中已经存在的接口 A 进行扩充，而不允许增加新的声明，例如新定义一个接口 B。
+
+- 无法使用模块扩充语法对模块的默认导出进行扩充，只能对命名模块导出进行扩充，因为在进行模块扩充时需要依赖于导出的名字。
+
+#### 4.10.6 扩充全局声明
+
+与模块扩充类似，TypeScript 还提供了全局对象扩充语法 `declare global {}`。示例如下：
+
+```ts
+// 使用 "export {}" 空导出语句，是因为全局对象扩充语句必须在模块或外部模块声明中使用，当添加了空导出语句后，该文件就成了一个模块。
+export {};
+declare global {
+  interface Window {
+    myAppConfig: object;
+  }
+}
+
+const config: object = window.myAppConfig;
+```
+
+此例中，"declare global {}" 是全局对象扩充语法，它扩展了全局的 Window 对象，增加了一个 myAppConfig 属性。全局对象扩充也具有和模块扩充相同的限制，不能在全局对象扩充语法中增加新的顶层声明，只能扩充现有的声明。
+
+## 五. TypeScript 配置管理
+
+主要内容：
+
+- 安装并使用 TypeScript 编译器来编译 TypeScript 程序
+- 如何使用编译选项
+- 使用 "tsconfig.json" 配置文件来管理 TypeScript 工程
+- 如何对 JS 代码进行类型检查
+- 如何使用三斜线指令
+
+将介绍如何组织和管理 TypeScript 工程。这其中包括了管理 TypeScript 工程中的文件，管理 TypeScript 工程的编译选项以及管理不同 TypeScript 工程之间的依赖关系。还会介绍如何编译由多个源文件组成的 TypeScrip 工程。
+
+### 5.1 编译器
+
+TypeScript 编译器是一段 JS 程序，能够对 TypeScript 和 JS 代码进行静态类型检查，并且可以将 TypeScript 程序编译为可执行的 JS 程序。TypeScript 编译器是自托管编译器（self-hosting compiler），它使用 TypeScript 语言进行开发。
+
+TypeScript 编译器程序位于 TypeScript 语言安装目录下的 lib 文件夹中。TypeScript 编译器对外提供了一个命令行工具用来编译 TypeScript 程序，它就是 tsc 命令。
+
+本节将详细介绍如何安装 TypeScript 编译器，以及如何使用 TypeScript 编译器来编译单个和多个 TypeScript 源文件。
+
+#### 5.1.1 安装编译器
+
+安装 TypeScript 编译器最简单的方式是使用 npm 工具，即 Node.js 包管理器。Node.js 的安装包中内置了 npm 工具，因此安装 Node.js 的同时会自动安装 npm 工具。
+
+安装了 Node.js 之后，在命令行窗口中运行下列命令来全局安装 TypeScript 语言：
+
+```sh
+npm install -g typescript
+```
+
+如果安装成功，那么该命令会打印出如下的输出信息（实际版本号与安装的版本有关）：
+
+```sh
++typescript@3.8.3
+```
+
+在不同的操作系统中，全局安装的 TypeScript 会被安装到不同的目录下。例如，在 Windows 系统中 TypeScript 会被安装到 "%AppData%\npm”目录下。
+
+根据 GNU 编码规范，每个命令行程序都应该提供 "--help" 和 "--version" 两个选项。TypeScript 编译器也提供了这两个标准的命令行选项。
+
+#### 5.1.2 编译程序
+
+在安装了 TypeScript 之后，就可以使用 tsc 命令来编译 TypeScript 工程了。
+
+##### 5.1.2.1 编译单个文件
+
+TypeScript 编译器最基本的使用方式是编译单个文件。假设，当前工程目录结构如下：
+
+C:\app
+`--index.ts
+
+```ts
+// index.ts
+function add(x: number, y: number): number {
+  return x + y;
+}
+```
+
+在 "C:\app" 目录下运行 tsc 命令来编译 "index.ts" 文件：
+
+```ts
+tsc index.ts
+```
+
+默认情况下，编译器会在 “C:\app” 目录下生成编译后的 "index.js" 文件，其内容如下：
+
+```js
+function add(x, y) {
+  return x + y;
+}
+```
+
+当前工程目录结构如下：
+
+C:\app
+|--index.js
+`--index.ts
+
+如果待编译文件的文件名中带有空白字符，如空格，那么就需要使用转义符号 `\` 或者使用单、双引号将文件名包围起来。
+
+假设当前工程目录结构如下：
+
+C:\app
+`--filename with spaces.ts
+
+在 "C:\app" 目录下运行 tsc 命令来编译 "filename with spaces.ts" 文件。示例如下：
+
+```sh
+# 使用双引号
+tsc "filename with spaces.ts"
+# 使用单引号
+tsc 'filename with spaces.ts'
+# 使用转义符号
+tsc filename\ with\ spaces.ts
+```
+
+##### 5.1.2.2 编译多个文件
+
+TypeScript 编译器能够同时编译多个文件。可以在命令行上逐一列出待编译的文件，也可以使用通配符来模糊匹配待编译的文件。
+
+假设当前工程目录结构如下：
+
+C:\app
+|--index.ts
+`---utils.ts
+
+在“C:\app”目录下运行 tsc 命令来编译 "index.ts" 和 "utils.ts" 文件。示例如下：
+
+```sh
+tsc index.ts utils.ts
+```
+
+除此之外，还可以使用通配符来匹配待编译的文件，支持的通配符包括：
+
+- `*`：匹配零个或多个字符，但不包含目录分隔符。
+- `?`：匹配一个字符，但不包含目录分隔符。
+- `**/`：匹配任意目录及其子目录。
+
+在 “C:\app” 目录下运行 tsc 命令并使用通配符来匹配当前目录下的所有 TypeScript 文件。示例如下：
+
+```sh
+tsc *.ts
+```
+
+不论使用以上哪种方式来指定待编译的文件，编译器都会在 "C:\app" 目录下生成编译后的 "index.js" 文件和 "utils.js" 文件，工程目录结构如下：
+
+C:\app
+|--index.js
+|--index.ts
+|--utils.js
+`--utils.ts
+
+##### 5.1.2.3 --watch 和 -w
+
+TypeScript 编译器提供了一种特殊的编译模式，即观察模式。在观察模式下，编译器会监视文件的修改并自动重新编译文件。观察模式通过 `--watch`（简写为 “-W”）编译选项来启用。假设当前工程目录结构如下：
+
+C:\app
+`--index.ts
+
+在 "C:\app" 目录下运行 tsc 命令来编译 "index.ts" 文件并启用观察模式。示例如下：
+
+```sh
+tsc index.ts --watch
+```
+
+运行 tsc 命令后，编译器会编译 "index.ts" 文件并进入观察模式。在命令行窗口中能够看到如下输出消息：
+
+```sh
+[1:00:00 PM] Starting compilation in watch mode.
+[1:00:01 PM]Found 0 errors.Watching for file changes.
+```
+
+这时，如果修改 "index.ts" 文件并保存，编译器会自动重新编译 "index.ts" 文件。在命令行窗口中能够看到如下输出消息：
+
+```sh
+[1:00:10 PM] File change detected. Starting incremental compilation...
+[1:00:11 PMj Found 0 errors. Watching for file changes.
+```
+
+编译器在重新编译了 "index.ts" 文件之后依然会继续监视文件的修改。
+
+##### 5.1.2.4 --preserveWatchOutput
+
+在观察模式下，编译器每次编译文件之前都会清空命令行窗口中的历史输出信息。如果想保留每一次编译的输出信息，则可以使用 `--preserveWatchOutput` 编译选项。示例如下：
+
+```sh
+tsc index.ts --watch --preserveWatchOutput
+```
+
+### 5.2 编译选项
+
+编译选项是传递给编译器程序的参数，使用编译选项能够改变编译器的默认行为。在编译程序时，编译选项不是必须指定的。本节不会介绍完整的编译选项列表，而是会列举出部分常用的编译选项并介绍如何使用它们。在本节中，会着重介绍严格类型检查编译选项，因为这些编译选项能够帮助提高代码质量。
+
+#### 5.2.1 编译选项风格
+
+TypeScript 编译选项的命名风格包含以下两种：
+
+- 长名字风格，如 "--help"。
+- 短名字风格，如 "-h"。
+
+每一个编译选项都有一个长名字，但是不一定有短名字。在 TypeScript 中，不论是长名字风格的编译选项还是短名字风格的编译选项均不区分大小写，即 "--help""--HELP""-h""-H" 表示相同的含义。
+
+长名字风格的编译选项由两个连字符和一个单词词组构成。提供长名字风格的命令行选项是推荐的做法。它有助于在不同程序之间保持一致的、具有描述性的选项名，从而提高开发者的使用体验。
+
+短名字风格的编译选项名由单个连字符和单个字母构成。TypeScript 编译器仅针对一小部分常用的编译选项提供了短名字。如果一个编译选项具有短名字形式，那么该短名字通常为其长名字的首字母，例如 “--help” 编译选项的短名字为“-h”。
+
+由于提供了短名字的编译选项数量较少且十分常用，因此在下表中列出了所有支持短名字风格的编译选项。
+
+![TS短命名编译选项](./image/TS短命名编译选项.png)
+
+#### 5.2.2 使用编译选项
+
+在运行 tsc 命令时，可以在命令行上指定编译选项。有一些编译选项在使用时不必传入参数，只需要写出编译选项名即可，例如 “--version"。也可以使用 "--version" 编译选项的短名字形式 "-V"。
+
+实际上，每一个编译选项都能够接受一个参数值，只不过有一些编译选项具有默认值，因此也可以省略传入参数。在给编译选项传入参数时，需要将参数写在编译选项名之后，并以空格字符分隔。例如，"--emitBOM" 编译选项接受 true 或 false 作为参数值。该编译选项设置了编译器在生成输出文件时是否插入 byte order mark（BOM）。
+
+但如果编译选项的参数值不是布尔类型的 true 或 false，那么就不能省略参数值，必须在命令行上设置一个参数值。示例如下：
+
+```sh
+tsc --target ES5
+```
+
+如果想要同时使用多个编译选项，那么在编译选项之间使用空格分隔即可。示例如下：
+
+```sh
+tsc --version --locale zh-CN
+```
+
+此例中，同时使用了 "--version" 和 "--locale" 编译选项。"--locale" 编译选项能够设置显示信息时使用的区域和语言，它的可选值如下：
+
+- 简体中文：zh-CN
+- 英语：en
+- 捷克语：cs
+- 德语：de
+- 西班牙语：es
+- 法语：fr
+- 意大利语：it
+- 日语：ja
+- 韩语：ko
+- 波兰语：pl
+- 葡萄牙语：pt-BR
+- 俄语：ru
+- 土耳其语：tr
+
+#### 5.2.3 严格类型检查
+
+TypeScript 编译器提供了两种类型检查模式，即严格类型检查和非严格类型检查。
+
+非严格类型检查是默认的类型检查模式，该模式下的[类型检查](#22-类型检查)比较宽松。在将已有的 JS 代码迁移到 TypeScript 时，通常会使用这种类型检查模式，因为这样做可以让迁移工作更加顺利地进行，不至于一时产生过多的错误。
+
+在严格类型检查模式下，编译器会进行额外的类型检查，从而能够更好地保证程序的正确性。严格类型检查功能使用一系列编译选项来开启。在开始一个新的工程时，强烈推荐启用所有严格检查编译选项。对于已有的工程，则可以逐步启用这些编译选项。因为只有如此才能够最大限度地利用编译器的静态类型检查功能。
+
+##### 5.2.3.1--strict
+
+`--strict` 编译选项是所有严格类型检查编译选项的 “总开关”。如果启用了 `--strict` 编译选项，那么就相当于同时启用了下列编译选项：
+
+- --noImplicitAny
+- --strictNullChecks
+- --strictFunctionTypes
+- --strictBindCallApply
+- --strictPropertyInitialization
+- --noImplicitThis
+- ---alwaysStrict
+
+在实际工程中，可以先启用 "--strict" 编译选项，然后再根据需求禁用不需要的某些严格类型检查编译选项。这样做有一个优点，那就是在 TypeScript 语言发布新版本时可能会引入新的严格类型检查编译选项，如果启用了 "--strict" 编译选项，那么就会自动应用新引入的严格类型检查编译选项。
+
+"--strict" 编译选项既可以在命令行上使用，也可以在 "tsconfig.json" 配置文件中使用。
+
+##### 5.2.3.2 --noImplicitAny
+
+若一个表达式没有明确的类型注解并且编译器又无法推断出一个具体的类型时，那么它将被视为 any 类型。编译器不会对 any 类型进行类型检查，因此可能存在潜在的错误。
+
+例如，下例中的函数参数 str 既没有类型注解也无法推断出具体类型，因此它的类型为 any 类型。不论使用哪种类型调用函数都不会产生编译错误，但如果实际参数不是 string 类型，那么在代码运行时会产生错误：
+
+```ts
+/**
+ * --noImplicitAny=false
+ */
+function f(str) {
+  // 类型为：any
+  console.log(str.substring(3));
+}
+f(42); // 运行时错误
+```
+
+如果启用了 "--noImplicitAny" 编译选项，那么当表达式的推断类型为 any 类型时将产生编译错误。该编译选项详细情况参考 [any](#271-any)。
+
+##### 5.2.3.3--strictNullChecks
+
+若没有启用 `--strictNullChecks` 编译选项，编译器在类型检查时将忽略 undefined 值和 null 值：
+
+```ts
+/**
+ * --strictNullChecks=false
+ */
+function f(str: string) {
+  console.log(str.substring(3));
+}
+// 以下均没有编译错误，但在运行时产生错误
+f(undefined);
+f(null);
+```
+
+此例中，函数期望传入 string 类型的参数，并且在传入 undefined 值和 null 值时，编译器没有产生错误。因为在没有启用 "--strictNullChecks" 编译选项的情况下，当编译器遇到 undefined 值和 null 值时会跳过类型检查。而实际上，此例中的代码在运行时会产生错误，因为在 undefined 值或 null 值上调用方法将抛出 "TypeError" 异常。
+
+如果启用了 "--strictNullChecks" 编译选项，那么 undefined 值只能赋值给 undefined 类型（顶端类型、void 类型除外），null 值也只能赋值给 null 类型（顶端类型除外），两者都明确地拥有了各自的类型。
+
+##### 5.2.3.4 --strictFunctionTypes
+
+该编译选项用于配置编译器对函数类型的类型检查规则：
+
+- 如果启用了 `--strictFunctionTypes` 编译选项，那么函数参数类型与函数类型之间是逆变关系。
+- 如果禁用了 `--strictFunctionTypes` 编译选项，那么函数参数类型与函数类型之间是相对宽松的双变关系。
+- 不论是否启用了 `--strictFunctionTypes` 编译选项，函数返回值类型与函数类型之间始终是协变关系。
+
+关于该编译选项的详细介绍参考[函数类型](#415-函数类型)。
+
+##### 5.2.3.5 --strictBindCallApply
+
+"Function.prototype.call"、"Function.prototype.bind"、"Function.prototype.apply" 是 JS 语言中函数对象上的内置方法。这三个方法都能够绑定函数调用时的 this 值：
+
+```ts
+function f(this: { name: string }, x: number, y: number) {
+  console.log(this.name);
+  console.log(x + y);
+}
+
+f.apply({ name: 'ts' }, [1, 2]);
+f.call({ name: 'ts' }, 1, 2);
+f.bind({ name: 'ts' })(1, 2);
+```
+
+如果没有启用 `--strictBindCallApply` 编译选项，那么编译器不会对以上三个内置方法进行类型检查。虽然函数声明中定义了 this 的类型以及参数 x 和 y 的类型，但是传入任何类型的实际参数都不会产生编译错误：
+
+```ts
+/**
+ *--strictBindCallApply=false
+ */
+function f(this: { name: string }, x: number, y: number) {
+  console.log(this.name);
+  console.log(x + y);
+}
+
+// 下列语句均没有编译错误
+f.apply({}, ['param']);
+f.call({}, 'param');
+f.bind({})('param');
+```
+
+如果启用了 "--strictBindCallApply" 编译选项，那么编译器将对以上三个内置方法的 this 类型以及参数类型进行严格的类型检查。示例如下：
