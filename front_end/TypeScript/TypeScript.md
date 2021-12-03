@@ -10898,10 +10898,10 @@ C:\app
 "tsconfig.json"配置文件内容如下：
 
 ```json
-{{
- "compilerOptions":{
- "listFiles": true
- }
+{
+  "compilerOptions": {
+    "listFiles": true
+  }
 }
 ```
 
