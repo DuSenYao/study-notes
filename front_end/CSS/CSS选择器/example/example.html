@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      [CLASS~='CONTENT' i] {
+        text-decoration: line-through;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="content">是的发生范德萨</p>
+    <div id="hostElement"></div>
+
+    <script>
+      window.onload = () => {
+        let hostElement = document.getElementById('hostElement');
+        // 创建 Shadow DOM
+        let shadow = hostElement.attachShadow({ mode: 'open' });
+        // 给 Shadow DOM 添加文字
+        shadow.innerHTML = '<p>我是由Shadow DOM创建的&ltp&gt元素，我的背景色是？</p>';
+        // 添加 CSS，p 标签背景色变成黑色
+        shadow.innerHTML += '<style>p{background-color:#096;color:#fff;}</style>';
+      };
+    </script>
+  </body>
+</html>
