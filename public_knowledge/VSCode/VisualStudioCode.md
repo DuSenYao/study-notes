@@ -1163,9 +1163,7 @@ TypeScript 是 JS 的超集，可以编译成 JS。与 JS 类似，不需要安�
 #### 5.3.1 准备工作
 
 1. 安装 TypeScript 编译器
-   安装 Node.js，安装完成后，需要确保 Node.js 已经被添加到 PATH 环境变量中。
-   通过 npm 包管理工具安装 `npm install -g typescript`
-   在命令行输入 `tsc --version`，来验证 TypeScript 是否安装成功。
+   安装 Node.js，安装完成后，需要确保 Node.js 已经被添加到 PATH 环境变量中。通过 npm 包管理工具安装 `npm install -g typescript`。在命令行输入 `tsc --version`，来验证 TypeScript 是否安装成功。
 
 2. 编译 TypeScript 文件
    TS 文件需要先编译成 JS 文件后才能运行。打开 VSCode 的集成终端，在终端集成中输入 tsc file.ts。TS 的编译器（tsc）会对 `file.ts` 进行编译，并在同一目录下生成一个 `file.js` 的 JS 文件。
@@ -1222,7 +1220,8 @@ TS 提供了丰富的项目设置和编译设置，以便后续进行项目管�
     在左侧的调试视图中可以看到与当前代码相关的变量信息，在调试控制台，可以对 TS 变量和表达式直接进行运算。
 
 - 调试配置
-  TS 文件在调试前，需要编译，所以使用了以下两个属性:
+  TS 文件在调试前，需要编译，所以使用了以下两个属性：
+
   - preLaunchTask：定义了在调试前要运行的任务（在 tasks.json 文件中设置），在调试 TS 之前，需要先编译 TS 文件
   - outFiles：定义了 JS 文件的输出路径，优先级小于 tsconfig.json 中的定义。
 
@@ -1291,7 +1290,7 @@ VSCode 使用前端技术栈（HTML、CSS 和 TS）开发而成。同时 VSCode 
 
 ### 6.1 HTML
 
-VSCode 内置了对 HTML 的支持，包括 **语法高亮**、**代码补全**、**代码格式化** 等各类功能。
+VSCode 内置了对 HTML 的支持，包括**语法高亮**、**代码补全**、**代码格式化**等各类功能。
 
 #### 6.1.1 IntelliSense
 
@@ -1301,7 +1300,8 @@ VSCode 内置了对 HTML 的支持，包括 **语法高亮**、**代码补全**�
 
 - 在输入 `>` 字符后，VSCode 会自动插入闭合标签。
 - 在输入 `/` 字符后，VSCode 会自动插入闭合标签。
-  可以通过 `"html.autoClosingTags": false` 设置来禁用自动闭合标签的功能
+
+可以通过 `"html.autoClosingTags": false` 设置来禁用自动闭合标签的功能
 
 #### 6.1.3 颜色选择器
 
@@ -1310,8 +1310,7 @@ VSCode 内置了对 HTML 的支持，包括 **语法高亮**、**代码补全**�
 #### 6.1.4 验证嵌入的 JS 和 CSS
 
 VSCode 支持对嵌入 HTML 文件的 JS 脚本和 CSS 样式进行语法验证。
-
-可以通过以下设置来禁用或启用验证功能，默认为启用状态:
+可以通过以下设置来禁用或启用验证功能，默认为启用状态：
 
 - `"html.validate.scripts":true` // 是否对嵌入的脚本进行验证
 - `"html.validate.styles":true` // 是否对嵌入的样式进行验证
@@ -1321,7 +1320,7 @@ VSCode 支持对嵌入 HTML 文件的 JS 脚本和 CSS 样式进行语法验证�
 代码折叠有以下三种方式：
 
 - 通过单击行号与代码之间的折叠图标，可以对 HTML 代码进行代码折叠
-- 通过区域标记 `<!--#region-->` 和 `<!--endregion-->` 来定义代码折叠的范围
+- 通过区域标记 `<!--#region-->` 和 `<!--#endregion-->` 来定义代码折叠的范围
 - 快捷键 `Ctrl + Shift + [\]` 折叠打开代码
 
 可以通过以下设置来切换折叠的策略：
@@ -1571,7 +1570,7 @@ Vetur 插件总内置了 **Vue ESLint** 插件(eslint-plugin-vue)，为 Vue 提�
 
 安装 Path intellisense，打开 `setting.json` 文件添加以下代码：
 
-```js
+```json
 "path-intellisense.mappings" : {
   "@" : "${workspaceFolder}/src"
 }
@@ -1579,23 +1578,21 @@ Vetur 插件总内置了 **Vue ESLint** 插件(eslint-plugin-vue)，为 Vue 提�
 
 在项目 `package.json` 所在同级目录下创建文件 `jsconfig.json`：
 
-```js
+```json
 {
   "compilerOptions": {
-      "baseUrl": "./",
-      "paths": {
-        "@/*": ["src/*"]
-      }
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
-  "exclude": [
-      "node_modules", "dist"
-  ]
+  "exclude": ["node_modules", "dist"]
 }
 ```
 
-> **注意**：
->
-> 1. `jsconfig.json` 中配置的别名要与 `vue.config.js` 中的别名对应。
-> 2. 目前只跳转支持 `.js` 文件，不支持 `.vue`
+**注意**：
+
+1. `jsconfig.json` 中配置的别名要与 `vue.config.js` 中的别名对应。
+2. 目前只跳转支持 `.js` 文件，不支持 `.vue`
 
 ## 七. 远程开发

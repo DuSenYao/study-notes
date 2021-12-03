@@ -11529,3 +11529,437 @@ const element2 = document.getElementById(456); // 参数类型错误，应该为
 ```
 
 #### 5.5.3 JSDoc 与 类型
+
+JSDoc 是一款知名的为 JS 代码添加文档注释的工具。JSDoc 利用了 JS 语言中的多行注释语法并结合使用特殊的 "JSDoc 标签" 来为代码添加丰富的描述信息。
+
+在使用 JSDoc 时，有以下两个基本要求：
+
+- 代码注释必须以 `/**` 开始，其中 `*` 的数量必须为两个。若使用了 `\*`、`\***` 或其他形式的多行注释，则 JSDoc 会忽略该条注释。
+- 代码注释与它描述的代码处于相邻的位置，并且注释在上，代码在下。
+
+下例中，使用 JSDoc 描述了 "sayHello" 函数能够接受一个 string 类型的参数。其中，`@param` 是一个 JSDoc 标签，如下所示：
+
+```js
+/**
+ * @param {string} somebody
+ */
+function sayHello(somebody) {
+  alert('Hello' + somebody);
+}
+```
+
+TypeScript 编译器既能够自动推断出大部分 JS 代码的类型信息，也能够从 JSDoc 中提取类型信息。接下来，将介绍 TypeScript 编译器支持的部分 JSDoc 标签。
+
+##### 5.5.3.1 @typedef
+
+`@typedef` 标签能够创建自定义类型。通过 @typedef 标签创建的自定义类型等同于 TypeScript 中的类型别名：
+
+```js
+/**
+ * @typedef {(number|string)} NumberLike
+ */
+```
+
+此例中，创建了一个名为 NumberLike 的类型，它是由 number 类型和 string 类型构成的联合类型。该类型等同于如下类型别名定义：
+
+```ts
+type NumberLike = string | number;
+```
+
+##### 5.5.3.2 @type
+
+`@type` 标签能够定义变量的类型：
+
+```js
+/**
+ * @type {string}
+ */
+let a;
+```
+
+此例中，定义了变量 a 的类型为 string。在 @type 标签中可以使用由 @typedef 标签创建的类型：
+
+```js
+/**
+ * @typedef {(number|string)} NumberLike
+ */
+/**
+ * @type {NumberLike}
+ */
+let a = 0;
+```
+
+在 @type 标签中允许使用 TypeScript 中的类型及其语法：
+
+```js
+/** @type{true|false}*/
+let a;
+/** @type {number[]} */
+let b;
+/** @type {Array<number>} */
+let c;
+/** @type {{ readonly x:number,y?:string}} */
+let d;
+/** @type {(s:string, b:boolean) => number} */
+let e;
+```
+
+##### 5.5.3.3@param
+
+`@param` 标签用于定义函数参数类型：
+
+```js
+/**
+ * @param {string} x - A string param.
+ */
+function foo(x) {}
+```
+
+若函数参数是可选参数，则需要将参数名置于一对中括号 `[]` 中：
+
+```js
+/**
+ * @param {string} [x] - An optional param.
+ */
+function foo(x) {}
+```
+
+在定义可选参数时，还可以为它指定一个默认值：
+
+```js
+/**
+ * @param {string}[x="bar"] - An optional param
+ */
+function foo(x) {}
+```
+
+##### 5.5.3.4 @return 和 @returns
+
+`@return` 和 `@returns` 标签的作用相同，两者都用于定义函数返回值类型。用法如下所示：
+
+```js
+/**
+ * @return { boolean }
+ */
+function foo() {
+  return true;
+}
+/**
+ * @returns { number }
+ */
+function bar() {
+  return 0;
+}
+```
+
+##### 5.5.3.5 @extends 和修饰符
+
+`@extends` 标签用于定义继承的基类。`@public`、`@protected`、`@private` 标签分别用于定义类的公有成员、受保护成员和私有成员。`@readonly` 标签用于定义只读成员：
+
+```js
+class Base {
+  /**
+   * @public
+   * @readonly
+   */
+  x = 0;
+  /**
+   * @protected
+   */
+  y = 0;
+}
+
+/**
+ * @extends { Base}
+ */
+class Derived extends Base {
+  /**
+   * @private
+   */
+  z = 0;
+}
+```
+
+### 5.6 三斜线指令
+
+三斜线指令是一系列指令的统称，它是从 TypeScript 早期版本就开始支持的编译指令。目前，已经**不推荐继续使用三斜线指令**，因为可以使用模块来取代它的大部分功能。
+
+正如其名，三斜线指令是以三条斜线开始，并包含一个 XML 标签。从 JS 语法的角度上来看，三斜线指令相当于一条单行注释。
+
+若一个文件中使用了三斜线指令，那么在**三斜线指令之前只允许使用单行注释、多行注释和其他三斜线指令**。若某个三斜线指令出现在可执行语句之后，那么该三斜线指令将不生效：
+
+```ts
+let count;
+/// <reference path="lib.ts" />
+// 三斜线指令不生效
+count = add(1, 2);
+```
+
+#### 5.6.1 reference path
+
+该指令用于声明 TypeScript 源文件之间的依赖关系。在编译一个文件时，编译器会同时将该文件中使用 `/// <reference path="" />` 三斜线指令引用的文件添加到编译文件列表。
+
+在 `/// <reference path="" />` 三斜线指令中，`path` 属性定义了依赖文件的路径。若指定的路径是一个相对路径，则相对于的是当前文件的路径。
+
+**--outFile 编译选项**
+使用 `--outFile` 编译选项能够将编译生成的 ".js" 文件合并为一个文件。但需要注意的是，该编译选项不支持合并使用了 CommonJS 模块和 ES6 模块模式的代码，只有将 --module 编译选项设置为 None、System 或 AMD 时才有效。
+
+在合并生成代码的过程中，`/// <reference path="" />` 三斜线指令可以作为排序文件的一种手段。
+
+```ts
+/// <reference path="lib1.ts" />
+/// <reference path="lib2.ts" />
+const a;
+```
+
+**--noResolve 编译选项**
+在默认情况下，编译器会检查三斜线指令中引用的文件是否存在，并将它们添加到编译文件列表。若启用了 `--noResolve` 编译选项，则编译器将忽略所有的三斜线指令。此时，三斜线指令中引用的文件既不会被添加到编译文件列表，也不会影响 --outFile 的结果。
+
+**注意**：
+
+- path 属性必须指向一个存在的文件，若文件不存在则会报错。
+- path 属性不允许指向当前文件。
+
+#### 5.6.2 reference types
+
+该三斜线指令用来定义对某个 DefinitelyTyped 声明文件的依赖，或者说是对安装在 "node_modules/@types" 目录下的某个声明文件的依赖。在 `/// <reference types="" />` 三斜线指令中，`types` 属性的值是声明文件安装包的名称，也就是安装到 "node_modules/@types" 目录下的文件夹的名字。
+
+```ts
+/// <reference types="jquery" />
+declare var settings: JQuery.AjaxSettings;
+```
+
+> **注意**：应该只在声明文件（.d.ts)中使用 `/// <reference types="">` 三斜线指令，而不应该在 ".ts" 文件中使用该指令。在 .ts 文件中，应该使用 `--types` 编译选项和 `--typeRoots` 编译选项来设置引用的声明文件。
+
+#### 5.6.3 reference lib
+
+该三斜线指令用于定义对语言内置的某个声明文件的依赖。在计算机中安装 TypeScript 语言时，也会同时安装一些内置的声明文件。这些声明文件位于 TypeScript 安装目录下的 lib 文件夹中，它们描述了 JS 语言的标准 API。
+
+在 `/// <reference lib="" />` 三斜线指令中，`lib` 属性的值是内置声明文件的名称。内置声明文件统一使用 "lib.[description].d.ts" 命名方式，而 lib 属性的值就是文件名中的 description 这部分。
+
+例如，对于内置的 "lib.es2015.symbol.wellknown.d.ts" 声明文件，应使用如下方式进行引用：
+
+```ts
+/// <reference lib="es2015.symbol.wellknown" />
+```
+
+##### 5.6.3.1 --target 编译选项
+
+`--target` 编译选项能够设置程序的目标运行环境，可选择的值为：
+
+- ES3（默认值）
+- ES5
+- ES6/ES2015
+- ES2016
+- ES2017
+- ES2018
+- ES2019
+- ES2020
+- ESNext
+
+如果将 --target 编译选项设置为 “ES5"，那么编译器会自动将适用于 “ES5” 的内置声明文件添加到编译文件列表。
+
+另外，--target 编译选项还决定了对哪些语法进行降级处理。例如，在 ES5 环境中不支持箭头函数语法，因此当将 --target 设置为 “ES5” 时，编译后代码中的箭头函数将被替换为 “ES5” 环境中支持的函数表达式。
+
+##### 5.6.3.2 --lib 编译选项
+
+--lib 编译选项与 `/// <reference lib="" />` 三斜线指令有着相同的作用，都是用来引用语言内置的某个声明文件。
+
+如果将 `--target` 设置为 “ES6”，但是想使用 ES2017 环境中才开始支持的 `padStart()` 函数。那么，就需要引用内置的 "lib.es2017.string.d.ts" 声明文件，否则编译器将产生编译错误。
+
+在 tsconfig.json 配置文件中使用"--lib"编译选项：
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "lib": ["ES6", "ES2017.String"]
+  }
+}
+```
+
+> **注意**：不但要传入 “ES2017.String”，还要传入 “ES6”，否则编译器将仅包含 “ES2017.String” 这一个内置声明文件。
+
+使用 `/// <reference lib=""/>` 三斜线指令：
+
+```ts
+/// <reference lib="ES2017.String"/>
+```
+
+> **注意**：在将 "lib.es2017.string.d.ts" 内置声明文件添加到编译文件列表后，虽然编译器允许使用 padStart() 方法，但是实际的 JS 运行环境可能不支持该方法。因为该方法是在 ES2017 标准中定义的，而 JS 运行环境可能仍处于一个较旧的版本，因此不支持这个新方法。这样就会导致程序可以成功地编译，但是在运行时出错，因为找不到 padStart()方法的定义。
+
+在实际项目中，通过引入 polyfill 脚本来解决这个常见问题。polyfill 已经成为了 Web 开发领域中的一个术语，在很多地方它被叫作 “腻子脚本”。polyfill 脚本是一段 JS 代码，它使用普遍支持的 JS 语法和 API 来实现新版本 JS 中才支持的 API。因此，它相当于用自定义代码来填充 JS 运行环境中缺失的 API，从而为 JS 运行环境打上了 “补丁”。
+
+## 六. 项目实践
+
+### 6.1 TypeScrip 和 Babel
+
+很多现有的 JS 项目已经在使用 Babel 作为代码转译工具，而 TypeScript 也具有代码转译的功能。在将现有的 JS 项目迁移到 TypeScript 时，开发者既可以选择继续使用 Babel 作为代码转译工具，也可以选择使用 TypeScript 来转译代码。
+
+#### 6.1.1 Babel
+
+Babel 是诞生于 2014 年的开源项目，它是一个比较流行的 JS 程序转译器。Babel 能够对输入的 JS 代码进行解析，并在保证功能不变的情况下重新生成 JS 代码。
+Babel 的原名是 “6to5”。最初，它是用来将符合 ES6 标准的代码转译为符合 ES5 标准的代码。这样一来使用最新语言特性编写的程序也能够在低版本的运行环境中运行。
+
+但自从 2015 年发布了 ES6 标准以来，每一年都会有新版本的 ECMAScript 标准发布并以年份命名。例如，ES6 也叫作 ES2015，还有之后的 ES2016、ES2017 等。于是，Babel 的功能也不仅限于转译 ES6 代码，它还能够转译其他 ECMAScript 版本的代码。与此同时， Babel 的架构也进行了演进，变得更加模块化并且提供了插件系统，开发者可以自定义代码转译的行为。基于以上种种原因，“6to5” 已经不再是一个恰当的名字，最终被更名为 Babel。
+
+现如今，Babel 的主要用途是将 ES6 及以上版本的 JS 代码转译为兼容某一运行环境的 JS 代码。例如，它既可以将 ES6 代码转译为 ES5 代码，也可以将 ES7 代码转译为兼容某一浏览器的代码，如 IE 浏览器。从 Babel7 版本开始，Babel 内置了对 TypeScript 语言的支持，因此也能够将 TypeScript 代码转译为兼容某一运行环境的 JS 代码。
+
+#### 6.1.2 TypeScript 编译器
+
+TypeScript 编译器具有以下两个主要功能：
+
+- 能够对 TypeScript 和 JS 代码进行静态类型检查
+- 能够将 TypeScript 和 JS 代码转译为 JS 代码
+
+由此可以看出，TypeScript 编译器与 Babel 的相同之处在于两者都能够将 TypeScript 和 JS 代码转译为 JS 代码，而两者的不同之处在于 TypeScript 编译器还能够对 TypeScript 和 JS 代码进行静态类型检查。
+
+##### 6.1.2.1 转译 TypeScript
+
+将 TypeScript 代码转译为 JS 代码是 TypeScript 编译器的主要功能之一。例如，index.ts 文件使用了 ES6 规范中定义的箭头函数语法：
+
+```ts
+[1, 2, 3].map((n: number) => n + 1);
+```
+
+通过运行以下 tsc 编译命令能够将上述 TypeScript 代码编译为符合 ES5 规范的 JS 代码：
+
+```sh
+tsc index.ts --target ES5
+```
+
+TypeScript 编译器还会对 TypeScript 代码进行类型检查，例如检查 map 方法的类型。此例中，经过 TypeScript 编译器处理后的 JS 代码与使用 Babel 转译后的 JS 代码是相同的。
+
+如果在运行 tsc 编译命令时启用了 --allowJs 编译选项，那么 TypeScript 编译器也能够转译 JS 文件。
+
+虽然 TypeScript 编译器包含了 Babel 的主要功能，但两者并不是对立的关系。TypeScript 和 Babel 可以结合使用，TypeScript 负责静态类型检查而 Babel 则负责转译 JS 代码。
+
+该模式的一个应用场景是对现有项目进行改造。例如，有一个使用 JS 开发的 Web 应用，它已经在依赖于 Babel 将 JS 源码转译为兼容旧版本浏览器环境的代码。现在，想要为该程序添加静态类型检查。那么，只需要在原先的 Babel 工作流中增加一步，使用 TypeScript 编译器对代码进行静态类型检查即可。
+
+##### 6.1.2.2 TypeScrip 与 Babel 项目配置
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "outDir": "lib",
+    "strict": true,
+    "isolatedModules": true
+  }
+}
+```
+
+需要安装的 Babel 包：
+
+- @babel/core 提供了 Babel 核心的转译代码的功能
+- @babel/cli 提供了 Babel 命令行工具。
+- @babel/preset-env 提供了自动检测待转译的语法以及自动导入填充脚本（polyfill）的功能
+- @babel/preset-typescript 它是 Babel 与 TypeScript 结合的关键，它提供了从 TypeScript 代码中删除类型相关代码的功能，如类型注解。
+
+.babelrc.json 是 Babel 配置文件：
+
+```json
+{
+  "presets": ["@babel/env", "@babel/typescript"]
+}
+```
+
+TypeScript 编译器提供了一个 `--noEmit` 编译选项。当启用该编译选项时，编译器只会对代码进行静态类型检查，而不会将 TypeScript 代码转译为 JS 代码。
+
+```sh
+npx tsc --noEmit
+```
+
+运行该命令能够对 TypeScript 代码进行类型检查，但不会生成任何 JS 文件。可以将该命令添加为 npm 脚本来方便之后进行调用。在 package.json 文件的 `scripts` 属性中定义一个 type-check 脚本：
+
+```json
+{
+  "name": "ts-babel",
+  "version": "1.0.0",
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  }
+}
+```
+
+##### 6.1.2.3 关于编译器与转译器
+
+**编译器指的是能够将高级语言翻译成低级语言的程序**。编译器的典型代表是 C 语言编译器，它能够将 C 语言程序翻译为低级的机器语言。
+
+**转译器通常是指能够将高级语言翻译成高级语言的程序**，即在同一抽象层次上进行源代码的翻译。转译器的典型代表是 Babel，它能够将符合 ES6 规范的代码翻译为符合 ES5 规范的代码，其输入和输出均为 JS 语言的代码。
+
+有时候 TypeScript 编译器也称作 TypeScript 转译器，因为它是在 TypeScript 语言与 JS 语言之间进行翻译的，而这两种编程语言拥有相近的抽象层次。
+
+同理，也可以将 Babel 命令添加为 npm 脚本来方便之后进行调用。在 package.json 文件的 scripts 属性中定义一个 build 脚本：
+
+```json
+{
+  "name": "ts-babel",
+  "version": "1.0.0",
+  "scripts": {
+    "type- heck": "tsc--noEmit",
+    "build": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline"
+  }
+}
+```
+
+##### 6.1.2.4 注意事项
+
+虽然 Babel 能够转译绝大部分的 TypeScript 代码，但仍存在一些语言结构无法很好地处理。例如：
+
+- 命名空间
+- `<T>` 类型断言语法，但可以使用 "x as T" 语法来代替。
+- 常量枚举 const enum
+- 跨文件声明的枚举，在 TypeScript 中会被合并为一个声明。
+- 旧的导入导出语法，如：export=、import=
+
+在编译 TypeScript 时，可以启用 `--isolatedModules` 编译选项，它的作用是当编译器发现无法被正确处理的语言结构时给出提示。
+
+### 6.2 TypeScript 与 webpack
+
+项目中的 TypeScript 源代码不会全部放在一个文件中，会根据组件、模块和功能等将源代码划分到不同的文件。在发布一个项目时，尤其 Web 前端应用，通常需要使用打包工具对源文件进行打包合并。使用打包工具至少有以下几个原因：
+
+- 由于运行环境（浏览器）中不支持 TypeScript 代码中使用的模块格式（ES 模块），因此会导致无法加载代码。打包工具能够解析模块间的依赖关系并将多个模块文件合并为运行环境能够直接加载的单一文件。
+
+- 在浏览器环境中减少加载的资源文件数量能够显著提升 Web 应用的性能。如果使用打包工具将多文件合并为一个文件，那么浏览器只需加载一个文件即可。
+
+webpack 是一个流行的 JS 应用打包器。webpack 的主要用途是将多个 JS 文件打包成一个或多个 JS 文件。除此之外，webpack 还能够打包其他类型的资源文件，如图片和 CSS 等。
+
+#### 6.2.1 webpack 配置
+
+需要先安装 webpack 及相关工具：
+
+```sh
+npm install --save-dev webpack webpack-cli ts-loader
+```
+
+在默认情况下，webpack 会使用 webpack.config.js 作为配置文件。在 "C:\ts-webpack" 目录下创建一个 webpack.config.js 文件，它的内容如下：
+
+```js
+const path = require('path');
+
+module.exports = {
+  entry: '/src/index.ts',
+  module: {
+    rules: [{ test: /tsx?$/, use: 'ts-loader', exclude: /node_modules/ }]
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js']
+  },
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist')
+  }
+};
+```
+
+在该配置文件中，`entry` 属性用来配置入口的模块文件，webpack 将搜索该模块文件直接或间接依赖的其他模块文件，并将此依赖关系保存在一种称作 “依赖图” 的数据结构中。
+
+`module.rules` 属性用来配置文件加载器，文件加载器定义了如何解析一个文件以及如何打包该文件。webpack 从 “依赖图” 中读取要加载的文件，然后根据文件的类型选择对应的文件加载器。webpack 内置了 JS 文件和 JSON 文件的加载器，若想要打包其他类型的文件，则必须安装和配置使用的加载器。此例中，想要让 webpack 能够打包 TypeScript 文件，因此必须安装能够处理 TypeScript 文件加载器。其中：
+
+- `use` 属性定义了文件加载器的名字。此例中，使用的是 ts-loader。
+- `test` 属性定义了在哪些文件上使用 ts-loader 文件加载器。此例中，使用正则表达式匹配了以 ".ts" 或 ".tsx" 结尾的文件。
+
+`resolve.extensions` 属性定义了在文件名相同但文件扩展名不同时选择文件的优先级，第一个数组元素的优先级最高。
+
+`output` 属性定义了打包生成的文件名及存放的位置。此例中，将打包生成的 "bundle.js" 存放在 "C:\ts-webpack\dist" 目录下。
