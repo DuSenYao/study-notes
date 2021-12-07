@@ -1049,20 +1049,114 @@ img:hover {
 
 3. 移动端 Safari 浏览器下，:active 伪类默认是无效的，需要设置任意的 touch 事件才支持。
 
-    可以加这么一行 JS 代码：
+   可以加这么一行 JS 代码：
 
-    ```js
-    documentbody.addEventListener('ontouchstart', function () {});
-    ```
+   ```js
+   documentbody.addEventListener('ontouchstart', function () {});
+   ```
 
-    然而，虽然此时 :active 伪类可以生效了，但是 :active 样式应用的时机还是有问题，因此，如果对细节的要求比较高，建议在 Safari 浏览器下还是使用原生的 -webkit-tap-highlight-color 实现触摸高亮反馈更好：
+   然而，虽然此时 :active 伪类可以生效了，但是 :active 样式应用的时机还是有问题，因此，如果对细节的要求比较高，建议在 Safari 浏览器下还是使用原生的 -webkit-tap-highlight-color 实现触摸高亮反馈更好：
 
-    ```css
-    body {
-      -webkit-tap-highlight-color: rgba(0, 0, 0, 0.5);
-    }
-    ```
+   ```css
+   body {
+     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.5);
+   }
+   ```
 
 4. 键盘访问无法触发 :active 伪类。例如，a 元素在 focus 状态下按下 Enter 键的事件行为与点击一致，但是，不会触发 :active 伪类。
 
 5. :active 伪类的主要作用是反馈点击交互，让用户知道他的点击行为已经成功触发，这对于按钮和链接元素是必不可少的，否则会有体验问题。由于 :active 伪类作用在按下的那一段时间，因此不适合用来实现复杂交互。
+
+#### 6.2.2 按钮的通用 :active 样式技巧
+
+本技巧更适用的场景是移动端开发，因为桌面端可以通过 :hover 反馈状态变化，而移动端只能通过 :active 反馈。
+
+- 使用 box-shadow 内阴影，例如：
+
+  ```css
+  [href]:active,
+  button:active {
+    box-shadow: inset 0 0 0 999px rgba(0, 0, 0.05);
+  }
+  ```
+
+  这种方法的优点是它可以兼容到 IE9 浏览器，缺点是对非对称闭合元素无能为力，例如 input 按钮。
+
+- 另外一种方法是使用 linear-gradient 线性渐变，例如：
+
+  ```css
+  [href]:active,
+  button:active,
+  [type='reset']:active,
+  [type='button']:active,
+  [type='submit']:active {
+    background-image: linear-gradient(rgba(0, 0.05), rgba(0, 0.05));
+  }
+  ```
+
+  这种方法的优点是它对 input 按钮这类非对称闭合元素也有效，缺点是 CSS 渐变是从 IE10 浏览器才开始支持的，如果项目还需要兼容 IE9 浏览器，就会有一定的限制。
+
+- 最后再介绍一种在特殊场景下使用的方法。有时候，链接元素包裹的是一张图片，如果 a 四周没有 padding 留白，则此时上面两种通用技巧都没有效果，因为 :active 样式被图片挡住了。
+
+  可能会想到使用 :before 伪元素在图片上覆盖一层半透明颜色模拟 :active 效果，但这种方法对父元素有依赖，无法作为通用样式使用，此时，可以试试 outline，如下：
+
+  ```css
+  [href] > img:only-child:active {
+    outline: 999px solid rgba(0, 0.05);
+    outline-offset: -999px;
+    -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  ```
+
+  这种方法的优点是 CSS 的冲突概率极低，对非对称闭合元素也有效。缺点是不适合需要兼容 IE 浏览器的产品，因为虽然 IE8 浏览器就已经支持 outline 属性，但是 outline-offset 从 Edge 15 才开始被支持。还有另外一个缺点就是，outline 模拟的反馈浮层并不是位于元素的底层，而是位于元素的上方，且可以被绝对定位子元素穿透，因此不适合用在包含复杂 DOM 信息的元素中，但是特别适用于类似图片这样的单一元素。
+
+#### 6.2.3 :active 伪类与 CSS 数据上报
+
+如果想要知道两个按钮的点击率，可以使用 CSS：
+
+```css
+button-1:active::after {
+  content: url(./pixel.gif?action=click&id=button1);
+  display: none;
+}
+```
+
+此时，当点击按钮的时候，相关行为数据就会上报给服务器，这种上报，就算把 JS 禁用掉也无法阻止，方便快捷，特别适合 A/B 测试。
+
+### 6.3 焦点伪类 :focus
+
+`:focus` 是一个从 IE8 浏览器开始支持的伪类，它可以匹配当前处于聚焦状态的元素。例如，高亮显示处于聚焦状态的 textarea 输入框的边框：
+
+```css
+textarea {
+  border: 1px solid #ccc;
+}
+textarea:focus {
+  border-color: HighLight;
+}
+```
+
+#### 6.3.1 :focus 伪类匹配机制
+
+与 :active 伪类不同，:focus 伪类默认只能匹配特定的元素，包括：
+
+- 非 disabled 状态的表单元素，如 input 输入框、select 下拉框、button 按钮等
+- 包含 href 属性的 a 元素
+- area 元素，不过可以生效的 CSS 属性有限
+- HTML5 中的 summary 元素
+
+其他 HTML 元素应用 :focus 伪类是无效的。
+
+如何让普通元素也能响应 :focus 伪类呢？
+
+设置了 HTML `contenteditable` 属性的普通元素可以应用 :focus 伪类。例如：
+
+```html
+<div contenteditable="true"></div>
+<div contenteditable="plaintext-only"></div>
+```
+
+因为此时 div 元素是一个类似 textarea 元素的输入框。
+
+设置了 HTML `tabindex` 属性的普通元素也可以应用 :focus 伪类。例如，下面 3 种写法都是可以的：

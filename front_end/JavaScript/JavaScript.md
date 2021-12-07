@@ -1271,11 +1271,11 @@ JS 的注释分为单行注释和多行注释：
 多行注释中允许出现除了 `*` 之外的所有字符，而每一个 `*` 之后，不能出现正斜杠符 `/`
 除了四种 LineTerminator 之外，任何字符都可以作为单行注释
 
-> 注意：多行注释是否包含换行符，会对 JS 语法产生影响，对于"no line terminator"规则来说，带换行符的多行注释和换行符是等效的
+> **注意**：多行注释是否包含换行符，会对 JS 语法产生影响，对于"no line terminator"规则来说，带换行符的多行注释和换行符是等效的
 
 #### 4.1.4 标识符名称 IdentifierName
 
-IdentifierName 可以以美元符"\$"、下划线"\_"、或者 Unicode 字母开始，除了开始字符以外，IdentifierName 中还可以使用 Unicode 连接标记，字符以及连接符号。
+IdentifierName 可以以美元符 `$`、下划线 `_`、或者 Unicode 字母开始，除了开始字符以外，IdentifierName 中还可以使用 Unicode 连接标记，字符以及连接符号。
 
 IdentifierName 的任意字符可以使用 JS 的 Unicode 转义写法，在使用 Unicode 的转义写法时，没有任何字符限制。
 
