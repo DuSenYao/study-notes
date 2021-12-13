@@ -34,9 +34,9 @@
         - [1.2.5.2 `git checkout` [分支名]](#1252-git-checkout-分支名)
         - [1.2.5.3 `git merge <branchName>`](#1253-git-merge-branchname)
       - [1.2.6 版本操作](#126-版本操作)
-        - [1.2.6.1 `git commit` -m "message"](#1261-git-commit-m-message)
+        - [1.2.6.1 git commit -m "message"](#1261-git-commit-m-message)
         - [1.2.6.2 `git reset` [--soft | --mixed | --hard] [HEAD] [-- file]](#1262-git-reset-soft-mixed-hard-head-file)
-        - [1.2.6.3 `git rebase`](#1263-git-rebase)
+        - [1.2.6.3 git rebase](#1263-git-rebase)
       - [1.2.7 其他](#127-其他)
         - [1.2.7.1 gitk](#1271-gitk)
         - [1.2.7.1 `git stash`](#1271-git-stash)
@@ -428,14 +428,14 @@ git merge dev
 
 #### 1.2.6 版本操作
 
-##### 1.2.6.1 `git commit` -m "message"
+##### 1.2.6.1 git commit -m "message"
 
 主要是将暂存区里的改动给提交到本地的版本库，message 填写摘要
 
-- `-a`: 跳过暂存区，从工作区直接提交到本地版本库
-- `--amend`: 追加提交，在**不增加**一个新的 commit 的情况下，将新修改的代码追加到**前一次**的 commit 中
+- `-a`：跳过暂存区，从工作区直接提交到本地版本库
+- `--amend`：追加提交，在**不增加**一个新的 commit 的情况下，将新修改的代码追加到**前一次**的 commit 中
 
-##### 1.2.6.2 `git reset` [--soft | --mixed | --hard] [HEAD] [-- file]
+##### 1.2.6.2 git reset [--soft | --mixed | --hard] [HEAD] [-- file]
 
 用于回退版本，可以指定暂存区退回某一次提交的版本
 
