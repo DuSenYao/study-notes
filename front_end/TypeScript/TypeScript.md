@@ -533,7 +533,7 @@ TypeScript 中的类型注解是可选的，编译器在大部分情况下都能
 
   该模式下的类型检査比较激进，会尽可能地发现代码中的错误。例如，在严格类型检査模式下不允许将 undefined 值和 null 值赋值给 string 类型的变量。启用严格类型检査模式能够最大限度地利用 TypeScript 静争态类型检査带来的益处。从长远来讲，使用严格类型检查模式对提高代码质量更加有利，因此建议在新的工程中启用。
 
-  TypeScript 提供了若干个与[严格类型检查相关的编译选项](#523-严格类型检查)，例如：“-strictNullChecks” 和 “--noImplicitAny” 等。也可以在工程的 [tsconfig.json](#53-tsconfigjson) 配置文件中启用 `strict` 编译选项：
+  TypeScript 提供了若干个与[严格类型检查相关的编译选项](#523-严格类型检查)，例如：“--strictNullChecks” 和 “--noImplicitAny” 等。也可以在工程的 [tsconfig.json](#53-tsconfigjson) 配置文件中启用 `strict` 编译选项：
 
   ```json
   {
@@ -543,7 +543,7 @@ TypeScript 中的类型注解是可选的，编译器在大部分情况下都能
   }
   ```
 
-  将 strict 编译选项设置为 true 将开启所有的严格类型检査编译选项。它包含了前面提到的 -strictNullChecks 和 --noImplicitAny 编译选项。
+  将 strict 编译选项设置为 true 将开启所有的严格类型检査编译选项。它包含了前面提到的 --strictNullChecks 和 --noImplicitAny 编译选项。
 
 ### 2.3 原始类型
 
@@ -559,7 +559,9 @@ JS 语言中的每种原始类型都有与之对应的 TypeScript 类型。除�
   TypeScript 中的 number 类型对应于 JS 中的 Number 原始类型。该类型能够表示采用双精度 64 位二进制浮点数格式存储的数字。
 
 - **bigint**
-  TypeScript 中的 bigint 类型对应于 JS 中的 BigInt 原始类型。该类型能够表示仼意精度的整数，但也仅能表示整数。bigint 采用了特殊的对象数据结构来表示和存储一个整数。
+  BigInt 类型在 TypeScript3.2 版本被内置，TypeScript 中的 bigint 类型对应于 JS 中的 BigInt 原始类型。该类型能够表示仼意精度的整数，但也仅能表示整数。bigint 采用了特殊的对象数据结构来表示和存储一个整数。
+
+  > **注意**：在使用 BigInt 的时候，必须添加 ESNext 的编译辅助库。
 
 - **[symbol 和 unique symbol](#2131-symbol-和-unique-symbol)**
 
@@ -2328,7 +2330,7 @@ const b: Number = new F(1);
 
 #### 2.12.12 重载函数
 
-重载函数是指一个函数同时拥有多个同类的函数签名。例如，个函数拥有两个及以上的调用签名，或者一个构造函数拥有两个及以上的构造签名。当使用不同数量和类型的参数调用重载函数时，可以执行不同的函数实现代码。
+重载函数是指一个函数同时拥有多个同类的函数签名。例如，一个函数拥有两个及以上的调用签名，或者一个构造函数拥有两个及以上的构造签名。当使用不同数量和类型的参数调用重载函数时，可以执行不同的函数实现代码。
 
 TypeScript 中的重载函数与其他编程语言中的重载函数略有不同。首先，看一个重载函数的例子。下例中定义了一个重载函数 add。它接受两个参数，若两个参数的类型为 number，则返回它们的和；若两个参数的类型为数组，则返回合并后的数组。在调用 add 函数时，允许使用这两个调用签名之一并且能够得到正确的返回值类型：
 
@@ -4071,7 +4073,13 @@ interface AConstructor {
 
 ### 3.1 泛型
 
-泛型程序设计是一种编程风格或编程范式，它允许在程序中定义形式类型参数，然后在泛型实例化时使用实际类型参数来替换形式类型参数。通过泛型，能够定义通用的数据结构或类型，这些数据结构或类型仅在它们操作的实际类型上有差别。泛型程序设计是实现可重用组件的一种手段。
+泛型程序设计是一种编程风格或编程范式，它允许在程序中定义形式类型参数，然后在泛型实例化时使用实际类型参数来替换形式类型参数。通过泛型，能够**定义通用的数据结构或类型**，这些数据结构或类型仅在它们操作的实际类型上有差别。泛型程序设计是实现可重用组件的一种手段。
+
+优点：
+
+1. 函数和类可以轻松的支持多种类型，增强程序的扩展性
+2. 不必写多条函数重载，冗长的联合类型声明，增强代码的可读性
+3. 灵活控制类型间的约束
 
 #### 3.1.1 泛型简介
 
@@ -6107,8 +6115,8 @@ type T4 = ReturnType<<T extends U, U extends number[]>() => T>;
 // any
 type T5 = ReturnType<never>;
 
-type T6 = ReturnType<boolean>; //编译错误
-type T7 = ReturnType<Function>; //编译错误
+type T6 = ReturnType<boolean>; // 编译错误
+type T7 = ReturnType<Function>; // 编译错误
 ```
 
 #### 3.8.13 `InstanceType<T>`
@@ -6576,7 +6584,7 @@ function f(x: A | B) {
 
 ##### 3.11.1.6 自定义类型守卫函数
 
-除了内置的类型守卫之外，TypeScript 允许自定义类型守卫函数。类型守卫函数是指在函数返回值类型中使用了类型谓词的函数。语法如下所示：
+除了内置的类型守卫之外，TypeScript 允许自定义类型守卫函数。类型守卫函数是指在函数返回值类型中使用了**类型谓词**的函数。语法如下所示：
 
 ```ts
 x is T
@@ -6752,7 +6760,7 @@ function f(result: Result) {
 
 回到可辨识联合的定义，可辨识联合是由一组数量固定且种类不同的对象类型构成。编译器能够利用该性质并结合 switch 语句来对可辨识联合进行完整性检查。编译器能够分析出 switch 语句是否处理了可辨识联合中的所有可辨识对象。
 
-例如，在下例的可辨识联合 Shape 中包含了 Circle 和 Square 两种类型。在 switch 语句中，两个 case 分支分别匹配了 Circle 和 Square 类型并返回。编译器能够检测出 switch 语句已经处理了所有可能的情况并退出函数，同时第 21 行的代码不可能被执行到。在这种情况下，编译器会给出提示 “存在执行不到的代码”：
+例如，在下例的可辨识联合 Shape 中包含了 Circle 和 Square 两种类型。在 switch 语句中，两个 case 分支分别匹配了 Circle 和 Square 类型并返回。编译器能够检测出 switch 语句已经处理了所有可能的情况并退出函数，同时 console 方法不可能被执行到。在这种情况下，编译器会给出提示 “存在执行不到的代码”：
 
 ```ts
 interface Circle {
@@ -7215,7 +7223,7 @@ type S = {
   (x: number): number;
 };
 type T = {
-  (x: a): string;
+  (x: 'a'): string;
   (x: 0): number;
 };
 ```
@@ -7491,14 +7499,14 @@ type T = 0;
 
 交叉类型由若干成员类型构成，在计算交叉类型的子类型关系时需要考虑每一个成员类型。
 
-假设有交叉类型 “S=S0&S1” 和任意类型 T，如果成员类型 S0 是类型 T 的子类型，或者成员类型 S1 是类型 T 的子类型，那么交叉类型 S 是类型 T 的子类型：
+假设有交叉类型 “S = S0 & S1” 和任意类型 T，如果成员类型 S0 是类型 T 的子类型，或者成员类型 S1 是类型 T 的子类型，那么交叉类型 S 是类型 T 的子类型：
 
 ```ts
 type S = { x: number } & { y: number };
 type T = { x: number };
 ```
 
-假设有交叉类型 “S=S0&S1” 和任意类型 T，如果类型 T 是成员类型 S0 的子类型，并且也是成员类型 S1 的子类型，那么类型 T 是交叉类型 S 的子类型：
+假设有交叉类型 “S = S0 & S1” 和任意类型 T，如果类型 T 是成员类型 S0 的子类型，并且也是成员类型 S1 的子类型，那么类型 T 是交叉类型 S 的子类型：
 
 ```ts
 type S = { x: number } & { y: number };
@@ -8295,8 +8303,8 @@ export function add(x: number, y: number) {
 
 ```js
 // index.js
- import { add } from ' /utils;
- const total = add(1,2);
+import { add } from './utils';
+const total = add(1, 2);
 ```
 
 #### 4.6.2 ECMAScript 模块
@@ -10129,7 +10137,7 @@ namespace f {
 }
 
 f(); // '1.0'
-f.version; //'1.0'
+f.version; // '1.0'
 ```
 
 ##### 4.10.4.3 命名空间与类合并
@@ -10765,7 +10773,7 @@ C:\app
 
 > **注意**：不是所有的编译选项都能够在 tsconfig.json 配置文件中指定。例如，"--help" 和 "--version" 编译选项不支持在 tsconfig.json 配置文件中使用。
 
-TypeScript 提供了一个 `--init` 编译选项，在命令行上运行 tsc 命令并使用 -init 编译选项会初始化一个 "tsconfig.json" 配置文件。在生成的 "tsconfig.json" 配置文件中会自动添加一些常用的编译选项并将它们分类。假设当前工程目录结构如下：
+TypeScript 提供了一个 `--init` 编译选项，在命令行上运行 tsc 命令并使用 --init 编译选项会初始化一个 "tsconfig.json" 配置文件。在生成的 "tsconfig.json" 配置文件中会自动添加一些常用的编译选项并将它们分类。假设当前工程目录结构如下：
 
 C:\app
 `--index.ts

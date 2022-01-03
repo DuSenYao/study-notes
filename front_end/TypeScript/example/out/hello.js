@@ -1,5 +1,6 @@
-let a = {
-  a: 1,
-  b: 2
+"use strict";
+const a = {
+    x: 1,
+    y: 2
 };
-console.log(a);
+//# sourceMappingURL=hello.js.map

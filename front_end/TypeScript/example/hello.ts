@@ -1,4 +1,12 @@
-function log<T>(value: T): T {
-  console.log(value);
-  return value;
+
+class A {
+  a = 1;
+  getA() {
+    return () => {
+      return this.a;
+    };
+  }
 }
+
+const b = new A().getA();
+console.log(b());

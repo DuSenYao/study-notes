@@ -25,22 +25,22 @@
         - [1.2.3.3 git mv [file] [newFile]](#1233-git-mv-file-newfile)
         - [1.2.3.4 git restore](#1234-git-restore)
       - [1.2.4 远程操作](#124-远程操作)
-        - [1.2.4.1 `git remote`](#1241-git-remote)
-        - [1.2.4.2 `git fetch [alias]`](#1242-git-fetch-alias)
-        - [1.2.4.3 `git pull` [<远程主机名> <远程分支名>:<本地分支名>]](#1243-git-pull-远程主机名-远程分支名本地分支名)
-        - [1.2.4.4 `git push <远程主机名> <本地分支名>:<远程分支名>`](#1244-git-push-远程主机名-本地分支名远程分支名)
+        - [1.2.4.1 git remote](#1241-git-remote)
+        - [1.2.4.2 git fetch [alias]](#1242-git-fetch-alias)
+        - [1.2.4.3 git pull [<远程主机名> <远程分支名>:<本地分支名>]](#1243-git-pull-远程主机名-远程分支名本地分支名)
+        - [1.2.4.4 git push <远程主机名> <本地分支名>:<远程分支名>](#1244-git-push-远程主机名-本地分支名远程分支名)
       - [1.2.5 分支操作](#125-分支操作)
         - [1.2.5.1 git branch](#1251-git-branch)
-        - [1.2.5.2 `git checkout` [分支名]](#1252-git-checkout-分支名)
-        - [1.2.5.3 `git merge <branchName>`](#1253-git-merge-branchname)
+        - [1.2.5.2 git checkout [分支名]](#1252-git-checkout-分支名)
+        - [1.2.5.3 git merge](#1253-git-merge)
       - [1.2.6 版本操作](#126-版本操作)
         - [1.2.6.1 git commit -m "message"](#1261-git-commit-m-message)
-        - [1.2.6.2 `git reset` [--soft | --mixed | --hard] [HEAD] [-- file]](#1262-git-reset-soft-mixed-hard-head-file)
+        - [1.2.6.2 git reset [--soft | --mixed | --hard] [HEAD] [-- file]](#1262-git-reset-soft-mixed-hard-head-file)
         - [1.2.6.3 git rebase](#1263-git-rebase)
       - [1.2.7 其他](#127-其他)
         - [1.2.7.1 gitk](#1271-gitk)
-        - [1.2.7.1 `git stash`](#1271-git-stash)
-        - [1.2.7.2 `git rerere`](#1272-git-rerere)
+        - [1.2.7.1 git stash](#1271-git-stash)
+        - [1.2.7.2 git rerere](#1272-git-rerere)
     - [1.3 基础知识](#13-基础知识)
       - [1.3.1 Git 基本工作流程](#131-git-基本工作流程)
       - [1.3.2 .git 文件夹下的文件](#132-git-文件夹下的文件)
@@ -53,7 +53,7 @@
       - [1.3.9 Git 解决的问题](#139-git-解决的问题)
       - [1.3.10 将 Git 的默认编辑器设置为 VSCode](#1310-将-git-的默认编辑器设置为-vscode)
     - [1.4 Git 集成使用禁忌](#14-git-集成使用禁忌)
-      - [1.4.1 `git push -f`](#141-git-push-f)
+      - [1.4.1 git push -f](#141-git-push-f)
       - [1.4.2 禁止向集成分支执行变更历史的操作](#142-禁止向集成分支执行变更历史的操作)
   - [二. GitHub](#二-github)
     - [2.1 GitHub 基础](#21-github-基础)
@@ -68,7 +68,7 @@
       - [2.2.1 选择适合团队的工作流](#221-选择适合团队的工作流)
       - [2.2.2 挑选合适的分支集成策略](#222-挑选合适的分支集成策略)
       - [2.2.3 GitHub 中的 Projects](#223-github-中的-projects)
-      - [2.2.3 项目内部实施代码检查(code review)](#223-项目内部实施代码检查code-review)
+      - [2.2.3 项目内部实施代码检查（code review）](#223-项目内部实施代码检查code-review)
   - [三. 常见场景](#三-常见场景)
     - [3.1 不同人修改了不同文件](#31-不同人修改了不同文件)
     - [3.2 不同人修改了相同文件的不同区域](#32-不同人修改了相同文件的不同区域)
@@ -298,7 +298,7 @@ git restore public_knowledge\Git\Git.md
 
 #### 1.2.4 远程操作
 
-##### 1.2.4.1 `git remote`
+##### 1.2.4.1 git remote
 
 用于在远程仓库的操作
 
@@ -320,7 +320,7 @@ git restore public_knowledge\Git\Git.md
 
 - `add <name> <new url>`: :在本地仓库添加一个远程仓库
 
-##### 1.2.4.2 `git fetch [alias]`
+##### 1.2.4.2 git fetch [alias]
 
 用于从远程获取代码库：
 
@@ -332,7 +332,7 @@ git fetch origin main
 
 通过这些信息来判断是否产生冲突，以确定是否将更新 `merge` 到当前分支。
 
-##### 1.2.4.3 `git pull` [<远程主机名> <远程分支名>:<本地分支名>]
+##### 1.2.4.3 git pull [<远程主机名> <远程分支名>:<本地分支名>]
 
 从远程获取代码并合并本地的版本，其实就是 `git fetch` 和 `git merge FETCH_HEAD` 的简写
 
@@ -342,7 +342,7 @@ git fetch origin main
 - `--rebase`: push 失败，需要先把服务器上的代码给 pull 下来，为了避免有 merge 动作，可以使用
   > 相当于 git fetch + git rebase FETCH_HEAD
 
-##### 1.2.4.4 `git push <远程主机名> <本地分支名>:<远程分支名>`
+##### 1.2.4.4 git push <远程主机名> <本地分支名>:<远程分支名>
 
 用于从将本地的分支版本上传到远程并合并
 
@@ -356,9 +356,9 @@ git push origin master:master
 
 - `-d`：删除远程主机的分支
 
-   ```sh
-   git push origin -d branch
-   ```
+  ```sh
+  git push origin -d branch
+  ```
 
 - `--all`：推送全部分支
 
@@ -366,7 +366,7 @@ git push origin master:master
 
 - 使用`ssh`协议推送: `gitHub: git push git@github.com:DuSenYao/Learning-notes-and-materials.git`
 
-> **注意**: 需要 [配置公私钥](#211-配置公私钥)
+> **注意**：需要 [配置公私钥](#211-配置公私钥)
 
 #### 1.2.5 分支操作
 
@@ -386,7 +386,7 @@ git push origin master:master
 - `-D <branchName>`：-D 是 `--delete --force` 的缩写，这样写可以在不检查 merge 状态的情况下删除分支
 - `-v`: 查看分支版本
 
-##### 1.2.5.2 `git checkout` [分支名]
+##### 1.2.5.2 git checkout [分支名]
 
 切换分支
 
@@ -408,9 +408,9 @@ git push origin master:master
   git checkout -b dev origin/dev
   ```
 
-##### 1.2.5.3 `git merge <branchName>`
+##### 1.2.5.3 git merge
 
-合并分支
+合并分支或历史记录
 
 ```sh
 git merge dev
@@ -513,7 +513,7 @@ git merge dev
 
 打开 git 自带的图形界面工具
 
-##### 1.2.7.1 `git stash`
+##### 1.2.7.1 git stash
 
 临时保存和恢复修改，可跨分支，在**未 add**之前才能执行
 
@@ -523,15 +523,15 @@ git merge dev
 - `apply stash@{num}`: 恢复，num 是可选值，通过 `git stash list` 查看具体值，可恢复多次
 
   ```sh
-  git stash apply stash@{0}
+  git stash apply 0
   ```
 
 - `drop stash@{num}`: 删除指定保存
 - `clear`: 删除所有保存
 
-##### 1.2.7.2 `git rerere`
+##### 1.2.7.2 git rerere
 
-重用记录的解决方案，它允许 Git 记住解决一个块冲突的方法，这样在下一次看到 **相同的冲突** 时，Git 可以自动地解决它。
+重用记录的解决方案，它允许 Git 记住解决一个块冲突的方法，这样在下一次看到**相同的冲突**时，Git 可以自动地解决它。
 
 ```sh
 # 启用 rerere
@@ -565,9 +565,9 @@ C --> A: git merge FETCH_HEAD
 - `config`: 当前 **git** 的配置文件，这是个引用指向 **refs 文件夹** 下的 **heads 文件夹** 里的分支
 - `refs文件夹`:
 
-  - **heads 文件夹** : 存放当前项目的所有分支文件，每个分支文件存放的是当前分支对应的是哪个 commit(提交)
-  - **remotes 文件夹** : 存放远程分支
-  - **tags 文件夹** : 存放当前项目的所有标签
+  - **heads 文件夹**：存放当前项目的所有分支文件，每个分支文件存放的是当前分支对应的是哪个 commit(提交)
+  - **remotes 文件夹**：存放远程分支
+  - **tags 文件夹**：存放当前项目的所有标签
 
 - `objects文件夹`: 存放所有的**git 对象**，**对象哈希值前 `2` 位作为文件夹名称，后 `38` 位作为对象文件名**, 可通过 `git cat-file -p` 命令，拼接文件夹名称 + 文件名查看
 
@@ -589,7 +589,7 @@ C --> A: git merge FETCH_HEAD
 
 **分离头指针**是指在没有任何分支的情况下做 commit。
 
-> **优缺点** : 用于实验性的更改与提交，随时可以放弃，而不影响任何分支的状态。缺点也是没有分支，意味着一旦切换分支，这些 commit 都会被当做垃圾丢弃。
+> **优缺点**：用于实验性的更改与提交，随时可以放弃，而不影响任何分支的状态。缺点也是没有分支，意味着一旦切换分支，这些 commit 都会被当做垃圾丢弃。
 
 #### 1.3. 6 HEAD 与 branch
 
@@ -610,18 +610,18 @@ HEAD~2^2
 
 #### 1.3.7 在 .gitignore 文件里指定不需要 Git 管理的文件
 
-- **文件夹** : filename/
-- **具体的文件** : filename.后缀名
-- **特定后缀名的文件** : \*.后缀名
+- **文件夹**：filename/
+- **具体的文件**：filename.后缀名
+- **特定后缀名的文件**：\*.后缀名
 
 #### 1.3.8 常用的传输协议
 
-- 哑协议: `path/to/repo.git`
-- 智能协议: `file://path/to/repo.git`
-- http/https 协议: `http://git-server.com/path/to/repo.git`
-- ssh 协议: `user@git-server.com:path/to/repo.git` 是工作中最常用的智能协议
+- 哑协议：`path/to/repo.git`
+- 智能协议：`file://path/to/repo.git`
+- http/https 协议：`http://git-server.com/path/to/repo.git`
+- ssh 协议：`user@git-server.com:path/to/repo.git` 是工作中最常用的智能协议
 
-**哑协议与与智能协议的区别**:
+**哑协议与与智能协议的区别**：
 
 - 哑协议传输进度不可见，智能协议传输可见
 - 智能协议比哑协议传输速度快
@@ -644,7 +644,7 @@ git config --global core.editor "code -w"
 
 ### 1.4 Git 集成使用禁忌
 
-#### 1.4.1 `git push -f`
+#### 1.4.1 git push -f
 
 强制推送，即使不是 `fast-forward` [^1]
 [^1]: 当前分支合并到另一分支时，如果没有分歧，就会直接移动文件指针。这个过程叫做`fast-forward`。fast-forward 能够保证不会强制覆盖别人的代码，确保了多人协同开发。尽量不要使用 non fast forward 方法提交代码。
@@ -695,17 +695,17 @@ git config --global core.editor "code -w"
 
 #### 2.1.3 GitHub 核心功能
 
-- code review: 代码评审，人人都可以看见项目，都可以发表自己对代码的看法与改进意见
-- Project management: 项目管理
-- integrations: 集成
-- Team management: 团队管理，对不同的仓库授予不同的权限
-- social coding: 开源代码
-- Documentation: 可以在 GIthub 上做个人网页、文档
-- code hosting: 代码托管
+- code review：代码评审，人人都可以看见项目，都可以发表自己对代码的看法与改进意见
+- Project management：项目管理
+- integrations：集成
+- Team management：团队管理，对不同的仓库授予不同的权限
+- social coding：开源代码
+- Documentation：可以在 GitHub 上做个人网页、文档
+- code hosting：代码托管
 
 #### 2.1.4 快速搜索到感兴趣的开源项目
 
-在搜索页，语言栏左下方有高级搜索(Advanced search)
+在搜索页，语言栏左下方有高级搜索（Advanced search）
 
 #### 2.1.5 组织类型的仓库
 
@@ -725,35 +725,35 @@ git config --global core.editor "code -w"
 
 #### 2.2.1 选择适合团队的工作流
 
-**需要考虑的因素** :
+**需要考虑的因素**：
 
 - 团队人员的组成
 - 研发设计能力
 - 输出产品的特征
 - 项目难易程度
 
-**主干开发适用于** :
+**主干开发适用于**：
 
 - 开发团队系统设计和开发能力强。有一套有效的特性切换的实施机制，保证上线后无需修改代码就能够修改系统行为。需要快速迭代，想获得 CI/CD 所有好处。
 - 组件开发的团队，成员能力强，人员少，沟通顺畅。用户升级组件成本低的环境。
 
-**Git Flow 适用于** :
+**Git Flow 适用于**：
 
 - 不具备主干开发能力，有预定的发布周期。需要执行严格的发布流程。
 
-**GitHub FLow 适用于** :
+**GitHub FLow 适用于**：
 
 - 不具备主干开发能力。随时集成随时发布；分支集成时经过代码评审和自动化测试，就可以立即发布的应用。
 
-**GitLab Flow (带生产分支) 适用于**:
+**GitLab Flow (带生产分支) 适用于**：
 
 - 不具备主干开发能力。无法控制准确的发布时间，但又要求不停的集成。
 
-**GitLab FLow (带环境分支) 适用于**:
+**GitLab FLow (带环境分支) 适用于**：
 
 - 不具备主干开发能力，需要逐个通过各个测试环境的验证才能发布。
 
-**GitLab Flow (带发布分支) 适用于**:
+**GitLab Flow (带发布分支) 适用于**：
 
 - 不具备主干开发能力。需要对外发布和维护不同版本。
 
@@ -763,9 +763,9 @@ git config --global core.editor "code -w"
 
 ![Merge button](./image/Merge_button.png)
 
-1. `git merge` : `git merge` 带 `squash` 参数则合并后特性分支上的多个 commit 会合并成一个 commit 放到主分支上，不带 `squash` 参数则特性分支上的多个 commit 在合并后会原样体现出来。
+1. `git merge`：`git merge` 带 `squash` 参数则合并后特性分支上的多个 commit 会合并成一个 commit 放到主分支上，不带 `squash` 参数则特性分支上的多个 commit 在合并后会原样体现出来。
 
-2. `git rebase` : 将特性分支上的多个 commit 放到主分支上，如果有冲突先将特性分支和主分支解决冲突 merge。 可以再使用 merge 将特性分支和主分支合并。
+2. `git rebase`：将特性分支上的多个 commit 放到主分支上，如果有冲突先将特性分支和主分支解决冲突 merge。 可以再使用 merge 将特性分支和主分支合并。
 
 #### 2.2.3 GitHub 中的 Projects
 
@@ -775,7 +775,7 @@ Projects 可以有序的管理 **issue** 和 **Pull request**
 
 ![Projects](./image/Projects.png)
 
-#### 2.2.3 项目内部实施代码检查(code review)
+#### 2.2.3 项目内部实施代码检查（code review）
 
 在 仓库 -> Settings -> Branches -> Branch protection rules 中可以添加分支保护规则
 
@@ -785,15 +785,15 @@ Projects 可以有序的管理 **issue** 和 **Pull request**
 
 ### 3.1 不同人修改了不同文件
 
-**有两种方法**:
+**有两种方法**：
 
-- 如果在进行 `git push` 之前发现远程又有了更新，可以将本地的提交回退掉，避免掉无用的远程 merge 本地分支的提交记录，使用如下命令:
+- 如果在进行 `git push` 之前发现远程又有了更新，可以将本地的提交回退掉，避免掉无用的远程 merge 本地分支的提交记录，使用如下命令：
 
   > `git reset HEAD~` > `git pull`
 
   然后重新进行新的提交，这样就可以避免远程与本地分支的 `merge` 提交记录，让 git 的提交历史更加干净。
 
-- 把本地的提交基于远端分支做 `rebase` ，在本地解决掉冲突并完成自测。
+- 把本地的提交基于远端分支做 `rebase` ，在本地解决掉冲突并完成自测
 
   ```sh
   git pull --rebase
@@ -805,11 +805,11 @@ Projects 可以有序的管理 **issue** 和 **Pull request**
 
 ### 3.3 不同人修改相同文件的相同区域
 
-使用 `git pull`，然后手动解决冲突(与另一个提交者交流后)
+使用 `git pull`，然后手动解决冲突（与另一个提交者交流后）
 
 ### 3.4 同时变更了文件名和文件内容
 
-**分两种情况**:
+**分两种情况**：
 
 - 没有修改相同位置，没有修改的冲突，变更文件名和变更文件内容的操作能够自动被 git 处理。
 
@@ -823,7 +823,7 @@ Projects 可以有序的管理 **issue** 和 **Pull request**
 
 ### 3.6 提交 commit 后，想再忽略一些已经提交的文件
 
-1. 把想忽略的文件添加到 **.gitignore**
+1. 把想忽略的文件添加到 .gitignore
 2. 然后通过 `git rm --cached name_of_file` 的方式删除掉 git 仓库里面无需跟踪的文件。
 
 ## 四. GitLab
@@ -869,9 +869,7 @@ Git 是可以像 SVN 这样的中心工作流一样工作的。
 
 ![git-pull--rebase应用代码](./image/git-pull--rebase应用代码.png)
 
-> **问题**
-> 小团队或是小项目可以这么干，但是对比较大的项目或是人比较多的团队，这么干就会有很多问题。
-> 最大的问题就是代码可能干扰太严重。
+> **问题**：小团队或是小项目可以这么干，但是对比较大的项目或是人比较多的团队，这么干就会有很多问题。最大的问题就是代码可能干扰太严重。
 
 ### 5.2 功能分支协同工作流
 
@@ -879,7 +877,7 @@ Git 是可以像 SVN 这样的中心工作流一样工作的。
 
 协同工作流的开发过程如下：
 
-1. 首先使用 `git checkout -b new-feature` 创建并切换到 "new-feature"分支。
+1. 首先使用 `git checkout -b new-feature` 创建并切换到 "new-feature" 分支。
 2. 然后共同开发这个功能的程序员就在这个分支上工作，进行 add、commit 等操作。
 3. 然后通过 `git push -u origin new-feature` 把分支代码 push 到服务器上。
 4. 其他程序员可以通过 `git pull --rebase` 来拿到最新的这个分支的代码。最后通过 Pull Request 的方式做完 Code Review 后合并到 Master 分支上。
@@ -890,7 +888,7 @@ Git 是可以像 SVN 这样的中心工作流一样工作的。
 
 这种开发是以服务器为中心的开发，还不是 Git 分布式开发，它只不过是用分支来完成代码改动的隔离。
 
-为什么会叫"功能分支"，而不是"项目分支"？因为 Git 的最佳实践希望在开发的过程中，快速提交，快速合并，快速完成。这样可以少很多冲突的事，所以叫功能分支。
+为什么会叫 "功能分支"，而不是" 项目分支"？因为 Git 的最佳实践希望在开发的过程中，快速提交，快速合并，快速完成。这样可以少很多冲突的事，所以叫功能分支。
 
 传统的项目分支开得太久，时间越长就越合不回去。这种玩法其实就是把一个大项目切分成若干个小项目来执行（最好是一个小功能一个项目）。这样才是互联网式的快速迭代式的开发流程。
 
@@ -912,16 +910,16 @@ GitFlow 协同工作流是由 Vincent Driessen 于 2010 年在 A successful Git 
 
 整个代码库中一共有五种分支:
 
-- **Master 分支** : 也就是主干分支，用作发布环境，上面的每一次提交都是可以发布的。
+- **Master 分支**：也就是主干分支，用作发布环境，上面的每一次提交都是可以发布的。
 
-- **Feature 分支** : 也就是功能分支，用于开发功能，其对应的是开发环境。
+- **Feature 分支**：也就是功能分支，用于开发功能，其对应的是开发环境。
 
-- **Developer 分支** : 是开发分支，一旦功能开发完成，就向 Developer 分支合并，合并完成后，删除功能分支。这个分支对应的是集成测试环境。
+- **Developer 分支**：是开发分支，一旦功能开发完成，就向 Developer 分支合并，合并完成后，删除功能分支。这个分支对应的是集成测试环境。
 
-- **Release 分支** : 当 Developer 分支测试达到可以发布状态时，开出一个 Release 分支来，然后做发布前的准备工作。这个分支对应的是预发环境。之所以需要这个 Release 分支，是因为开发需要继续向前，不会因为要发布而被 block 住而不能提交。
+- **Release 分支**：当 Developer 分支测试达到可以发布状态时，开出一个 Release 分支来，然后做发布前的准备工作。这个分支对应的是预发环境。之所以需要这个 Release 分支，是因为开发需要继续向前，不会因为要发布而被 block 住而不能提交。
   一旦 Release 分支上的代码达到可以上线的状态，那么需要把 Release 分支向 Master 分支和 Developer 分支同时合并，以保证代码的一致性。然后再把 Release 分支删除掉。
 
-- **Hotfix 分支** : 是用于处理生产线上代码的 Bug-fix，每个线上代码的 Bug-fix 都需要开一个 Hotfix 分支，完成后，向 Developer 分支和 Master 分支上合并。合并完成后，删除 Hotfix 分支。
+- **Hotfix 分支**：是用于处理生产线上代码的 Bug-fix，每个线上代码的 Bug-fix 都需要开一个 Hotfix 分支，完成后，向 Developer 分支和 Master 分支上合并。合并完成后，删除 Hotfix 分支。
 
 这就是整个 GitFlow 协同工作流的工作过程。可以看到：
 
@@ -931,13 +929,17 @@ GitFlow 协同工作流是由 Vincent Driessen 于 2010 年在 A successful Git 
 
 - GitFlow 协同虽然工作流比较重。但是它几乎可以应对所有公司的各种开发流程，包括瀑布模型，或是快速迭代模型。
 
-**GitFlow 的问题**:
+**GitFlow 的问题**：
 
-- 分支太多，所以会出现 git log 混乱的局面。具体来说，主要是 git-flow 使用 `git merge --no-ff` 来合并分支，在 git-flow 这样多个分支的环境下会让分支管理的 log 变得很难看。
+- **分支太多**
+  会出现 git log 混乱的局面。具体来说，主要是 git-flow 使用 `git merge --no-ff` 来合并分支，在 git-flow 这样多个分支的环境下会让分支管理的 log 变得很难看。
+
   所谓 --no-ff 参数的意思是 no fast forward 的意思。也就是说，合并的方法不要把这个分支的提交以前置合并的方式，而是留下一个 merge 的提交。
+
   对此的建议是：只有 feature 合并到 developer 分支时，使用 --no-ff 参数，其他的合并都不使用 --no-ff 参数来做合并。
 
-- 管理复杂。需要来来回回地切换工作的分支，有时候一不小心没有切换，就提交到了不正确的分支上，还要回滚和重新提交。
+- **管理复杂**
+  需要来来回回地切换工作的分支，有时候一不小心没有切换，就提交到了不正确的分支上，还要回滚和重新提交。
 
 ### 5.4 GitHub/GitLab 协同工作流
 
@@ -945,10 +947,10 @@ GitFlow 协同工作流是由 Vincent Driessen 于 2010 年在 A successful Git 
 
 GitHub 的工作流程：
 
-1. 每个开发人员都把"官方库"的代码 fork 到自己的代码仓库中。
+1. 每个开发人员都把 "官方库" 的代码 fork 到自己的代码仓库中。
 2. 然后，开发人员在自己的代码仓库中做开发。
 3. 因此，开发人员的代码库中，需要配两个远程仓库，一个是自己的库，一个是官方库（用户的库用于提交代码改动，官方库用于同步代码）。
-4. 然后在本地建"功能分支"，在这个分支上做代码开发。
+4. 然后在本地建 "功能分支"，在这个分支上做代码开发。
 5. 这个功能分支被 push 到开发人员自己的代码仓库中。
 6. 然后，向"官方库"发起 pull request，并做 Code Review。
 7. 一旦通过，就向官方库进行合并。
@@ -981,16 +983,14 @@ GitHub Flow 这种玩法依然会有好多问题，因为其虽然变得很简�
 3. 不同环境和代码的一致性。
 4. 代码总是会在稳定和不稳定间交替。希望生产线上的代码总是能对应到稳定的代码上来。
 
-**软件开发的趋势**:
+**软件开发的趋势**：
 
 - **以微服务或是 SOA 为架构的方式**
   一个大型软件会被拆分成若干个服务，那么，代码应该也会跟着服务拆解成若干个代码仓库。这样一来，每个代码仓库都会变小，于是协同工作流程就会变简单。
-  对于每个服务的代码仓库，开发和迭代速度也会变得很快，开发团队也会跟服务一样被拆分成多个小团队。
-  这样一来， GitFlow 这种协同工作流程就非常重了，而 GitHub 这种方式或是功能分支这种方式会更适合开发。
+
+  对于每个服务的代码仓库，开发和迭代速度也会变得很快，开发团队也会跟服务一样被拆分成多个小团队。这样一来， GitFlow 这种协同工作流程就非常重了，而 GitHub 这种方式或是功能分支这种方式会更适合开发。
 
 - **以 DevOps 为主的开发流程**
   DevOps 关注于 CI/CD，需要有自动化的集成测试和持续部署的工具。这样一来，代码发布速度就会大大加快，每一次提交都能很快地被完整地集成测试，并很快地发布到生产线上。
 
-协同工作流的本质，并不是怎么玩好代码仓库的分支策略，而是**玩好软件架构和软件开发流程**。
-
-与其花时间在 Git 协同工作流上，还不如把时间花在调整软件架构和自动化软件生产和运维流程上来，这才是真正简化协同工作流程的根本。
+协同工作流的本质，并不是怎么玩好代码仓库的分支策略，而是**玩好软件架构和软件开发流程**。与其花时间在 Git 协同工作流上，还不如把时间花在调整软件架构和自动化软件生产和运维流程上来，这才是真正简化协同工作流程的根本。
