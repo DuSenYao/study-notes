@@ -561,11 +561,15 @@ Node 是 DOM 树继承关系的根节点，它定义了 DOM 节点在 DOM 树上
 
 - appendChild: 可向节点的子节点列表末尾添加新的子节点。
   如果要添加的子节点，是 DOM 树中已经存在了的，添加的子节点将从 DOM 树中删除，然后重新插入它的新位置。如果要添加的子节点是 DocumentFragment 节点，则不会直接插入它，而是把它的子节点按序插入当前节点的子节点列表末尾。
+
   例：[**操作 DOM 树的 API**.html 行 45](./示例文件/操作DOM树的API.html)
+
 - insertBefore: 向指定的已有子节点之前插入新的子节点
   例：[操作 DOM 树的 API.html 行 47](./示例文件/操作DOM树的API.html)
+
 - removeChild: 删除一个子节点，返回删除的节点
   例：[操作 DOM 树的 API.html 行 50](./示例文件/操作DOM树的API.html)
+
 - replaceChild: 用指定节点替换当前节点的一个子节点，并返回被替换的节点
   例：[操作 DOM 树的 API.html 行 51](./示例文件/操作DOM树的API.html)
 
@@ -575,12 +579,16 @@ Node 还提供了一些高级 API，如下：
 
 - compareDocumentPosition: 可以比较当前节点与任意文档中另一个节点的位置关系，返回值是一个位掩码。
   例：[Node 高级 API.html 行 25](./示例文件/Node高级API.html)
+
 - contains: 检查传入节点是否为当前节点的后代节点，返回布尔值
   例：[Node 高级 API.html 行 26](./示例文件/Node高级API.html)
+
 - isEqualNode: 检查两个节点是否完全相同
   例：[Node 高级 API.html 行 27](./示例文件/Node高级API.html)
+
 - isSameNode: 检查两个节点是否是同一个节点，实际上在 JS 中可以用"==="
   例：[Node 高级 API.html 行 28](./示例文件/Node高级API.html)
+
 - cloneNode: 复制一个节点，如果传入参数 true，则会连同子元素做深拷贝
   例：[Node 高级 API.html 行 29](./示例文件/Node高级API.html)
 
@@ -588,18 +596,27 @@ DOM 标准规定了节点必须从文档的 `create` 方法创建出来，不能
 
 - createElement: 创建并返回一个由标签名称指定的 HTML 元素
   例：[DOM-create API.html 行 44](./示例文件/DOM-create-API.html)
+
 - createTextNode: 创建并返回一个新的文本节点。这个方法可以用来转义 HTML 字符。
   例：[DOM-create API.html 行 45](./示例文件/DOM-create-API.html)
+
 - createCDATASection: 创建并返回一个新的 CDATA 节点
   例：[DOM-create API.html 行 46](./示例文件/DOM-create-API.html)
+
 - createComment: 创建并返回一个注释节点
   例：[DOM-create API.html 行 47](./示例文件/DOM-create-API.html)
+
 - createProcessingInstruction: 创建并返回一个新的处理指令节点
   例：[DOM-create API.html 行 48](./示例文件/DOM-create-API.html)
+
 - createDocumentFragment: 创建并返回一个新的空白文档片段。
+
   DocumentFragment 是 DOM 节点，但不是主 DOM 树的一部分。通常用于创建文档片段，将元素附加到文档片段，然后将文档片段附加到 DOM 树，在 DOM 树中，文档片段被其所有的子元素代替。
-  因为文档片段存在于内存中，并不在 DOM 树中，所以将子元素插入到文档片段时不会引起页面回流(对元素位置和几何的计算)，因此，使用文档片段通常会带来更好的性能。
+
+  因为文档片段存在于内存中，并不在 DOM 树中，所以将子元素插入到文档片段时不会引起页面回流（对元素位置和几何的计算），因此，使用文档片段通常会带来更好的性能。
+
   例：[DOM-create API.html 行 49](./示例文件/DOM-create-API.html)
+
 - createDocumentType: 创建并返回一个 DocumentType 对象。
   例：[DOM-create API.html 行 50](./示例文件/DOM-create-API.html)
 

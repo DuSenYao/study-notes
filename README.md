@@ -18,6 +18,7 @@
   - [CSS](/front_end/CSS/CSS.md)
     - [精通CSS-高级Web标准解决方案](/front_end/CSS/精通CSS/精通CSS-高级Web标准解决方案.md)
     - [SCSS](/front_end/CSS/SCSS/Scss.md)
+    - [CSS选择器](/front_end/CSS/CSS选择器/CSS选择器.md)
   - [HTML](/front_end/HTML/HTML.md)
   - [JavaScript](/front_end/JavaScript/JavaScript.md)
     - [JavaScript 权威指南](/front_end/JavaScript/JavaScript权威指南/JavaScript权威指南.md)
