@@ -1,9 +1,3 @@
-<!--
- * @Author: DSY
- * @Date: 2021-01-13 11:09:24
- * @LastEditTime: 2021-01-14 11:24:04
- * @Description:
--->
 <!DOCTYPE html>
 <html lang="zn-CN">
   <head>
@@ -22,7 +16,7 @@
   <body>
     <div class="container">
       <div class="img">
-        <!-- 注意并没有为它引入真实的src -->
+        <!-- 注意：并没有为它们引入真实的src -->
         <img class="pic" alt="加载中" data-src="../image/回流-重绘.png" />
       </div>
       <div class="img">
@@ -68,7 +62,7 @@
   </body>
   <script>
     // 获取所有的图片标签
-    const imgs = document.getElementsByTagName("img");
+    const imgs = document.getElementsByTagName('img');
     // 获取可视区域的高度
     const viewHeight = window.innerHeight || window.documentElement.clientHeight;
     // num用于统计当前显示到了哪一张图片，避免每次都从第一张图片开始检查是否露出
@@ -80,13 +74,13 @@
         // 如果可视区域高度大于等于元素顶部距离可视区域顶部的高度，说明元素露出
         if (distance >= 0) {
           // 给元素写入真实的src，展示图片
-          imgs[i].src = imgs[i].getAttribute("data-src");
+          imgs[i].src = imgs[i].getAttribute('data-src');
           // 前i张图片已经加载完毕，下次从第i+1张开始检查是否露出
           num = i + 1;
         }
       }
     }
     // 监听Scroll事件
-    window.addEventListener("scroll", lazyLoad, false);
+    window.addEventListener('scroll', lazyLoad, false);
   </script>
 </html>
