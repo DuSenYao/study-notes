@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CSS渲染-渐变</title>
+    <title>HSL颜色应用</title>
     <style>
       .button {
         display: inline-block;
@@ -33,12 +33,12 @@
     <div class="radial"></div>
   </body>
   <script>
-    var btn = document.querySelector(".button");
-    var h = 25;
+    let btn = document.querySelector('.button');
+    let h = 25;
     // HSL颜色的应用
     setInterval(() => {
-      h++;
-      h = h % 360;
+      h += 1;
+      h %= 360;
       btn.style.borderColor = `hsl(${h}, 95%, 45%)`;
       btn.style.background = `linear-gradient(to bottom,  hsl(${h},95%,54.1%),  hsl(${h},95%,84.1%))`;
     }, 100);
