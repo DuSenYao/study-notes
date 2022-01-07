@@ -13654,9 +13654,9 @@ _IndexedDB_
 
 Window 对象的 `localStorage` 和 `sessionStorage` 属性引用的是 storage 对象。Storage 对象与普通 JS 对象非常类似，只不过：
 
-- Storage 对象的属性值必须是字符串;
+- Storage 对象的属性值必须是字符串
 
-- Storage 对象中存储的属性是持久化的。如果设置了 localStorage 对象的一个属性，然后用户刷新了页面，的程序仍然可以访问在该属性中保存的值。
+- Storage 对象中存储的属性是持久化的。如果设置了 localStorage 对象的一个属性，然后用户刷新了页面，程序仍然可以访问在该属性中保存的值。
 
 例如，可以像下面这样使用 localStorage 对象：
 

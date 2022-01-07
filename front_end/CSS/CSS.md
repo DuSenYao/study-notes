@@ -29,6 +29,8 @@
       - [2.1.1 at-rule](#211-at-rule)
       - [2.1.2 普通规则](#212-普通规则)
         - [2.1.2.1 声明：属性和值](#2121-声明属性和值)
+      - [2.1.3 CSS 函数](#213-css-函数)
+        - [2.1](#21)
     - [2.2 层叠](#22-层叠)
     - [2.3 层叠上下文](#23-层叠上下文)
       - [2.3.1 层叠等级](#231-层叠等级)
@@ -56,13 +58,13 @@
       - [3.2.9 内在大小与外在大小](#329-内在大小与外在大小)
       - [3.2.10 正常流](#3210-正常流)
         - [3.2.10.1 正常流的使用技巧](#32101-正常流的使用技巧)
-    - [2.2 文档流](#22-文档流)
-    - [2.3 脱流文档流](#23-脱流文档流)
-    - [3.3 其他 CSS 布局模块](#33-其他-css-布局模块)
-      - [3.3.1 弹性盒布局](#331-弹性盒布局)
-      - [3.3.2 网格布局](#332-网格布局)
-    - [3.3.3 多栏布局](#333-多栏布局)
-    - [3.4 Region](#34-region)
+    - [3.3 文档流](#33-文档流)
+    - [3.4 脱流文档流](#34-脱流文档流)
+    - [3.5 其他 CSS 布局模块](#35-其他-css-布局模块)
+      - [3.5.1 弹性盒布局](#351-弹性盒布局)
+      - [3.5.2 网格布局](#352-网格布局)
+      - [3.5.3 多栏布局](#353-多栏布局)
+    - [3.6 Region](#36-region)
   - [四. 网页排版](#四-网页排版)
     - [4.1 CSS 的基本排版技术](#41-css-的基本排版技术)
       - [4.1.1 文本颜色](#411-文本颜色)
@@ -619,11 +621,27 @@ CSS 也是可以验证的。W3C 的 [CSS 验证器](http://jigsaw.w3.org/css-val
 
 #### 1.4.3 HSL 颜色
 
-上面两种颜色都是从人类视觉角度建模，但是人类对颜色的认识却并非来自自己的神经系统，当把阳光散射，可以得到七色光：红橙黄绿蓝靛紫，实际上，阳光接近白光，它包含了各种颜色的光，它散射之后，应该是个基本连续的。这说明对人的感知来说，颜色远远大于红、绿、蓝。
+上面两种颜色都是从人类视觉角度建模，但是人类对颜色的认识却并非来自自己的神经系统，当把阳光散射，可以得到七色光：红橙黄绿蓝靛紫，实际上，阳光接近白光，它包含了各种颜色的光，它散射之后，应该是个基本连续的。这说明对人的感知来说，颜色远远多于红、绿、蓝。
 
-因此，HSL 这样的颜色模型被设计出来了，它用一个值表示人类认知中的颜色。用专业的术语叫做：色相(H)、颜色的纯度(S)和明度(L)，就构成了一种颜色的表示。
+因此，HSL 这样的颜色模型被设计出来了，它用以下三个值表示人类认知中的颜色：
+
+- **色相**（H）
+
+  又名色盘，指色彩的基本属性。就是常说的颜色名称，例如红色、绿色等。色相的单位是 deg，值的范围在 0~360deg 间，若超过 360deg 则相当绕 N 圈再计算剩余的值。0deg 和 360deg 为红色，120deg 为绿色，240deg 为蓝色。
+
+- **饱和度**（S）
+
+  指色彩的纯度。越高色彩越纯，越低色彩越灰。饱和度的单位是 %，值的范围在 0~100% 间。0% 为灰色，100% 为全色。
+
+- **亮度**（L）
+
+  指色彩的发光强度。越高色彩越亮，越低色彩越暗。亮度的单位是 %，值的范围在 0~100% 间。0% 为最暗，100% 为最亮。
 
 ![HSL颜色](./image/HSL颜色.png)
+
+> **注意**：饱和度和亮度的单位即使是 0 也得写成 0%。
+
+HSL 颜色其实是一种将 RGB 颜色中的点在圆柱坐标系中标记出来的表示法，该表示法试图做到比基于笛卡尔坐标系的几何结构 RGB 更直观。
 
 > 建议使用 HSL 颜色，这是一种语义化的颜色。当对一张图片改变色相时，人们感知到的是 "图片的颜色变了"。
 
@@ -639,8 +657,8 @@ CSS 中有四种角度单位：
 
 - `deg`：度（Degrees），一个圆有 360 度
 - `grad`：梯度（gradients），一个圆共 400 梯度
-- `rad`：弧度（radians），一个圆有 2π 弧度
 - `turn`：圈（turns），一个圆有一圈
+- `rad`：弧度（radians），一个圆有 2π 弧度
 
 90deg = 200grad = 0.25turn ≈ 1.570796326794897rad
 
@@ -880,6 +898,248 @@ at-rule 由一个 `@` 关键字和后续的一个区块组成，如果没有区�
 
      [css-attr()](./example/css-attr.html)
 
+#### 2.1.3 CSS 函数
+
+CSS 函数指复杂类型或调用特殊处理的组件值类型。在 CSS 代码中，只要带有 () 的属性值都是函数。有了函数后，可将一系列相关计算交给浏览器处理，可减少大量人工计算甚至无需人工计算，大大提高了 CSS 代码的编写效率。
+
+**分类**：
+
+- **颜色函数**
+
+  - rgb()：RGB 色彩模式
+  - rgba()：RGBA 色彩模式
+  - hsl()：HSL 色彩模式
+  - hsla()：HSLA 色彩模式
+  - color()：色彩模式，基于当前颜色衍生出其他颜色
+
+- **属性函数**
+
+  - attr()：属性
+  - var()：变量
+
+- **数学函数**
+
+  - clamp()：区间范围值
+  - counter()：计数器
+  - counters()：嵌套计数器
+  - calc()：计算
+  - max()：最大值
+  - min()：最小值
+
+- **背景函数**
+
+  - url()：图像路径
+  - element()：图像映射，渲染指定元素为图像
+  - image-set()：图像集合，根据屏幕分辨率匹配合适图像
+  - linear-gradient()：线性渐变
+  - radial-gradient()：径向渐变
+  - conic-gradient()：锥形渐变
+  - repeating-linear-gradient()：重复线性渐变
+  - repeating-radial-gradient()：重复径向渐变
+  - repeating-conic-gradient()：重复锥形渐变
+
+- **滤镜函数**
+
+  - blur()：模糊
+  - brightness()：亮度
+  - contrast()：对比度
+  - drop-shadow()：阴影
+  - grayscale()：灰度
+  - hue-rotate()：色相旋转
+  - invert()：反相
+  - opacity()：透明度
+  - saturate()：饱和度
+  - sepia()：褐色
+
+- **图像函数**
+
+  - circle()：圆形
+  - ellipse()：椭圆形
+  - inset()：矩形
+  - path()：路径
+  - polygon()：多边行
+
+- **变换函数**
+
+  - matrix()：矩阵
+  - matrix3d()：3D 矩阵
+  - perspective()：视距
+  - rotate()：旋转
+  - rotate3d()：3D 旋转
+  - rotateX()：X 轴旋转
+  - rotateY()：Y 轴旋转
+  - rotateZ()：Z 轴旋转
+  - scale()：缩放
+  - scale3d()：3D 缩放
+  - scaleX()：X 轴缩放
+  - scaleY()：Y 轴缩放
+  - scaleZ()：Z 轴缩放
+  - skew()：扭曲
+  - skewX()：X 轴扭曲
+  - skewY()：Y 轴扭曲
+  - translate()：位移
+  - translate3d()：3D 位移
+  - translateX()：X 轴位移
+  - translateY()：Y 轴位移
+  - translateZ()：Z 轴位移
+
+- **缓动函数**
+
+  - cubic-bezier()：贝塞尔曲线
+  - steps()：逐帧
+
+##### 2.1.3.1 颜色函数
+
+颜色函数是最常用的函数，没有之一。颜色函数可用在 border-color、outline-color、background-color、box-shadow、color、caret-color 等属性上使用。
+
+- [RGB 色彩](#141-rgb-颜色)模式：rgb()、rgba()
+
+  rgb() 里的 R 表示红色，G 表示绿色，B 表示蓝色，而 rgba() 多出来的 A 表示透明度，这个 A 与 opacity 声明的透明度不同，rgba() 声明的透明度不会应用到子节点上，而 opacity 声明的透明度会应用到子节点上。
+
+  > **建议**：在声明普通颜色时使用 HEX 色彩模式（16 进制色彩模式），若颜色存在透明度的需求，可用 rgba()。
+
+- [HSL 色彩](#143-hsl-颜色)模式：hsl()、hsla()
+
+##### 2.1.3.2 属性函数
+
+`attr(val)` 用于返回节点属性，通常结合伪元素的 content 使用。
+
+```html
+<h1 class="hello" data-name=" World"></h1>
+<style>
+  h1::before {
+    content: attr(class);
+  }
+  h1::after {
+    content: attr(data-name);
+  }
+</style>
+```
+
+::before 通过 attr()获取 h1 class 的属性值并赋值到 content 上，::after 通过 attr() 获取 h1 data-name 的属性值并赋值到 content 上，最终 h1 的 innerText 是 hello World。
+
+attr() 可灵活结合选择器返回节点属性并赋值到伪元素的 content 上，通过 attr() 结合 :hover 和 :empty 抓取节点需显示的内容是一个很不错的技巧。
+
+##### 2.1.3.3 数学函数
+
+- `counter()`/`counters()`
+
+  counter() 用于返回计数器迭代值，必须结合伪元素的 content 使用。它以计数器名称作为参数，并作为值传递给 content。counters() 用于返回嵌套计数器迭代值，情况和 counter() 一致。
+
+  在使用 counter() 和 counters() 时，必须与 counter-reset 和 counter-increment 一起使用。
+
+  - `counter-reset`：重置计数器名称与初始值，编写形式为 counter-reset:name val;
+  - `counter-increment`：对指定计数器累计其计数值，编写形式为 counter-increment:name，在使用到的地方声明就会累加
+
+  对于一些迭代需求通常都会使用 HTML 模板，例如 Vue 模板等，所以 counter() 和 counters() 使用场景不多。以下就使用 counter() 巧妙搭配完成一个显示权重的迭代计数器。
+
+  ```html
+  <div class="iterative-counter">
+    <ul>
+      <li>
+        <input id="angular" type="checkbox" />
+        <label for="angular">Angular</label>
+      </li>
+      <li>
+        <input id="react" type="checkbox" />
+        <label for="react">React</label>
+      </li>
+      <li>
+        <input id="vue" type="checkbox" />
+        <label for="vue">Vue</label>
+      </li>
+    </ul>
+    <p class="count" data-unit="个">框架：</p>
+    <p class="weight" data-unit="%">权重：</p>
+  </div>
+  ```
+
+  ```scss
+  .iterative-counter {
+    ul {
+      counter-reset: index 0 count 0 weight 0;
+    }
+    li {
+      display: flex;
+      position: relative;
+      align-items: center;
+      counter-increment: index 1;
+      &::before {
+        content: counter(index) '、';
+      }
+      & + li {
+        margin-top: 10px;
+      }
+    }
+    input {
+      overflow: hidden;
+      position: absolute;
+      width: 0;
+      height: 0;
+      opacity: 0;
+      &:checked + label::before {
+        color: #3c9;
+        content: '\2713';
+      }
+    }
+    label {
+      display: flex;
+      align-items: center;
+      height: 20px;
+      &::before {
+        margin-right: 5px;
+        border: 1px solid #3c9;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        line-height: 20px;
+        text-align: center;
+        color: transparent;
+        content: '';
+        transition: all 300ms;
+      }
+    }
+    p {
+      margin-top: 10px;
+      &.count::after {
+        content: counter(count) attr(data-unit);
+      }
+      &.weight::after {
+        content: counter(weight) attr(data-unit);
+      }
+    }
+  }
+  #angular:checked {
+    counter-increment: count 1 weight 20;
+  }
+  #react:checked {
+    counter-increment: count 1 weight 50;
+  }
+  #vue:checked {
+    counter-increment: count 1 weight 30;
+  }
+  ```
+
+- `calc()`
+
+  calc(exp) 用于动态计算单位，数值、长度、角度、时间和百分比都能作为参数。由于执行数学表达式后返回运算后的计算值，所以可减少大量人工计算甚至无需人工计算。所有计量单位都能作为参数参加整个动态计算：
+
+ ·数值：整数、浮点数
+ 长度：px、em、rem、vw、vh等(详情可回看第5章样式计算)
+ 角度：deg、turn
+ 时间：s、ms
+ 百分比：%
+calc()虽然好用，但是新手难免会遇到一些坑，谨记以下特点，相信就能玩转calc()了。
+
+四则运算：只能使用+、-、*、/作为运算符号
+运算顺序：遵循加减乘除运算顺序，可用()提升运算等级
+符号连接：每个运算符号必须使用空格间隔起来
+混合计算：可混合不同计量单位动态计算
+第三点尤为重要，若未能遵守，浏览器直接忽略该属性。
+
+还记得第5章样式计算的一行CSS代码让页面自适应吗？font-size:calc(100vw / 7.5)，其实就是根据设计图与浏览器视窗的比例动态计算<html>的font-size：100/750 = x/100vw。
+
+在SPA里有遇过因为有滚动条或没滚动条而导致页面路由在跳转过程中发生向左或向右的抖动吗？这让强迫症患者很不舒服，此时可用calc()巧妙解决该问题。
 ### 2.2 层叠
 
 稍微复杂的样式表中都可能存在两条甚至多条规则同时选择一个元素的情况。CSS 通过一种叫作层叠（cascade）的机制来处理这种冲突。从 CSS 这个名字就可知这种机制有多重要，因为其中的 C 就是 cascade（SS 是 style sheet，即样式表）。
@@ -1248,7 +1508,7 @@ margin 可以理解为"一个元素规定了自身周围至少需要的空间"�
 **自适应宽**
 [正常流-自适应宽度问题.html](./example/正常流-自适应宽度问题.html)
 
-### 2.2 文档流
+### 3.3 文档流
 
 文档流指节点在排版布局过程中默认使用从左往右从上往下的流式排列方式。窗体从上往下分成一行行且每行按照从左往右的顺序排列节点，其显著特点就是从左往右从上往下。
 
@@ -1267,7 +1527,7 @@ margin 可以理解为"一个元素规定了自身周围至少需要的空间"�
 
 - `position:absolute; z-index:-1`：不占据空间，不可点击
 
-### 2.3 脱流文档流
+### 3.4 脱流文档流
 
 脱流文档流指节点脱流正常文档流后，在正常文档流中的其他节点将忽略该节点并填补其原先空间。文档一旦脱流，计算其父节点高度时不会将其高度纳入，脱流节点不占据空间，因此添加浮动或定位后会对周围节点布局产生或多或少的影响。
 
@@ -1281,27 +1541,27 @@ margin 可以理解为"一个元素规定了自身周围至少需要的空间"�
 
   节点使用 position 脱流时（只有 absolute 和 fixed），会让其及其文本一起跳出正常文档流，其他节点会忽略该节点并填补其原先空间。absolute 绝对定位是相对往上遍历第一个包含 position:relative/absolute 的祖先节点定位，若无此节点则相对 body 定位；fixed 固定定位是相对浏览器窗口定位。
 
-### 3.3 其他 CSS 布局模块
+### 3.5 其他 CSS 布局模块
 
 对于 CSS 这种视觉表现语言来说，稳健又灵活的布局模型无论如何都是必需的。虽然道理显而易见，但这种模型的诞生却并不容易。过去，曾想方设法地利用这门语言中可用的特性来达成自己的目标，哪怕那些特性并不好用。比如最早曾使用表格布局，但问题是代码臃肿、语义不当。近来又在使用浮动和绝对定位，但这些技术同样也并非为页面布局而设计。无论是表格还是浮动与定位，都有非常严重的局限性，使用它们只是不得已的选择。
 
 最近出现了一些专门针对创建灵活、稳健页面布局的 CSS 模块。这些模块的进度快慢不一，有的甚至还没有得到较多浏览器支持。后面会详细介绍其中几个模块，此处先概览一下它们的主要功能。
 
-#### 3.3.1 弹性盒布局
+#### 3.5.1 弹性盒布局
 
 弹性盒布局模块（Flexible Box Layout Module），常被称为 Flexbox，是 CSS3 新引入的一种布局模型。Flexbox 支持对子元素水平或垂直布局，以及设置这些子元素的大小、间距和对齐方式。此外，Flexbox 还支持改变元素渲染到页面上的次序，可以跟它们在 HTML 中的次序不同。作为 CSS 常规流模型（行内和块）的升级版，无论是调整内容本身还是适应内容大小，Flexbox 都做到了既精确又灵活。
 
 [Flexbox](#63-flexbox) 已经得到浏览器的广泛支持，只是在旧版本正中缺乏支持或支持不完整。好在可以将 Flexbox 与浮动等其他技术组合使用，以确保跨浏览器布局的稳健。
 
-#### 3.3.2 网格布局
+#### 3.5.2 网格布局
 
 [网格布局](#73-二维布局css-grid-layout)（grid layout）是 CSS 中最早成熟的高层布局工具，目标是取代浮动和定位元素的布局方式。网格布局实现了源代码次序的完全分离，从内容结构和个别模块的表现中抽象出了网格系统。Flexbox 关注 “微观”，而网格系统关注 “宏观”，二者正好互补。
 
-### 3.3.3 多栏布局
+#### 3.5.3 多栏布局
 
 多栏布局模块（Multi-column Layout Module）的用意很明确，就是实现内容的多栏布局。比如，要排成像报纸那样的多栏样式。可以先指定栏数，也可以先指定每一栏的宽度，然后让浏览器根据可用宽度自动确定栏数。当然，还可以控制栏间距，并在其中应用类似边框的视觉效果。因为多栏布局更倾向于排版而布局。
 
-### 3.4 Region
+### 3.6 Region
 
 CSS Regions Module Level 1 可以实现内容在不同元素间的灌文接排。可以把一个元素作为内容来源，但它不在常规文档流中，其内容可以灌排到页面中的其他占位元素。这意味着布局不再受 HTML 中元素次序的影响，也就是把布局表现从内容结构中解耦了出来。
 
@@ -6352,7 +6612,7 @@ button {
 
 1. **可插值**
 
-   有些属性虽然没有明确的中间值，却可以实现动画。比如，在使用 z-index 时，不能指定值为 1.5，但 1 或 999 都没问题。很多属性，比如 z-index 或 column-count 只接受整数值，浏览器会自动插人整数值，类似前面的 steps() 函数。
+   有些属性虽然没有明确的中间值，却可以实现动画。比如，在使用 z-index 时，不能指定值为 1.5，但 1 或 999 都没问题。很多属性，比如 z-index 或 column-count 只接受整数值，浏览器会自动插人整数值，类似 steps() 函数。
 
    有些可以插值的属性还有点怪。比如，可以对 visibility 属性实现过渡动画，但浏览器会在过渡经过中点后突变为两个终点值中的一个。
 
