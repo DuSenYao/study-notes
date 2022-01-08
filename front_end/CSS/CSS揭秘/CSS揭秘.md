@@ -1110,6 +1110,79 @@ background: linear-gradient(225deg, transparent 50%, rgba(0, 0, 0, 0.4) 0) no-re
 }
 ```
 
+### 4.4 暗黑模式
+
+```html
+<div class="dark-theme">
+  <input class="ios-switch" type="checkbox" />
+  <iframe class="main" src="https://juejin.im"></iframe>
+</div>
+```
+
+```scss
+.btn {
+  border-radius: 31px;
+  width: 102px;
+  height: 62px;
+  background-color: #e9e9eb;
+}
+.dark-theme {
+  display: flex;
+  .ios-switch {
+    position: relative;
+    appearance: none;
+    cursor: pointer;
+    transition: all 100ms;
+    @extend .btn;
+    &::before {
+      position: absolute;
+      content: '';
+      transition: all 300ms cubic-bezier(0.45, 1, 0.4, 1);
+      @extend .btn;
+    }
+    &::after {
+      position: absolute;
+      left: 4px;
+      top: 4px;
+      border-radius: 27px;
+      width: 54px;
+      height: 54px;
+      background-color: #fff;
+      box-shadow: 1px 1px 5px rgba(#000, 0.3);
+      content: '';
+      transition: all 300ms cubic-bezier(0.4, 0.4, 0.25, 1.35);
+    }
+    &:checked {
+      background-color: #5eb662;
+      &::before {
+        transform: scale(0);
+      }
+      &::after {
+        transform: translateX(40px);
+      }
+      & + .main {
+        filter: invert(1) hue-rotate(180deg);
+        img,
+        video,
+        .avatar,
+        .image,
+        .thumb {
+          filter: invert(1) hue-rotate(180deg);
+        }
+      }
+    }
+  }
+  .main {
+    margin-left: 20px;
+    border: 1px solid #3c9;
+    width: 1000px;
+    height: 400px;
+    background-color: #fff;
+    transition: all 300ms;
+  }
+}
+```
+
 ## 五. 字体排印
 
 ### 5.1 连字符断行
@@ -1459,6 +1532,133 @@ h1 {
 ```
 
 ## 六. 用户体验
+
+### 6.1 放大镜
+
+传统的放大镜效果需依赖大部分 JS 逻辑，移动和显示的效果均依赖 JS，通过 JS 计算偏移量再渲染样式，可以使用变量和 calc() 简化这些 JS 逻辑，将计算偏移量的逻辑整合到变量中
+
+```html
+<div class="magnifier" @mousemove="move"></div>
+```
+
+```js
+export default {
+  methods: {
+    move(e) {
+      e.target.style.setProperty('--x', `${e.offsetX}px`);
+      e.target.style.setProperty('--y', `${e.offsetY}px`);
+    }
+  }
+};
+```
+
+接下来使用 scss 构建放大镜效果。放大镜显示内容其实就是将原图像放大 N 倍，通过上述偏移量按照比例截取一定区域显示内容。
+
+先定义相关的 scss 变量。设定放大倍率为 2 倍，那么被放大图像的宽高也是原来宽高的 2 倍。声明两个变量，分为为 --x 和 --y。
+
+```scss
+$ratio: 2;
+$box-w: 600px;
+$box-h: 400px;
+$box-bg: 'https://static.yangzw.vip/codepen/gz.jpg';
+$outbox-w: $box-w * $ratio;
+$outbox-h: $box-h * $ratio;
+.magnifier {
+  --x: 0;
+  --y: 0;
+  overflow: hidden;
+  position: relative;
+  width: $box-w;
+  height: $box-h;
+  background: url($box-bg) no-repeat center/100% 100%;
+  cursor: pointer;
+}
+```
+
+放大镜在使用时宽高为 100px，不使用时宽高为 0px。通过绝对定位布局放大镜随鼠标移动的位置，即声明 left 和 top，再通过声明 transform:translate(-50%,-50%) 将放大镜补位，使放大镜中心与鼠标光标位置一致。由于声明 left 和 top 定位放大镜的位置，那么还需声明 will-change 改善 left 和 top 因改变而引发的性能问题。
+
+```scss
+.magnifier {
+  &::before {
+    --size: 0;
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    border-radius: 100%;
+    width: var(--size);
+    height: var(--size);
+    box-shadow: 1px 1px 3px rgba(#000, 0.5);
+    content: '';
+    will-change: left, top;
+    transform: translate(-50%, -50%);
+  }
+  &:hover::before {
+    --size: 100px;
+  }
+}
+```
+
+接下来使用 background 实现放大镜显示内容。依据放大倍率为 2 倍，那么声明 size:$outbox-w $outbox-h，通过声明 position-x 和 position-y 移动背景即可，最终连写成 background:#333 url($box-bg) no-repeat $scale-x $scale-y/$outbox-w $outbox-h，而 $scale-x 和 $scale-y 对应 position-x 和 position-y，用于随着鼠标移动而改变背景位置。
+
+```txt
+水平方向偏移量 = offsetX * 倍率 - 放大镜宽度 / 倍率
+垂直方向偏移量 = offsetY * 倍率 - 放大镜高度 / 倍率
+```
+
+因为 background-position 正负值问题，上述两条公式还需乘以 -1，则变成以下公式：
+
+```txt
+水平方向偏移量 = 放大镜宽度 / 倍率 - offsetX _ 倍率
+垂直方向偏移量 = 放大镜高度 / 倍率 - offsetY _ 倍率
+```
+
+此时将两条公式代入到 $scale-x 和 $scale-y 两个 scss 变量中，若在 calc()中使用 scss 变量，需使用#{}的方式包含 scss 变量，否则会按照字符串的方式解析。
+
+```scss
+$scale-x: calc(var(--size) / #{$ratio} - #{$ratio} * var(--x));
+$scale-y: calc(var(--size) / #{$ratio} - #{$ratio} * var(--y));
+```
+
+最终的 scss 文件如下。
+
+```scss
+$ratio: 2;
+$box-w: 600px;
+$box-h: 400px;
+$box-bg: 'https://static.yangzw.vip/codepen/gz.jpg';
+$outbox-w: $box-w * $ratio;
+$outbox-h: $box-h * $ratio;
+.magnifier {
+  --x: 0;
+  --y: 0;
+  overflow: hidden;
+  position: relative;
+  width: $box-w;
+  height: $box-h;
+  background: url($box-bg) no-repeat center/100% 100%;
+  cursor: pointer;
+
+  &::before {
+    --size: 0;
+    $scale-x: calc(var(--size) / #{$ratio} - #{$ratio} * var(--x));
+    $scale-y: calc(var(--size) / #{$ratio} - #{$ratio} * var(--y));
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    border-radius: 100%;
+    width: var(--size);
+    height: var(--size);
+    background: #333 url($box-bg) no-repeat $scale-x $scale-y/$outbox-w $outbox-h;
+    box-shadow: 1px 1px 3px rgba(#000, 0.5);
+    content: '';
+    will-change: left, top;
+    transform: translate(-50%, -50%);
+  }
+  &:hover::before {
+    --size: 100px;
+  }
+}
+```
 
 ## 七. 结构与布局
 
@@ -2137,7 +2337,7 @@ transform-origin: 0 0;
 }
 ```
 
-代码质量显然已经上了一个台阶，但仍然比较冗长、难以理解。先从最简单的地方入手，把连续的 translate() 变形操作合并起来，尤其是 translate(-50%， 150px) 和 translate(50%， 50%) 这样的情况。但遗憾的是，百分比值和绝对长度是无法合并的（除非使用 calc()，但那样一来代码同样会相当臃肿）。尽管如此，单纯水平方向上的位移还是可以相互抵消的，因此这基本上相当于只在 Y 轴上做了两次位移操作（`translateYY(-150px) translateY(50%)`）。此外，由于同一关键帧内的两次旋转也会相互抵消，还可以把旋转之前和之后的水平位移动作去掉，再把垂直位移合并起来。这样一来就得到了如下的关键帧：
+代码质量显然已经上了一个台阶，但仍然比较冗长、难以理解。先从最简单的地方入手，把连续的 translate() 变形操作合并起来，尤其是 translate(-50%, 150px) 和 translate(50%, 50%) 这样的情况。但遗憾的是，百分比值和绝对长度是无法合并的（除非使用 calc()，但那样一来代码同样会相当臃肿）。尽管如此，单纯水平方向上的位移还是可以相互抵消的，因此这基本上相当于只在 Y 轴上做了两次位移操作（`translateYY(-150px) translateY(50%)`）。此外，由于同一关键帧内的两次旋转也会相互抵消，还可以把旋转之前和之后的水平位移动作去掉，再把垂直位移合并起来。这样一来就得到了如下的关键帧：
 
 ```css
 @keyframes spin {
