@@ -11,6 +11,7 @@
     - [Chrome-DevTools](/front_end/浏览器/Chrome_DevTools/Chrome-DevTools.md)
     - [浏览器工作原理与实践](/front_end/浏览器/浏览器工作原理与实践/浏览器工作原理与实践.md)
     - [浏览器实现原理与 API](/front_end/浏览器/浏览器的实现原理与API/浏览器实现原理与API.md)
+  - [前端缓存](/front_end/前端缓存/前端缓存.md)
   - [前端综合应用](/front_end/前端工程实践/前端综合应用.md)
   - [前端性能优化](/front_end/前端性能优化/前端性能优化.md)
   - 常用工具
