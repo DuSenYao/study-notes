@@ -1,6 +1,5 @@
-"use strict";
 const a = {
-    x: 1,
-    y: 2
+  x: 1,
+  y: 2
 };
-//# sourceMappingURL=hello.js.map
+// # sourceMappingURL=hello.js.map

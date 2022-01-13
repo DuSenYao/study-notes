@@ -10,5 +10,8 @@
     "titleBar.inactiveForeground": "#e7e7e799",
     "sash.hoverBorder": "#2f7c47"
   },
-  "peacock.color": "#215732"
+  "peacock.color": "#215732",
+  "eslint.packageManager": "pnpm",
+  "npm.packageManager": "pnpm",
+  "stylelint.packageManager": "pnpm"
 }
