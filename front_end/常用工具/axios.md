@@ -266,7 +266,7 @@ const instance = axios.create({
   // 如果请求花费了超过 `timeout` 的时间，请求将被中断
   timeout: 1000,
 
-   // `withCredentials` 表示跨域请求时是否需要使用凭证
+   // `withCredentials` 表示跨域请求时是否需要使用 cookie
   withCredentials: false, // default
 
   // `adapter` 允许自定义处理请求，以使测试更轻松
