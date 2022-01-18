@@ -6,30 +6,29 @@
 
 - [Axios](#axios)
   - [一. 案例](#一-案例)
-    - [1.1 执行 `GET` 请求](#11-执行-get-请求)
-    - [1.2 执行 `POST` 请求](#12-执行-post-请求)
+    - [1.1 执行 GET 请求](#11-执行-get-请求)
+    - [1.2 执行 POST 请求](#12-执行-post-请求)
     - [1.3 执行多个并发请求](#13-执行多个并发请求)
   - [二. axios API](#二-axios-api)
   - [三. 请求方法的别名](#三-请求方法的别名)
-  - [四. 并发](#四-并发)
-  - [五. 实例](#五-实例)
-    - [5.1 创建实例](#51-创建实例)
-    - [5.2 实例方法](#52-实例方法)
-  - [六. 请求配置](#六-请求配置)
-  - [七. 响应结构](#七-响应结构)
-  - [八. 配置默认值](#八-配置默认值)
-    - [8.1 全局的 axios 默认值](#81-全局的-axios-默认值)
-    - [8.2 自定义实例默认值](#82-自定义实例默认值)
-    - [8.3 配置的优先顺序](#83-配置的优先顺序)
-  - [九. 拦截器](#九-拦截器)
-    - [9.1 添加](#91-添加)
-    - [9.2 移除拦截器](#92-移除拦截器)
-    - [9.3 为自定义 axios 实例添加拦截器](#93-为自定义-axios-实例添加拦截器)
-  - [十. 错误处理](#十-错误处理)
-  - [十一. 取消](#十一-取消)
-  - [十二. 使用 application/x-www-form-urlencoded format](#十二-使用-applicationx-www-form-urlencoded-format)
-    - [12.1 浏览器](#121-浏览器)
-    - [12.2 Node.js](#122-nodejs)
+  - [四. 实例](#四-实例)
+    - [4.1 创建实例](#41-创建实例)
+    - [4.2 实例方法](#42-实例方法)
+  - [五. 请求配置](#五-请求配置)
+  - [六. 响应结构](#六-响应结构)
+  - [七. 配置默认值](#七-配置默认值)
+    - [7.1 全局的 axios 默认值](#71-全局的-axios-默认值)
+    - [7.2 自定义实例默认值](#72-自定义实例默认值)
+    - [7.3 配置的优先顺序](#73-配置的优先顺序)
+  - [八. 拦截器](#八-拦截器)
+    - [8.1 添加](#81-添加)
+    - [8.2 移除拦截器](#82-移除拦截器)
+    - [8.3 为自定义 axios 实例添加拦截器](#83-为自定义-axios-实例添加拦截器)
+  - [九. 错误处理](#九-错误处理)
+  - [十. 取消](#十-取消)
+  - [十一. 使用 application/x-www-form-urlencoded format](#十一-使用-applicationx-www-form-urlencoded-format)
+    - [11.1 浏览器](#111-浏览器)
+    - [11.2 Node.js](#112-nodejs)
 
 <!-- /code_chunk_output -->
 
@@ -58,7 +57,7 @@ npm install axios
 
 ## 一. 案例
 
-### 1.1 执行 `GET` 请求
+### 1.1 执行 GET 请求
 
 ```js
 // 为给定 ID 的 user 创建请求
@@ -86,7 +85,7 @@ axios
   });
 ```
 
-### 1.2 执行 `POST` 请求
+### 1.2 执行 POST 请求
 
 ```js
 axios
@@ -169,18 +168,11 @@ axios('/user/12345');
 - `axios.put(url[, data[, config]])`
 - `axios.patch(url[, data[, config]])`
 
-> 注意 : 在使用别名方法时， `url`、`method`、`data` 这些属性都不必在配置中指定。
+> **注意**：在使用别名方法时， `url`、`method`、`data` 这些属性都不必在配置中指定。
 
-## 四. 并发
+## 四. 实例
 
-处理并发请求的助手函数
-
-- `axios.all(iterable)`
-- `axios.spread(callback)`
-
-## 五. 实例
-
-### 5.1 创建实例
+### 4.1 创建实例
 
 可以使用自定义配置新建一个 `axios` 实例
 
@@ -194,7 +186,7 @@ const instance = axios.create({
 });
 ```
 
-### 5.2 实例方法
+### 4.2 实例方法
 
 以下是可用的实例方法。指定的配置将与实例的配置合并。
 
@@ -207,7 +199,7 @@ const instance = axios.create({
 - `axios#put(url[, data[, config]])`
 - `axios#patch(url[, data[, config]])`
 
-## 六. 请求配置
+## 五. 请求配置
 
 这些是创建请求时可以用的配置选项。只有 `url` 是必需的。如果没有指定 `method`，请求默认使用 `get` 方法。
 
@@ -347,7 +339,7 @@ const instance = axios.create({
 }
 ```
 
-## 七. 响应结构
+## 六. 响应结构
 
 某个请求的响应包含以下信息
 
@@ -389,11 +381,11 @@ axios.get('/user/12345').then(function (response) {
 
 在使用 `catch` 时，或传递 `rejection callback` 作为 `then` 的第二个参数时，响应可以通过 `error` 对象可被使用，正如在[错误处理](#十-错误处理)这一节所讲。
 
-## 八. 配置默认值
+## 七. 配置默认值
 
 可以指定将被用在各个请求的配置默认值
 
-### 8.1 全局的 axios 默认值
+### 7.1 全局的 axios 默认值
 
 ```js
 axios.defaults.baseURL = 'https://api.example.com';
@@ -401,7 +393,7 @@ axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 ```
 
-### 8.2 自定义实例默认值
+### 7.2 自定义实例默认值
 
 ```js
 // 创建实例时设置默认配置
@@ -413,7 +405,7 @@ const instance = axios.create({
 instance.defaults.headers.common['Authorization'] = AUTH_TOKEN;
 ```
 
-### 8.3 配置的优先顺序
+### 7.3 配置的优先顺序
 
 配置会以一个优先顺序进行合并。这个顺序是：在 `lib/defaults.js` 找到的库的默认值，然后是实例的 `defaults` 属性，最后是请求的 `config` 参数。后者将优先于前者。这里是一个例子：
 
@@ -432,9 +424,9 @@ instance.get('/longRequest', {
 });
 ```
 
-## 九. 拦截器
+## 八. 拦截器
 
-### 9.1 添加
+### 8.1 添加
 
 在请求或响应被 `then` 或 `catch` 处理前拦截它们。
 
@@ -464,7 +456,7 @@ axios.interceptors.response.use(
 );
 ```
 
-### 9.2 移除拦截器
+### 8.2 移除拦截器
 
 ```js
 const myInterceptor = axios.interceptors.request.use(function () {
@@ -473,7 +465,7 @@ const myInterceptor = axios.interceptors.request.use(function () {
 axios.interceptors.request.eject(myInterceptor);
 ```
 
-### 9.3 为自定义 axios 实例添加拦截器
+### 8.3 为自定义 axios 实例添加拦截器
 
 ```js
 const instance = axios.create();
@@ -482,7 +474,7 @@ instance.interceptors.request.use(function () {
 });
 ```
 
-## 十. 错误处理
+## 九. 错误处理
 
 ```js
 axios.get('/user/12345').catch(function (error) {
@@ -515,11 +507,11 @@ axios.get('/user/12345', {
 });
 ```
 
-## 十一. 取消
+## 十. 取消
 
 使用 `cancel token` 取消请求
 
-> Axios 的 cancel token API 基于 cancelable promises proposal，它还处于第一阶段。
+> Axios 的 cancel token API 基于 cancelable promises proposal。
 
 可以使用 `CancelToken.source` 工厂方法创建 cancel token，像这样：
 
@@ -572,11 +564,11 @@ cancel();
 
 > 注意: 可以使用同一个 cancel token 取消多个请求
 
-## 十二. 使用 application/x-www-form-urlencoded format
+## 十一. 使用 application/x-www-form-urlencoded format
 
 默认情况下，axios 将 JavaScript 对象序列化为 JSON。 要以 `application/x-www-form-urlencoded` 格式发送数据，可以使用以下选项之一。
 
-### 12.1 浏览器
+### 11.1 浏览器
 
 在浏览器中，可以使用 URLSearchParams API，如下所示：
 
@@ -608,7 +600,7 @@ const options = {
 axios(options);
 ```
 
-### 12.2 Node.js
+### 11.2 Node.js
 
 在 node.js 中，可以使用 querystring 模块，如下所示：
 
