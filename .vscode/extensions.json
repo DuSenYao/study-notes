@@ -24,6 +24,7 @@
     "gruntfuggly.todo-tree",
     "pranaygp.vscode-css-peek",
     "formulahendry.auto-rename-tag",
-    "mgmcdermott.vscode-language-babel"
+    "mgmcdermott.vscode-language-babel",
+    "johnsoncodehk.volar"
   ]
 }
