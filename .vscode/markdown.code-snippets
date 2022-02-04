@@ -18,6 +18,6 @@
   "markdown image": {
     "scope": "markdown",
     "prefix": "image",
-    "body": "![$1](./image/$2)"
+    "body": "![${1:$CLIPBOARD}](./image/${2:$CLIPBOARD})"
   }
 }

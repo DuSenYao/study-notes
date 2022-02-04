@@ -380,7 +380,9 @@ git push origin master:master
   git branch -r
   ```
 
-- `-a`: 查看所有分支
+- `-a`：查看所有分支
+- `-m`：移动或重命名
+- `-M`：--move --force 的快捷键
 - `-d <branchName>`：-d 是 `--delete` 的缩写，在使用 -d 删除分支时，该分支必须完全和它的上游分支 merge 完成，如果没有上游分支，必须要和 HEAD 完全 merge
 - `-f`：是 `--force` 的缩写，作用是将当前 branch 重置到初始点（startpoint），如果不使用 -f 的话，git 分支无法修改一个已经存在的分支
 - `-D <branchName>`：-D 是 `--delete --force` 的缩写，这样写可以在不检查 merge 状态的情况下删除分支

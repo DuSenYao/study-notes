@@ -44,7 +44,7 @@
 
   - Vue
     - [Vue2](/front_end/Vue/Vue2.md)
-    - [Vue3](/front_end/Vue/Vue3.md)
+    - [Vue3](/front_end/Vue/Vue3/Vue3.md)
     - [Vue-CLI](/front_end/Vue/Vue-CLI.md)
     - [Vue-loader](/front_end/Vue/Vue-loader.md)
     - [Vue-router](/front_end/Vue/Vue-router.md)

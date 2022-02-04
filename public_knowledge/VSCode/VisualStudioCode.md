@@ -328,7 +328,7 @@ VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过�
 - `TM_FILENAME_BASE`: 当前文件的文件名（不包含扩展名）
 - `TM_DIRECTORY`：当前文件的目录名
 - `CLIPBOARD`：当前粘贴板的文本内容
-- `WORKSPACE_NAME`：-当前工作区的目录名
+- `WORKSPACE_NAME`：当前工作区的目录名
 
 下面的变量可以用来插入**日期**和**时间**：
 
