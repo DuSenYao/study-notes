@@ -12,6 +12,14 @@
   - [二. Vue3 基础](#二-vue3-基础)
     - [2.1 项目启动](#21-项目启动)
     - [2.2 新的代码组织方式：Composition API + script setup](#22-新的代码组织方式composition-api-script-setup)
+    - [2.3 巧妙的响应式](#23-巧妙的响应式)
+      - [2.3.1 响应式原理](#231-响应式原理)
+  - [三. 闭包组件](#三-闭包组件)
+    - [3.1 路由](#31-路由)
+      - [3.1.1 前后端开发模式的演变](#311-前后端开发模式的演变)
+      - [3.1.2 前端路由的实现原理](#312-前端路由的实现原理)
+    - [3.2 JSX](#32-jsx)
+      - [3.2.1 h 函数](#321-h-函数)
 
 <!-- /code_chunk_output -->
 
@@ -520,12 +528,200 @@ export default defineComponent({
 然后，在文件 src/About.vue 中，使用下面代码中的 import 语法来引入 Heading，之后使用 level 传递标签的级别：
 
 ```vue
-
- <template>
+<template>
   <Heading :level="3">hello geekbang</Heading>
 </template>
 
 <script setup>
-import Heading from './components/Heading.jsx'
+import Heading from './components/Heading.jsx';
 </script>
 ```
+
+手写的 h 函数，可以处理动态性更高的场景。但是**如果是复杂的场景，h 函数写起来就显得非常繁琐，需要自己把所有的属性都转变成对象**。并且组件嵌套的时候，对象也会变得非常复杂。不过，因为 h 函数也是返回虚拟 DOM 的，所以可以使用 JSX 去更方便的写 h 函数。
+
+#### 3.2.2 JSX
+
+JSX 来源自 React 框架，下面这段代码就是 JSX 的语法，给变量 title 赋值了一个 h1 标签。
+
+```jsx
+const title = <h1 id="heading">Hello</h1>;
+```
+
+**这种在 JS 里面写 HTML 的语法，就叫做 JSX**，算是对 JS 语法的一个扩展。上面的代码直接在 JS 环境中运行时，会报错。JSX 的本质就是下面代码的语法糖，h 函数内部也是调用 createVnode 来返回虚拟 DOM：
+
+```jsx
+const title = createVnode('h1', { id: 'app' }, 'Hello');
+```
+
+在从 JSX 到 createVNode 函数的转化过程中，需要安装一个 JSX 插件 `@vitejs/plugin-vue-jsx`。
+
+插件安装完成后，打开 vite.config.js 文件去修改配置，加入下面的代码。这样，在加载 JSX 插件后，现在的页面中就可以支持 JSX 插件了。
+
+```js
+import vue from '@vitejs/plugin-vue';
+import vueJsx from '@vitejs/plugin-vue-jsx';
+
+export default defineConfig({
+  plugins: [vue(), vueJsx()]
+});
+```
+
+然后，进入 src/components/Heading.jsx 中，把 setup 函数的返回函数改成下面代码中所示的内容，这里使用变量 tag 计算出标签类型，直接使用渲染，使用一个大括号把默认插槽包起来就可以了。
+
+```jsx
+setup(props, { slots }) {
+  const tag = 'h'+props.level
+  return () => <tag>{slots.default()}</tag>
+}
+```
+
+JSX 的语法详细要点在 [GitHub 文档](https://github.com/vuejs/babel-plugin-jsx/blob/dev/packages/babel-plugin-jsx/README-zh_CN.md)中也有全面的介绍。
+
+进入到 src/components 下面新建文件 Todo.jsx，在下面的代码中，使用 JSX 实现了一个简单版本的清单应用。首先使用 defineComponent 的方式来定义组件，在 setup 返回的 JSX 中，使用单个大括号包裹的形式传入变量 title.value ，然后使用 onClick 取代 @click。循环渲染清单的时候，使用 .map 映射取代 v-for，使用三元表达式取代 v-if。
+
+```jsx
+import { defineComponent, ref } from 'vue';
+
+export default defineComponent({
+  name: 'TodoList',
+  setup() {
+    let title = ref('');
+    let todos = ref([{ title: '学习Vue3', done: false }]);
+
+    function addTodo() {
+      todos.value.push({
+        title: title.value,
+        done: false
+      });
+      title.value = '';
+    }
+
+    return () => (
+      <div>
+        <input type="text" v-model={title.value} />
+        <button onClick={addTodo}>click</button>
+        <ul>
+          {todos.value.length ? (
+            todos.value.map(todo => {
+              return <li>{todo.title}</li>;
+            })
+          ) : (
+            <li>no data</li>
+          )}
+        </ul>
+      </div>
+    );
+  }
+});
+```
+
+**使用 JSX 的本质，还是在写 JS**。在 Element3 组件库设计中有很多组件需要用到 JSX，比如时间轴 Timeline、分页 Pagination、表格 Table 等等。
+
+就像在 TimeLine 组件的[源码](https://github.com/hug-sun/element3/blob/master/packages/element3/packages/timeline/Timeline.vue#L35)中，有一个 reverse 的属性来决定是否倒序渲染，在下面写出了类似的代码。代码中的 Timeline 是一个数组，数组中的两个元素都是 JSX，可以通过数组的 reverse 方法直接进行数组反转，实现逆序渲染。类似这种动态性要求很高的场景，template 是较难实现的。
+
+```jsx
+export const Timeline = props => {
+  const timeline = [<div className="start">8.21 开始自由职业</div>, <div className="online">10.18 专栏上线</div>];
+  if (props.reverse) {
+    timeline.reverse();
+  }
+  return <div>{timeline}</div>;
+};
+```
+
+**JSX 和 Template**
+template 的语法是固定的，只有 v-if、v-for 等等语法。也就是说，template 遇见条件渲染就是要固定的选择用 v-if。按照这种固定格式的语法书写，这样 Vue 在编译层面就可以很方便地去做静态标记的优化。
+
+而 JSX 只是 h 函数的一个语法糖，本质就是 JS，想实现条件渲染可以用 if else，也可以用三元表达式，还可以用任意合法的 JS 语法。也就是说，**JSX 可以支持更动态的需求。而 template 则因为语法限制原因，不能够像 JSX 那样可以支持更动态的需求**。这是 JSX 相比于 template 的一个优势。
+
+**JSX 相比于 template 还有一个优势，是可以在一个文件内返回多个组件**，可以像下面的代码一样，在一个文件内返回 Button、Input、Timeline 等多个组件。
+
+```jsx
+export const Button = (props, { slots }) => <button {...props}>slots.default()</button>;
+export const Input = props => <input {...props} />;
+export const Timeline = props => {
+  // ...
+};
+```
+
+![template解析](./image/template解析.webp)
+
+上面的截图是使用 Vue 官方的 template 解析的一个 demo。在 demo 页面右侧是 template 代码编译的结果，相比于自己去写 h 函数，在 template 解析的结果中，有以下几个性能优化的方面：
+
+- 首先，静态的标签和属性会放在 \_hoisted 变量中，并且放在 render 函数之外。这样，重复执行 render 的时候，代码里的 h1 这个纯静态的标签，就不需要进行额外地计算，并且静态标签在虚拟 DOM 计算的时候，会直接越过 Diff 过程。
+
+- 然后是 @click 函数增加了一个 cache 缓存层，这样实现出来的效果也是和静态提升类似，尽可能高效地利用缓存。最后是，由于在下面代码中的属性里，那些带冒号的属性是动态属性，因而存在使用一个数字去标记标签的动态情况。
+
+  比如在 p 标签上，使用 8 这个数字标记当前标签时，只有 props 是动态的。而在虚拟 DOM 计算 Diff 的过程中，可以忽略掉 class 和文本的计算，这也是 Vue 3 的虚拟 DOM 能够比 Vue 2 快的一个重要原因。
+
+在 template 和 JSX 这两者的选择问题上，只是选择框架时角度不同而已。**实现业务需求的时候，也是优先使用 template，动态性要求较高的组件使用 JSX 实现，尽可能地利用 Vue 本身的性能优化**。
+
+### 3.3 Vue 3 中使用 TypeScript
+
+TypeScript 是微软开发的 JS 的超集，这里说的超集，意思就是 TypeScript 在语法上完全包含 JS。TypeScript 的主要作用是给 JS 赋予强类型的语言环境。现在大部分的开源项目都是用 TypeScript 构建的，并且 Vue 3 本身 TS 的覆盖率也超过了 95%。
+
+**TypeScript 相当于在 JS 外面包裹了一层类型系统，这样可以帮助开发更健壮的前端应用**。
+
+![TS和JS的关系](./image/TS和JS的关系.webp)
+
+由于 TypeScript 中的每个变量都需要把类型定义好，因而对代码书写的要求也会提高。**Vue 2 中全部属性都挂载在 this 之上，而 this 可以说是一个黑盒子，完全没办法预先知道 this 上会有什么数据，这也是为什么 Vue 2 对 TypeScript 的支持一直不太好的原因**。
+
+Vue 3 全面拥抱 Composition API 之后，没有了 this 这个黑盒，对 TypeScript 的支持也比 Vue2 要好很多。在下面的代码中，首先需要在 script 标签上加一个配置 lang="ts"，来标记当前组件使用了 TypeScript，然后代码内部使用 defineComponent 定义组件即可。
+
+```vue
+<script lang="ts">
+import { defineComponent } from 'vue';
+export default defineComponent({
+  // 已启用类型推断
+});
+</script>
+```
+
+在 `<script setup>` 的内部，需要调整写法的内容不多。下面的代码使用 Composition API 的过程中，可以针对 ref 或者 reactive 进行类型推导。如果 ref 包裹的是数字，那么在对 count.value 进行 split 函数操作的时候，TypeScript 就可以预先判断 count.value 是一个数字，并且进行报错提示。
+
+```js
+const count = ref(1);
+count.value.split(''); // => Property 'split' does not exist on type 'number'
+```
+
+也可以显式地去规定 ref、reactive 和 computed 输入的属性，下面代码中分别演示了 ref、reactive 和 computed 限制类型的写法，每个函数都可以使用默认的参数推导，也可以显式地通过泛型去限制。
+
+```vue
+<script setup lang="ts">
+import { computed, reactive, ref } from '@vue/runtime-core';
+
+interface Geek {
+  name: string;
+  price: number;
+}
+
+const msg = ref(''); //  根据输入参数推导字符串类型
+const msg1 = ref<string>(''); //  可以通过范型显示约束
+
+const obj = reactive({});
+const course = reactive<Geek>({ name: '玩转Vue3全家桶', price: 129 });
+
+const msg2 = computed(() => ''); // 默认参数推导
+const course2 = computed<Geek>(() => {
+  return { name: '玩转Vue3全家桶', price: 129 };
+});
+</script>
+```
+
+在 Vue 中，除了组件内部数据的类型限制，还需要对传递的属性 Props 声明类型。而在 `<script setup>` 语法中，只需要在 defineProps 和 defineEmits 声明参数类型就可以了。下面的代码中，声明了 title 属性必须是 string，而 value 的可选属性是 number 类型。
+
+```ts
+const props = defineProps<{
+  title: string;
+  value?: number;
+}>();
+const emit = defineEmits<{
+  (e: 'update', value: number): void;
+}>();
+```
+
+如果需要了解 Composition API 所有的类型设置，可以进入项目目录下面的 node_modules/@vue/reactivity/dist/reactivity.d.ts 中查看。
+
+### 3.4 实战痛点
+
+#### 3.4.1
