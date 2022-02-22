@@ -2,6 +2,14 @@
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
+<!-- code_chunk_output -->
+
+- [WebAssembly](#webassembly)
+  - [一. 基础](#一-基础)
+    - [1.1 相关知识](#11-相关知识)
+
+<!-- /code_chunk_output -->
+
 ## 一. 基础
 
 **WebAssembly 是基于栈式虚拟机的虚拟二进制指令集（V-ISA），它被设计为高级编程语言的可移植编译目标**。
