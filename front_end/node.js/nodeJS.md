@@ -268,7 +268,7 @@ npm 的包安装是最核心的功能，分为本地安装 (local) 、全局安�
 
 本地安装，具体说明:
 
-- 将包放在 node_modules (运行 npm 命令时所在的目录)下，如果没有 node_module 目录，则会在当前执行 npm 命令的目录下生成。
+- 将包放在 node_modules（运行 npm 命令时所在的目录）下，如果没有 node_module 目录，则会在当前执行 npm 命令的目录下生成。
 - 可以通过 require() 来引入本地的包
   例 : 先安装常用的 Node.js 调试模块 `npm install debug`，安装好后，debug 包存在于工程目录下的 node_modules 目录中，因此在代码中只执行 `const debug = require('debug')`即可，无需指定第三方包路径。
 
