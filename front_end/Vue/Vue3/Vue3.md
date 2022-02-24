@@ -876,3 +876,29 @@ const lazyPlugin = {
 3. 项目上线之后，如果发现有重大 Bug，如何尽快回滚代码。
 
 ## 四. 开发
+
+### 4.1 自定义渲染器
+
+Vue 内部的组件是以虚拟 dom 形式存在的。下面的代码就是一个很常见的虚拟 Dom，用对象的方式去描述一个项目。相比 dom 标签相比，这种形式可以让整个 Vue 项目脱离浏览器的限制，更方便地实现 Vuejs 的跨端。
+
+```js
+{
+  tag: 'div',
+  props: {
+    id: 'app'
+  },
+  children: [
+    {
+      tag: Container,
+      props: {
+        className: 'el-container'
+      },
+      children: [
+        'Hello'
+      ]
+    }
+  ]
+}
+```
+
+渲染器是围绕虚拟 Dom 存在的。在浏览器中，把虚拟 Dom 渲染成真实的 Dom 对象，Vue 源码内部把一个框架里所有和平台相关的操作，抽离成了独立的方法。所以，我们只需要实现下面这些方法，就可以实现 Vue 3 在一个平台的渲染。首先用 createElement 创建标签，还有用 createText 创建文本。创建之后就需要用 insert 新增元素，通过 remote 删除元素，通过 setText 更新文本和 patchProps 修改属性。然后再实现 parentNode、nextSibling 等方法实现节点的查找关系。完成这些工作，理论上就可以在一个平台内实现一个应用了。在 Vue 3 中的 runtime-core 模块，就对外暴露了这些接口，runtime-core 内部基于这些函数实现了整个 Vue 内部的所有操作，然后在 runtime-dom 中传入以上所有方法。下面的代码就是 Vue 代码提供浏览器端操作的函数，这些 DOM 编程接口完成了浏览器端增加、添加和删除操作，这些 API 都是浏览器端独有的，如果一个框架强依赖于这些函数，那就只能在浏览器端运行。
