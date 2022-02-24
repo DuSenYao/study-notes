@@ -1560,7 +1560,7 @@ const tuple: [number, ...string[]] = [0, 'a', 'b'];
 对于经典的元组类型，即不包含可选元素和剩余元素的元组而言，元组中元素的数量是固定的。也就是说，元组拥有一个固定的长度。TypeScript 编译器能够识别出元组的长度并充分利用该信息来进行类型检查。示例如下：
 
 ```ts
-function f(point: [number, numbert]) {
+function f(point: [number, number]) {
   //  编译器推断出 length 的类型为数字字面量类型 2
   const length = point.length;
 
@@ -1587,7 +1587,7 @@ len = 4; // 编译错误！类型 4 不能赋值给 1 | 2 | 3
 
 #### 2.10.6 使用元组来规范参数类型
 
-有时候可能需要批量的来获取参数，并且每一个参数的类型还不一样，可以声明一个元组如：
+有时候可能需要批量的来获取参数，并且每一个参数的类型还不一样，可以声明一个元组：
 
 ```ts
 function query(...args: [string, number, boolean]) {
