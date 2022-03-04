@@ -525,6 +525,7 @@ Task 被配置在 `.vscode` 文件夹下的 `tasks.json` 文件中。
    - `${selectedText}`：当前 打开的文件中选中的文本
    - `${execPath}`：VSCode 可执行文件的完整路径
    - `${defaultBuildTask}`：默认的 Build Task 的名字
+   - `${userHome}`：用户主页，如：C:\Users\dsy
 
 2. 环境变量
    通过 `${env:Name}` 的语法，可以引用环境变量。

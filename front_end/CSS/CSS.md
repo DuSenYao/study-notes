@@ -3346,7 +3346,7 @@ box-shadow 的另一个比 text-shadow 更为灵活之处是可以使用 `inset`
 
 ```css
 .linear-repeat {
-  background-image: repeating-linear-gradient (#cfdfee, #2c56a1 20px);
+  background-image: repeating-linear-gradient(#cfdfee, #2c56a1 20px);
 }
 ```
 
