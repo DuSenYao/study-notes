@@ -366,13 +366,15 @@ link 标签的链接类型主要通过 `rel` 属性来区分，有以下几种�
 
 外部资源型 link 标签会被主动下载，并且根据 `rel` 类型作不同处理。
 
-- icon 型 link
+- **icon 型 link**
+
   这类链接表示页面的 icon。多数浏览器会读取 icon 型 link，并且把页面的 icon 展示出来。
   icon 型 link 是唯一一个外部资源类的元信息 link，其他元信息 link 都是超链接，这意味着，icon 型 link 中的图标地址默认会被浏览器下载和使用。
   如果没有指定这样的 link，多数浏览器会使用域名根目录下的 `favicon.ico`，即使它不存在，所以从性能的角度考虑，建议一定要保证页面中有 icon 型的 link。
   只有 icon 型 link 有有效的 sizes 属性，HTML 标准允许一个页面出现多个 icon 型 link，并用 sizes 指定它适合的 icon 尺寸。
 
-- 预处理类 link
+- **预处理类 link**
+
   导航到一个网站需要经过 DNS 查询、建立连接、传输数据、加载入内存、渲染等一系列的步骤。预处理类 link 标签就是允许控制浏览器，提前针对一些资源去做这些操作，以提高性能。
 
   - dns-prefetch 型 link: 提前对一个域名做 dns 查询，这样的 link 里面的 href 实际只有域名有意义。
@@ -381,19 +383,19 @@ link 标签的链接类型主要通过 `rel` 属性来区分，有以下几种�
   - preload 型 link: 提前加载 href 指定的内容。
   - prerender 型 link: 提前渲染 href 指定的 url
 
-- modulepreload 型 link
+- **modulepreload 型 link**
+
   作用是预先加载一个 JS 的模块。这可以保证 JS 模块不必等到执行时才加载。这里的加载，是指完成下载并放入内存，并不会执行对应的 JS。
 
   ```html
-  <!--
-    假设 app.js 中有 import “irc” 和 import “fog-machine”, 而 irc.js 中有 import “helpers”。
-    这段代码使用 modulepreload 型 link 来预加载了四个 js 模块。
-    尽管，单独使用 script 标签引用 app.js 也可以正常工作，但是通过加入对四个 JS 文件的 link 标签，使得四个 JS 文件有机会被并行地下载，这样提高了性能
-  -->
+  <!-- 假设 app.js 中有 import “irc” 和 import “fog-machine”, 而 irc.js 中有 import “helpers”。 -->
+  <!-- 这段代码使用 modulepreload 型 link 来预加载了四个 js 模块。 -->
+  <!-- 尽管，单独使用 script 标签引用 app.js 也可以正常工作，但是通过加入对四个 JS 文件的 link 标签，使得四个 JS 文件有机会被并行地下载，这样提高了性能 -->
   <link rel="modulepreload" href="app.js">
   <link rel="modulepreload" href="helpers.js">
   <link rel="modulepreload" href="irc.js">
-  <link rel="modulepreload" href="fog-machine.js"><script type="module" src="app.js">
+  <link rel="modulepreload" href="fog-machine.js">
+  <script type="module" src="app.js">
   ```
 
 - stylesheet 型 link
@@ -633,7 +635,7 @@ CDATA 也是一种文本，它存在的意义是语法上的意义：在 CDATA �
 
 HTML 注释语法以 `<!--` 开头，以 `-->` 结尾，注释的内容除了 `-->` 外都没有问题。如果注释的内容一定要出现 `-->`，可以拆分成多个注释节点。
 
-### 2.4 4.DTD 语法（文档类型定义）
+### 2.4 DTD 语法（文档类型定义）
 
 DTD 的全称是 Document Type Defination，也就是文档类型定义。SGML 用 DTD 来定义每一种文档类型，HTML 属于 SGML，在 HTML5 出现之前，HTML 都是使用符合 SGML 的 DTD。
 

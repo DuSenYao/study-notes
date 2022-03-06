@@ -2182,9 +2182,7 @@ let bar: () => ; // 编译错误：未指定返回值类型
 函数在本质上是一个对象，但特殊的地方在于函数是可调用的对象。因此，可以使用对象类型来表示函数类型。若在对象类型中定义了调用签名类型成员，那么称该对象类型为函数类型。调用签名的语法如下所示：
 
 ```ts
-{
-  (ParameterList): Type
-}
+{ (ParameterList): Type }
 ```
 
 在该语法中，ParameterList 表示函数形式参数列表类型，Type 表示函数返回值类型，两者都是可选的。
@@ -2549,8 +2547,7 @@ function f() {
 
 ##### 2.12.13.1 --noImplicitThis
 
-将 this 值的类型设置为 any 类型对类型检查没有任何帮助。因此 TypeScript 提供了一个 `--noImplicitThis` 编译选项。当启用了该编译选项时，如果 this 值默认获得了 any 类型，那么将产生编译错淏；如果
-函数体中没有引用 this 值，则没有任何影响。示例如下：
+将 this 值的类型设置为 any 类型对类型检查没有任何帮助。因此 TypeScript 提供了一个 `--noImplicitThis` 编译选项。当启用了该编译选项时，如果 this 值默认获得了 any 类型，那么将产生编译错淏；如果函数体中没有引用 this 值，则没有任何影响。示例如下：
 
 ```ts
 // --noImplicitThis = true
@@ -3029,9 +3026,11 @@ interface Circle extends Style, Shape {
 type AliasName = Type;
 ```
 
-在该语法中，type 是声明类型别名的关键字；AliasName 表示类型别名的名称；Type 表示类型别名关联的具体类型。
+在该语法中，type 是声明类型别名的关键字；AliasName 表示类型别名的名称；Type 表示类型别名关联的具体类型。类型别名的名称必须为合法的标识符。由于类型别名表示一种类型，因此类型别名的首字母通常需要大写。
 
-类型别名的名称必须为合法的标识符。由于类型别名表示一种类型，因此类型别名的首字母通常需要大写。同时需要注意，不能使用 TypeScript 内置的类型名作为类型别名的名称，例如 boolean、number 和 any 等。下例中，声明了一个类型别名 Point，它表示包含两个属性的对象类型：
+> **注意**：不能使用 TypeScript 内置的类型名作为类型别名的名称，例如 boolean、number 和 any 等。
+
+下例中，声明了一个类型别名 Point，它表示包含两个属性的对象类型：
 
 ```ts
 type Point = { x: number; y: number };
@@ -10285,7 +10284,13 @@ TypeScript 编译器是一段 JS 程序，能够对 TypeScript 和 JS 代码进�
 
 TypeScript 编译器程序位于 TypeScript 语言安装目录下的 lib 文件夹中。TypeScript 编译器对外提供了一个命令行工具用来编译 TypeScript 程序，它就是 tsc 命令。
 
-本节将详细介绍如何安装 TypeScript 编译器，以及如何使用 TypeScript 编译器来编译单个和多个 TypeScript 源文件。
+tsc 编译的大致过程如下：
+
+1. TypeScript 源码 -> TypeScript AST
+2. 类型检查器检查 AST
+3. TypeScript AST -> JS 源码
+
+在这个过程中，第 1~2 步使用程序的类型，第 3 步不使用。类型只在类型检查这一步使用，这个特性确保可以随意改动、更新和改进程序中的类型，而无需担心会破坏应用的功能。
 
 #### 5.1.1 安装编译器
 

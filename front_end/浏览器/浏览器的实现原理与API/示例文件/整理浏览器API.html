@@ -12,6 +12,12 @@
     </div>
   </body>
   <script>
+    function filterOut(names, props) {
+      let set = new Set();
+      props.forEach(o => set.add(o));
+      return names.filter(e => !set.has(e));
+    }
+
     /**
      *  整理浏览器API的方法
      *  1.在Window的属性中，找到API名称
@@ -19,7 +25,7 @@
      *  3.阅读代码，整理出标准中包含的API
      *  4.用代码在 window 的属性中过滤掉标准中涉及的API
      */
-
+    /* eslint-disable max-statements */
     // 大部分的 API 属于 Window 对象（或者说全局对象），可以用反射来看一看现行浏览器中已经实现的 API
     function log_getOwnPropertyNames() {
       let objects = [
@@ -94,7 +100,7 @@
             return true;
           }
         })
-        .filter(e => e != 'Node');
+        .filter(e => e !== 'Node');
       // console.log(names);
 
       // 过滤掉Window对象上的属性
@@ -235,7 +241,7 @@
       // console.log(names);
 
       // 过滤 Intl 它属于 ECMA402 标准，这份标准是 JS 的一个扩展，它包含了国际化相关的内容，ECMA402 中，只有一个全局属性 Intl
-      names = names.filter(e => e != 'Intl');
+      names = names.filter(e => e !== 'Intl');
 
       // 过滤掉 WHATWG 的 Streams 标准
       names = filterOut(names, [
@@ -293,41 +299,27 @@
       // console.log(names);
 
       // 过滤掉 Encoding 标准
-      names = filterOut(names, [
-        'TextDecoder',
-        'TextEncoder',
-        'TextDecoderStream',
-        'TextEncoderStream'
-      ]);
+      names = filterOut(names, ['TextDecoder', 'TextEncoder', 'TextDecoderStream', 'TextEncoderStream']);
       // console.log(names);
 
       // 过滤 Web Background Synchronization
-      names = names.filter(e => e != 'SyncManager');
+      names = names.filter(e => e !== 'SyncManager');
       // console.log(names);
 
       // 过滤 Web Cryptography API
-      names = filterOut(names, [
-        'CryptoKey',
-        'SubtleCrypto',
-        'Crypto',
-        'crypto'
-      ]);
+      names = filterOut(names, ['CryptoKey', 'SubtleCrypto', 'Crypto', 'crypto']);
       // console.log(names);
 
       // 过滤 Media Source Extensions
-      names = filterOut(names, [
-        'MediaSource',
-        'SourceBuffer',
-        'SourceBufferList'
-      ]);
+      names = filterOut(names, ['MediaSource', 'SourceBuffer', 'SourceBufferList']);
       // console.log(names);
 
       // 过滤 The Screen Orientation API
-      names = names.filter(e => e != 'ScreenOrientation');
+      names = names.filter(e => e !== 'ScreenOrientation');
       // console.log(names);
 
       // 过滤 全局属性 globalThis 包含全局的 this 值，类似于全局对象（global object） 来自 ECMAScript (ECMA-262)
-      names = names.filter(e => e != 'globalThis');
+      names = names.filter(e => e !== 'globalThis');
       // console.log(names);
 
       // 过滤 XPath
@@ -424,12 +416,7 @@
       // console.log(names);
 
       // 过滤 定时器
-      names = filterOut(names, [
-        'clearInterval',
-        'clearTimeout',
-        'setTimeout',
-        'setInterval'
-      ]);
+      names = filterOut(names, ['clearInterval', 'clearTimeout', 'setTimeout', 'setInterval']);
       // console.log(names);
 
       // 过滤  Web MIDI API
@@ -455,12 +442,6 @@
       // 过滤 URL
       names = names.filter(e => !e.match(/^URL/));
       console.log(names);
-    }
-
-    function filterOut(names, props) {
-      let set = new Set();
-      props.forEach(o => set.add(o));
-      return names.filter(e => !set.has(e));
     }
   </script>
 </html>

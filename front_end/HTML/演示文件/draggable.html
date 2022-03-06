@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>draggable</title>
+    <style>
+      .drag,
+      .target {
+        width: 100%;
+        height: 150px;
+        border: 1px solid #ccc;
+      }
+
+      .drag :first-child {
+        background-color: rgb(69, 190, 69);
+      }
+
+      .drag :nth-child(2) {
+        background-color: rgb(30, 73, 189);
+      }
+
+      .drag :last-child {
+        background-color: rgb(199, 20, 103);
+      }
+
+      .drag-item {
+        display: inline-block;
+        height: 100px;
+        width: 100px;
+        border: 1px solid #dcc;
+      }
+
+      span.drag-item.dragged {
+        background-color: #0ff;
+      }
+
+      #file {
+        border: 1px solid #ccc;
+        width: 150px;
+        height: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="drag" id="drag">
+      <span draggable="true" id="a" class="drag-item">A</span>
+      <span draggable="true" id="b" class="drag-item">B</span>
+      <span draggable="true" id="c" class="drag-item">C</span>
+    </div>
+
+    <div class="target" id="target">
+      <p id="msg"></p>
+    </div>
+
+    <div id="file">
+      <p>Drop Files Here</p>
+    </div>
+    <table id="data"></table>
+
+    <script>
+      let drag = document.getElementById('drag');
+      let target = document.getElementById('target');
+      let msg = document.getElementById('msg');
+
+      /* 处理拖动事件 */
+      // 在元素开始被拖动时触发
+      drag.ondragstart = ({ target, dataTransfer }) => {
+        // 设置指定格式的数据
+        dataTransfer.setData('text/plain', target.id);
+        target.classList.add('dragged');
+      };
+      // 在拖动操作完成时触发
+      drag.ondragend = e => {
+        e.target.classList.remove('dragged');
+      };
+      // 在元素被拖动时反复触发
+      drag.ondrag = e => {
+        msg.innerHTML = e.target.innerHTML;
+      };
+
+      function handleDrag(e) {
+        e.preventDefault();
+      }
+
+      /* 创建释放区 */
+      target.ondragenter = handleDrag;
+      target.ondragover = handleDrag;
+
+      target.ondrop = e => {
+        // 得到指定格式的数据
+        let droppedID = e.dataTransfer.getData('text/plain');
+        let newElem = document.getElementById(droppedID).cloneNode(false);
+        target.appendChild(newElem);
+        e.preventDefault();
+      };
+
+      // 文件拖拽
+      let file = document.getElementById('file');
+
+      file.ondragenter = handleDrag;
+      file.ondragover = handleDrag;
+
+      file.ondrop = e => {
+        console.log(e.dataTransfer.files);
+        let files = e.dataTransfer.files;
+        let tableElem = document.getElementById('data');
+        for (let i = 0; i < files.length; i++) {
+          let row = `<tr><td>${files[i].name}</td><td>${files[i].type}</td><td>${files[i].size}</td></tr>`;
+          tableElem.innerHTML += row;
+        }
+        e.preventDefault();
+      };
+    </script>
+  </body>
+</html>
