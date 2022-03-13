@@ -6,3 +6,9 @@ function query(...args: [string, number, boolean]) {
 }
 
 query('1', 2, false);
+
+function tuple<T extends unknown[]> (...ts: T): T {
+  return ts;
+}
+
+const a = tuple(1, true);

@@ -44,6 +44,7 @@
       - [2.10.4 元组类型中的剩余元素](#2104-元组类型中的剩余元素)
       - [2.10.5 元组的长度](#2105-元组的长度)
       - [2.10.6 使用元组来规范参数类型](#2106-使用元组来规范参数类型)
+      - [2.10.7 改善元组的类型推导](#2107-改善元组的类型推导)
     - [2.11 对象类型](#211-对象类型)
       - [2.11.1 Object](#2111-object)
       - [2.11.2 object](#2112-object)
@@ -120,6 +121,12 @@
         - [2.15.12.2 抽象成员](#215122-抽象成员)
       - [2.15.13 this 类型](#21513-this-类型)
       - [2.15.14 类类型](#21514-类类型)
+      - [2.15.15 混入](#21515-混入)
+      - [2.15.16 模拟 final 类](#21516-模拟-final-类)
+    - [2.17 设计模式](#217-设计模式)
+      - [2.17.1 工厂模式](#2171-工厂模式)
+      - [2.17.2 建造者模式](#2172-建造者模式)
+      - [2.17.3 伴生对象模式](#2173-伴生对象模式)
   - [三. 类型进阶](#三-类型进阶)
     - [3.1 泛型](#31-泛型)
       - [3.1.1 泛型简介](#311-泛型简介)
@@ -229,6 +236,8 @@
         - [3.11.5.2 asserts X](#31152-asserts-x)
         - [3.11.5.3 断言函数的返回值](#31153-断言函数的返回值)
         - [3.11.5.4 断言函数的应用](#31154-断言函数的应用)
+    - [3.12 模拟名义类型](#312-模拟名义类型)
+    - [3.13 安全的扩展原型](#313-安全的扩展原型)
   - [四. 类型深入](#四-类型深入)
     - [4.1 子类型兼容性](#41-子类型兼容性)
       - [4.1.1 类型系统可靠性](#411-类型系统可靠性)
@@ -424,6 +433,11 @@
         - [6.1.2.4 注意事项](#6124-注意事项)
     - [6.2 TypeScript 与 webpack](#62-typescript-与-webpack)
       - [6.2.1 webpack 配置](#621-webpack-配置)
+  - [七. 错误处理](#七-错误处理)
+    - [7.1 返回 null](#71-返回-null)
+    - [7.2 抛出异常](#72-抛出异常)
+    - [7.3 返回异常](#73-返回异常)
+    - [7.4 Option 类型](#74-option-类型)
 
 <!-- /code_chunk_output -->
 
@@ -623,8 +637,7 @@ class C {
 }
 ```
 
-上例第 1 行，常量 a 的初始值为 Symbol 值，其类型为 unique symbol 类型。在标识符 a 与其初始值 Symbol 值之间形成了绑定关系，并且该关系是不可变
-的。这是因为常量的值是固定的，不允许再被赋予其他值。标识符 a 能够固定表示该 Symbol 值，标识符 a 的角色相当于该 Symbol 值的字面量形式。
+上例第 1 行，常量 a 的初始值为 Symbol 值，其类型为 unique symbol 类型。在标识符 a 与其初始值 Symbol 值之间形成了绑定关系，并且该关系是不可变的。这是因为常量的值是固定的，不允许再被赋予其他值。标识符 a 能够固定表示该 Symbol 值，标识符 a 的角色相当于该 Symbol 值的字面量形式。
 
 如果使用 let 或 var 声明定义 unique symbol 类型的变量，那么将产生错误，因为标识符与 Symbol 值之间的绑定是可变的。
 
@@ -995,7 +1008,7 @@ function bar(foo: Foo) {
 }
 ```
 
-下例中，由于 Foo 联合枚举类型等同于联合类型 Foo.A|Foo.B，因此它是联合类型 'A'|'B' 的子类型：
+下例中，由于 Foo 联合枚举类型等同于联合类型 Foo.A|Foo.B，因此它是联合类型 'A'|'B' 的[子类型](#41-子类型兼容性)：
 
 ```ts
 enum Foo {
@@ -1027,8 +1040,6 @@ function f2(foo: Foo, bar: Bar, baz: Baz) {
   f1(baz);
 }
 ```
-
-关于子类型兼容性的详细介绍请参考 7.1 节
 
 #### 2.4.7 const 枚举类型
 
@@ -1205,7 +1216,7 @@ any 类型是从 TypeScript 1.0 开始就支持的一种顶端类型。any 类�
 
 在 any 类型上**允许执行任意的操作而不会产生编译错误**。例如，可以读取 any 类型的属性或者将 any 类型当作函数调用，就算 any 类型的实际值不支持这些操作也不会产生编译错误。
 
-在程序中，使用 any 类型来跳过编译器的类型检查。如果声明了某个值的类型为 any 类型，那么就相当于告诉编译器：“不要对这个值进行类型检查。”当 TypeScript 编译器看到 any 类型的值时，也会对它开启 “绿色通道”，让其直接通过类型检查。在将已有的 JS 程序迁移到 TypeScript 程序的过程中，使用 any 类型来暂时绕过类型检査是一项值得掌握的技巧。
+在程序中，使用 any 类型来跳过编译器的类型检查。如果声明了某个值的类型为 any 类型，那么就相当于告诉编译器：“不要对这个值进行类型检查。” 当 TypeScript 编译器看到 any 类型的值时，也会对它开启 “绿色通道”，让其直接通过类型检查。在将已有的 JS 程序迁移到 TypeScript 程序的过程中，使用 any 类型来暂时绕过类型检査是一项值得掌握的技巧。
 
 从长远来看，应该**尽量减少在代码中使用 any 类型**。因为只有开发者精确地描述了类型信息，TypeScript 蝙编译器才能够更加准确有效地进行类型检查，这也是选择使用 TypeScript 语言的主要原因之一。
 
@@ -1597,6 +1608,32 @@ function query(...args: [string, number, boolean]) {
 }
 ```
 
+#### 2.10.7 改善元组的类型推导
+
+TypeScript 在推导元组的类型时会放宽要求，推导出的结果尽量宽泛，不在乎元组的长度和各位置的类型：
+
+```ts
+let a = [1, true]; // (number | boolean)[]
+```
+
+然而，有时希望推导的结果更严格一些，把上例中的 a 视作固定长度的元组，而不是数组。当然，可以使用类型断言把元组转换成元组类型，也可以使用 [as const 断言](#3104-const-类型断言)把元组标记为只读的，尽量收窄推导出的元组类型。
+
+可是，如果希望元组的推导结果为元组类型，但不想使用类型断言，也不想使用 as const 收窄推导结果，并把元组标记为只读的呢？为此，可以利用 TypeScript 推导剩余参数的类型的方式：
+
+```ts
+// 声明 tuple 函数，用于构建元组类型（替代内置的 [] 句法）
+function tuple<
+  T extends unknown[] // 声明一个类型参数 T，它是 unknown[] 的子类型（表明 T 是任意类型的数组）
+>(
+  ...ts: T // tuple 函数接受不定数量的参数 ts。由于 T 描述的是剩余参数，因此 TypeScript 推导出的是一个元组类型
+): T {
+  // tuple 函数的返回类型与 ts 的推导结果相同
+  return ts;
+}
+```
+
+如果代码中大量使用元组类型，而又不想使用类型断言，可以利用这个技术。
+
 ### 2.11 对象类型
 
 在 JS 中存在一种说法，就是 “一切皆为对象"。有这种说法是因为 JS 中的绝大多数值都可以使用对象来表示。例如，函数、数组和对象字面量等本质上都是对象。对于原始数据类型，如 String 类型，JS 提供了相应的构造函数来创建能够表示原始值的对象。
@@ -1934,8 +1971,7 @@ const task: { canceled?: boolean } = { cancelled: true };
 // 编译错误！对象字面量只允许包含已知属性 cancelled 不存在于 { canceled?: boolean } 类型中是否指的是 canceled 属性
 ```
 
-此例中，常量 task 的类型为 `{canceled?: boolean}`。其中 canceled 属性是可选属性，因此允许不设置该属性的值。在赋值语句右侧的 `{cancelled: true}` 对象字面量中，只包含 cancelled 属性。仔细査看该代码会发现，对象字面量 `{cancelled:true}` 与 `{canceled?: boolean}` 类型中的属性名拼 写相差了一个字母 "l"。如果编译器不进行多余属性检査，那么此例中的代码不会产生编译错误。更糟糕的是，常量 task 中的 canceled 属
-性没有按照预期被设置为 true，而是使用默认值 undefined。undefined 是一个“假”值，它与想要设置的 true 正好相反。这就给程序注入了一个让人难以察觉的错误。
+此例中，常量 task 的类型为 `{canceled?: boolean}`。其中 canceled 属性是可选属性，因此允许不设置该属性的值。在赋值语句右侧的 `{cancelled: true}` 对象字面量中，只包含 cancelled 属性。仔细査看该代码会发现，对象字面量 `{cancelled:true}` 与 `{canceled?: boolean}` 类型中的属性名拼 写相差了一个字母 "l"。如果编译器不进行多余属性检査，那么此例中的代码不会产生编译错误。更糟糕的是，常量 task 中的 canceled 属性没有按照预期被设置为 true，而是使用默认值 undefined。undefined 是一个 “假” 值，它与想要设置的 true 正好相反。这就给程序注入了一个让人难以察觉的错误。
 
 如果编译器能够执行多余属性检査，那么它能够识别出对象字面量中的 cancelled 属性是一个多余属性，从而产生编译错误。更好的是，编译器不但能够提示多余属性的错误，还能够根据 "Levenshtein distance" 算法来推测可能的属性名。这也是为什么在上例中，编译器能够提示出 _“是否指的是 canceled"属性_ 这条消息。
 
@@ -1949,7 +1985,7 @@ const point: { x: number } = { x: 0, y: 0 }; // y 是多余属性
 
 能够忽略多余属性检查的方法如下：
 
-- **使用类型断言**（推荐）
+- **使用类型断言（推荐）**
 
   [类型断言](#310-类型断言)能够对类型进行强制转换。例如，可以将对象字面量 `{x:0， y:0}` 的类型强制转换为 `{x: number}` 类型。类型断言能够绕过多余属性检查的真正原因是，**处于类型断言表达式中的对象字面量将不再是 “全新的对象字面量类型”**，因此编译器也就不会对其进行多余属性检査。
 
@@ -1961,15 +1997,16 @@ const point: { x: number } = { x: 0, y: 0 }; // y 是多余属性
   ```
 
 - **启用 `--suppressExcessPropertyErrors` 编译选项**
+
   启用该编译选项能够完全禁用整个 TypeScript 工程的多余属性检查，但同时也将完全失去多余属性检査带来的帮助。可以在 [tsconfig.json](#53-tsconfigjson) 配置文件中或命令行上启用该编译选项。
 
 - **使用 "// @ts-ignore" 注释指令**
 
-  该注释指令能够禁用针对某一行代码的类型检査。关于注释指令的详细介绍请参考 8.5.2 节。
+  该[注释指令](#5524-ts-ignore)能够禁用针对某一行代码的类型检査。
 
 - **为目标对象类型添加索引签名**
 
-  若目标对象类型上存在索引签名，那么目标对象可以接受仼意属性，因此也就谈不上多余属性。关于索引签名的详细介绍请参考 5.13.6 节。示例如下：
+  若目标对象类型上存在[索引签名](#2133-索引签名)，那么目标对象可以接受仼意属性，因此也就谈不上多余属性。示例如下：
 
   ```ts
   const point: {
@@ -2601,7 +2638,7 @@ foo 函数 this 值的类型设置为对象类型 `{ bar: string }`。第一个�
 
 类似于对象类型字面量，接口类型也能够表示任意的对象类型。不同的是，接口类型能够给对象类型命名以及定义类型参数。接口类型无法表示原始类型，如 boolean 类型等。
 
-接口声明只存在于编译阶段，在编译后生成的 JS 代码中不包含任何接口代码。
+> 接口声明只存在于编译阶段，在编译后生成的 JS 代码中不包含任何接口代码。
 
 #### 2.13.1 接口声明
 
@@ -2997,7 +3034,7 @@ interface Circle extends Style, Shape {}
 
 两个 draw 方法返回值不同。所以，当 Circle 接口尝试将两个 draw 方法合并时发生冲突，因此产生了编译错误。
 
-解决这个问题的一个办法是，在 Circle 接口中定义一个同名的 draw 方法。这样 Circle 接口中的 draw 方法会拥有更高的优先级，从而取代父接口中的 draw 方法。这时编译器将不再进行类型合并操作，因此也就不会发生合并冲突。但是，Circle 接口中定义的 draw 方法一定要与所有父接口中的 draw 方法是**[类型兼容](#41-子类型兼容性)**的：
+解决这个问题的一个办法是，在 Circle 接口中定义一个同名的 draw 方法。这样 Circle 接口中的 draw 方法会拥有更高的优先级，从而取代父接口中的 draw 方法。这时编译器将不再进行类型合并操作，因此也就不会发生合并冲突。但是，Circle 接口中定义的 draw 方法一定要与所有父接口中的 draw 方法是[类型兼容](#41-子类型兼容性)的：
 
 ```ts
 interface Style {
@@ -3465,7 +3502,7 @@ circle.radius; // 10
 
 在实际应用中，定义类的索引成员并不常见。类中所有的属性和方法必须符合字符串索引签名定义的类型。同时，只有当类具有类似数组的行为时，数值索引签名才有意义。
 
-类的索引成员与接口中的索引签名类型成员具有完全相同的语法和语义，这里不再重复。关于索引签名的详细介绍请参考 5136 节。示例如下:
+类的索引成员与接口中的[索引签名](#2133-索引签名)类型成员具有完全相同的语法和语义，这里不再重复。示例如下:
 
 ```ts
  class A {
@@ -3562,7 +3599,7 @@ ECMAScript 标准在 2020 年 1 月引入了一个新特性，那就是允许在
 class Circle {
   #radius: number;
 
-  construct() {
+  constructor() {
     this.#radius = 0;
   }
 }
@@ -3649,7 +3686,7 @@ readonly 修饰符也可以和任意一个可访问性修饰符结合使用来�
 
 ```ts
 class A {
-  construct(public readonly x: number) {}
+  constructor(public readonly x: number) {}
 }
 ```
 
@@ -3888,6 +3925,8 @@ class Derived extends Base {
 
 前面介绍的类和类的成员都属于具体类和具体类成员。TypeScript 支持定义抽象类和抽象类成员。抽象类和抽象类成员都使用 `abstract` 关键字来定义。
 
+> **使用**：如果多个类公用同一个实现，使用抽象类。如果需要一种轻量的方式表示这 “这类是 T 型”，使用[接口](#213-接口)。
+
 ##### 2.15.12.1 抽象类
 
 定义抽象类时，只需要在 class 关键字之前添加 `abstract` 关键字即可：
@@ -4073,6 +4112,228 @@ interface AConstructor {
   x: number;
 }
 ```
+
+#### 2.15.15 混入
+
+JS 和 TS 都没有 trait 或 mixin 关键字，不过实现也不难。这两个特性都用于模拟多重继承（一个类扩展两个以上的类），可做面向角色编程。这是一种编程风格，在这种风格中，不表述 “这是一个 Shape”，而是描述事物的属性，不再关心 “是什么” 关系，转而描述 “能做什么” 和 “有什么” 关系。
+
+混入这种模式把行为和属性混合到类中看，按照惯例，混入有以下特性：
+
+- 可以有状态（即实例属性）
+- 只能提供具体方法（与抽象方法相反）
+- 可以有构造方法，调用的顺序与混入类的顺序一致
+
+TypeScript 没有内置混入的概念，不过可以手动实现。下面设计一个调试 TypeScript 类的库，命名为 EZDebug，它的作用是输出关于类的一些信息，方便在运行时审查类。用法如下：
+
+```ts
+class User {
+  // ...
+}
+
+// 通过这个标准的 .debug 接口，用户可以调试任何类
+User.debug(); // 求值结果为：'User({"id":3, "name": "Tom"})'
+```
+
+首先将通过一个混入实现这个接口，将其命名为 withEZdebug。混入其实就是一个函数，只不过这个函数接受一个类构造方法，而且返回一个类构造方法。这个混入的声明如下：
+
+```ts
+// 先声明类型 ClassConstructor，表示任意构造方法。由于 TypeScript 完全采用结构化类型，因此可以使用 new 运算符操作的就是构造方法。
+// 不知道这个构造方法接受什么类型的参数，所以指明它可以接受任意个任意类型的参数
+type ClassConstructor<T> = new (...args: any[]) => T;
+
+// 声明 withEZdebug 混入，只接受一个类型参数 C。C 至少是类构造方法并至少定义了 getDebugValue 方法，使用 extends 子句表示这一要求。
+// 让 TypeScript 推导 withEZdebug 的返回类型，结果是 C 与该匿名类的交集。
+function withEZdebug<C extends ClassConstructor<{ getDebugValue(): object }>>(Class: C) {
+  // 由于混入是接受一个构造方法并返回一个构造方法的函数，所以这里返回一个匿名类构造方法。
+  return class extends Class {
+    // 类构造方法至少要接受传入的类接受的参数。但是注意，由于事先不知道将传入什么类，所以要尽量放宽要求，允许传入任意个任意类型的参数
+    // constructor(...args: any[]) {
+    //   因为这个匿名类扩展自其他类，为了正确建立父子关系，调用 Class 的构造方法
+    //   super(...args);
+    // }
+
+    debug() {
+      const Name = Class.name;
+      const value = this.getDebugValue();
+      return `${Name}(${JSON.stringify(value)})`;
+    }
+  };
+}
+// 使用
+class HardToDebugUser {
+  private id: number;
+  private firstName: string;
+  private lastName: string;
+
+  constructor(id: number, firstName: string, lastName: string) {
+    this.id = id;
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+
+  getDebugValue() {
+    return {
+      id: this.id,
+      name: `${this.firstName} ${this.lastName}`
+    };
+  }
+}
+
+const User = withEZdebug(HardToDebugUser);
+const user = new User(3, 'tom', 'Jie');
+user.debug(); // HardToDebugUser({"id":3,"name":"tom Jie"})
+```
+
+可以把任意多个混入混合到类中，为类增添更丰富的行为，而且这一切在类型上都是安全的。混入有助于封装行为，是描述可重用行为的一种重要方式。
+
+#### 2.15.16 模拟 final 类
+
+虽然 TypeScript 的类和方法不支持 final 关键字，但是可以轻易模拟。final 关键字的作用：某些语言使用这个关键字把类标记为不可扩展，或者把方法标记为不可覆盖。
+
+```ts
+// 在 TypeScript 中，可以通过私有的构造方法模拟 final 类：
+class MessageQueue {
+  private constructor(private messages: string[]) {}
+}
+
+// 把 constructor 标记为 private 后，不能使用 new 运算符实例化类，也不能扩展类：
+class BadQueue extends MessageQueue {} // Error
+new MessageQueue([]); // Error
+```
+
+除了禁止扩展类以外，私有的构造方法还禁止直接实例化类。但是，如果希望 final 类能实例化，禁止扩展就行，那么可以：
+
+```ts
+class MessageQueue {
+  private constructor(private message: string[]) {}
+
+  static create(messages: string[]) {
+    return new MessageQueue(messages);
+  }
+}
+
+class BadQueue extends MessageQueue {} // Error
+MessageQueue.create([]); // MessageQueue
+```
+
+### 2.17 设计模式
+
+#### 2.17.1 工厂模式
+
+工厂模式（factory pattern）是创建某种类型的对象的一种方式，这种方式把创建哪种具体对象留给创建该对象的工厂决定。下面构建一个造鞋工厂。首先定义 Shoe 类型，以及几种鞋：
+
+```ts
+// 也可以使用 interface
+type Shoe = {
+  purpose: string;
+};
+class BalletFlat implements Shoe {
+  purpose = 'dancing';
+}
+class Boot implements Shoe {
+  purpose = 'woodcutting';
+}
+class Sneaker implements Shoe {
+  purpose = 'walking';
+}
+```
+
+下面建造制鞋工厂：
+
+```ts
+const Shoe = {
+  // 把 type 的值指定为一个并集类型有助于提升.create 的类型安全，以免使用方在编译时传入一个无效的 type。
+  create(type: 'balletFlat' | 'boot' | 'sneaker'): Shoe {
+    // 使用 switch 检查 type 的值，确保处理每一种 Shoe。
+    switch (type) {
+      case 'balletFlat':
+        return new BalletFlat();
+      case 'boot':
+        return new Boot();
+      case 'sneaker':
+        return new Sneaker();
+      default:
+        return new Boot();
+    }
+  }
+};
+```
+
+这个示例使用伴生对象模式声明类型 Shoe 和同名的值 Shoe（TypeScript 把值和类型放在不同的命名空间中），以此表明值提供了操作类型的方法。若想使用这个工厂，只需调用 .create：
+
+```ts
+Shoe.create('boot');
+```
+
+> **注意**：可以更明确一些，在 Shoe.create 的类型签名中指明，传入 'boot' 得到一个 Boot 实例，传入 'sneaker' 得到一个 Sneaker 实例等，但是这样做破坏了工厂模式所做的抽象（即使用方不知道将得到什么具体的类，知道的只是该类满足特定的接口）。
+
+#### 2.17.2 建造者模式
+
+建造者模式（builder pattern）把对象的建造方式与具体的实现方式区分开。
+
+如果用过 jQuery，或者 ES6 的 Map 和 Set 等数据结构，对这种 API 风格应该不会陌生。下面举个例子：
+
+```ts
+new RequestBuilder().setURL('/users').setMethod('get').setData({ firstName: 'Anna' }).send();
+```
+
+实现 RequestBuilder 和其他几个方法：
+
+```ts
+class RequestBuilder {
+  private data: object | null = null; // 把用户设置的 URL 保存在私有实例变量 url 中，其初始值为 null。
+  private method: 'get' | 'post' | null = null;
+  private url: string | null = null;
+
+  // setURL 的返回类型是 this，即用户调用 setURL 的那个 RequestBuilder 实例。
+  setMethod(method: 'get' | 'post'): this {
+    this.method = method;
+    return this;
+  }
+  setData(data: object): this {
+    this.data = data;
+    return this;
+  }
+  setURL(url: string): this {
+    this.url = url;
+    return this;
+  }
+  send() {
+    // ...
+  }
+}
+```
+
+#### 2.17.3 伴生对象模式
+
+伴生对象模式源自 [Scala](https://docs.scala-lang.org/tour/singleton-objects.html#companion-objects)，目的是把同名的对象和类配对在一起。TypeScript 中也有类似的模式，而且作用类似，即把同名类型和对象配对在一起。
+
+```ts
+type Currency = {
+  unit: 'EUR' | 'GBP' | 'JPY' | 'USD';
+  value: number;
+};
+
+const Currency = {
+  DEFAULT: 'USD',
+  from(value: number, unit = Currency.DEFAULT): Currency {
+    return { unit, value };
+  }
+};
+```
+
+这种模式有几个不错的性质。首先，可以把语义上归属同一名称的类型和值放在一起。其次使用时可以一次性导入二者。
+
+```ts
+import { Currency } from './Currency';
+let amountDue: Currency = {
+  unit: 'JPY',
+  value: 789.22
+};
+let otherAmountDue = Currency.from(330, 'EUR');
+```
+
+如果一个类型和一个对象在语义上有关联，就可以使用伴生对象模式，由对象提供操作类型的实用方法。
 
 ## 三. 类型进阶
 
@@ -6988,6 +7249,142 @@ function f(x: string | undefined) {
 }
 ```
 
+### 3.12 模拟名义类型
+
+虽然 TypeScript 是结构化类型系统，但有时名义类型确有用武之地。比如：应用中有几个 ID 类型，以不同方式确定系统中各种对象的类型：
+
+```ts
+type CompanyID = string;
+type OrderID = string;
+type UserID = string;
+type ID = CompanyID | OrderID | UserID;
+
+// 这是很好的文档，有助于其他人了解该传入哪个类型的 ID
+function queryForUser(id: UserID) {
+  // ...
+}
+
+// 但 UserID 只是 string 的别名，万一传错，类型系统也无可奈何
+let id: CompanyID = 'bs23432';
+queryForUser(id);
+```
+
+这是就体现名义类型的作用了。虽然 TypeScript 原生不支持名义类型，但可以使用类型烙印（type branding）技术模拟实现。使用类型烙印技术之前要稍微设置一下，而且在 TypeScript 中使用这个技术不像在原生支持名义类型别名的语言中那么平顺。但，带烙印的类型可以极大地提升程序的安全性。
+
+首先，为各个名义类型合成类型烙印：
+
+```ts
+type CompanyID = string & { readonly brand: unique symbol };
+type OrderID = string & { readonly brand: unique symbol };
+type UserID = string & { readonly brand: unique symbol };
+type ID = CompanyID | OrderID | UserID;
+```
+
+显然，使用 string 和 { readonly brand: unique symbol} 的交集显得有点乱，但是只能这么做，如果想创建这个类型的值，别无他法，只能使用断言。这就是带烙印的类型的一个重要性质：不太可能意外使用错误的类型。选择的 “烙印” 是 unique symbol，因为这是 TypeScript 中两个真正意义上是名义类型的类型之一（另一个是 enum)。之所以取这个烙印与 string 的交集，是为了通过断言指明给定的字符串属于这个带烙印的类型。
+
+现在，要找到一种方式创建 CompanyID、OrderID 和 UserID 类型的值。为此，将使用[伴生对象模式](#2173-伴生对象模式)。将为每个带烙印的类型声明一个构造函数，使用类型断言构建各合成类型的值：
+
+```ts
+function CompanyID(id: string) {
+  return id as CompanyID;
+}
+function OrderID(id: string) {
+  return id as OrderID;
+}
+function UserID(id: string) {
+  return id as UserID;
+}
+```
+
+最后，看一下如何使用这些类型：
+
+```ts
+function queryForUser(id: UserID) {
+  // ...
+}
+let companyId = CompanyID('8a6076cf');
+let orderId = OrderID('789s7dfs');
+let userId = UserID('d21b1dbf');
+queryForUser(userId); // OK
+queryForUser(companyId); // Error
+```
+
+这种方式的优点是，降低了运行时的开销，每构建一个 ID 只需调用一个函数，而且 JS VM 还有可能把函数放在行内。在运行时时，一个 ID 就是一个字符串，烙印纯粹是一种编译时结构。
+
+同样，多数应用没必要费这么大事。不过，对大型应用来说，或处理容易混淆的类型时，带烙印的类型能极大地提升安全性。
+
+### 3.13 安全的扩展原型
+
+构建 JS 应用时，传统的观点是扩展内置类型的原型不安全。这个观点可追溯到 jQuery 出现之前的日子，那时 JS 高手在构建 MooTools 等库时都是直接扩展和覆盖内置的原型方法。但是，各路高手都在设法增强原型的功能，冲突随之而来。没有静态类型系统的管护，这些冲突只能在运行时暴露出来。
+
+JS 是一门十分动态的语言，它允许在运行时修改内置的方法，每一个内置对象的原型都可以直接访问，包括 Array.prototype、Function.prototype、Object.prototype 等。
+
+虽然过去认为扩展原型不安全，但是有了 TypeScript 提供的静态类型系统，现在可以放心扩展原型[^2]了。举个例子，为 Array 原型添加 zip 方法。为了安全扩展原型，要做两件事：
+
+[^2]: 不建议扩展原型还有其他原因，例如代码可移植性、保持依赖图清晰明了，以及只加载真正使用的函数，提升性能。然而，安全性已经不在其列。
+
+1. 首先，在一个 .ts 文件（比如 zip.ts）中扩展 Array 原型的类型；然后，新增 zip 方法，增强原型的功能。
+
+   ```ts
+   // 首先让 TypeScript 知道要为 Array 添加 zip 方法。利用接口合并特性增强全局接口 Array<T>，为这个全局定义的接口添加 zip 方法。
+   interface Array<T> {
+     zip<U>(list: U[]): [T, U][];
+   }
+
+   // 这个文件没有显式导入或导出，因此可以直接增强全局接口 Array。声明一个接口，与现有的 Array<T> 同名，TypeScript 将负责合并二者。如果文件在模块模式中（如果实现 zip 需要导入其他代码，便是这种情况），就要把全局扩展放在 declare global 类型声明中
+   declare global {
+     interface Array<T> {
+       zip<U>(list: U[]): [T, U][];
+     }
+   }
+   ```
+
+2. 然后在 Array 的原型上实现 zip 方法。这里使用 this 类型，以便让 TypeScript 正确推导出调用 .zip 方法的数组的类型 T。
+
+   ```ts
+   // 实现 .zip 方法
+   Array.prototype.zip = function <T, U>(this: T[], list: U[]): [T, U][] {
+     // 由于 TypeScript 推导出的映射函数的返回类型是 (T|U)[]（TypeScript 没那么智能，意识不到这个元组的 0 索引始终是 T、1 索引始终是 U），所以使用 tuple 函数创建一个元组类型，而不使用类型断言。
+     return this.map((v, k) => tuple(v, list[k]));
+   };
+
+   // 声明 tuple 函数，用于构建元组类型（替代内置的 [] 句法）
+   function tuple<
+     T extends unknown[] // 声明一个类型参数 T，它是 unknown[] 的子类型（表明 T 是任意类型的数组）
+   >(
+     ...ts: T // tuple 函数接受不定数量的参数 ts。由于 T 描述的是剩余参数，因此 TypeScript 推导出的是一个元组类型
+   ): T {
+     // tuple 函数的返回类型与 ts 的推导结果相同
+     return ts;
+   }
+   ```
+
+> **注意**：声明的 `interface Array<T>` 是对全局命名空间 Array 的增强，影响整个 TypeScript 项目，即便没有导入 zip.ts 文件，在 TypeScript 看来，[].zip 方法也可用。但是，为了增强 Array.prototype，要确保用到 zip 方法的文件都已经加载了 zip.ts 文件，这样才能让 Array.prototype 上的 zip 方法生效。
+
+需要编辑 tsconfig.json 文件，把 zip.ts 排除在项目之外，这样使用方就必须先使用 import 语句将其导入：
+
+```json
+{
+  "exclude": ["./zip.ts"]
+}
+```
+
+现在可以随心使用 zip 方法了，而且完全安全：
+
+```ts
+import './zip';
+[1, 2, 3]
+  .map(n => n * 2) // number[]
+  .zip(['a', 'b', 'c']); // [number, string][]
+
+// 运行上述代码，首先映射，然后拼凑，得到的结果如下：
+// [
+//   [2,'a'],
+//   [4, 'b'],
+//   [6,'c']
+// ]
+```
+
 ## 四. 类型深入
 
 本章主要内容：
@@ -7583,6 +7980,10 @@ f(s);
 
 类型注解是最直接地定义表达式类型的方式，而类型推断是指在没使用类型注解的情况下，编译器能够自动地推导出表达式的类型。
 
+> TypeScript 采用的是基于流的类型推断，这是一种符号执行[^1]，类型检查器在检查代码的过程中利用流程语句（如 if、?、||）和类型查询（如 typeof、instanceof 和 in）细化类型，就像程序员阅读代码的流程一样。
+
+[^1]: 符号执行是一种分析程序的方式，这种方式使用一个特殊的程序（称为符号求值程序）运行程序，过程与运行时运行程序一样，只是不为变量赋予具体的值，而使用符号建模变量，在程序运行的过程中约束变量的值。符号执行可以表达 “这个变量从未使用” “这个函数永不返回” 或 “在 if 语句的肯定分支中，第 102 行的变量 x 肯定不是 null”。
+
 在绝大部分场景中，TypeScript 编译器都能够正确地推断出表达式的类型。类型推断在一定程度上简化了代码，避免了在程序中为每一个表达式添加类型注解。
 
 #### 4.3.1 常规类型推断
@@ -7863,7 +8264,7 @@ let b = a; // 推断的类型为：number
 
 ```ts
 const c: 0 = 0; // 类型为：0
-// 虽然let声明属于可变位置，但是常量c的类型为非全新的字面量类型
+// 虽然 let 声明属于可变位置，但是常量c的类型为非全新的字面量类型
 // 因此，推断变量 d 的类型时不进行字面量类型放宽操作，变量 d 的推断类型与常量 c 的类型相同，均为非全新的不可放宽的数字字面量类型 0。
 let d = c; // 推断的类型为：0
 ```
@@ -9933,7 +10334,9 @@ namespace Utils {}
 
 对于同一个标识符而言，它可以同时具有上述多种含义。例如，有一个标识符 A，它可以同时表示一个值、一种类型和一个命名空间。
 
-在同一声明空间内使用的标识符必须唯一。TypeScript 语言中的大部分语法结构都能够创建出新的声明空间，例如函数声明和类声明都能够创建出一个新的声明空间。最典型的声明空间是全局声明空间和模块声明空间。当编译器**发现同一声明空间内存在同名的声明时，会尝试将所有同名的声明合并为一个声明，即声明合并**；若发现无法进行声明合并，则会产生编译错误。声明合并是 TypeScript 语言特有的行为。在进行声明合并时，编译器会按照标识符的含义进行分组合并，即值和值合并、类型和类型合并以及命名空间和命名空间合并。但是并非所有同名的声明都允许进行声明合并，例如，常量声明 a 和函数声明 a 之间不会进行声明合并。
+在同一声明空间内使用的标识符必须唯一。TypeScript 语言中的大部分语法结构都能够创建出新的声明空间，例如函数声明和类声明都能够创建出一个新的声明空间。最典型的声明空间是全局声明空间和模块声明空间。
+
+当编译器**发现同一声明空间内存在同名的声明时，会尝试将所有同名的声明合并为一个声明，即声明合并**；若发现无法进行声明合并，则会产生编译错误。声明合并是 TypeScript 语言特有的行为。在进行声明合并时，编译器会按照标识符的含义进行分组合并，即值和值合并、类型和类型合并以及命名空间和命名空间合并。但是并非所有同名的声明都允许进行声明合并，例如，常量声明 a 和函数声明 a 之间不会进行声明合并。
 
 接下来，将具体介绍 TypeScript 语言中的声明合并，包括接口声明、枚举声明、类声明、命名空间声明、扩充模块声明、扩充全局声明。
 
@@ -12025,3 +12428,218 @@ module.exports = {
 `resolve.extensions` 属性定义了在文件名相同但文件扩展名不同时选择文件的优先级，第一个数组元素的优先级最高。
 
 `output` 属性定义了打包生成的文件名及存放的位置。此例中，将打包生成的 "bundle.js" 存放在 "C:\ts-webpack\dist" 目录下。
+
+## 七. 错误处理
+
+### 7.1 返回 null
+
+编写一个程序，把用户输入的生日解析为 Date 对象：
+
+```ts
+function ask() {
+  return prompt('When is your birthday?');
+}
+
+// 检查指定的日期是否有效
+function isValid(date: Date) {
+  return Object.prototype.toString.call(date) === '[object date]' && !Number.isNaN(date.getTime());
+}
+
+function parse(birthday: string): Date | null {
+  let date = new Date(birthday);
+  if (!isValid(date)) {
+    return null;
+  }
+  return date;
+}
+
+let date = parse(ask());
+// 强制要求先检查结果是否为 null，然后再使用
+if (date) {
+  console.info('Date is', date.toISOString(0));
+} else {
+  console.error('Error parsing date for some reason');
+}
+```
+
+考虑到类型安全，返回 null 是处理错误最为轻量的方式。有效的用户输人到一个 Date 对象，无效的用户输人得到一个 null，类型系统会自动检査有没有涵盖这两种情况。
+
+然而，这么做丢失了一些信息，parse 函数没有指出操作到底为什么失败，负责调试的工程师要梳理日志才能找出原因，用户看到弹出窗口中显示的是 “解析日期出错，原因未知”，而不是提示如何改正的消息，例如 “请输人 YYYY/MM/DD 格式的日期”。
+
+返回 null 也不利于程序的编写，每次操作都检査结果是否为 null 太烦琐，不利于嵌套和串联操作。
+
+### 7.2 抛出异常
+
+把返回 null 改成抛出异常方便处理具体的问题，这样能获取关于异常的元数据，便于调试。
+
+```ts
+function parse(birthday: string): Date {
+  let date = new Date(birthday);
+  if (!isValid(date)) {
+    throw new RangeError('Enter a date in the form YYYY/MM/DD');
+  }
+  return date;
+}
+```
+
+现在使用上述代码时要捕获异常，以优雅的方式处理，免得整个应用崩溃：
+
+```ts
+try {
+  let date = parse(ask());
+  console.info('Date is', date.toISOString());
+} catch (e) {
+  console.error(e.message);
+}
+```
+
+此外，也可以再次抛出其他异常，不放过任何一个错误：
+
+```ts
+try {
+  let date = parse(ask());
+  console.info('Date is', date.toISOString());
+} catch (e) {
+  if (e instanceof RangeError) {
+    console.error(e.message);
+  } else {
+    throw e;
+  }
+}
+```
+
+可以使用错误的子类，更具体地表示问题的种类。如果其他人修改 parse 或 ask 函数，抛出其他 RangeError，可以更好地区分：
+
+```ts
+// 自定义错误类型
+class InvalidDateFormatError extends RangeError {}
+class DateIsInTheFutureError extends RangeError {}
+function parse(birthday: string): Date {
+  let date = new Date(birthday);
+  if (!isValid(date)) {
+    throw new InvalidDateFormatError('Enter a date in the form YYYY/MM/DD');
+  }
+  if (date.getTime() > Date.now()) {
+    throw new DateIsInTheFutureError('Are you a timelord?');
+  }
+  return date;
+}
+
+try {
+  let date = parse(ask());
+  console.info('Date is', date.toISOString());
+} catch (e) {
+  if (e instanceof InvalidDateFormatError) {
+    console.error(e.message);
+  } else if (e instanceof DateIsInTheFutureError) {
+    console.info(e.message);
+  } else {
+    throw e;
+  }
+}
+```
+
+不仅表明有什么地方出错了，还通过一个自定义的错误指出了失败的原因。抛出这些错误之后，加上服务器日志的辅助，可以更好地调试问题，还可以显示恰当的对话框，告诉用户什么地方做错了、该采取什么措施修正。另外，可以在一个 try/catch 结构中串联和嵌套一系列操作（不用像返回 null 时那样检查每个操作是否失败）。
+
+这样的代码又该如何使用呢？假如把一大段 try/catch 结构放在一个文件中，余下的代码在一个库中，从别的地方导入。那么，怎么知道要捕获什么类型的错误呢（InvalidDateFormatError 和 DateIsInTheFutureError），或者直接检查常规的 RangeError 错误（注意，TypeScript 的函数签名中不含异常信息）。可以在函数的名称中指明（parseThrows），也可以在 docblock 中注明：
+
+```ts
+/**
+ * @throws { InvalidDateFormatError } The user entered their birthday
+ * @throws { DateIsInTheFutureError } The user entered a birthday in the correctly.
+ */
+function parse(birthday: string): Date {
+  // ...
+}
+```
+
+但实际上，有可能不会把代码放在 try/catch 结构中，根本不检查异常，而且类型系统不会指出缺少了什么情况要做处理。然而，有时代码希望处理异常，以免导致程序崩溃。可以使用返回异常的方式告诉使用方，成功和出错两种情况都要处理。
+
+### 7.3 返回异常
+
+TypeScript 与 Java 不同，不支持 throws 子句。不过可以使用并集类型近似实现这个特性：
+
+```ts
+function parse(birthday: string): Date | InvalidDateFormatError | DateIsInTheFutureError {
+  let date = new Date(birthday);
+  if (!isValid(date)) {
+    return new InvalidDateFormatError('Enter a date in the form YYYY/MM/DD');
+  }
+  if (date.getTime() > Date.now()) {
+    return new DateIsInTheFutureError('Are you a timelord?');
+  }
+  return date;
+}
+```
+
+现在，使用方被迫处理所有情况，即 InvalidDateFormatError、DateIsInTheFutureError 和成功解析，否则在编译时将报错 TypeError：
+
+```ts
+let result = parse(ask()); // 返回一个日期或错误
+if (result instanceof InvalidDateFormatError) {
+  console.error(result.message);
+} else if (result instanceof DateIsInTheFutureError) {
+  console.info(result.message);
+} else {
+  console.info('Date is', result.toISOString());
+}
+```
+
+这里，利用 TypeScript 的类型系统实现了以下三点：
+
+- 在 parse 函数的签名中加入可能出现的异常。
+- 告诉使用方可能抛出哪些异常。
+- 迫使使用方处理（或再次抛出）每一个异常。
+
+使用方太懒的话，可以不用逐一处理各个异常，但是要明确写出来：
+
+```ts
+let result = parse(ask()); // 一个日期或错误
+if (result instanceof Error) {
+  console.error(result.message);
+} else {
+  console.info('Date is', result.toISOString());
+}
+```
+
+当然，程序可能还是会在内存不足或堆栈溢出时崩溃，但是对此无能为力。
+
+这种方式比较轻量，不需要什么精巧的数据结构，但又提供了足够的信息，让使用方知道错误表示的是什么问题，在需要进一步了解情况时也知道该搜索什么。
+
+这种方式的缺点是串联和嵌套可能出错的操作时容易让人觉得烦琐。如果一个函数返回 T | Error1，那么使用该函数的函数有两个选择：
+
+1. 显式处理 Error1。
+
+2. 处理 T（成功的情况），把 Error1 传给使用方处理。然而这样传来传去，使用方要处理的错误将越来越多：
+
+    ```ts
+    function x(): T | Error1 {
+      //...
+    }
+    function y(): U | Error1 | Error2 {
+      let a = x();
+      if (a instanceof Error) {
+        return a;
+      }
+      //对 a 执行一定的操作
+    }
+
+    function z(): U | Error1 | Error2 | Error3 {
+      let a = y();
+      if (a instanceof Error) {
+        return a;
+      }
+      //对a执行一定的操作
+    }
+    ```
+
+这种方式确实烦琐，但却极好地保证了安全。
+
+### 7.4 Option 类型
+
+除此之外，还可以使用专门的数据类型描述异常。这种方式与返回值和错误的并集相比是有缺点的（尤其是与不使用这些数据类型的代码互操作时），但是却便于串联可能出错的操作。在这方面，常用的三个选项是 Try、
+Option 和 Either 类型。这里只介绍 Option 类型，其他两个类型本质上基本相同。
+
+> **注意**：Try、Option 和 Either 与 Array、Error、Map 或 Promise 不同，不是 JS 环境内置的数据类型。如果想使用，要在 NPM 中寻找实现，或者自己编写。
+
+Option 类型源自 Haskell、OCaml、Scala 和 Rust 等语言，隐含的意思是，不返回一个值，而是返回一个容器，该容器中可能有一个值，也可能没有。这个容器有一些方法，即使没有值也能串联操作。容器几乎可以是任何数据结构，只要能在里面存放值。例如，可以使用数组作为容器：

@@ -180,7 +180,6 @@ module.exports = {
         objectsInObjects: false
       }
     ],
-    'no-alert': process.env.NODE_ENV === 'production' ? 1 : 0,
     'no-array-constructor': 2,
     'no-bitwise': 1,
     'no-div-regex': 1,
