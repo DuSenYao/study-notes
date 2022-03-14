@@ -1,9 +1,3 @@
-<!--
- * @Author: DSY
- * @Date: 2021-03-14 15:38:43
- * @LastEditTime: 2021-03-18 22:24:59
- * @Description:
--->
 <!DOCTYPE html>
 <html lang="zn-CN">
   <head>
@@ -21,8 +15,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script>
+      /* global Vue */
       // 定义组件
-      Vue.component("todo-item", {
+      Vue.component('todo-item', {
         props: {
           title: String,
           del: {
@@ -37,38 +32,38 @@
               <button v-show="!del" @click="deleteItem">删除</button>
             </li>
           `,
-        data: function () {
+        data() {
           return {};
         },
         methods: {
-          deleteItem() {
-            console.log("点击删除按钮");
+          deleteItem(...args) {
+            console.log('点击删除按钮');
             // 子组件向父组件传值
-            this.$emit("delete", {
+            this.$emit('delete', {
               delete: true,
-              type: arguments[0].type,
+              type: args[0].type,
               title: this.title
             });
           }
         }
       });
 
-      Vue.component("todo-list", {
+      Vue.component('todo-list', {
         props: {},
         template: `
           <ul>
-            <todo-item v-for="item in list" data-test="test" @delete="deleteHandle" :title="item.title" :del="item.del"></todo-item>
+            <todo-item v-for="item in list" data-test="test" @delete="deleteHandle" :key="item.title" :title="item.title" :del="item.del"></todo-item>
           </ul>
         `,
-        data: function () {
+        data() {
           return {
             list: [
               {
-                title: "课程1",
+                title: '课程1',
                 del: false
               },
               {
-                title: "课程2",
+                title: '课程2',
                 del: true
               }
             ]
@@ -77,22 +72,22 @@
         methods: {
           deleteHandle(arg) {
             console.log(arg);
-            console.log("deleteHandle");
+            console.log('deleteHandle');
           }
         }
       });
 
-      var vm = new Vue({
-        el: "#app",
+      let vm = new Vue({
+        el: '#app',
         data: {
-          message: "hello World",
+          message: 'hello World',
           list: [
             {
-              title: "课程1",
+              title: '课程1',
               del: false
             },
             {
-              title: "课程2",
+              title: '课程2',
               del: true
             }
           ]
