@@ -519,17 +519,17 @@ git merge dev
 
 临时保存和恢复修改，可跨分支，在**未 add**之前才能执行
 
-- `[save message]`: 保存修改到临时目录，并把工作区的文件还原到上一次 commit
-- `list`: 显示所有保存的记录列表
-- `pop stash@{num}`: 恢复，num 是可选值，通过 `git stash list` 查看具体值，只能恢复一次
-- `apply stash@{num}`: 恢复，num 是可选值，通过 `git stash list` 查看具体值，可恢复多次
+- `[save message]`：保存修改到临时目录，并把工作区的文件还原到上一次 commit
+- `list`：显示所有保存的记录列表
+- `pop num`：恢复，num 是可选值，通过 `git stash list` 查看具体值，只能恢复一次
+- `apply num`：恢复，num 是可选值，通过 `git stash list` 查看具体值，可恢复多次
 
   ```sh
   git stash apply 0
   ```
 
-- `drop stash@{num}`: 删除指定保存
-- `clear`: 删除所有保存
+- `drop num`：删除指定保存
+- `clear`：删除所有保存
 
 ##### 1.2.7.2 git rerere
 
