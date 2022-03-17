@@ -4198,7 +4198,7 @@ f.apply(o, [1, 2]);
 
 如果函数定义时可以接收任意多个参数，则使用 `apply()` 方法可以在调用这个函数时把任意长度的数组内容传给它。在 ES6 及之后的版本中可以使用扩展操作符。
 
-例如，在不使用扩展操作符的情况下，想找到一个数值数组中的最大值，可以使用 `apply()` 方法把数组的元素传给 `Math.max()` 函数:
+例如，在不使用扩展操作符的情况下，想找到一个数值数组中的最大值，可以使用 `apply()` 方法把数组的元素传给 `Math.max()` 函数：
 
 ```js
 let biggest = Math.max.apply(Math, arrayOfNumbers);
@@ -8221,6 +8221,9 @@ palabras.sort(traditionalSpanish); // ["como", "chico", "luz", "llama"]
 
 **console.timeEnd()**
 : 这个函数接收一个字符串参数。如果该参数之前传给过 console.time()，则它打印该参数及经过的时间。在调用 console.timeEnd() 之后，如果不再调用 console.time()，则调用 console.timeLog() 将是不合法的。
+
+**console.memory**
+: 这是一个属性，而不是方法，可以用来检查内存信息。
 
 #### 11.8.1 通过控制台格式化输出
 

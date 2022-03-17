@@ -32,10 +32,10 @@
       - [3.5.3 monitorEvents（监听事件）方法](#353-monitorevents监听事件方法)
     - [3.6 Console 类中的各种方法](#36-console-类中的各种方法)
       - [3.6.1 console.assert](#361-consoleassert)
-      - [3.6.2 增强 `log` 的阅读体验](#362-增强-log-的阅读体验)
+      - [3.6.2 增强 log 的阅读体验](#362-增强-log-的阅读体验)
       - [3.6.3 console.table](#363-consoletable)
       - [3.6.4 console.dir](#364-consoledir)
-      - [3.6.5 给 `logs` 加上时间戳](#365-给-logs-加上时间戳)
+      - [3.6.5 给 logs 加上时间戳](#365-给-logs-加上时间戳)
       - [3.6.6 检测执行时间](#366-检测执行时间)
       - [3.6.7 让 `console.log` 基于调用堆栈自动缩进](#367-让-consolelog-基于调用堆栈自动缩进)
       - [3.6.8 直接在回调中使用 `console.log`](#368-直接在回调中使用-consolelog)
@@ -385,7 +385,7 @@ console.assert(assertion, obj1 [, obj2, ..., objN]);
 console.assert(assertion, msg [, subst1, ..., substN]);
 ```
 
-#### 3.6.2 增强 `log` 的阅读体验
+#### 3.6.2 增强 log 的阅读体验
 
 `console.log` 可以通过 `{}` 将参数包装，可以将一组数据打印成一个对象，这是 `ECMAScript 2015` 引入的 `enhanced object literal（增强对象文字面量）`。
 
@@ -408,7 +408,7 @@ console.log({ name, date, age, isHealthy });
 
 使用 `console.log` 打印元素，会将元素渲染成像是从 `Elements` 中剪切出来的一样。使用 `console.dir` 会将元素打印为这个节点所关联到的 `js对象`。
 
-#### 3.6.5 给 `logs` 加上时间戳
+#### 3.6.5 给 logs 加上时间戳
 
 给打印出来的信息加上时间戳，有两种方法：
 

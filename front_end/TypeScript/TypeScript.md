@@ -12612,34 +12612,208 @@ if (result instanceof Error) {
 
 2. 处理 T（成功的情况），把 Error1 传给使用方处理。然而这样传来传去，使用方要处理的错误将越来越多：
 
-    ```ts
-    function x(): T | Error1 {
-      //...
-    }
-    function y(): U | Error1 | Error2 {
-      let a = x();
-      if (a instanceof Error) {
-        return a;
-      }
-      //对 a 执行一定的操作
-    }
+   ```ts
+   function x(): T | Error1 {
+     //...
+   }
+   function y(): U | Error1 | Error2 {
+     let a = x();
+     if (a instanceof Error) {
+       return a;
+     }
+     //对 a 执行一定的操作
+   }
 
-    function z(): U | Error1 | Error2 | Error3 {
-      let a = y();
-      if (a instanceof Error) {
-        return a;
-      }
-      //对a执行一定的操作
-    }
-    ```
+   function z(): U | Error1 | Error2 | Error3 {
+     let a = y();
+     if (a instanceof Error) {
+       return a;
+     }
+     //对a执行一定的操作
+   }
+   ```
 
 这种方式确实烦琐，但却极好地保证了安全。
 
 ### 7.4 Option 类型
 
-除此之外，还可以使用专门的数据类型描述异常。这种方式与返回值和错误的并集相比是有缺点的（尤其是与不使用这些数据类型的代码互操作时），但是却便于串联可能出错的操作。在这方面，常用的三个选项是 Try、
-Option 和 Either 类型。这里只介绍 Option 类型，其他两个类型本质上基本相同。
+除此之外，还可以使用专门的数据类型描述异常。这种方式与返回值和错误的并集相比是有缺点的（尤其是与不使用这些数据类型的代码互操作时），但是却便于串联可能出错的操作。在这方面，常用的三个选项是 Try、Option 和 Either 类型。这里只介绍 Option 类型，其他两个类型本质上基本相同。
 
 > **注意**：Try、Option 和 Either 与 Array、Error、Map 或 Promise 不同，不是 JS 环境内置的数据类型。如果想使用，要在 NPM 中寻找实现，或者自己编写。
 
 Option 类型源自 Haskell、OCaml、Scala 和 Rust 等语言，隐含的意思是，不返回一个值，而是返回一个容器，该容器中可能有一个值，也可能没有。这个容器有一些方法，即使没有值也能串联操作。容器几乎可以是任何数据结构，只要能在里面存放值。例如，可以使用数组作为容器：
+
+```ts
+function parse(birthday: string): Date[] {
+  let date = new Date(birthday);
+  if (lisValid(date)) {
+    return [];
+  }
+  return [date];
+}
+
+let date = parse(ask());
+date.map(_ => _.toIsostring()).forEach(_ => console.info('Date is', _));
+```
+
+Option 的缺点与返回 null 一样，只告诉使用方什么地方出错了，而未说明出错的原因。
+
+**Option 真正发挥作用是在一次执行多个操作，而每个操作都有可能出错**。例如，之前一直假定 prompt 始终成功，而 parse 可能失败。但是，如果 prompt 也有可能失败呢？比如说，用户撤销了生日输入提示。这也是错误，不能放之不理。此时，仍然可以使用 Option。
+
+```ts
+function ask() {
+  let result = prompt('When is your birthday?');
+  if (result === null) {
+    return [];
+  }
+  return [result];
+}
+
+// 把数组构成的数组整平为常规数组
+function flatten<T>(array: T[][]): T[] {
+  return Array.prototype.concat.apply([], array);
+}
+
+flatten(ask())
+  .map(parse)
+  .map(date => date.toISOString()); // Error
+```
+
+这样有点不便。Option 类型没有告诉什么信息（一切都是常规的数组），很难一眼看出这段代码在做什么。为了改变这种局面，可以把整个过程（把一个值放入容器，提供操作那个值的方式，提供从容器中取回结果的方式）包装成一个特殊的数据结构，让一切一目了然。实现好以后，可以像下面这样使用该数据类型：
+
+```ts
+ask().flatMap(parse);
+flatMap(date => new Some(date.toISOString()));
+flatMap(date => new Some('Date is' + date)).getOrElse('Error parsing date for some reason');
+```
+
+将采用下述方式定义 Option 类型：
+
+- Option 是一个接口，实现两个类：`Some<T>` 和 None。这是两种 Option。`Some<T>` 是包含一个 T 类型值的 Option，None 是没有值的 Option，表示失败。
+
+- Option 既是类型也是函数。作为类型，它是一个接口，表示 Some 和 None 的超类型。作为函数，它是创建 Option 类型值的方式。
+
+1. 先拟出类型：
+
+```ts
+// Option<T> 是一个接口，Some<T> 和 None 都可以实现该接口。
+interface Option<T> {}
+// Some<T>表示操作成功，得到一个值。与前面使用的数组一样，Some<T> 是该值的容器。
+class Some<T> implements Optic<T> {
+  constructor(private value: T) {}
+}
+// None表示操作失败，不包含值。
+class None implements Option<never> {}
+```
+
+这几个类型等效于下述通过数组实现的 Option：
+
+- `Option<T>` 是 [T] | []
+- `Some<T>` 是 [T]
+- None 是 []
+
+就目前的实现，只定义两个操作：
+
+flatMap
+: 串联操作可能为空的 Option。
+
+getOrElse
+: 从 Option 中取回值。
+
+首先在 Option 接口中定义这两个操作，然后在 `Some<T>` 和 None 中具体实现：
+
+```ts
+interface Option<T> {
+  flatMap(f: (value: T) => None): None;
+  // flatMap 接受一个函数 f，该函数接受一个类型的值（option 内的值的类型），返回一个内含 U 类型值的 Option。
+  flatMap<U>(f: (value: T) => Option<U>): Option<U>;
+  // getOrElse 接受一个默认值，其类型与 Option 中值的类型相同，也是 T，返回的值为默认值（Option 为不含值的 None）或 Option 中的值（Option为 Some<T>）。
+  getOrElse(value: T): T;
+}
+
+class Some<T> implements Option<T> {
+  private value;
+  constructor(value: T) {
+    this.value = value;
+  }
+  flatMap(f: (value: T) => None): None;
+  flatMap<U>(f: (value: T) => Some<U>): Some<U>;
+  // 在 Some<T> 类型的值上调用 flatMap 时，传入函数 f，使用 Some<T> 中的值产出一个新类型的 Option。
+  flatMap<U>(f: (value: T) => Option<U>): Option<U> {
+    return f(this.value);
+  }
+  // 在 Some<T> 类型的值上调用 getOrElse，返回 Some<T> 中的值。
+  getOrElse(): T {
+    return this.value;
+  }
+}
+
+class None implements Option<never> {
+  // 由于 None 表示操作失败，因此在 None 上调用 flatMap 始终返回一个 None 值，毕竟操作失败后无法再恢复（至少对现在实现的 Option 来说是这样）。
+  flatMap(): None {
+    return this;
+  }
+  // 在 None 类型的值上调用 getOrElse 始终返回传给 getOrElse 的值。
+  getOrElse<U>(value: U): U {
+    return value;
+  }
+}
+
+// 调用 Option 时，如果传入的是 null 或 undefined，返回一个 None 值。
+function Option(value: null | undefined): None;
+// 否则，返回一个 Some<T> 值
+function Option<T>(value: T): Some<T>;
+function Option<T>(value: T): Option<T> {
+  if (value === null) {
+    return new None();
+  }
+  return new Some(value);
+}
+```
+
+现在得到了一个精简版的 Option 类型，可以安全地操作可能为 null 的值了。用法如下：
+
+```ts
+let result = Option(6); // Some<number>
+.flatMap(n => Option(n*3)) // Some<number>
+.flatMap(n => new None()) // None
+.getOrElse(7) // 7
+```
+
+对一系列可能成功也可能失败的操作，Option 是一种强有力的执行方式，不仅保证了类型安全性，还通过类型系统向使用方指出了某个操作可能失败。
+
+然而，Option 也不是没有缺点。Option 通过一个 None 值表示失败，没有关于失败的详细信息，也不知道失败的原因。另外，与不使用 Option 的代码无法互操作（要自己动手包装这些 API，让它们返回 Option）。
+
+## 八. 异步编程、并发和并行
+
+网络请求、数据库和文件系统交互、用户操作的响应，以及在单独的线程中执行 CPU 密集型运算，都要用到异步 API，比如说回调、promise 和流。这些异步任务才能真正突显 JS 的优势，才是与其他主流多线程语言（如 Java 和 C++）与众不同的特色。V8 和 SpiderMonkey 等流行的 JS 引擎使用一个线程完成传统上需要多个线程执行的任务，这些引擎十分聪明，在一个线程中多路复用任务，而其他任务则处于空闲状态。这种事件循环（event loop）是 JS 引擎的标准线程模型。
+
+JS 采用事件循环式并发模型，规避了多线程编程令人深恶痛绝的顽疾，也不用再去辨别同步式数据类型、互斥对象、计数信号量等多线程术语了。即便使用多线程运行 JS，也很少使用共享内存，常见的做法是通过消息在线程之间传递和序列化数据。这种设计很像 Erlang、actor 系统，以及其他纯函数式并发模型，也正是因为这样的设计，JS 的多线程编程才十分简单易用。
+
+尽管如此，异步编程还是会让程序难以理解。不能一行行分析程序，而要知道代码在何处暂停，移到其他地方执行，又在何时返回原处。
+
+TypeScript 为理解异步程序提供了便利的工具，通过类型可以追踪异步操作，借助内置的 async/await 可以把熟悉的同步思想应用到异步程序上。使用 TypeScript 还可以为多线程程序指定严格的消息传递协议（听着复杂，其实很简单）。
+
+### 8.1 处理回调
+
+JS 异步程序的核心基础是回调。回调其实就是常规的函数，只是作为参数传给另一个函数。就像在同步程序中一样，另一个函数在做完操作（处理网络请求等）之后调用回调函数。异步代码调用的回调也是函数，而且类型签名中没有标明函数是异步调用的。
+
+NodeJS 的原生 API，例如 fs.readFile（采用异步方式从磁盘中读取文件的内容）和 dns.resolveCname（采用异步方式解析 CNAME 记录），按照约定，回调的第一个参数是错误或 null，第二个参数是结果或 null。
+
+readFile 的类型签名如下所示：
+
+```ts
+function readFile(
+  path: string,
+  options: { encoding: string; flag?: string },
+  callback: (err: Error | null, data: string | null) => void
+): void;
+```
+
+> **注意**：readFile 和 callback 的类型没有什么特别之处，都是常规的 JS 函数。签名中没有特别标明 readFile 是异步的，也没有指出在调用 readFile 之后控制权会立即传给下一行代码（不等待调用 readFile 的结果）。
+
+这种传统回调可执行简单的异步任务，但如果不对异步任务的执行做更复杂的抽象，使用相互之间有依赖关系的多个回调很容易深陷 “回调金字塔”。
+
+### 8.2 promise
+
+在 ES5 之后，JS 引入了 Promise，它是 JS 语言提供的一种标准化的异步管理方式，它的总体思想是，需要进行 io、等待或者其他异步操作的函数，不返回真实结果，而是返回一个 "承诺"，函数的调用方可以选择在合适的时机，选择等待这个承诺实现（通过 Promise 的 then 方法的回调）。
