@@ -6508,7 +6508,11 @@ getElementById(elementId: string): HTMLElement | null;
 假设有如下的 HTML 代码：
 
 ```html
-<input type="text" id="username" name="username" />
+<input
+  type="text"
+  id="username"
+  name="username"
+/>
 ```
 
 当使用 getElementById 方法去查询并使用该 input 元素时可能会遇到一些麻烦。示例如下：
@@ -9621,7 +9625,7 @@ const button = document getElementById('btn');
 在尝试安装某个第三方代码库的声明文件时，可能会遇到以下三种情况，下面以 jQuery 为例：
 
 - 在安装 jQuery 时，jQuery 的代码包中已经内置了它的声明文件。
-- 在安装 jQuery 时，jQuery 的代码包中没有内置的声明文件，但是在 DefinitelyTyped 网站上能够找到 jQuery 的声明文件。
+- 在安装 jQuery 时，jQuery 的代码包中没有内置的声明文件，但是在 [DefinitelyTyped](https://definitelytyped.org/) 网站上能够找到 jQuery 的声明文件。
 - 通过以上方式均找不到 jQuery 的声明文件，需要自定义 jQuery 的声明文件。
 
 ##### 4.8.2.1 含有内置声明文件
@@ -12693,7 +12697,7 @@ flatMap(date => new Some('Date is' + date)).getOrElse('Error parsing date for so
 
 - Option 既是类型也是函数。作为类型，它是一个接口，表示 Some 和 None 的超类型。作为函数，它是创建 Option 类型值的方式。
 
-1. 先拟出类型：
+先拟出类型：
 
 ```ts
 // Option<T> 是一个接口，Some<T> 和 None 都可以实现该接口。
@@ -12814,6 +12818,372 @@ function readFile(
 
 这种传统回调可执行简单的异步任务，但如果不对异步任务的执行做更复杂的抽象，使用相互之间有依赖关系的多个回调很容易深陷 “回调金字塔”。
 
-### 8.2 promise
+### 8.2 异步流
 
-在 ES5 之后，JS 引入了 Promise，它是 JS 语言提供的一种标准化的异步管理方式，它的总体思想是，需要进行 io、等待或者其他异步操作的函数，不返回真实结果，而是返回一个 "承诺"，函数的调用方可以选择在合适的时机，选择等待这个承诺实现（通过 Promise 的 then 方法的回调）。
+promise 对象是便于建模、排列和编排未来的值，但是如果有多个值在未来的不同时刻产出呢？这种情况并不少见，比如从文件系统中读取文件、填写表单时敲击的键盘。表面上看，这些事情没什么共同点，不过却都可以视作异步流，都
+是在未来某个时刻发生的一系列事件。
+
+这样的操作有多种不同的建模方式，最为常见的是事件发射器（例如 NodeJS 的 EventEmitter）或响应式编程库（例如 [RxJS](https://www.npmjs.com/package/rxjs)）。
+
+**事件发射器**
+概括来说，事件发射器提供的 API 用于在通道中发射事件，并监听该通道中的事件：
+
+```ts
+interface Emitter {
+  // 发送事件
+  emit(channel: string, value: unknown): void;
+  // 发送事件后做些事情
+  on(channel: string, f: (value: unknown) => void): void;
+}
+```
+
+事件发射器是 JS 中一种常见的设计模式。在使用 DOM 事件、jQuery 事件或 NodeJS EventEmitter 模块的过程中，可能遇到过。
+
+在多数语言中，像这样的事件发射器是不安全的。原因在于，value 的类型由具体的 channel 而定，而在多数语言中，无法使用类型表示二者之间的关系。如果使用的语言不同时支持重载函数签名和字面量类型，那就没法表达 “这
+是在该通道中发射的某类型”。为了解决这个问题，经常采用宏，让宏生成发射事件的方法和监听各个通道的方法。然而，在 TypeScript 中，可以使用类型系统直接表述 value 的类型与 channel 之间的关系。
+
+假设在使用 [NodeRedis 客户端](https://github.com/NodeRedis/node_redis)，这是内存数据存储器 Redis 的 NodeAPI。具体方法如下：
+
+```ts
+import Redis from 'redis';
+// 创建一个 Redis 客户端实例
+let client = redis.createClient();
+// 监听该客户端发射的几个事件
+client.on('ready', () => console.info('Client is ready'));
+client.on('error', e => console.error('An error occurred!', e));
+client.on('reconnecting', params => console.info('Reconnecting...', params));
+```
+
+作为使用这个 Redis 库的程序员，希望知道 on API 传给回调的参数是什么类型。可是，各参数的类型取决于 Redis 在哪个通道中发射事件，而不是具体某一个类型。为保安全，最简单的方式是使用重载类型：
+
+```ts
+type RedisClient = {
+  on(event: 'ready', f: () => void): void;
+  on(event: 'error', f: (e: Error) => void): void;
+  on(event: 'reconnecting', f: (params: { attempt: number; delay: number }) => void): void;
+};
+```
+
+这样做没问题，但是有点啰嗦。下面使用[映射类型](#36-映射对象类型)改写，把事件定义提出来，单声明一个类型 Events：
+
+```ts
+// 首先定义一个单独的对象类型，列举 Redis 客户端可能发射的每个事件，以及各事件的参数。
+type Events = {
+  ready: void;
+  error: Error;
+  reconnecting: { fattempt: number; delay: number };
+};
+
+// 映射 Events 类型，告诉 TypeScript，调用 on 时可以传入前面定义的任何事件。
+type RedisClient = {
+  on<E extends keyof Events>(event: E, f: (arg: Events[E]) => void): void;
+};
+```
+
+现在，可以使用这个类型提升 Node-Redis 库的安全性，尽量增加 emit 和 on 两个方法的安全：
+
+```ts
+// ...
+type RedisClient = {
+  on<E extends keyof Events>(event: E, f: (arg: Events[E]) => void): void;
+  emit<E extends keyof Events>(event: E, arg: Events[E]): void;
+};
+```
+
+把事件名称和参数提取到结构中，然后映射该结构，生成监听器和发射器，这是 TypeScript 代码常见的模式。这样写出的代码简洁，而且非常安全。像这样指定发射器的类型，肯定不会拼错一个键、错误使用一个参数的类型，或者忘记传入参数。此外，使用代码的其他工程师还可以把这种方式当做文档，代码编辑器会给出建议的事件以及传入事件回调的参言数类型。
+
+**TypeScript 实际发射器**
+使用映射类型构建对类型安全的事件发射器是很常见的做法。例如，在 TypeScript 标准库中，DOM 事件的类型就是这样声明的。WindowEventMap 是事件名称到事件类型的映射，.addEventListener 和 .removeEventListener API 都通过映射生成更为具体的事件类型，而不是默认的 Event 类型：
+
+```ts
+// lib.dom.ts
+interface WindowEventMap extends GlobalEventHandlersEventMap {
+  // ...
+  contextmenu: PointerEvent;
+  dblclick: MouseEvent;
+  devicelight: DeviceLightEvent;
+  devicemotion: DeviceMotionEvent;
+  deviceorientation: DeviceOrientationEvent;
+  drag: DragEvent;
+  // ...
+}
+
+interface Window
+  extends EventTarget,
+    WindowTimers,
+    WindowSessionStorage,
+    WindowLocalStorage,
+    WindowConsole,
+    GlobalEventHandlers,
+    IDBEnvironment,
+    WindowBase64,
+    GlobalFetch {
+  addEventListener<K extends keyof WindowEventMap>(
+    type: K,
+    listener: (this: Window, ev: WindowEventMap[K]) => any,
+    options?: boolean | AddEventListenerOptions
+  ): void;
+  removeEventListener<K extends keyof WindowEventMap>(
+    type: K,
+    listener: (this: Window, ev: WindowEventMap[k]) => any,
+    options?: boolean | EventListenerOptions
+  ): void;
+}
+```
+
+### 8.3 多线程类型安全
+
+一些 CPU 密集型任务可能需要并行，把一项任务分到多个线程中。这么做可能是为了提升速度，也可能是想让主线程空闲出来，继续响应后续操作。
+
+#### 8.3.1 在浏览器中：使用工作线程
+
+浏览器大都支持使用工作线程（worker）处理多线程。为免某些操作（例如 CPU 密集型任务）阻塞主线程，导致 UI 无响应，可以在 JS 主线程中创建一些工作线程（严格受限的后台线程），把相关操作交给它们。工作线程真正在浏览器中采用并行方式运行代码，而 Promise 和 setTimeout 等异步 API 只是并发运行代码。工作线程在另一个 CPU 线程中并行运行代码。
+
+工作线程可以处理网络请求、文件系统写入等操作，不过有一些小限制。工作线程是浏览器提供的 API，设计人员对安全性提出了更高的要求。这里的 “安全性” 并不是类型安全，而是内存安全。如果多个线程读写同一块内存，很容易遇到各种并发问题，例如不确定性、死锁等。
+
+在浏览器中，代码必须安全，而且要降低崩溃的风险，以免导致糟糕的用户体验。鉴于此，主线程和工作线程之间，以及两个工作线程之间的主要通信手段是消息传递。消息传递 API 是这样使用的：
+
+```ts
+// MainThread.ts
+// 首先，在主线程中派生一个工作线程：
+let worker = new Worker('WorkerScript.ts');
+// 然后，把消息传给该工作线程：
+worker.postMessage('some data');
+```
+
+主线程在把数据交给工作线程之前会克隆数据。在工作线程这一端，使用全局可用的 onmessage API 监听入站事件：
+
+```ts
+// WorkerScript.ts
+onmessage = e => {
+  console.log(e.data); // 输出 'some data'
+};
+```
+
+如果想反过来通讯，由工作线程发消息给主线程，使用全局可用的 postMessage 把消息发给主线程，在主线程中使用 .onmessage 方法监听入站消息。两个方向的通信综合如下：
+
+```ts
+// MainThread.ts
+let worker = new Worker('WorkerScript.ts');
+worker.onmessage = e => {
+  console.log(e.data); // 输出 'Ack:"some data"'
+};
+worker.postMessage('some data');
+
+// WorkerScript.ts
+onmessage = e => {
+  console.log(e.data); //输出 'some data'
+  postMessage(`Ack:"${e.data}"`);
+};
+```
+
+其实，这个 API 就是事件发射器，因此可以采用前面的方式加入类型。举个例子，下面为一个聊天客户端构建一个简单的消息层，运行在工作线程中。
+
+这个消息层把更新推送给主线程，暂且不管错误处理、权限等。首先，定义一些入站和出站消息类型（主线程把 Commands 发给工作线程，工作线程把 Events 发给主线程）：
+
+```ts
+// MainThread.ts
+type Message = string;
+type ThreadID = number;
+type UserID = number;
+type Participants = UserID[];
+
+type Commands = {
+  sendMessageToThread: [ThreadID, Message];
+  createThread: [Participants];
+  addUserToThread: [ThreadID, UserID];
+  removeUserFromThread: [ThreadID, UserID];
+};
+
+type Events = {
+  receivedMessage: [ThreadID, UserID, Message];
+  createdThread: [ThreadID, Participants];
+  addedUserToThread: [ThreadID, UserID];
+  removedUserFromThread: [ThreadID, UserID];
+};
+```
+
+那么如何把这些类型应用到 Web 工作线程的消息 API 中呢？最简单的方法之一是定义一个并集类型，囊括所有消息类型，然后分别处理不同的消息类型。不过这样做十分麻烦。以 Command 类型为例，写出的代码如下所示：
+
+```ts
+// WorkerScript.ts
+// 为主线程可能发给工作线程的所有命令定义一个并集类型，并且指定各命令的参数。
+// 这就是一个常规的并集类型。在定义较长的并集类型时，以管道符号（|）开头利于理解。
+type Command =
+  | { type: 'sendMessageToThread'; data: [ThreadID, Message] }
+  | { type: 'createThread'; data: [Participants] }
+  | { type: 'addUserToThread'; data: [ThreadID, serID] }
+  | { type: 'removeUserFromThread'; data: [ThreadID, UserID] };
+
+// onmessage API 没有类型信息，那就把消息委托给有类型信息的 processCommandFromMainThread API 处理。
+onmessage = e => processCommandFromMainThread(e.data);
+
+// processCommandFromMainThread 对无类型信息的 onmessage API 进行包装，负责处理从主线程接收到的所有消息。
+function processCommandFromMainThread(command: Command) {
+  // Command 是可辨别的并集类型，可以使用 switch 穷尽主线程发来的每一种消息。
+  switch (command.type) {
+    case 'sendMessageToThread':
+      const [threadID, message] = command.data;
+      console.log(message);
+    // ...
+  }
+}
+```
+
+下面，要对工作线程不那么直白的 API 进行抽象，使用 EventEmitter API 包装，简化入站消息和出站消息类型。
+
+首先，对 NodeJS 的 EventEmitter API（在浏览器中可通过 NPM 中的 [events 包](https://www.npmjs.com/package/events)使用）做一层类型安全包装：
+
+```ts
+import EventEmitter from 'events';
+
+// SafeEmitter 声明一个泛型 Events，以及一个从 PropertyKey（TypeScript 内置的类型，表示对象的有效键：string、number 或 Symbol）到参数列表的 Record 映射。
+class SafeEmitter<Events extends Record<PropertyKey, unknown[]>> {
+  // 把 emitter 声明为 SafeEmitter 的私有成员。没有扩展 SafeEmitter，因为 emit 和 on 的签名比在 EventEmitter 中更严格，而且作为参数的函数会逆变，TypeScript 不允许重载。
+  private emitter = new EventEmitter();
+
+  // emit 接受一个 channel，以及为 Events 类型定义的一组参数。
+  emit<K extends keyof Events>(channel: K, ...data: Events[K]) {
+    return this.emitter.emit(channel, ...data);
+  }
+  // 类似地，on 接受一个 channel 和一个 listener。listener 接受为 Events 类型定义的一组参数。
+  on<K extends keyof Events>(channel: K, listener: (...data: Events[K]) => void) {
+    return this.emitter.on(channel, listener);
+  }
+}
+```
+
+使用 SafeEmitter 可以极大地减少安全实现监听层所需的样板代码量。在工作线程端，把所有 onmessage 调用委托给发射器，向外开放一个便利且安全的监听器 API：
+
+```ts
+// WorkerScript.ts
+type Commands = {
+  sendMessageToThread: [ThreadID, Message];
+  createThread: [Participants];
+  addUserToThread: [ThreadID, UserID];
+  removeUserFromThread: [ThreadID, UserID];
+};
+type Events = {
+  receivedMessage: [ThreadID, UserID, Message];
+  createdThread: [ThreadID, Participants];
+  addedUserToThread: [ThreadID, UserID];
+  removedUserFromThread: [ThreadID, UserID];
+};
+
+// 监听主线程发来的事件
+const commandEmitter = new SafeEmitter<Commands>();
+// 把事件发射回主线程
+const eventEmitter = new SafeEmitter<Events>();
+// 使用类型安全的事件发射器包装主线程发来的命令
+onmessage = command => commandEmitter.emit(command.data.type, ...command.data.data);
+// 监听工作线程触发的事件，发给主线程
+eventEmitter.on('receivedMessage', data => postMessage({ type: 'receivedMessage', data }));
+eventEmitter.on('createdThread', data => postMessage({ type: 'createdThread', data }));
+// ...
+
+// 回应主线程发来的 sendMessageToThread 命令
+commandEmitter.on('sendMessageToThread', (threadID, message) =>
+  console.log(`OK,I will send a message to threadID ${threadID}`)
+);
+
+// 把事件发回主线程
+eventEmitter.emit('createdThread', 123, [456, 789]);
+```
+
+反过来，在主线程中也可以使用基于 EventEmitter 的 API 把命令发给工作线程。
+
+> **注意**：如果想在自己的代码中采用这种模式，应该使用功能更完善的发射器（例如 [EventEmitter2](https://www.npmjs.com/package/eventemitter2)），最好支持通配监听器，这样就无需动手为每种事件添加监听器了。
+
+**类型安全的协议**
+现在，知道如何在两个线程之间传递消息了。那么，若想指明一个命令始终收到特定事件的响应该怎么做呢？
+
+下面构建一个简单的调用-响应协议，在线程之间传递函数的求值结果。在线程之间传递函数不太容易，不过可以选择在工作线程中定义函数，把参数发给该函数，再把结果发送回来。假如想构建一个矩阵计算引擎，让它支持三种运算：求矩阵的行列式、计算两个矩阵的点积和求逆矩阵。下面先为这三种运算声明类型：
+
+```ts
+type Matrix = number[][];
+type MatrixProtocol = {
+  determinant: {
+    in: [Matrix];
+    out: number;
+  };
+  'dot-product': {
+    in: [Matrix, Matrix];
+    out: Matrix;
+  };
+  invert: {
+    in: [Matrix];
+    ut: Matrix;
+  };
+};
+```
+
+将在主线程中定义矩阵，运算则交给工作线程。总体思路与之前一样，对不安全的操作（工作线程发送和接收不带类型的消息）进行包装，把带类型的 API 开放给使用方。理想情况下，首先定义一个简单的请求响应协议 Protocol，列出工作线程可执行的操作，并为预期的输入和输出声明类型。然后，定义一个泛型函数 createProtocol，其参数为一个 Protocol 和一个工作线程文件的路径；返回结果为一个函数，其参数为传入的协议中的 command；该函数最终也返回一个函数，调用这个函数求值 command 处理参数的结果。代码如下：
+
+> **注意**：这样实现针对的是理想情况，每执行一个命令都派生一个工作线程。实际使用中，或许会考虑维护一个工作线程池，让一些工作线程保持活跃，并回收空闲的工作线程。
+
+```ts
+// 首先定义一个多用途的 Protocol 类型，而不限于只能处理 MatrixProtocol。
+type Protocol = {
+  [command: string]: {
+    in: unknown[];
+    out: unknown;
+  };
+};
+
+// 调用 createProtocol 时，传入工作线程文件的路径 script，以及特定的 Protocol。
+function createProtocol<P extends Protocol>(script: string) {
+  // createProtocol 返回一个匿名函数，其参数为一个 command，值为上面绑定的 Protocol 的键。
+  return <K extends keyof P>(command: K) =>
+    // 然后，使用 command 中通过 in 传入的命令类型调用该函数。
+    (...args: P[K]['in']) =>
+      // 得到的结果是一个 Promise，其类型为具体的协议定义的 out 类型。注意，要显式为 Promise 绑定一个类型参数，否则默认为 {}。
+      new Promise<P[K]['out']>((resolve, reject) => {
+        let worker = new Worker(script);
+        worker.onerror = reject;
+        worker.onmessage = event => resolve(event.data.data);
+        worker.postMessage({ command, args });
+      });
+}
+```
+
+下面把 MatrixProtocol 类型和 Web 工作线程脚本的路径传给 createProtocol 得到一个函数，可在该协议中运行特定的命令：
+
+```ts
+let runWithMatrixProtocol = createProtocol<MatrixProtocol>('MatrixWorkerScript.js');
+let parallelDeterminant = runWithMatrixProtocol('determinant');
+parallelDeterminant([
+  [1, 2],
+  [3, 4]
+]).then(
+  determinant => console.log(determinant) // -2
+);
+```
+
+把完全不安全的操作（在线程之间传递无类型的消息）抽象成了对类型绝对安全的请求-响应协议。协议支持的所有命令集中在一个地方（MatrixProtocol），而且核心逻辑（createProtocol）与协议的具体实现（runWithMatrixProtocol）是区分开的。
+
+#### 8.3.2 在 NodeJS 中：使用子进程
+
+在 NodeJS 中并行执行类型安全的操作，方式与在浏览器中使用工作线程一样。虽然消息传递层不安全，但是可以在此基础上自己动手构建类型安全的 API。NodeJS 的子进程 API 使用方法如下：
+
+```ts
+// MainThread.ts
+import { fork } from 'child_process';
+// 使用 NodeJS 的 forkAPI 派生子进程。
+let child = fork('./ChildThread.ts');
+// 使用 onAPI 监听子进程发来的消息。NodeJS 的子进程发给父进程的消息有好几种，这里只监听 'message' 消息。
+child.on('message', data => console.info('Child process sent a message', data));
+// 使用 send API 把消息发给子进程。
+child.send({ type: 'syn', data: [3] });
+```
+
+在子线程中，使用 process.on API 监听主线程发来的消息，使用 process.send 把消息发给主线程：
+
+```ts
+// ChildThread.ts
+// 在全局定义的 process 上调用 on API 监听父线程发来的消息。
+process.on('message', data => console.info('Parent process sent a message', data));
+// 在 process 上调用 send API 把消息发给父进程。
+process.send({ type: 'ack', data: [3] });
+```
+
+可以看出，消息传递机制与 Web 中工作线程差不多。
