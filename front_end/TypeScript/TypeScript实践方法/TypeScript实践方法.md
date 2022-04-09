@@ -413,3 +413,6 @@ let age: number;
 age = '12'; // 不能将类型 “12” 分配给类型 “number”
 age = '12' as any; // OK
 ```
+
+**any 类型没有类型安全**
+在前面的例子中，类型说明中说 age 是一个 number，但 any 可以让它分配给一个 string，而类型检查器相信它是一个 number，于是就乱套了。
