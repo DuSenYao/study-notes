@@ -430,9 +430,9 @@ const fs = require('fs'); // 需要文件系统模块
 function readConfigFile(path, callback) {
   fs.readFile(path, 'utf8', (err, text) => {
     // 读取文件时出错了
-    if (rer) {
+    if (err) {
       console.error(err);
-      calLback(null);
+      callback(null);
       return;
     }
     let data = null;
