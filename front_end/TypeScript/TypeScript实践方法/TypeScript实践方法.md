@@ -416,3 +416,286 @@ age = '12' as any; // OK
 
 **any 类型没有类型安全**
 在前面的例子中，类型说明中说 age 是一个 number，但 any 可以让它分配给一个 string，而类型检查器相信它是一个 number，于是就乱套了。
+
+**any 类型会打破契约**
+当编写一个函数时，是在指定一个契约：如果调用者给一个特定类型的输入，将产生一个特定类型的输出。但有了 any 类型，就可以打破这些契约。
+
+```ts
+function calculateAge(birthDate: Date): number {
+  // ...
+}
+let birthDate: any = '1990-01-19';
+calculateAge(birthDate); // OK
+```
+
+出生日期参数应该是一个 Date，而不是一个 string。而 any 类型已经打破了 calculateAge 的契约。这会特别麻烦，因为 JS 经常在类型之间进行隐式转换。有时一个 string 也会在该是 number 的地方正常运行，但只有在其他（一些很严格的）情况下才会出问题。
+
+**any 类型没有语言服务**
+当一个符号有一个类型时，TypeScript 的语言服务（Language Service）能够提供自动补全和上下文文档。但对于带有 any 类型的符号，只能靠自己了。
+
+重命名是另一个这样的服务。如果有一个人（Person）的类型，并有函数来格式化一个人的名字：
+
+```ts
+interface Person {
+  first: string;
+  last: string;
+}
+const formatName = (p: Person) => `${p.first} ${p.last}`;
+const formatNameAny = (p: any) => `${p.first} ${p.last}`;
+```
+
+然后可以在 vscode 中选择 first，选择 “重命名符号”，并将其改为 firstName。TypeScript 语言服务确保工程中所有使用该符号的地方也被重命名。改变了 formatName 函数，但不会改变使用了 any 的函数（即 formatNameAny）。
+
+TypeScript 的座右铭是 “规模化的 JS”。“规模化” 的一个关键部分是语言服务，它是 TypeScript 体验的核心部分（参见条款 6）<!--TODO-->。丧失它意味着生产力的损失。
+
+**any 类型会掩盖重构代码时的错误**
+假设正在构建一个 Web 应用程序，其中用户可以选择某些选项（Item）。一个组件可能有一个 onSelectItem 回调函数。为一个选项（Item）写一个类型似乎很麻烦，所以只用 any 作为一个代替：
+
+```ts
+interface ComponentProps {
+  onSelectItem: (item: any) => void;
+}
+```
+
+下面是管理该组件的代码：
+
+```ts
+function renderselector(props: ComponentProps) {
+  /* ... */
+}
+let selectedId: number = 0;
+function handleSelectItem(item: any) {
+  selectedId = item.id;
+}
+renderselector({ onSelectItem: handleselectItem });
+```
+
+后来重新设计了选择器，使它很难将整个 item 对象传递给 onSelectItem。这没什么大不了的，因为只需要 ID。只是改变了 ComponentProps 的函数签名。
+
+```ts
+interface ComponentProps {
+  onSelectItem: (id: number) => void;
+}
+```
+
+更新了组件，一切都通过了类型检查器的检查。成功！但果真如此吗？handleSelectItem 接受了一个 any 参数，所以它对一个选项（Item）和一个 ID 一样都没问题。尽管通过了类型检查器，它还是会产生一个运行时异常。但假如使用的是一个更具体的类型，它将被类型检查器捕获。
+
+**any 类型遮蔽了你的类型设计**
+像应用程序状态这样的复杂对象的类型定义可能会变得很长。与其为页面状态的几十个属性写出类型，可能会想只使用一个 any 类型就可以了。
+
+正如本条款中列出的所有原因那样，这样做有很多问题。但还有问题是因为它隐藏了状态设计。正如第 4 章 <!--TODO--> 中解释的那样，好的类型设计对于写出干净、正确和可理解的代码是必不可少的。对于一个 any 类型，类型设计是隐性的。这使得很难知道这个设计是否为一个好的设计，甚至根本不知道这个设计是什么。如果要求同事审查一个代码变更，他们就得重新构建看是否和如何改变了应用状态。因此最好把它写出来给大家看。
+
+**any 类型破坏了对类型系统的信心**
+每当犯了一个错误，而类型检查器又抓住了它，这就增强了对类型系统的信心。但是当在运行时看到一个类型错误时，这种信心就会受到打击。如果在一个较大的团队中引入 TypeScript，这可能会让同事怀疑是否值得为 TypeScript 付出努力。any 类型通常是这些未捕获的错误的来源。
+
+TypeScript 的目的是让工作变得更简单，但是有很多 any 类型的 TypeScript 可能比无类型的 JS 更难处理，因为必须修复各种类型错误，同时还得在脑海中记住真正的类型。如果代码中的类型与事实相符，就可以摆脱在脑海中保存类型信息的负担。TypeScript 将为你记录它。
+
+对于必须使用 any 的情况，分别有更好的和更坏的方法来做到这一点。更多关于如何限制类型检查器的 any 害处，请参看第 5 章。<!--TODO-->
+
+## 二. TypeScript 的类型系统
+
+### 2.1 使用编辑器来询问和探索类型系统
+
+当安装 TypeScript 时，会得到两个可执行文件：
+
+- tsc，TypeScript 编译器
+- tsserver，TypeScript 独立服务器
+
+更有可能直接运行 TypeScript 编译器，但 tsserver 同样重要，因为它提供语言服务。这些服务包括自动补全、检查、导航和重构。通常通过编辑器使用这些服务。如果系统没有被配置以提供这些服务，那么就失去了使用它们的机会。像自动补全这样的服务是让 TypeScript 使用起来如此快乐的原因之一。但是除了方便之外，编辑器是建立和测试类型系统知识最好的地方。这将帮助建立一个直觉，即当 TypeScript 能够推断类型时，这也是编写紧凑的、习惯性的代码的关键（参见条款 19）。<!--TODO-->
+
+这些细节会因编辑器的不同而不同，但一般可以将鼠标放在某一个符号上，看看 TypeScript 认为它的类型是什么。也可以检查函数的类型。
+
+> **注意**：如果函数返回类型的推断值与期望值不一致，应该添加一个类型声明，并追踪差异（参见条款 9）。<!--TODO-->
+
+建立 TypeScript 在任何情况下对变量类型的理解，对于构建围绕扩展（参见条款 21 ）<!--TODO--> 和收缩（参见条款 22）的直觉至关重要。理解一个变量的类型在条件分支中的变化是建立对类型系统信心的有效方法。
+
+```ts
+function logMessage(message: string | null) {
+  if (message) {
+    message; // (parameter) message: string
+  }
+}
+```
+
+还可以在一个更大的对象中检查其中的单个属性，以查看 TypeScript 对它们的推断：
+
+```ts
+const foo = {
+  x: [1, 2, 3], // (property) x: number[]
+  bar: {
+    name: 'Fred'
+  }
+};
+```
+
+要查看操作链中间的推断通用类型，可以检查方法名称。
+
+在编辑器中看到类型错误也是学习类型系统细微差别的好方法。例如，这个函数试图通过 HTMLElement 的 ID 获取该元素，或者返回一个默认的值。TypeScript 标记了两个错误：
+
+```ts
+function getElement(elOrId: string | HTMLElement | null): HTMLElement {
+  if (typeof elOrId === 'object') {
+    return elOrId; // "HTMLElement | null" 不可分配给 "HTMLElement"
+  } else if (elOrId === null) {
+    return document.body;
+  } else {
+    const el = document.getElementById(elOrId);
+    return el; // "HTMLElement | null" 不可分配给 "HTMLElement"
+  }
+}
+```
+
+if 语句第一分支的意图是只过滤对象，即 HTMLElement。但奇怪的是，在 JS 中 typeof null 为 “object”，所以在该分支中 elOrId 仍然可能是 null。可以把 null 检查放在第一位来解决这个问题。第二个错误是因为 document.getElementById 可能返回 null，所以你也需要处理这种情况，比如可以通过抛出异常来解决。
+
+语言服务也可以帮助浏览库和类型声明。假设在代码中看到了对 fetch 函数的调用，并想了解更多关于它的信息，编辑器中应该提供 “Go to Definition” 选项。
+
+选择这个选项将会带你转到 lib.dom.d.ts，其中有 TypeScript 引入的 DOM 的类型声明：
+
+```ts
+declare function fetch(input: RequestInfo, init?: RequestInit): Promise<Response>;
+```
+
+可以看到，fetch 返回一个 Promise，并接受两个参数。点击 RequestInfo，会看到：
+
+```ts
+type RequestInfo = Request | string;
+```
+
+可以从这里进入 Request 的定义：
+
+```ts
+declare var Request: {
+  prototype: Request;
+  new (input: RequestInfo, init?: RequestInit): Request;
+};
+```
+
+在这里，可以看到 Request 的类型和值是被分开建模的（参见条款 8）<!--TODO-->。已经看到了 RequestInfo。点击 RequestInit，可以看到所有可以用来构造 Request 的方法。
+
+```ts
+interface RequestInit {
+  body?: BodyInit | null;
+  cache?: RequestCache;
+  credentials?: RequestCredentials;
+  headers?: HeadersInit;
+  // ...
+}
+```
+
+在理解了这里想要表达的内容后，可以使用上面的方法来应对更多的类型。类型声明一开始读起来可能很有挑战性，但它是一个可以理解 TypeScript 可以做什么、使用的库是如何建模的及如何调试错误的好方法。关于类型声明的更多内容，请参见第 6 章。<!--TODO-->
+
+### 2.2 将类型视为价值的集合
+
+在运行时，每个变量都有唯一的从 JS 的值空间中选择的值。可能的值有很多。但是在代码运行之前，TypeScript 检查错误时，它仅仅有一个类型。最好将其视为一组可能的值的集合。这个集合被称为类型的域。例如，可以把 number 类型视为所有数字值的集合。42 和 -37.25 都在其中，但 'Canada' 不在其中。根据（是否设定了）strictNullChecks，null 和 undefined 可能是该集合的一部分，也可能不是。
+
+最小的集合是空集，它不包含任何值。它对应于 TypeScript 的 never 类型。因为它的域是空的，所以没有值可以赋给一个 never 类型的变量。
+
+```ts
+const x: never = 12; // 不能将类型 “12” 分配给类型 “never”
+```
+
+接下来的最小集合是那些包含单个值的集合。这些对应于 TypeScript 的字面类型，也称单位类型。
+
+```ts
+type A = 'A';
+type B = 'B';
+type Twelve = 12;
+```
+
+为了形成有两个或三个值的类型，可以联合单位类型。
+
+```ts
+type AB ='A' 'B';
+type AB12 = 'A' | 'B' | 12;
+```
+
+以此类推。联合类型对应于值集的并集。
+
+在很多 TypeScript 错误中都会出现 “可赋值（assignable）”这个词。在值集的上下文中，它的意思要么是 “的成员”（对于一个值和一个类型之间的关系），要么是 “的子集”（对于两个类型之间的关系）。
+
+```ts
+const a: AB = 'A'; // OK，值 “A” 是集合 {'A','B'} 的成员
+const c: AB = 'C'; // 不能将类型 "C" 分配给类型 "AB"
+```
+
+类型 “C” 是一个单位类型。它的域由单个值 “C” 组成。这不是 AB 的域的子集（该子集由值 "A" 和 "B" 组成），所以这是一个错误。最终，几乎所有的类型检查器都是在测试一个集合是否为另一个集合的子集。
+
+```ts
+const ab: AB = Math.random() < 0.5 ? 'A' : 'B'; // OK，{"A","B"} 是 {"A","B"} 的子集：
+const ab12: AB12 = ab; // OK，{"A","B"} 是 {"A","B",12} 的子集
+declare let twelve: AB12;
+const back: AB = twelve; // 不能将类型 "AB12" 分配给类型 "AB"
+// 不能将类型 “12” 分配给类型 “AB”
+```
+
+这些类型的集合很容易推断，因为它们是有限的。但在实践中，所使用的大多数类型都有无限域，而对这些类型的推断可能比较困难。可以把它们视为要么是被构造起来的：
+
+```ts
+type Int = 1 | 2 | 3 | 4 | 5; // | ...
+```
+
+要么是通过描述它们的成员构造起来的：
+
+```ts
+interface Identified {
+  id: string;
+}
+```
+
+把这个接口（interface）视为对其类型域中的值的描述。该值是否有一个属性 id，其值可赋给 string（的一个成员）？如果满足条件，那么，它就是一个可识别的。
+
+这就是它的全部内容。正如条款 4 中所解释的，TypeScript 的结构类型规则意味着该值也可以有其他属性，这些属性甚至可以是可调用的！这个事实有时会被多余的属性检查所掩盖（参见条款 11）。<!--TODO-->
+
+将类型视为值的集合，可以帮助推断对它们的操作。例如：
+
+```ts
+interface Person {
+  name: string;
+}
+interface Lifespan {
+  birth: Date;
+  death?: Date;
+}
+type PersonSpan = Person & Lifespan;
+```
+
+`&` 操作符计算的是两个类型的交集。什么样的值属于 PersonSpan 类型？乍看第一眼，Person 和 Lifespan 接口没有共同的属性，所以可能会认为它是空集（即 never 类型）。但是，类型操作适用值的集合（类型的域），而不是接口中的属性。而且要记住，具有附加属性的值仍然属于一个类型。所以，一个同时具有 Person 和 Lifespan 属性的值将属于该交叉类型。
+
+```ts
+const ps: PersonSpan = {
+  name: 'Alan Turing',
+  birth: new Date('1912/06/23'),
+  death: new Date('1954/06/07')
+};
+```
+
+当然，一个值可以有三个以上的属性，并且它仍然属于该类型！一般的规则是，交叉类型中的值包含了它的每一个成分中的属性的并集。
+
+关于相交属性的直觉是正确的，但对于两个接口的联合，就不是它们的交集了。
+
+```ts
+type K = keyof (Person | Lifespan); // 类型是 never
+```
+
+TypeScript 不能保证任何键属于联合类型中的一个值，所以联合类型的 keyof 必须是空集（never）。或者，更形式化地：
+
+```ts
+keyof (A & B) = (keyof A) | (keyof B)
+keyof (A | B) = (keyof A) & (keyof B)
+```
+
+如果能建立一个直觉来解释为什么这些等式成立，那它就会对理解 TypeScript 的类型系统有很大的帮助!
+
+另一种可能更常见的写法是用 extends 来写 PersonSpan 类型：
+
+```ts
+interface Person {
+  name: string;
+}
+interface Personspan extends Person {
+  birth: Date;
+  death?: Date;
+}
+```
+
+将类型视为一组值，那 extends 是什么意思呢？如同 “assignable to（可赋值到）”一样，可以把它理解为 “subset of（的子集）”。PersonSpan 中的每个值都必须有一个 name 属性，它是一个 string，并且每个值也必须有一个 birth 属性，所以它是一个合适的子集。
