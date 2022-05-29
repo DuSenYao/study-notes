@@ -1,13 +1,10 @@
-interface Person {
-  name: string;
+interface State {
+  userId: string;
+  pageTitle: string;
+  recentFiles: string[];
+  pageContents: string;
 }
-interface Lifespan {
-  birth: Date;
-  death?: Date;
-}
-type PersonSpan = Person & Lifespan;
-const ps: PersonSpan = {
-  name: 'Alan Turing',
-  birth: new Date('1912/06/23'),
-  death: new Date('1954/06/07')
+
+type TopNavState = {
+  [k in 'userId' | 'pageTitle' | 'recentFiles']: State[k];
 };

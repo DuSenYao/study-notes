@@ -1,5 +1,4 @@
-const a = {
-  x: 1,
-  y: 2
-};
-// # sourceMappingURL=hello.js.map
+let x = 'hello';
+console.log(x.language = 'English'); // 'English'
+x.language; // undefined
+console.log(x);
