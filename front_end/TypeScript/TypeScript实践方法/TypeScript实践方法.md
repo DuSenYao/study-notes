@@ -33,6 +33,10 @@
     - [3.6 在使用别名时要保持一致](#36-在使用别名时要保持一致)
     - [3.7 使用 async 函数代替异步代码的回调](#37-使用-async-函数代替异步代码的回调)
     - [3.8 了解类型推断中如何使用上下文](#38-了解类型推断中如何使用上下文)
+    - [3.9 使用函数式构造和库来帮助类型流转](#39-使用函数式构造和库来帮助类型流转)
+  - [四. 类型设计](#四-类型设计)
+    - [4.1 倾向选择总是代表有效状态的类型](#41-倾向选择总是代表有效状态的类型)
+    - [4.2 宽进严出](#42-宽进严出)
 
 <!-- /code_chunk_output -->
 
@@ -3949,5 +3953,392 @@ async function changePage(state: State, newPage: string) {
   } catch (e) {
     state.error = '' + e;
   }
+}
+```
+
+这里有很多问题！下面是其中几个问题：
+
+- 在错误的情况下，忘记将 state.isLoading 设置为 false。
+- 没有清除 state.error，所以如果之前的请求失败，那么会一直看到这个错误信息，而不是加载信息。
+- 如果用户在页面加载过程中再次刷新页面，谁也不知道会发生什么。他们可能会看到一个新的页面，然后出现一个错误；或者看到第一个页面，而不是第二个页面，这取决于响应回来的顺序。
+
+问题在于状态包括的信息太少：哪个请求失败了？哪个正在加载？或者包括的信息太多：State 类型允许设置 isLoading 和 error，即使这代表一个无效的状态。这使得 render() 和 changePage() 都无法很好地实现。这里有一种更好的方式来表示应用状态：
+
+```ts
+interface RequestPending {
+  state: 'pending';
+}
+interface RequestError {
+  state: 'error';
+  error: string;
+}
+interface RequestSuccess {
+  state: string;
+  pageText: string;
+}
+type RequestState = RequestPending | RequestError | RequestSuccess;
+interface State {
+  currentPage: string;
+  requests: { [page: string]: RequestState };
+}
+```
+
+这里使用一个标签联合类型来明确地模拟网络请求可能处于的不同状态。尽管这个版本的状态要长三到四倍，但它有一个巨大的优势，就是不接受无效状态。当前页面是基于显式建模的，发出的每个请求的状态也是基于显式建模的。因此，renderpage 和 changepage 函数很容易实现：
+
+```ts
+function render(state: State) {
+  const { currentpoe } = state;
+  const requestState = state.requests[currentPage];
+  switch (requestState.state) {
+    case 'pending':
+      return `Loading ${currentPage}...`;
+    case 'error':
+      return `Error! Unable to load ${currentPage}:${requestState.error}`;
+    case 'ok':
+      return `<h1>${currentPage}</h1>\n${requestState.pageText}`;
+  }
+}
+
+async function changePage(state: State, newpage: string) {
+  state.requests[newPage] = { state: 'pending' };
+  state.currentPage = newPage;
+  try {
+    const response = await fetch(getUrlForPage(newPage));
+    if (!response.ok) throw new Error(`Unable to load ${newPage}: ${response.statusText}`);
+    const pageText = await response.text();
+    state.requests[newPage] = { state: 'ok', pageText };
+  } catch (e) {
+    state.requests[newpage] = { state: 'error', error: '' + e };
+  }
+}
+```
+
+和第一次实现相比，歧义完全消失了。当前页面是什么很清楚，每一个请求正好对应一个状态。如果用户在请求发出后改变了页面，那也没有问题。旧的请求仍然会完成，但不会影响 UI。
+
+### 4.2 宽进严出
+
+这个想法被称为健壮性原则或 Postel 法则，是用在 TCP 协议文本中写下它的 Jon Postel 的名字命名的。
+
+> TCP 的实现应该遵循一个普遍的健壮性原则：自己做的东西要保守，接受别人的东西要自由。
+
+类似的规则也适用于函数契约。自己的函数在接受的输入方面可以宽泛一些，但在产生的输出方面通常应该更具体。
+
+举个例子，一个 3D 贴图 API 可能会提供一种方法来定位摄像机和为一个边界框（bounding box）计算可视范围（viewport）：
+
+```ts
+declare function setCamera(camera: CameraOptions): void;
+declare function viewportForBounds(bounds: LngLatBounds): CameraOptions;
+```
+
+很方便的是，viewportForBounds 可以直接将结果传递给 setCamera 来定位摄像机。来看看这些类型的定义：
+
+```ts
+interface CameraOptions {
+  center?: LngLat;
+  zoom?: number;
+  bearing?: number;
+  pitch?: number;
+}
+type LngLat = { lng: number; lat: number } | { lon: number; lat: number } | [number, number];
+```
+
+CameraOptions 里面的字段都是可选字段，因为可能只想设置 center（中心）或 zoom（缩放），而不改变 bearing（方位）或 pitch（间距）。LngLat 类型也使得 setCamera 在接受的输入方面很自由、宽松：可以传入一个 {lng,lat} 对象、一个 {lon, lat} 对象；或者，如果很确信正确的顺序的话，[lng, lat] 对也可以。这些选择余地使得函数容易被调用。viewportForBounds 函数则采用了另一种 “自由” 类型：
+
+```ts
+type LngLatBounds = { northeast: LngLat; southwest: LngLat } | [LngLat, LngLat] | [number, number, number, number];
+```
+
+可以通过指定具名角、纬度（lat）/长度（lng）对；或者，在确信正确的顺序的情况下，也可以用一个四元组来指定边界。由于 LngLat 已经兼容了三种形式，所以 LngLatBounds 至少有 19 种可能的形式。
+
+现在写一个函数，以调整可视范围来兼容一个 GeoJSON Feature，并将新的可视范围存储在 URL 中（关于 calculateBoundingBox 的定义见条款 31）。<!-- TODO -->
+
+```ts
+function focusOnFeature(f: Feature) {
+  const bounds = calculateBoundingBox(f);
+  const camera = viewportForBounds(bounds);
+  setCamera(camera);
+  const {
+    center: { lat, lng },
+    zoom
+  } = camera;
+  // 类型 “...” 上不存在属性 “lat”
+  // 类型 “...” 上不存在属性 “lng”
+  zoom; // 类型是 number | undefined
+  window.location.search = `?v=@${lat},${lng}z${zoom}`;
+}
+```
+
+这里只有 zoom 属性存在，但它的类型被推断为 number | undefined，这也是个麻烦。问题在于，viewportForBounds 的类型声明表明，它不仅在接受的输入方面是自由的，而且在产生的输出方面也是宽松的。使用 camera 作为结果的唯一的类型安全方法是为联合类型的每个组件[引入一个代码分支](#34-理解类型收缩)。
+
+因为其返回类型中含有很多可选属性和联合类型，使得 viewportForBounds 用起来很困难。它宽泛的参数类型的确很方便，但宽泛返回类型却不亦然。更好用的 API 应该是输出严格的。
+
+为了实现这种方法，一种方式是区分坐标的规范格式。按照 JS [区分 “Array” 和 “Array-like”](#211-优先选择-array-tuple-和-arraylike而不是数字索引签名) 的惯例，可以在 LngLat 和 LngLatLike 之间进行区分；也可以区分完整定义的 Camera 类型和 setCamera 接受的输入的部分类型：
+
+```ts
+interface LngLat {
+  lng: number;
+  lat: number;
+}
+type LngLatLike = LngLat | { lon: number; lat: number } | [number, number];
+interface Camera {
+  center: LngLat;
+  zoom: number;
+  bearing: number;
+  pitch: number;
+}
+interface CameraOptions extends Omit<Partial<Camera>, 'center'> {
+  center?: LngLatLike;
+}
+type LngLatBounds =
+  | { northeast: LngLatLike; southwest: LngLatLike }
+  | [LngLatLike, LngLatLike]
+  | [number, number, number, number];
+
+declare function setCamera(camera: CameraOptions): void;
+declare function viewportForBounds(bounds: LngLatBounds): Camera;
+```
+
+[宽泛的 CameraOptions 类型适配更严格的 Camera 类型](#29-使用类型操作和泛型来避免重复的工作)。
+
+用 `Partial<Camera>` 作为参数类型在 setCamera 这里是行不通的，因为确实要允许 LngLatLike 对象的 center 属性。而且不能写成 `CameraOptions extends Partial<Camera>`，因为 [LngLatLike 是 LngLat 的超集，而非子集](#22-将类型视为价值的集合)。如果这看起来太繁杂，也可以把类型显式地写出来，但代价是有些重复：
+
+```ts
+interface CameraOptions {
+  center?: LngLatLike;
+  zoom?: number;
+  bearing?: number;
+  pitch?: number;
+}
+```
+
+无论哪种情况，有了这些新的类型声明，focusOnFeature 函数就能通过类型检查器：
+
+```ts
+function focusOnFeature(f: Feature) {
+  const bounds = calculateBoundingBox(f);
+  const camera = viewportForBounds(bounds);
+  setCamera(camera);
+  const {
+    center: { lat, lng },
+    zoom
+  } = camera; // OK
+  zoom; // 类型是 number
+  window.location.search = `?v=@${lat},${lng}z${zoom}`;
+}
+```
+
+这次，zoom 的类型就是 number 而不是 number | undefined 了。viewportForBounds 函数现在更容易使用了。如果还有其他任何函数输出边界信息，还需要引入一个规范形式，并在 LngLatBounds 和 LngLatBoundsLike 之间进行区分。
+
+允许 19 种可能的边界框形式是一个好的设计吗？也许不是。但如果要为一个确实这么多可能形式的库写类型声明，就要对其行为进行建模。只是不要有 19 种返回类型！
+
+### 4.3 不要在文档中重复类型信息
+
+```ts
+/**
+ * 返回一个带有前景色（foreground color）的 string
+ * 接受零或一个参数
+ * 无参数时，返回标准前景色
+ * 只有一个参数时，返回特定页面的前景色
+ */
+function getForegroundColor(page?: string) {
+  return page === 'login' ? { r: 127, g: 127, b: 127 } : { r: 0, g: 0, b: 0 };
+}
+```
+
+代码和注释不一致！这个注释有以下几个问题：
+
+- 注释描述了函数将颜色作为 string 返回，而实际上它返回的是一个 {r, g, b}对象。
+- 注释解释了函数接受 0 或 1 个参数，这从类型签名中已经很清楚了。
+- 不必要的啰嗦：注释比函数的声明加上实现还要长！
+
+TypeScript 的类型标注系统被设计成紧凑的、描述性的和可读的。它的开发者是拥有几十年经验的语言专家。而且由于类型标注是由 TypeScript 编译器来检查的，因此它们永远不会与实现脱节。也许 getForegroundColor 以前返回的是一个字符串，但后来被改成返回一个对象。做这个改动的人可能忘了更新注释。
+
+除非被迫，否则没有什么能保持同步。有了类型标注，TypeScript 的类型检查器就是这种力量！如果把类型信息放在标注中，而不是在文档中，它将随着代码的发展而保持正确。一个更好的注释可能是这样的：
+
+```ts
+/** 获取应用程序或特定页面的前景色 */
+function getForegroundColor(page?: string): Color {
+  //...
+}
+```
+
+如果想描述一个特定的参数，可以使用 @param JSDoc 标注。更多内容请参见条款 48。<!-- TODO -->
+
+关于没有值变的注释也是值得怀疑的。不要只说不修改参数：
+
+```ts
+/* 不修改 nums */
+function sort(nums: number[]) {
+  /* ... */
+}
+```
+
+相反，[声明它为 readonly](#212-使用-readonly-避免值变mutation相关的错误)，让 TypeScript 执行这个 “合约”：
+
+```ts
+function sort(nums: readonly number[]) {
+  /* ... */
+}
+```
+
+对于注释来说是正确的，对于变量名来说也是如此。要避免将类型放入其中：与其命名一个变量 ageNum，不如将其命名为 age，并确保它真的是一个 number。
+
+对于有单位的数字而言，这是一个例外。如果不清楚单位是什么，可能想把它们包含在一个变量或属性名中。例如，timeMs 相比 time 命名更清晰，而 temperatureC 相比 temperature 命名更清晰。条款 37 描述的 “烙印（brands）” 提供了一个更加类型安全的方法来建模单位。<!-- TODO -->
+
+### 4.4 将空值推到类型边界上
+
+第一次开启 strictNullChecks 时，似乎必须在整个代码中添加几十条 if 语句来检查 null 和 undefined 值。这通常是因为空值和非空值之间的关系是隐式的：当变量 A 是非空值时，知道变量 B 也是非空值；反之亦然。这些隐式关系对于阅读代码的人和类型检查器来说都是难以理解的。
+
+当值要么是完全空值，要么是完全非空值，而不是混合值时，就比较容易处理。可以通过将空值推到结构的外围来进行建模。
+
+假设想计算一个数字列表的最小值和最大值，称之为 “范围（extent）”。下面是一个尝试：
+
+```ts
+function extent(nums: number[]) {
+  let min, max;
+
+  for (const num of nums) {
+    if (!min) {
+      min = num;
+      max = num;
+    } else {
+      min = Math.min(min, num);
+      max = Math.max(max, num);
+    }
+  }
+  return [min, max];
+}
+```
+
+代码通过了类型检查（没有 strictNullChecks），并推断返回类型为 number[]，这看起来是不错的。但它有一个错误和一个设计缺陷：
+
+- 如果最小值或最大值为零，它可能会被覆盖。例如，extent([0, 1, 2]) 将返回 [1, 2] 而不是 [0, 2]。
+- 如果 nums 数组为空，函数将返回[undefined, undefined]。这种带有几个 undefined 的对象会让使用者难以操作。通过阅读源代码知道，min 和 max 要么都是 undefined，要么都不是，但这些信息并没有在类型系统中表示出来。
+
+开启 strictNullchecks 后，这两个问题更加明显：
+
+```ts
+function extent(nums: number[]) {
+  let min, max;
+  for (const num of nums) {
+    if (!min) {
+      min = num;
+      max = num;
+    } else {
+      min = Math.min(min, num);
+      max = Math.max(max, num);
+      // 类型 “number | undefined” 的参数不能赋给类型 “number” 的参数
+    }
+    return [min, max];
+  }
+}
+```
+
+现在，extent 的返回类型被推断为 (number|undefined)[]，这使得其设计缺陷更加明显，即无论在哪里调用 extent，都可能表现为类型错误：
+
+```ts
+const [min, max] = extent([0, 1, 2]);
+const span = max - min; // 对象可能是 'undefined'
+```
+
+实现中的错误是因为虽然已经排除了 undefined 作为 min 的值的情况，但没有排除 max 的情况。两者是一起初始化的，但在类型系统中这个信息并不存在。可以通过添加一个对 max 的检查来使错误消失，但这将会错上加错。
+
+一个更好的解决方案是把最小值和最大值放在同一个对象中，并使这个对象要么是完全空的，要么是完全非空的：
+
+```ts
+function extent(nums: number[]) {
+  let result: [number, number] | null = null;
+  for (const num of nums) {
+    if (!result) {
+      result = [num, num];
+    } else {
+      result = [Math.min(num, result[0]), Math.max(num, result[1])];
+    }
+  }
+  return result;
+}
+```
+
+现在的返回类型是 [number, number] | null，这对用户来说就更容易操作了。最小值和最大值可以通过非空断言来获取：
+
+```ts
+const [min, max] = extent([0, 1, 2])!;
+const span = max - min; // OK
+```
+
+或只需一个检查：
+
+```ts
+const range = extent([0, 1, 2]);
+if (range) {
+  const [min, max] = range;
+  const span = max - min; // OK
+}
+```
+
+可通过使用单个对象来跟踪范围（extent）。改进了设计，帮助 TypeScript 理解了 null 值之间的关系，并修复了其错误，现在 if(!result) 检查就没有问题了。
+
+空值和非空值的混合也会导致类（class）中出现问题。例如，假设有一个类，它同时代表一个用户和他在论坛上发的帖子：
+
+```ts
+class UserPosts {
+  user: UserInfo | null;
+  posts: Post[] | null;
+
+  constructor() {
+    this.user = null;
+    this.posts = null;
+  }
+
+  async init(userId: string) {
+    return Promise.all([
+      async () => (this.user = await fetchUser(userId)),
+      async () => (this.posts = await fetchPostsForUser(userId))
+    ]);
+  }
+
+  getUserName() {
+    // ...?
+  }
+}
+```
+
+当这两个网络请求正在加载时，user 和 posts 属性将被置为 null。之后，它们可能都是 null，或是其中一个是 null，或者它们可能都是非 null，共有四种可能。这种复杂性将渗入类中的每个方法，几乎可以肯定这种设计会导致代码难以理解及 null 检查的扩散和错误。一个更好的设计是使类所使用的所有数据都可用：
+
+```ts
+class UserPosts {
+  user: UserInfo;
+  posts: Post[];
+
+  constructor(user: UserInfo, posts: Post[]) {
+    this.user = user;
+    this.posts = posts;
+  }
+
+  static async init(userId: string): Promise<UserPosts> {
+    const [user, posts] = await Promise.all([fetchUser(userId), fetchPostsForUser(userId)]);
+    return new UserPosts(user, posts);
+  }
+
+  getUserName() {
+    return this.user.name;
+  }
+}
+```
+
+现在这个 UserPosts 类完全是非空的，并且很容易基于此写出正确的方法。当然，如果需要在数据部分加载时执行一些操作，那么就需要处理 null 和非 null 状态的多重性。
+
+> 不要试图用 Promise 代替可空属性，这往往会导致更混乱的代码，并迫使所有方法都变成异步的。Promise 可以使加载数据的代码更清晰，但对使用这些数据的类却有相反的作用。
+
+### 4.5 优选接口的联合，而不是联合的接口
+
+如果创建的一个属性是联合类型的接口，应该问一下这个类型作为更精确的接口的联合是否更有意义。
+
+假设正在构建一个矢量绘图程序，并希望为具有特定几何类型的图层定义一个接口：
+
+```ts
+interface Layer {
+  layout: FillLayout | LineLayout | PointLayout;
+  paint: FillPaint | LinePaint | PointPaint;
 }
 ```
