@@ -27,7 +27,7 @@
       - [3.4.2 引入第三方库的注意事项](#342-引入第三方库的注意事项)
       - [3.4.3 性能优化](#343-性能优化)
       - [3.4.4 部署](#344-部署)
-  - [四. 开发](#四-开发)
+    - [3.5 渲染器](#35-渲染器)
 
 <!-- /code_chunk_output -->
 
@@ -606,7 +606,10 @@ export default defineComponent({
 
     return () => (
       <div>
-        <input type="text" v-model={title.value} />
+        <input
+          type="text"
+          v-model={title.value}
+        />
         <button onClick={addTodo}>click</button>
         <ul>
           {todos.value.length ? (
@@ -695,7 +698,10 @@ count.value.split(''); // => Property 'split' does not exist on type 'number'
 也可以显式地去规定 ref、reactive 和 computed 输入的属性，下面代码中分别演示了 ref、reactive 和 computed 限制类型的写法，每个函数都可以使用默认的参数推导，也可以显式地通过泛型去限制。
 
 ```vue
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { computed, reactive, ref } from '@vue/runtime-core';
 
 interface Geek {
