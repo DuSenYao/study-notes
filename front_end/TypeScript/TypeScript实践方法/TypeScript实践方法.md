@@ -37,6 +37,9 @@
   - [四. 类型设计](#四-类型设计)
     - [4.1 倾向选择总是代表有效状态的类型](#41-倾向选择总是代表有效状态的类型)
     - [4.2 宽进严出](#42-宽进严出)
+    - [4.3 不要在文档中重复类型信息](#43-不要在文档中重复类型信息)
+    - [4.4 将空值推到类型边界上](#44-将空值推到类型边界上)
+    - [4.5 优选接口的联合，而不是联合的接口](#45-优选接口的联合而不是联合的接口)
 
 <!-- /code_chunk_output -->
 
@@ -4332,7 +4335,7 @@ class UserPosts {
 
 ### 4.5 优选接口的联合，而不是联合的接口
 
-如果创建的一个属性是联合类型的接口，应该问一下这个类型作为更精确的接口的联合是否更有意义。
+如果创建的一个属性是联合类型的接口，应该思考一下这个类型作为更精确的接口的联合是否更有意义。
 
 假设正在构建一个矢量绘图程序，并希望为具有特定几何类型的图层定义一个接口：
 
@@ -4342,3 +4345,1111 @@ interface Layer {
   paint: FillPaint | LinePaint | PointPaint;
 }
 ```
+
+字段 layout 控制形状的绘制方式和位置（是圆角的还是直角的），而 paint 字段控制样式（线条是蓝色的、粗的、细的还是虚线的）。
+
+如果有一个图层，它的 layout 是 LineLayout，但它的 paint 属性是 FillPaint，这样有意义的吗？可能没有意义。允许这种可能性会使得使用库时更容易出错，并且使这个接口难以使用。一个更好的建模方式是为每一种类型的图层提供单独的接口：
+
+```ts
+interface FillLayer {
+  layout: FillLayout;
+  paint: FillPaint;
+}
+interface LineLayer {
+  layout: LineLayout;
+  paint: LinePaint;
+}
+interface PointLayer {
+  layout: PointLayout;
+  paint: PointPaint;
+}
+type Layer = FillLayer | LineLayer | PointLayer;
+```
+
+以这种方式定义 Layer，就可以排除混合 layout 和 paint 属性的可能性。[优先选择只代表有效状态的类型](#41-倾向选择总是代表有效状态的类型)。
+
+这种模式最常见的例子是 “标签联合类型”（或 “可辨识联合类型”）。在这种情况下，其中一个属性是字符串字面量类型的联合：
+
+```ts
+interface Layer {
+  type: 'fill' | 'line' | 'point';
+  layout: FillLayout | LineLayout | PointLayout;
+  paint: FillPaint | LinePaint | PointPaint;
+}
+```
+
+就像之前一样，既有 type: 'fill' 又有 LineLayout 和 PointPaint 的情况是合理的吗？当然不是。可以将 Layer 转换为一个接口的联合来排除这种可能性：
+
+```ts
+interface FillLayer {
+  type: 'fill';
+  layout: FillLayout;
+  paint: FillPaint;
+}
+interface LineLayer {
+  type: 'line';
+  layout: LineLayout;
+  paint: LinePaint;
+}
+interface PointLayer {
+  type: 'paint';
+  layout: PointLayout;
+  paint: PointPaint;
+}
+type Layer = Filllayer | LineLayer | PointLayer;
+```
+
+type 属性就是 “标签”，可以用来确定在运行时处理的 Layer 是哪种类型。TypeScript 也能够根据标签来收缩 Layer 的类型：
+
+```ts
+function drawLayer(layer: Layer) {
+  if (layer.type === 'fill') {
+    const { paint } = layer; // 类型是 FillPaint
+    const { layout } = layer; // 类型是 FillLayout
+  } else if (layer.type === 'line') {
+    const { paint } = layer; // 类型是 LinePaint
+    const { layout } = layer; // 类型是 LineLayout
+  } else {
+    const { paint } = layer; // 类型是 PointPaint
+    const { layout } = layer; // 类型是 PointLayout
+  }
+}
+```
+
+通过正确地对这个类型中属性之间的关系进行建模，可以帮助 TypeScript 检查代码的正确性。但是使用同样的代码初始化 Layer 会被类型断言弄得杂乱无章。
+
+因为标签联合类型与 TypeScript 的类型检查器配合得很好，所以它们在 TypeScript 代码中是无处不在的。要了解这个模式，并在合适的时候应用它。如果能在 TypeScript 中用一个标签联合类型来表示一个数据类型，那通常是个好主意。如果把可选字段视为它们的类型和 undefined 的联合类型，那么它们也适合这种模式。考虑一下这个类型：
+
+```ts
+interface Person {
+  name: string;
+  // 这些要么存在，要么不存在
+  placeOfBirth?: string;
+  dateofBirth?: Date;
+}
+```
+
+一个[带有类型信息的注释是表明可能存在问题的强烈信号](#43-不要在文档中重复类型信息)。在 placeOfBirth 和 dateOfBirth 字段之间可能存在一个还没有告诉 TypeScript 的关系。
+
+一个更好的建模方式是将这两个属性移动到一个对象中。这类似于[将 null 移动到边界上](#44-将空值推到类型边界上)：
+
+```ts
+interface Person {
+  name: string;
+  birth?: {
+    place: string;
+    date: Date;
+  };
+}
+```
+
+现在 TypeScript 抱怨 place 有值，但 birth 里的 date 没有值：
+
+```ts
+const alanT: Person = {
+  name: 'Alan Turing',
+  birth: {
+    // 类型 "{place: string; }” 中缺少属性 “date”，但在类型 “{place: string; date: Date; }” 中为必选
+    place: 'London'
+  }
+};
+```
+
+此外，一个接受 Person 对象的函数只需要做一次检查：
+
+```ts
+function eulogize(p: Person) {
+  console.log(p.name);
+  const { birth } = p;
+  if (birth) {
+    console.log(`was born on ${birth.date} in ${birth.place}.`);
+  }
+}
+```
+
+如果类型的结构不在控制范围内（例如，它来自一个 API 接口），那么仍然可以使用现在很熟悉的接口的联合来建模这些字段之间的关系：
+
+```ts
+interface Name {
+  name: string;
+}
+interface PersonWithBirth extends Name {
+  placeOfBirth: string;
+  dateOfBirth: Date;
+}
+type Person = Name | PersonWithBirth;
+```
+
+现在得到了一些和嵌套对象一样的好处：
+
+```ts
+function eulogize(p: Person) {
+  if ('placeOfBirth' in p) {
+    p; // 类型是 PersonWithBirth
+    const { dateOfBirth } = p; // OK，类型是 Date
+  }
+}
+```
+
+在这两种情况下，类型定义使属性之间的关系更加清晰。
+
+### 4.6 选择更精确的字符串类型的替代类型
+
+string 类型的域是很大的，当声明一个类型为 string 的变量时，应该思考一下更窄的类型是否更合适。假设正在建立一个音乐集，想为一个专辑定义一个类型。下面是一个例子：
+
+```ts
+interface Album {
+  artist: string;
+  releaseDate: string; // YYYY-MM-DD
+  recordingType: string; // 例如，"live" 或 "studio"
+}
+```
+
+string 类型的普遍性和[注释中的类型信息](#43-不要在文档中重复类型信息)强烈地表明这个 interface 是不太对的。下面是可能出错的地方：
+
+```ts
+const kindOfBlue: Album = {
+  artist: 'Miles Davis',
+  title: 'Kind of Blue',
+  releaseDate: 'August 17th, 1959', // 哎呀！
+  recordingType: 'Studio' // 哎呀！
+}; // OK
+```
+
+releaseDate 这个字段的格式不正确（根据注释），"Studio" 在应该小写的地方大写了。但是这些值都是字符串，所以这个对象是可以赋值为 Album 的，类型检查器也不会报错。
+
+即使对于合法的 Album 对象，这些宽泛的 string 类型也可以掩盖错误。例如，可以定义这样的函数：
+
+```ts
+function recordRelease(title: string, date: string) {
+  /* ... */
+}
+recordRelease(kindOfBlue.releaseDate, kindOfBlue.title); // OK，但应该报错
+```
+
+在调用 recordRelease 时，参数被颠倒了，但两个参数都是字符串，所以类型检查器不会报错。由于 string 类型的普遍性，这样的代码有时被称为 “字符串类型化（stringly typed）"。
+
+对于 releaseDate 字段来说，最好只用一个 Date 对象来避免格式相关的问题。最后，对于字段 recordingType，可以定义一个只有两个值的联合类型[也可以使用一个 enum（枚举），但一般建议避免使用枚举，请参见条款 53]：<!-- TODO -->
+
+```ts
+type RecordingType = 'studio' | 'live';
+interface Album {
+  artist: string;
+  title: string;
+  releaseDate: Date;
+  recordingType: RecordingType;
+}
+```
+
+这样一改，TypeScript 就可以进行更彻底的错误检查：
+
+```ts
+const kindOfBlue: Album = {
+  artist: 'Miles Davis',
+  title: 'Kind of Blue',
+  releaseDate: new Date('1959-08-17'),
+  recordingType: 'Studio' // 不能将类型 “Studio” 分配给类型 “RecordingType”
+};
+```
+
+除了更严格的检查之外，这种方法还有一些优点：
+
+1. 明确定义类型可以确保它的意义不会在传递的过程中丢失。例如，如果想查找某个录音类型的专辑，可以定义一个这样的函数：
+
+   ```ts
+   function getAlbumsOfType(recordingType: string): Album[] {
+     // ...
+   }
+   ```
+
+   这个函数的调用者怎么知道被期待的 recordingType 是什么？它只是一个 string，而解释它为 "studio" 或 "live" 的注释隐藏在 Album 的定义中，用户可能不会想到去看。
+
+2. 显式定义一个类型允许给它附上文档（参见条款 48）：<!-- TODO -->
+
+   ```ts
+   /* 这段录音是在什么样的环境下录制的？ */
+   type RecordingType = 'live' | 'studio';
+   ```
+
+   当把 getAlbumsOfType 改成取 RecordingType 为参数的话，调用者就能够通过点击来查看文档了。
+
+还有一个常见的 string 误用是在函数参数中。假设想写一个函数，将一个数组中某一个字段的所有值都提取出来。Underscore 库将其称为 “pluck”：
+
+```ts
+function pluck(records, key) {
+  return records.map(record => record[key]);
+}
+```
+
+会如何给它添加类型？以下是一个初步的尝试：
+
+```ts
+function pluck(record: any[], key: string): any[] {
+  return record.map(r => r[key]);
+}
+```
+
+这个可以通过类型检查，但不是很好。首先，any 类型是有问题的，特别是在返回值上（参见条款 38）<!-- TODO -->。改进类型签名的第一步是引入一个泛型类型参数：
+
+```ts
+function pluck<T>(record: T[], key: string): any[] {
+  return record.map(r => r[key]); // 对象 “{}” 类型的索引签名隐式地含有 "any" 类型
+}
+```
+
+现在 TypeScript 报错说用以 key 的 string 类型太宽泛。这个的确应该报错：如果传入一个 Album 数组，那么 key 只有四个有效的值（“artist” “title” “releaseDate” 和 “recordingType”），而不是一个巨大的字符串集。这正是 keyof Album 类型的含义：
+
+```ts
+type K = keyof Album; // 类型是 "artist" | "title" | "releaseDate" | "recordingType"
+```
+
+所以修复的方法是用 keyof T 代替 string：
+
+```ts
+function pluck<T>(record: T[], key: keyof T) {
+  return record.map(r => r[key]);
+}
+```
+
+这样就能通过类型检查器的检查。还让 TypeScript 推断了返回类型。如果在编辑器中将鼠标移到 pluck 上，则推断的类型是：
+
+```ts
+function pluck<T>(record: T[], key: keyof T): T[keyof T][];
+```
+
+`T[keyof T]` 是 T 的任何可能的值的类型。如果传入一个字符串作为 key，这就太宽泛了。例如：
+
+```ts
+const releaseDates = pluck(albums, 'releaseDate'); // 类型是 (string | Date)[]
+```
+
+类型应该是 Date[]，而不是 (string | Date)[]。虽然 keyof T 比 string 窄了很多，但还是太宽泛了。为了进一步缩小范围，需要引入第二个泛型参数，它是 keyof T 的一个子集（可能是一个单一的值）：
+
+```ts
+function pluck<T, K extends keyof T>(record: T[], key: K): T[K][] {
+  return record.map(r => r[key]);
+}
+```
+
+现在类型签名是完全正确的。可以通过几种不同的方式来检查 pluck：
+
+```ts
+pluck(albums, 'releaseDate'); // 类型是 Date[]
+pluck(albums, 'artist'); // 类型是 string[]
+pluck(albums, 'recordingType'); // 类型是 RecordingType[]
+pluck(albums, 'recordingdingDate'); // 类型 “recordingDate” 的参数不能赋给类型 “...” 的参数
+```
+
+语言服务甚至能够在 Album 的键上提供自动补全。
+
+string 有一些跟 any 同样的问题：如果使用不当的话，它会放过不合法的值并隐藏掉类型之间的关系。这会阻碍类型检查器并可能隐蔽真正的错误。TypeScript 定义 string 子集的能力是为 JS 代码带来类型安全的有力的方法。使用更精确的类型既有助于捕捉错误，又能提高代码的可读性。
+
+### 4.7 宁愿选择不完整的类型，也不选择不准确的类型
+
+在编写类型声明的过程中，不可避免地会发现有可以用更精确或更不精确的方式来建模行为的情况。类型的精确性通常是一件好事，因为它将帮助发现错误并利用 TypeScript 提供的工具。但是，当提高类型声明的精度时要小心：这很容易犯错，而且错误的类型可能比没有类型更糟糕。
+
+假设正在为 GeoJSON 编写类型声明。GeoJSON 表示的几何体可以是以下几种类型之一，每种类型都有不同的坐标数组：
+
+```ts
+interface Point {
+  type: 'Point';
+  coordinates: number[];
+}
+interface LineString {
+  type: 'LineString';
+  coordinates: number[][];
+}
+interface Polygon {
+  type: 'Polygon';
+  coordinates: number[][][];
+}
+
+type Geometry = Point | LineString | Polygon; // 还有其他几项
+```
+
+这很好，但用 number[] 作为坐标有点不精确。实际上，这些都是经纬度，所以也许用元组类型会更好：
+
+```ts
+type GeoPosition = [number, number];
+interface Point {
+  type: 'Point';
+  coordinates: GeoPosition;
+}
+// Etc.
+```
+
+对外发布了更精确的类型，并等待着用户的赞美。不幸的是，一个用户抱怨说新类型破坏了一切。尽管只使用了经纬度，但在 GeoJSON 中，一个位置被允许有第三个元素，如一个海拔高度，还有可能有更多元素。为了让类型声明更精确，做得太过火了，反而让类型变得不准确了！为了继续使用类型声明，用户将不得不引入类型断言或用 as any 使类型检查器完全不去工作。
+
+作为另一个例子，尝试为下面例子里 JSON 定义的 Lisp 类语言编写类型声明：
+
+```ts
+'red';
+['+', 1, 2]; // 3
+['/', 20, 2]; // 10
+['case', ['>', 20, 10], 'red', 'blue']; // "red"
+['rgb', 255, 0, 127]; // "#FF007F"
+```
+
+Mapbox 库使用这样的系统来确定地图特征在许多设备上的表现形式。有一个完整的精度谱，可以尝试输入：
+
+- 允许任何东西。
+- 允许使用字符串、数字和数组。
+- 允许使用已知函数名开头的字符串、数字和数组
+- 确保每个函数得到正确的参数数量。
+- 确保每个函数得到的参数类型正确。
+
+前两个选项是很直接的：
+
+```ts
+type Expression1 = any;
+type Expression2 = number | string | any[];
+```
+
+除此之外，应该引入一个测试集，测试有效的表达式和无效的表达式。当让类型更加精确时，这将有助于回归测试（参见条款 52）：<!-- TODO -->
+
+```ts
+const tests: Expression2[] = [
+  10,
+  'red',
+  true, // 不能将类型 “true” 分配给类型 “Expression2”
+  ['+', 10, 5],
+  ['case', ['>', 20, 10], 'red', 'blue', 'green'], // 过多的值
+  ['**', 2, 31], // 应该报一个错误：没有 "**" 函数
+  ['rgb', 255, 128, 64],
+  ['rgb', 255, 0, 127, 0] // 过多的值
+];
+```
+
+为了达到更高的精度，可以使用字符串字面量类型的联合类型作为元组的第一个元素：
+
+```ts
+type FnName = '+' | '-' | '*' | '/' | '>' | '<' | 'case' | 'rgb';
+type CallExpression = [FnName, ...any[]];
+type Expression3 = number | string | CallExpression;
+
+const tests: Expression3[] = [
+  10,
+  'red',
+  true, // 不能将类型 “true” 分配给类型 “Expression3”
+  ['+', 10, 5],
+  ['case', ['>', 20, 10], 'red', 'blue', 'green'],
+  ['**', 2, 31], // 不能将类型 "**" 分配给类型 “FnName”
+  ['rgb', 255, 128, 64]
+];
+```
+
+如果想确保每个函数都能得到正确的参数，那该怎么办？这就比较棘手了，因为现在的类型需要递归到所有的函数调用中去。在 TypeScript3.6 中，为了实现这个工作，需要引入至少一个 interface。由于 interface 不能是联合类型，因此必须使用 interface 来代替调用表达式。这就有点尴尬，因为定长数组最容易用元组类型来表达。但可以做到这一点：
+
+```ts
+type Expression4 = number | string | CallExpression;
+type CallExpression = MathCall | CaseCall | RGBCall;
+
+interface MathCall {
+  0: '+' | '-' | '*' | '/' | '>' | '<';
+  1: Expression4;
+  2: Expression4;
+  length: 3;
+}
+
+interface CaseCall {
+  0: 'case';
+  1: Expression4;
+  2: Expression4;
+  3: Expression4;
+  length: 4 | 6 | 8 | 10 | 12 | 14 | 16; // etc.
+}
+
+interface RGBCall {
+  0: 'rgb';
+  1: Expression4;
+  2: Expression4;
+  3: Expression4;
+  length: 4;
+}
+
+const tests: Expression4[] = [
+  10,
+  'red',
+  true, // 不能将类型 “true” 分配给类型 “Expression4”
+  ['+', 10, 5],
+  ['case', ['>', 20, 10], 'red', 'blue', 'green'], // 不能将类型 “["case", [">", ...], ...]” 分配给类型 “string"
+  ['**', 2, 31], // 不能将类型 “["**", number, number]” 分配给类型 “string"
+  ['rgb', 255, 128, 64],
+  ['rgb', 255, 128, 64, 73] // 不能将类型 “["rgb", number, number, number, number]" 分配给类型 “string”
+];
+```
+
+现在所有无效的表达式都会产生错误。而且很有意思的是，可以用 TypeScript 的 interface 表达类似 “一个长度为偶数的数组” 的概念。但是这些错误信息并不是很好，关于 `**` 的错误自从之前的类型化之后，已经变得相当糟糕了。
+
+这比以前的不那么精确的类型有进步吗？事实上，对于一些不正确的用法，会得到错误返回，这是一个胜利，但这些错误会使这个类型更难处理。[语言服务和类型检查一样是 TypeScript 体验的一部分](#21-使用编辑器来询问和探索类型系统)，所以一个好主意是，查看类型声明产生的错误信息，并在自动补全能够工作的时候使用自动补全。如果新类型声明比较精确，但破坏了自动补全机制，那么这会使 TypeScript 的开发体验变得不那么愉快。
+
+这种类型声明的复杂性也增加了错误发生的概率。例如，Expression4 要求所有数学运算符都取两个参数，但 Mapbox 表达式规范规定，`+` 和 `*` 可以取更多参数。另外，`-` 可以只取一个参数，在此情况下，它会取输入参数的反。Expression4 在所有这些方面都进行了错误的标记：
+
+```ts
+const okExpressions: Expression4[] = [
+  ['-', 12],
+  [('+', 1, 2, 3)], // 不能将类型 “["-", number]” 分配给类型 “string' // 不能将类型 “["+",number, ...]” 分配给类型 “string”
+  ['*', 2, 3, 4] // 不能将类型 “["*",number, ...]” 分配给类型 “string”
+];
+```
+
+再一次，为了更加精确，超额完成了任务，因而变得不那么准确了。这些不准确的地方是可以纠正的，但是前提是要扩展测试集，以说服自己没有遗漏其他的东西。复杂的代码通常需要更多的测试，类型也同样如此。**当精炼类型时，完善像 any 这样非常不精确的类型通常是有帮助的，但随着类型越来越精确，对它们的期望也会随之增加，会越来越依赖类型，因此其中不准确的地方会产生更大的问题**。
+
+### 4.8 从 API 和规范而不是从数据中生成类型
+
+一个设计良好的类型会使 TypeScript 使用起来很愉快，而一个设计不好的类型会使它变得很痛苦。但这确实给类型设计带来了相当大的压力。如果不需要自己去做这些设计，那不是很好吗？
+
+至少有一些类型可能来自程序之外：文件格式、API 或规范（spec）。在这些情况下，也许可以通过生成类型来避免编写类型。如果要这样做，关键在于要从规范中生成类型，而不是从示例数据中生成类型。当从规范中生成类型时，TypeScript 将帮助确保没有遗漏任何情况。当从数据中生成类型时，只考虑了所看到的例子。可能会遗漏一些重要的边缘情况这些情况可能会破坏程序。
+
+在[宽进严出](#42-宽进严出)写了一个函数来计算一个 GeoJSON Feature 的边界框。它看起来是这样的：
+
+```ts
+function calculateBoundingBox(f: GeoJSONFeature): BoundingBox | null {
+  let box: BoundingBox | null = null;
+  const helper = (coords: any[]) => {
+    // ...
+  };
+  const { geometry } = f;
+  if (geometry) {
+    helper(geometry.coordinates);
+  }
+  return box;
+}
+```
+
+GeoJSONFeature 的类型没有被明确定义。可以使用[宽进严出](#42-宽进严出)中的一些例子来完成它。但更好的方法是使用正式的 GeoJSON 规范[^geojson]。在 DefinitelyTyped 上已经有 TypeScript 类型声明。可以用常规方式将它们添加进来：
+
+[^geojson]: GeoJSON 也被称为 RFC7946。这个[规范](http://geojson.org)很具有可读性。
+
+```sh
+$ npm install --save-dev @types/geojson
++ @types/geojson@7946.0.7
+```
+
+当插入 GeoJSON 声明时，TypeScript 会立即标记一个错误：
+
+```ts
+import { Feature } from 'geojson';
+function calculateBounding(f: Feature): BoundingBox | null {
+  let box: BoundingBox | null = null;
+  const helper = (coords: any[]) => {
+    //...
+  };
+
+  const { geometry } = f;
+  helper(geometry.coordinates);
+  // 类型 “Geometry” 上不存在属性 “coordinates”
+  // 类型 “GeometryCollection” 上不存在属性 “coordinates”
+  return box;
+}
+```
+
+问题在于，代码假设一个几何体会有一个 coordinates 属性。这对许多几何体来说是正确的，包括点、线和多边形。但是，一个 GeoJSON 几何体也可以是一个 GeometryCollection，一个其他几何体的异构集合。与其他几何体类型不同的是，它没有 coordinates 属性。
+
+如果在一个几何体是 GeometryCollection 的 Feature 上调用 calculateBoundingBox，它将抛出一个无法读取 undefined 的 0 属性错误。这是一个真正的错误！使用规范中的类型定义时发现了这个问题。
+
+一个修复它的方案是显式地不允许 GeometryCollection，如下所示：
+
+```ts
+const { geometry } = f;
+if (geometry) {
+  if (geometry.type === 'GeometryCollection') {
+    throw new Error('GeometryCollections are not supported.');
+  }
+  helper(geometry.coordinates); //OK
+}
+```
+
+TypeScript 能够根据检查结果来完善 geometry 的类型，所以对 geometry.coordinates 的引用是允许的。如果没有别的原因，这将为用户带来更清晰的错误信息。
+
+但更好的解决方案是支持所有类型的几何体！可以通过抽出另外一个辅助函数来实现这一点：
+
+```ts
+const geometryHelper = (g: Geometry) => {
+  if (geometry.type === 'GeometryCollection') {
+    geometry.geometries.forEach(geometryHelper);
+  } else {
+    helper(geometry.coordinates); // OK
+  }
+};
+
+const { geometry } = f;
+if (geometry) {
+  geometryHelper(geometry);
+}
+```
+
+如果是自己写 GeoJSON 的类型声明，可能会根据对格式的理解和经验来编写。这可能不包括 GeometryCollection，并且会导致对代码的正确性产生一种错误的安全感。使用基于规范的类型会让代码将适用于所有的值，而不仅仅是见过的值。
+
+类似的考虑也适用于 API 调用：通常从 API 的规范中生成类型是个不错的主意。这对那些本身就有类型的 API 特别有效，比如 GraphQL。
+
+一个 GraphQL API 带有一个模式，它使用与 TypeScript 有点类似的类型系统来指定所有可能的查询和接口。可以通过编写查询来请求这些接口中的特定字段。例如，如果要使用 GitHub GraphQL API 来获取一个仓库的信息，可能会这样写：
+
+```GraphQL
+query {
+  repository(owner: "Microsoft", name: "TypeScript"){
+    createdAt;
+    description;
+  }
+}
+```
+
+结果是：
+
+```json
+{
+  "data": {
+    "repository": {
+      "createdAt": "2014-06-17T15:28:39Z",
+      "description": "Typescript is a superset of JavaScript that compiles to JavaScript."
+    }
+  }
+}
+```
+
+这种方法的好处是，可以为特定查询生成 TypeScript 类型。和 GeoJSON 的例子一样，这有助于确保准确地模拟类型之间的关系和它们的可空性（nullability）。
+
+下面是一个通过查询获取 GitHub 仓库的开源许可证的方法：
+
+```GraphQL
+query getLicense($owner: String!, $name: String!) {
+  repository(owner: $owner, name: $name){
+    description
+    licenseInfo {
+      spdxId
+      name
+    }
+  }
+}
+```
+
+$owner 和 $name 是 GraphQL 变量，它们本身就是有类型的。类型语法与 TypeScript 的很相似，以至于这样翻来覆去的会让人感到困惑：String 是 GraphQL 类型，但在 TypeScript 中应该是 string。虽然 TypeScript 类型是不可空的，但 GraphQL 中的类型可以。类型后面的 `!` 表示它被保证不会为空。
+
+有很多工具可以帮助从 GraphQL 查询转换到 TypeScript 类型，其中一个是 Apollo。可以这样使用它：
+
+```sh
+$ apollo client:codegen \
+  --endpoint https://api.github.com/graphql \
+  --includes license.graphql \
+  --target typescript
+Loading Apollo Project
+Generating query files with 'typescript' target - wrote 2 files
+```
+
+需要一个 GraphQL schema 来为查询生成类型。在这个例子中，Apollo 从 api.github.com/graphql 端点获得 schema。输出看起来像这样：
+
+```ts
+export interface getLicense_repository_licenseInfo {
+  __typename: 'License';
+  /* <https://spdx.org/licenses> 所指定的简短标识符 */
+  spdxId: string | null;
+  /* <https://spdx.org/licenses> 所指定的证书全称 */
+  name: string;
+}
+
+export interface getLicense_repository {
+  __typename: 'Repository';
+  /* 仓库的说明 */
+  description: string | null;
+  /* 与仓库相关的许可证 */
+  licenseInfo: getLicense_repository_licenseInfo | null;
+}
+
+export interface getLicense {
+  /* 通过所有者和仓库名称查找一个给定的仓库 */
+  repository: getLicense_repository | null;
+}
+
+export interface getLicenseVariables {
+  owner: string;
+  name: string;
+}
+```
+
+**重点注意**：
+
+- 查询参数（getLicenseVariables）和响应（getLicense）的接口都会被生成。
+- 可空信息从 schema 转移到响应接口。repository、description、LicenseInfo 和 spdxId 字段都是可空的，而许可证 name 和查询变量则不是可空的。
+- 文档以 JSDoc 的形式传输，以便它显示在编辑器中（参见条款 48）。这些注释来自 GraphQL schema 本身。<!-- TODO -->
+
+这种类型信息有助于确保正确地使用 API。如果查询变了，类型就会改变；如果 schema 变了，那么类型同样也会改变。类型和现实不会有任何不一致的风险，因为它们都来自一个单一的信息源：GraphQL schema。
+
+如果没有可用的规范或权威 schema 应该怎么办？那就必须从数据中生成类型。像 quicktype 这样的工具可以帮助解决这个问题。但要注意，类型可能与现实不符：可能会有遗漏的边缘情况。
+
+TypeScript 浏览器 DOM API 的类型声明是由官方接口生成的（参见条款 55）。这确保了它们正确地模拟了一个复杂的系统，并帮助 TypeScript 捕捉代码中的错误和理解偏差。<!-- TODO -->
+
+### 4.9 使用问题域语言命名类型
+
+给类型取名字也是类型设计的一个重要组成部分。选择好的类型、属性和变量名可以明确使用意图，提高代码和类型的抽象程度。选择不当的类型会使代码变得模糊不清，并导致不正确的心智模型。
+
+假设要建立一个动物数据库，创建了一个接口来表示其中一个动物：
+
+```ts
+interface Animal {
+  name: string;
+  endangered: boolean;
+  habitat: string;
+}
+
+const leopard: Animal = {
+  name: 'Snow Leopard',
+  endangered: false,
+  habitat: 'tundra'
+};
+```
+
+这里有几个问题：
+
+- name 是一个非常笼统的术语。想要的是什么的名字？学名还是俗名？
+- 布尔值 endangered 字段也是模棱两可的。如果一种动物已经灭绝了怎么办？这里的意图是 “濒危或更糟” 吗？还是字面上的意思——濒临灭绝？
+- habitat 字段也非常含糊，不仅因为 [string 类型过于宽泛](#43-不要在文档中重复类型信息)，还因为表意不够清晰的“生活环境”的含义。
+- 变量名是 leopard（豹子），但 name 属性的值是 “雪豹”。这种区别有意义吗？
+
+下面的类型声明和值则没有那么多歧义：
+
+```ts
+interface Animal {
+  commonName: string;
+  genus: string;
+  species: string;
+  status: ConservationStatus;
+  climates: KoppenClimate[];
+}
+
+type Conservationstatus = 'EX' | 'EW' | 'CR' | 'EN' | 'VU' | 'NT' | 'LC';
+type KoppenClimate =
+  | 'Af'
+  | 'Am'
+  | 'As'
+  | 'Aw'
+  | 'BSh'
+  | 'BSk'
+  | 'BWh'
+  | 'BWk'
+  | 'Cfa'
+  | 'Cfb'
+  | 'Cfc'
+  | 'Csa'
+  | 'Csb'
+  | 'Csc'
+  | 'Cwa'
+  | 'Cwb'
+  | 'Cwc'
+  | 'Dfa'
+  | 'Dfb'
+  | 'Dfc'
+  | 'Dfd'
+  | 'Dsa'
+  | 'Dsb'
+  | 'Dsc'
+  | 'Dwa'
+  | 'Dwb'
+  | 'Dwc'
+  | 'Dwd'
+  | 'EF'
+  | 'ET';
+
+const snowLeopard: Animal = {
+  commonName: 'Snow Leopard',
+  genus: 'Panthera',
+  species: 'Uncia',
+  climates: ['ET', 'EF', 'Dfd'] // 高山或亚高山
+};
+```
+
+相比第一个例子，这里做了许多改进：
+
+- name 被更具体的术语所取代：commonName（俗名）、genus（属）和 species（种）
+- endangered（濒危）变成了 conservationStatus（保护状态），并使用世界自然保护联盟的标准分类系统。
+- habitat（生活环境）变成了 climates（气候），并使用另一种标准分类法，即柯本气候分类法。
+
+如果需要这个类型第一个版本中字段的更多信息，就必须去找写这些字段的人进行询问。很有可能他们已经离开公司或者不记得了。
+
+这种情况在第二版代码中得到了很大的改善。如果想了解更多关于柯本气候分类系统的信息，或者追踪保护状态的确切含义，那么互联网上有无数的资源。
+
+每个领域都有专门的词汇来描述其主题。与其发明自己的术语，不如尝试重用问题域的术语。这些词汇往往经过了几年、几十年或几个世纪的磨炼，并且被该领域的人所熟知。使用这些术语将帮助更好地与用户沟通，并提高类型的清晰度。
+
+> **注意**：要准确使用领域词汇：使用一个领域的语言来表达不同的意思，甚至比发明自己的术语更加混乱。
+
+当在命名类型、属性和变量时有一些其他的规则要记住：
+
+- **使命名的区分有意义**。如果要使用两个不同的术语，应确保正在进行有意义的区分。如果没有，应该使用相同的术语。
+- **避免使用“数据（data）”“信息（info）”“事物（thing）”“项目（item）”“对象（object）”等含糊不清、毫无意义的名称**，或者一直很流行的“实体（entity）”。除非 Entity 在某个领域中有特定的含义。但如果使用它是因为不想去想一个更有意义的名字，那你最终会遇到麻烦。
+- **根据事物的性质来命名，而不是根据它们包含的内容或计算方式来命名**。Directory 比 INodeList 更有意义。它允许把目录（Directory）作为一个概念来考虑，而不是从它的实现角度来考虑。好的名字可以提高代码的抽象程度，降低设计上无意中造成冲突的风险。
+
+### 4.10 考虑加 “烙印” 来实现名义类型
+
+前面讨论了[结构类型（“鸭子”类型）](#12-习惯结构类型structural-typing)，以及它有时如何导致令人惊讶的结果：
+
+```ts
+interface Vector2D {
+  x: number;
+  y: number;
+}
+function calculateNorm(p: Vector2D) {
+  return Math.sqrt(p.x * p.x + p.y * p.y);
+}
+
+calculateNorm({ x: 3, y: 4 }); // OK，结果是 5
+const vec3D = { x: 3, y: 4, z: 1 };
+calculateNorm(vec3D); // OK！结果还是 5
+```
+
+如果想让 calculateNorm 拒绝 3D 向量呢？这违背了 TypeScript 的结构类型模型，但在数学上肯定更正确。
+
+实现这一目标的方法之一是使用名义类型（nominal typing）。使用名义类型，一个值会因为说它是而就是 Vector2D，而不是因为它有正确的外形。TypeScript 原生不支持名义类型，但可以使用[类型烙印](/front_end/TypeScript/TypeScript.md#312-模拟名义类型)（type branding）技术模拟实现：
+
+```ts
+interface Vector2D {
+  _brand: '2d';
+  x: number;
+  y: number;
+}
+function vec2D(x: number, y: number): Vector2D {
+  return { x, y, brand: '2d' };
+}
+function calculateNorm(p: Vector2D) {
+  return Math.sqrt(p.x * p.x + p.y * p.y); // 跟以前一样
+}
+calculateNorm(vec2D(3, 4)); // OK，返回 5
+const vec3D = { x: 3, y: 4, z: 1 };
+calculateNorm(vec3D); // 类型 “...” 中缺少属性 “_brand”
+```
+
+有趣的是，即使只在类型系统中进行操作，仍然可以获得许多与显式烙印一样的好处。这既消除了运行时的开销，又可以为内置类型打上烙印，比如 string 或 number 这种无法附加额外属性的类型。
+
+例如，假如有一个函数用来操作文件系统，并且它需要一个绝对（而不是相对）路径，该如何做呢？这在运行时很容易检查（路径是否以 “/” 开头），但在类型系统中就不那么容易了。这里有一个使用烙印的办法：
+
+```ts
+type AbsolutePath = string & { _brand: 'abs' };
+function listAbsolutePath(path: AbsolutePath) {
+  // ...
+}
+function isAbsolutePath(path: string): path is AbsolutePath {
+  return path.startsWith('/');
+}
+```
+
+无法构造一个既是 string 并且还有 `_brand` 属性的对象。这纯粹是类型系统的游戏。
+
+如果有一个 string 的路径，它可以是绝对的，也可以是相对的，那么就可以用类型守卫（type guard）来检查，这样可以完善它的类型：
+
+```ts
+function f(path: string) {
+  if (isAbsolutePath(path)) {
+    listAbsolutePath(path);
+  }
+  listAbsolutePath(path); // "string" 的参数不能赋给类型 “AbsolutePath” 的参数
+}
+```
+
+这种方法可以帮助记下哪些函数期望使用绝对或相对路径，以及每个变量持有哪种类型的路径。不过这并不是一个铁板钉钉的保证：对于任何 string，都可以通过 path as AbsolutePath 来成功通过类型检查。但如果不使用这些类型断言，那么获得 AbsolutePath 的唯一方法就是赋一个该类型的值或者做检查校验，而这正是想要的。
+
+这种方法可以用来为许多在类型系统中无法表达的属性建模。例如，使用二分搜索来查找列表中的元素：
+
+```ts
+function binarySearch<T>(xs: T[], x: T): boolean {
+  let low = 0,
+    high = xs.length - 1;
+  while (high >= low) {
+    const mid = low + Math.floor((high - low) / 2);
+    const v = xs[mid];
+    if (v === x) return true;
+    [low, high] = x > v ? [mid + 1, high] : [low, mid - 1];
+  }
+  return false;
+}
+```
+
+这种方法在列表是有序的情况下是可行的，但是如果列表不是有序的，就会产生漏报。无法在 TypeScript 的类型系统中表示一个有序列表，但可以创建一个烙印：
+
+```ts
+type SortedList<T> = T[] & { _brand: 'sorted' };
+function isSorted<T>(xs: T[]): xs is SortedList<T> {
+  for (let i = 1; i < xs.length; i++) {
+    if (xs[i] > xs[i - 1]) {
+      return false;
+    }
+  }
+  return true;
+}
+function binarySearch<T>(xs: SortedList<T>, x: T): boolean {
+  // ...
+}
+```
+
+为了调用这个版本的 binarySearch，要么得到一个 SortedList（即拥有一个证明说列表是有序的），要么自己使用 isSorted 来证明它是有序的。线性遍历虽然不是很好，但至少会很安全！
+
+一般来讲，这对于类型检查器来说是有帮助的。例如，为了在一个对象上调用一个方法，要么需要得到一个非空对象，要么自己用一个条件语句证明它是非空的。
+
+也可以给 number 类型打上烙印。例如，用来添加单位：
+
+```ts
+type Meters = number & { _brand: 'meters' };
+type Seconds = number & { _brand: 'seconds' };
+const meters = (m: number) => m as Meters;
+const seconds = (s: number) => s as Seconds;
+const oneKm = meters(1000); // 类型是 Meters
+const oneMin = seconds(60); // 类型是 Seconds
+```
+
+但这在实际操作中可能会比较尴尬，因为算术运算会使数字丢掉它们的烙印：
+
+```ts
+const tenKm = oneKm * 10; // 类型是 number
+const V = oneKm / oneMin; // 类型是 number
+```
+
+然而，如果代码涉及混着各种单位的数字，打上烙印以记下数字型参数的期望类型，可能仍是一个有吸引力的方法。
+
+## 五. 和 Any 一起工作
+
+类型系统在传统上是二元对立的：一种语言要么有一个完全静态的类型系统，要么有一个完全动态的类型系统。TypeScript 模糊了这一界限，因为它的类型系统是可选的和渐进的。可以将类型只添加到程序的其中一部分，而不用管另外的部分。
+
+这对于将现有的 JS 代码库逐步迁移到 TypeScript 是必不可少的（参见第 8 章）<!-- TODO -->。其中的关键是 any 类型，它可以有效地禁用部分代码的类型检查。它既强大却又容易被滥用。学会明智地使用 any 是编写高效的 TypeScript 的关键。
+
+### 5.1 为 Any 类型使用最窄的范围
+
+考虑一下这段代码：
+
+```ts
+function processBar(b: Bar) {
+  /* ... */
+}
+function f() {
+  const x = expressionReturningFoo();
+  processBar(x); // 类型 “Foo” 的参数不能分配给类型 “Bar” 的参数
+}
+```
+
+如果以某种方式从上下文中了解道，x 除了可以分配给 Foo 外还可以分配给 Bar，那么就可以用两种方式强制 TypeScript 接受这段代码：
+
+```ts
+function f1() {
+  const x: any = expressionReturningFoo(); // 不要这样做
+  processBar(x);
+}
+
+function f2() {
+  const x = expressionReturningFoo();
+  processBar(x as any); // 而要这样做
+}
+```
+
+其中，第二种方式是非常可取的。为什么这么说呢？因为该 any 类型的范围是一个函数参数中的单一表达式。它在这个参数或这一行之外没有任何影响。如果调用 processBar 之后的代码引用 x 了，它的类型仍然是 Foo，它仍然会触发类型错误。而在第一个例子中，它的类型是 any，其作用范围直到函数结束。
+
+如果从这个函数中返回 x，风险就会更大。看看会发生什么：
+
+```ts
+function f1() {
+  const x: any = expressionReturningFoo();
+  processBar(x);
+  return x;
+}
+function g() {
+  const foo = f1(); // 类型是 any
+  foo.fooMethod(); // 这次调用没有被检查！
+}
+```
+
+any 返回类型是有 “传染性”的，因为它可以在整个代码库中传播。改变了函数 f 后，any 类型便悄悄地出现在 g 中了。这换作范围更窄的 f2 中的 any 就不会发生。
+
+> 即使在返回类型可以推断的情况下，考虑显式地添加返回类型标注依然是一个很好的理由。它可以防止 any 类型 “逃逸”。
+
+这里之所以用 any 其实是为了让一个并不认同的错误不再提示。还有一种方法是用 @ts-ignore：
+
+```ts
+function f1() {
+  const x = expressionReturningFoo();
+  // @ts-ignore
+  processBar(x);
+  return x;
+}
+```
+
+这将使下一行的错误消失，使类型 x 不变。但尽量不要太过依赖 @ts-ignore，类型检查器通常有很好的理由来抛出警示，这也意味着如果下一行的错误变成了更有问题的东西时没法知道。
+
+也可能会遇到这样的情况：在一个较大的对象中，只得到一个属性的类型错误：
+
+```ts
+const config: Config = {
+  a: 1,
+  b: 2,
+  c: {
+    key: value // 类型 “Bar” 中缺少属性 “...”，但在类型 “Foo” 中为必选
+  }
+};
+```
+
+可以通过在整个 config 对象周围添加一个 as any 来抑制这样的错误：
+
+```ts
+const config: Config = {
+  a: 1,
+  b: 2,
+  c: {
+    key: value
+  }
+} as any; // 不要这样做！
+```
+
+但这有一个副作用，那就是对其他属性（a 和 b）也禁用类型检查。使用一个更窄范围的 any 可以限制这样的损害：
+
+```ts
+const config: Config = {
+  a: 1, // 这些属性仍然被检查
+  b: 2,
+  c: {
+    key: value as any
+  }
+};
+```
+
+### 5.2 比起普通的 any，选择更精确的 any 变体
+
+any 类型包含了 JS 中所有可以表达的值，这是一个超大集合！它不仅包括所有的数字和字符串，还包括所有的数组、对象、正则表达式、函数、类和 DOM 元素，更不用说 null 和 undefined。当使用 any 类型时，通常可以使用更具体的类型来保留一些类型安全：
+
+```ts
+// 别这样！
+function getLengthBad(array: any) {
+  return array.length;
+}
+function getLength(array: any[]) {
+  return array.length;
+}
+```
+
+后一个版本使用 any[] 而不是 any，这样做有以下三个好处：
+
+- 函数体中对 array.length 的引用是经过类型检查的。
+- 函数的返回类型会被推断为 number 而不是 any。
+- 对 getLength 的调用将被检查以确保参数是一个数组。
+
+如果希望参数是一个数组的数组，但并不关心具体类型，可以使用 any[][]。如果期望是某种对象，但不知道值是什么，可以使用 {[key: string]: any}：
+
+```ts
+function hasTwelveletterkey(o: { [key: string]: any }) {
+  for (const key in o) {
+    if (key.length === 12) {
+      return true;
+    }
+  }
+  return false;
+}
+```
+
+在这种情况下，也可以使用 object 类型，它包括所有非基本类型。但这会略有不同，虽然仍然可以枚举其键（key），但不能访问其中任何一个键的值：
+
+```ts
+function hasTwelveletterkey(o: object) {
+  for (const key in o) {
+    if (key.length === 12) {
+      console.log(key, o[key]); // 对象 “{}” 类型的索引签名隐式地含有 “any” 类型
+      return true;
+    }
+  }
+  return false;
+}
+```
+
+如果这种类型符合需求，可能也会对 unknown 类型感兴趣。参见条款 42。<!-- TODO -->
+
+如果只是想要一个函数类型，也要避免使用 any。有以下几个选项，而如何选择则取决于想要多具体：
+
+```ts
+type Fn0 = () => any; // 任何无参数的可调用函数
+type Fn1 = (arg: any) => any; // 只有一个参数
+type FnN = (...args: any[]) => any; // 有任意个参数，与 “Function” 类型相同
+```
+
+### 5.3 在类型良好的函数中隐藏不安全的类型断言
+
+很多时候，要把函数的类型签名写出来很容易，但要把其实现也写成类型安全的代码却相当困难。尽管编写类型安全的实现是一个崇高的目标，但比起处理那些知道代码里并不会出现的边缘情况的困难来说，可能并不值得。
+
+如果在类型安全实现上的合理尝试无法奏效，那么可以使用隐藏在具有正确类型签名的函数中的不安全类型断言。隐藏在类型良好的函数中的不安全类型断言比散落在代码中的不安全类型断言要好得多。
+
+假设想让一个函数缓存其最后一次调用。这是在 React 等框架中消除成本极高的函数调用的常用技术。如果能写一个通用的 cacheLast 包装器类型，可以给任何函数添加这种行为，那就很好了。它的声明很容易写：
+
+```ts
+declare function cacheLast<T extends Function>(fn: T): T;
+```
+
+这是对实现的一次尝试：
+
+```ts
+function cacheLast<T extends Function>(fn: T): T {
+  let lastArgs: any[] | null = null;
+  let lastResult: any;
+
+  return function (...args: any[]) {
+    // 不能将类型 “(...args: any[]) => any” 分配给类型 “T”
+    if (!lastArgs || !shallowEqual(lastArgs, args)) {
+      lastResult = fn(...args);
+      lastArgs = args;
+    }
+    return lastResult;
+  };
+}
+```
+
+这个报错是有道理的：TypeScript 没有理由相信这个非常松散的函数与 T 之间有任何关系。但是，类型系统会保证它被正确的参数调用，以及它的返回值被赋予正确的类型。所以，如果在这里添加一个类型断言，其实问题不大：
+
+```ts
+function cacheLast<T extends Function>(fn: T): T {
+  let lastArgs: any[] | null = null;
+  let lastResult: any;
+
+  return function (...args: any[]) {
+    // 不能将类型 “(...args: any[]) => any” 分配给类型 “T”
+    if (!lastArgs || !shallowEqual(lastArgs, args)) {
+      lastResult = fn(...args);
+      lastArgs = args;
+    }
+    return lastResult;
+  } as unknown as T;
+}
+```
+
+事实上，这个方法对传进来的任何简单的函数都能完美工作。当然，在这个实现中隐藏了不少 any 类型，但它们都不在类型签名之中，所以调用 cacheLast 的代码是不会知道的。但这个实现有几个实际的问题：
+
+- 它没有检查连续调用的 this 的值是否相同。
+- 而且如果原来的函数上定义了属性，那么封装后的函数就不会有这些属性了，所以它的类型也不会相同。
+
+但如果知道这些情况不会在代码中出现，那么这种实现就很好。这个函数的确可以采用类型安全的方式来写。
+
+在前面例子中，shallowEqual 函数对两个数组进行操作，其类型和实现还是比较容易的。但其对于对象的变种就更有意思了，和 cacheLast 一样，写出它的类型签名也比较容易：
+
+```ts
+declare function shallowObjectEqual<T extends object>(a: T, b: T): boolean;
+```
+
+但其实现就需要多用点心，因为不能保证 a 和 b 有相同的键（参见条款 54）：<!-- TODO -->
+
+```ts
+function shallowObjectEqual<T extends object>(a: T, b: T): boolean {
+  for (const [k, aVal] of Object.entries(a)) {
+    if (!(k in b) || aVal !== b[k]) {
+      // 对象 “{}” 类型的索引签名隐式地含有 "any" 类型
+      return false;
+    }
+  }
+  return Object.keys(a).length === Object.keys(b).length;
+}
+```
+
+尽管刚刚检查了 k in b 为真，但 TypeScript 还是对 b[k] 的访问报错，所以别无选择，只能进行类型转换：
+
+```ts
+function shallowObjectEqual<T extends object>(a: T, b: T): boolean {
+  for (const [k, aVal] of Object.entries(a)) {
+    if (!(k in b) || aVal !== (b as any)[k]) {
+      return false;
+    }
+  }
+  return Object.keys(a).length === Object.keys(b).length;
+}
+```
+
+这个类型断言是无害的（因为已经检查了 k in b），而且留下了一个正确的函数和一个清晰的类型签名。
+
+### 5.4 理解 any 演变

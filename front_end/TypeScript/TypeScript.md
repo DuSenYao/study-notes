@@ -455,7 +455,7 @@
 
 微软公司有一部分产品是使用 JS 语言进行开发和维护
 
-因此微软也面临同样的题。在微软技术院士 Steve Lucco 先生的带领下，微软公司组建了一个数十人的团队开始着手设计和实现一种 JS 开发工具，用以解决产品开发和维护中遇到的问题。随后，另一位重要成员也加入了这个团队，他就是 C# 和 Turbo pascal 编程语言之父、微软技术院 Anders Hejlsberg 先生。该团队决定推出一款新的编程语言来解决 JS 程序开发与维护过程中所面临的难题。凭借微软公司在编程语言设计与开发方面的丰富经验，在历经了约两年的开发后，2012 年 10 月 1 日，微软对外发布了 TypeScript 第一个公开预览版 v0.8。2014 年 4 月 2 日，TypeScript 1.0 版本发布；2016 年 9 月 22 日，TypeScript 2.0 版本发布；2018 年 7 月 30 日，TypeScript 3.0 版本发布
+因此微软也面临同样的题。在微软技术院士 Steve Lucco 先生的带领下，微软公司组建了一个数十人的团队开始着手设计和实现一种 JS 开发工具，用以解决产品开发和维护中遇到的问题。随后，另一位重要成员也加入了这个团队，他就是 C# 和 Turbo pascal 编程语言之父、微软技术院 Anders Hejlsberg 先生。该团队决定推出一款新的编程语言来解决 JS 程序开发与维护过程中所面临的难题。凭借微软公司在编程语言设计与开发方面的丰富经验，在历经了约两年的开发后，2012 年 10 月 1 日，微软对外发布了 TypeScript 第一个公开预览版 v0.8。2014 年 4 月 2 日，TypeScript 1.0 版本发布；2016 年 9 月 22 日，TypeScript 2.0 版本发布；2018 年 7 月 30 日，TypeScript 3.0 版本发布。
 
 #### 1.1.1 始于 JS，终于 JS
 
@@ -6813,7 +6813,7 @@ function f(x: A | B) {
     x; // A
   }
   if (x instanceof B) {
-    X; // B
+    x; // B
   }
 }
 ```
@@ -7035,10 +7035,10 @@ function f(result: Result) {
 
 - x.p
 - !x.p
-- x.p==v
-- x.p===v
-- x.p!=v
-- x.p!==v
+- x.p == v
+- x.p === v
+- x.p != v
+- x.p !== v
 
 其中，x 代表可辨识联合对象；p 为判别式属性名；v 若存在，则为一个表达式。判别式属性类型守卫能够对可辨识联合对象 × 进行类型细化。
 
@@ -9631,7 +9631,7 @@ const button = document getElementById('btn');
 在尝试安装某个第三方代码库的声明文件时，可能会遇到以下三种情况，下面以 jQuery 为例：
 
 - 在安装 jQuery 时，jQuery 的代码包中已经内置了它的声明文件。
-- 在安装 jQuery 时，jQuery 的代码包中没有内置的声明文件，但是在 [DefinitelyTyped](https://definitelytyped.org/) 网站上能够找到 jQuery 的声明文件。
+- 在安装 jQuery 时，jQuery 的代码包中没有内置的声明文件，但是可以在 [TypeScript 官方网站](https://www.typescriptlang.org/dt/search?search=)上搜索到声明文件。。
 - 通过以上方式均找不到 jQuery 的声明文件，需要自定义 jQuery 的声明文件。
 
 ##### 4.8.2.1 含有内置声明文件
@@ -9685,7 +9685,7 @@ observable.subscribe({
 });
 ```
 
-[DefinitelyTyped](https://definitelytyped.org/)是一个公开的集中式的 TypeScript 声明文件代码仓库，该仓库中包含了数千个代码库的声明文件。DefinitelyTyped 托管在 GitHub 网站上，由开源社区和 TypeScript 开发团队共同维护。如果正在使用的第三方代码库没有内置的声明文件，那么可以尝试在 DefinitelyTyped 仓库中搜索声明文件。
+[DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)是一个公开的集中式的 TypeScript 声明文件代码仓库，该仓库中包含了数千个代码库的声明文件。DefinitelyTyped 托管在 GitHub 网站上，由开源社区和 TypeScript 开发团队共同维护。如果正在使用的第三方代码库没有内置的声明文件，那么可以尝试在 [TypeScript 官方网站](https://www.typescriptlang.org/dt/search?search=)中搜索声明文件。
 
 ##### 4.8.2.2 typings 与 types
 

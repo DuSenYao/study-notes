@@ -52,7 +52,7 @@ ES6 的第一个版本就这样在 2015 年 6 月发布了，正式名称是《E
 - Stage 3：Candidate（候选阶段）
 - Stage 4：Finished（定案阶段）
 
-只要一个提案只要能进入 Stage 2，就基本认为其会包括在以后的正式标准里面。ECMAScript 当前的所有提案都可以在 TC39 的[官方网站](https://www.github.com/tc39/ecma262) 中查看。
+只要一个提案只要能进入 Stage 2，就基本认为其会包括在以后的正式标准里面。ECMAScript 当前的所有提案都可以在 TC39 的[官方网站](https://www.github.com/tc39/ecma262)中查看。
 
 ### 1.4 ECMAScript 的历史
 
