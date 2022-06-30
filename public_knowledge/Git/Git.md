@@ -667,25 +667,51 @@ git config --global core.editor "code -w"
 
 #### 2.1.1 配置公私钥
 
-在本地创建 SSH 秘钥
+1. 生成新的 SSH 秘钥
 
-1. 打开 Git Bash，在本地使用 `ssh-keygen -t ed25519 -C "1758231591@qq.com"` 生成 SSH 秘钥
-2. 确保 ssh-agent 正在运行。可以手动启动它：
+   打开 Git Bash，运行下面的代码，这将使用提供的电子邮件作为标签创建一个新的 SSH 密钥。
+
+   ```sh
+   ssh-keygen -t ed25519 -C "1758231591@qq.com"
+   ```
+
+   当系统提示 “输入要在其中保存密钥的文件” 时，按 Enter。这接受默认文件位置。
+
+   ```sh
+   > Enter a file in which to save the key (/c/Users/you/.ssh/id_algorithm):[Press enter]
+   ```
+
+2. 将 SSH 密钥添加到 ssh-agent
+
+   确保 ssh-agent 正在运行。也可以手动启动它：
 
    ```sh
    # 在后台启动 ssh-agent
-   $ eval `ssh-agent -s`
-
+   $ eval "$(ssh-agent -s)"
    > Agent pid 59566
    ```
 
-3. 将 SSH 私钥添加到 ssh-agent。 如果创建了不同名称的密钥，或者要添加不同名称的现有密钥，将命令中的 id_ed25519 替换为私钥文件的名称。
+   将 SSH 私钥添加到 SSH 代理。如果创建了不同名称的密钥，或者要添加不同名称的现有密钥，将命令中的 id_ed25519 替换为私钥文件的名称。
 
    ```sh
    ssh-add ~/.ssh/id_ed25519
    ```
 
-4. 在 `C:\Users\用户名\.ssh\id_ed25519.pub` 文件里，就有创建出来的**公钥**，把公钥复制出来，粘贴到 GitHub 上。
+3. 将 SSH 公钥添加到 GitHub 账户
+
+   1. 将 SSH 公钥复制到剪贴板
+
+      ```sh
+      clip < ~/.ssh/id_ed25519.pub
+      ```
+
+      > 如果 clip 不可用，公钥文件在 `C:\Users\用户名\.ssh\id_ed25519.pub`。
+
+   2. 在任何页面的右上角，单击右上角个人资料照片，然后单击 Settings。在单击侧边栏的 **SSH and GPG keys**。
+
+   3. 单击 New SSH key。在 "Title" 字段中，为新密钥添加描述性标签，并将密钥粘贴到 "Key" 字段。
+
+   4. 单击 Add SSH key。如有提示，确认 GitHub 密码。
 
 > ssh 协议需要这个，使用 ssh 传输协议，不需要账户密码就可以连接 gitHub。
 
