@@ -40,6 +40,17 @@
     - [4.3 不要在文档中重复类型信息](#43-不要在文档中重复类型信息)
     - [4.4 将空值推到类型边界上](#44-将空值推到类型边界上)
     - [4.5 优选接口的联合，而不是联合的接口](#45-优选接口的联合而不是联合的接口)
+    - [4.6 选择更精确的字符串类型的替代类型](#46-选择更精确的字符串类型的替代类型)
+    - [4.7 宁愿选择不完整的类型，也不选择不准确的类型](#47-宁愿选择不完整的类型也不选择不准确的类型)
+    - [4.8 从 API 和规范而不是从数据中生成类型](#48-从-api-和规范而不是从数据中生成类型)
+    - [4.9 使用问题域语言命名类型](#49-使用问题域语言命名类型)
+    - [4.10 考虑加 “烙印” 来实现名义类型](#410-考虑加-烙印-来实现名义类型)
+  - [五. 和 Any 一起工作](#五-和-any-一起工作)
+    - [5.1 为 Any 类型使用最窄的范围](#51-为-any-类型使用最窄的范围)
+    - [5.2 比起普通的 any，选择更精确的 any 变体](#52-比起普通的-any选择更精确的-any-变体)
+    - [5.3 在类型良好的函数中隐藏不安全的类型断言](#53-在类型良好的函数中隐藏不安全的类型断言)
+    - [5.4 理解 any 演变](#54-理解-any-演变)
+    - [5.5 对未知类型的值使用 unknown 而不是 any](#55-对未知类型的值使用-unknown-而不是-any)
 
 <!-- /code_chunk_output -->
 
@@ -5453,3 +5464,158 @@ function shallowObjectEqual<T extends object>(a: T, b: T): boolean {
 这个类型断言是无害的（因为已经检查了 k in b），而且留下了一个正确的函数和一个清晰的类型签名。
 
 ### 5.4 理解 any 演变
+
+在 TypeScript 中，一个变量的类型一般是在它被声明时所确定的。在这之后，它可以被细化（例如，通过检查它是否为 null），但它不能被扩展到又纳入新的值。然而，当涉及 any 类型时，就有一个值得关注的例外。
+
+在 JS 中，可能会写一个函数来生成一个这样的数字范围：
+
+```ts
+function range(start, limit) {
+  const out = [];
+  for (let i = start; i < limit; i++) {
+    out.push(i);
+  }
+  return out;
+}
+```
+
+当把它转换为 TypeScript 时，它会如期望的一样工作：
+
+```ts
+function range(start: number, limit: number) {
+  const out = [];
+  for (let i = start; i < limit; i++) {
+    out.push(i);
+  }
+  return out; // 返回类型推断为 number[]
+}
+```
+
+TypeScript 怎么知道 out 的类型是 number[]，它被初始化为 []，而这可能是一个 any 类型的数组。
+
+out 共出现了三次，从检查它每次出现被推断的类型开始看：
+
+```ts
+function range(start: number, limit: number) {
+  const out = []; // 类型是 any[]
+  for (let i = start; i < limit; i++) {
+    out.push(i); // out 的类型是 any[]
+  }
+  return out; // 类型是 number[]
+}
+```
+
+out 的类型一开始是 any[]，一个无差别的数组。但是，当把那些 number 的值都推进去时，它的类型就 “演变” 成了 number[]。
+
+这与[收缩](#34-理解类型收缩)不同。一个数组的类型可以通过推进不同的元素来扩展：
+
+```ts
+const result = []; // 类型是 any[]
+result.push('a');
+result; // 类型是 string[]
+result.push(1);
+result; // 类型是 (string | number)[]
+```
+
+有了条件语句，数组的类型甚至可以在不同的分支中变化。这里用一个简单的值而不是一个数组来展示同样的行为。
+
+```ts
+// 类型是 any
+let val; // 类型是 any
+if (Math.random() < 0.5) {
+  val = /hello/;
+  val; //类型是 RegExp
+} else {
+  val = 12;
+  val; // 类型是 number
+}
+val; // 类型是 number | RegExp
+```
+
+最后一种触发 “any 演变” 行为的情况是一个变量最初是 null。当在 try/catch 中设置一个值时，经常会出现这种情况：
+
+```ts
+let val = null; // 类型是 any
+try {
+  somethingDangerous();
+  val = 12;
+  val; // 类型是 number
+} catch (e) {
+  console.warn('alas!');
+}
+val; // 类型是 number | null
+```
+
+有趣的是，只有当一个变量的类型是隐式的 any，并设置了 noImplicitAny 时，才会出现这种行为！但添加一个显式的 any，其类型就不变了：
+
+```ts
+let val: any; //类型是 any
+if (Math.random() < 0.5) {
+  val = /hello/;
+  val; // 类型是 any
+} else {
+  val = 12;
+  val; // 类型是 any
+}
+val; // 类型是 any
+```
+
+> **注意**：这种行为在编辑器中可能会显得难以捉摸，因为只有在赋值或推进一个元素之后，类型才会 “演变”。如果检查赋值行上的类型，其仍然会显示 any 或 any[]。
+
+如果在任何赋值之前使用一个值，就会得到一个隐式的 any 错误：
+
+```ts
+function range(start: number, limit: number) {
+  const out = []; // 变量 “out” 在一些无法确定类型的地方隐式具有 “any[]” 类型。
+  if (start === limit) {
+    return out;
+  }
+  for (let i = start; i < limit; i++) {
+    out.push(i);
+  }
+  return out;
+}
+```
+
+换句话说，“演变的” any 类型只有在向它们写值的时候才是 any，如果试图在它们还是 any 的时候从它们那里读值，就会得到一个错误。隐式 any 类型不会通过函数调用来演变。这里的箭头函数会阻止类型推断：
+
+```ts
+function makesquares(start: number, limit: number) {
+  const out = []; // 变量 “out” 在某些地方隐式具有 “any[]” 类型
+  range(start, limit).forEach(i => {
+    out.push(i * i);
+  });
+  return out; // 变量 “out” 隐式具有 “any[]” 类型
+}
+```
+
+在类似的情况下，可能要考虑通过数组的 map 和 filter 方法仅用一条语句来构建数组，这样就彻底避免了循环和 any 演变。
+
+有关于类型推断的所有常见注意事项也适用于 any 演变。正确的数组类型真的是 (string|number)[]吗？还是应该是 number[]，但错误地推进了一个 string？可能还是想提供一个显式类型标注来获得更好的错误检查，而不是使用 any 演变。
+
+### 5.5 对未知类型的值使用 unknown 而不是 any
+
+假设想写一个 YAML 解析器（YAML 可以表示与 JSON 所表示的相同的东西，但能够接受 JSON 语法的超集）。parseYAML 方法的返回类型应该是什么？让返回值是 any 会很有吸引力（像 JSON.parse）。
+
+```ts
+function parseYAML(yaml: string): any {
+  // ...
+}
+```
+
+但这与[避免使用 “有传染性” 的 any 类型](#51-为-any-类型使用最窄的范围)的建议背道而驰，特别是其中提出的不要从函数中返回它们的建议。
+
+理想情况下，希望用户能立即将结果分配给另一个类型：
+
+```ts
+interface Book {
+  name: string;
+  author: string;
+}
+const book: Book = parseYAML(`
+name: Wuthering Heights
+author: Emily Bronte
+`);
+```
+
+但是如果没有类型声明，book 变量就会悄悄地得到一个 any 类型，而且在任何使用它的地方都会阻碍类型检查。

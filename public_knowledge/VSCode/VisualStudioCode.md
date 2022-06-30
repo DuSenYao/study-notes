@@ -267,9 +267,7 @@ VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过�
 
 #### 3.1.2 自定义代码片段
 
-文件 -> 首选项 -> 用户片段，或 命令面板的 `Preferences:Configure User Snippets`
-
-> 代码片段的定义文件是 `JSON` 格式的，并且支持 C 语言风格的注释。
+左下角管理 -> 配置用户代码片段，或 命令面板的 `Preferences:Configure User Snippets`。代码片段的定义文件是 JSON 格式的，并且支持 C 语言风格的注释。
 
 #### 3.1.3 创建
 
