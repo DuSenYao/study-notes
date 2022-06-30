@@ -59,9 +59,9 @@
 
 #### 2.2.1 箭头函数取代 Function.prototype.bind，不应再用 self/\_this/that 绑定 this
 
-#### 2.2.2 在 `class` 或 `Object` 中使用新的函数声明方式
+#### 2.2.2 在 class 或 Object 中使用新的函数声明方式
 
-ES6 推出了一种更简洁的函数声明方式，在 **class** 或 **Object** 中声明函数, 不需要写 `function`，只要 **名字 + ()** 即可：
+ES6 推出了一种更简洁的函数声明方式，在 class 或 Object 中声明函数, 不需要写 `function`，只要 名字 + () 即可：
 
 ```js
 const use = {
@@ -72,7 +72,7 @@ const use = {
 };
 ```
 
-#### 2.2.3 优先使用 箭头函数 而不是使用传统的函数，尤其是使用匿名函数时
+#### 2.2.3 优先使用箭头函数而不是传统的函数，尤其是使用匿名函数时
 
 #### 2.2.4 不要再函数体内使用 arguments 变量
 
@@ -109,7 +109,7 @@ class Queue {
 }
 ```
 
-### 2.4 不要使用 `if` 判断后再赋予默认值
+### 2.4 不要使用 if 判断后再赋予默认值
 
 如果函数需要对参数做默认值处理，不要使用 if 判空之后再修改参数，而是使用 ES6 的 [默认参数](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions/Default_parameters) 和 [解构赋值](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)。
 
@@ -147,7 +147,7 @@ function hello({ name, age, sex }) {
 
 ### 2.8 不要写多余的 await
 
-如果 await 是不必要的（在返回语句时，那么就不要用 async 标识函数），这是没有必要的 – 除非，需要在这个函数内异步操作完成后有其他操作。
+如果 await 是不必要的（在返回语句时，那么就不要用 async 标识函数），这是没有必要的。除非，需要在这个函数内异步操作完成后有其他操作。
 
 ### 2.9 不要使用 == 进行比较
 
@@ -173,7 +173,7 @@ const state = {
 
 ### 2.11 存放 id 标识列表使用 Set 而非数组
 
-使用 `Set` 可以从数据结构层面避免掉可能重复的问题：
+使用 Set 可以从数据结构层面避免掉可能重复的问题：
 
 ```js
 const item = {

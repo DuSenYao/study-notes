@@ -92,7 +92,7 @@
       - [10.3.2 :only-child 伪类](#1032-only-child-伪类)
       - [10.3.3 :nth-child() 伪类和 :nth-last-child() 伪类](#1033-nth-child-伪类和-nth-last-child-伪类)
     - [10.4 匹配类型的子索引伪类](#104-匹配类型的子索引伪类)
-      - [10.4.1 :first-of-type 伪类和：last-of-type 伪类](#1041-first-of-type-伪类和last-of-type-伪类)
+      - [10.4.1 :first-of-type 伪类和 :last-of-type 伪类](#1041-first-of-type-伪类和-last-of-type-伪类)
       - [10.4.2 :only-of-type 伪类](#1042-only-of-type-伪类)
       - [10.4.3 :nth-of-type() 伪类和 :nth-last-of-type() 伪类](#1043-nth-of-type-伪类和-nth-last-of-type-伪类)
   - [十一. 逻辑组合伪类](#十一-逻辑组合伪类)
@@ -2923,7 +2923,7 @@ if (typeof document.msHidden !== 'undefined' || !history.pushState) {
 
 ```html
 <div class="cs-confirm">
-  <!-- 可以匹配：only-child伪类 -->
+  <!-- 可以匹配 :only-child 伪类 -->
   <p class="cs-confirm-p">确定删除该内容？</p>
 </div>
 ```
@@ -2964,7 +2964,7 @@ if (typeof document.msHidden !== 'undefined' || !history.pushState) {
 
 匹配类型的子索引伪类类似于子索引伪类，区别在于匹配类型的子索引伪类是在同级列表中相同标签元素之间进行索引与解析的。写 HTML 的时候要注意使用语义化标签，甚至可以使用自定义标签。
 
-#### 10.4.1 :first-of-type 伪类和：last-of-type 伪类
+#### 10.4.1 :first-of-type 伪类和 :last-of-type 伪类
 
 :first-of-type 表示当前标签类型元素的第一个。:last-of-type 伪类的语法和匹配规则与 :first-of-type 的类似，区别在于 :last-of-type 伪类是匹配最后一个同类型的标签元素。
 
@@ -3022,6 +3022,7 @@ if (typeof document.msHidden !== 'undefined' || !history.pushState) {
    /* 尚未支持 */
    .cs-li:not(li, dd) {
    }
+
    /* 可以使用下面的写法代替： */
    .cs-li:not(li):not(dd) {
    }

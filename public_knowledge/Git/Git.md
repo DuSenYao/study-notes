@@ -336,10 +336,10 @@ git fetch origin main
 
 从远程获取代码并合并本地的版本，其实就是 `git fetch` 和 `git merge FETCH_HEAD` 的简写
 
-> **例 1**: `git pull origin master` // 如果远程分支是与当前分支合并，则冒号后面的部分可以省略
-> **例 2**: `git pull origin master:main` // 将远程主机 origin 的 master 分支拉取过来，与本地的 main 分支合并
+> **例 1**：`git pull origin master` // 如果远程分支是与当前分支合并，则冒号后面的部分可以省略
+> **例 2**：`git pull origin master:main` // 将远程主机 origin 的 master 分支拉取过来，与本地的 main 分支合并
 
-- `--rebase`: push 失败，需要先把服务器上的代码给 pull 下来，为了避免有 merge 动作，可以使用
+- `--rebase`：push 失败，需要先把服务器上的代码给 pull 下来，为了避免有 merge 动作，可以使用
   > 相当于 git fetch + git rebase FETCH_HEAD
 
 ##### 1.2.4.4 git push <远程主机名> <本地分支名>:<远程分支名>
@@ -364,7 +364,7 @@ git push origin master:master
 
 - `-u`：如果当前分支与多个主机存在追踪关系，则可以使用 `-u` 参数指定一个默认主机，这样后面就可以不加任何参数使用 git push，不带任何参数的 git push，默认只推送当前分支。如果想更改设置，可以使用 git config 命令。`git config --global push.default matching` 或 `git config --global push.default simple`
 
-- 使用`ssh`协议推送: `gitHub: git push git@github.com:DuSenYao/Learning-notes-and-materials.git`
+- 使用`ssh`协议推送：`gitHub: git push git@github.com:DuSenYao/Learning-notes-and-materials.git`
 
 > **注意**：需要 [配置公私钥](#211-配置公私钥)
 
