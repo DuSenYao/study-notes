@@ -16,6 +16,8 @@
     - [2.3 Section 概览](#23-section-概览)
       - [2.3.1 通用头部结构字段](#231-通用头部结构字段)
       - [2.3.2 单体 Section](#232-单体-section)
+      - [2.3.3 互补 Section](#233-互补-section)
+      - [2.3.4 魔数和版本号](#234-魔数和版本号)
 
 <!-- /code_chunk_output -->
 
@@ -167,11 +169,11 @@ i32.add
 
 这一类 Section 一般可以独自描述整个模块的一部分特征（或者说是功能），同时也可以与其他 Section 一起配合起来使用。
 
-1. Type Section
+1. **Type Section**
 
    ![Type Section](./image/Type%20Section.webp)
 
-   首先，第一个出现在模块中的 Section 是 “Type Section”。顾名思义，这个 Section 用来存放与 “类型” 相关的东西。而这里的类型，主要是指 “函数类型”。
+   首先，第一个出现在模块中的 Section 是 “Type Section”。顾名思义，这个 Section **用来存放与 “类型” 相关的东西**。而这里的类型，主要是指 “函数类型”。
 
    与大部分编程语言类似，函数类型一般由函数的**参数**和**返回值**两部分组成。而只要知道了这两部分，就能够确定在函数调用前后，栈上数据的变化情况。因此，对于 “函数类型”，也可以将其直接理解为更加常见的一个概念 —— “函数签名”。
 
@@ -185,12 +187,84 @@ i32.add
 
    ![Type Section的 entries 字段的具体组成](./image/Type%20Section%E7%9A%84%20entries%20%E5%AD%97%E6%AE%B5%E7%9A%84%E5%85%B7%E4%BD%93%E7%BB%84%E6%88%90.webp)
 
-2. Start Section
+2. **Start Section**
 
    ![Start Section](./image/Start%20Section.webp)
 
-   Start Section 的 ID 为 8。通过这个 Section，可以为模块指定在其初始化过程完成后，需要首先被宿主环境执行的函数。
+   Start Section 的 ID 为 8。通过这个 Section，**可以为模块指定在其初始化过程完成后，需要首先被宿主环境执行的函数**。
 
    所谓的 “初始化完成后” 是指：模块实例内部的线性内存和 Table，已经通过相应的 Data Section 和 Element Section 填充好相应的数据，但导出函数还无法被宿主环境调用的这个时刻。关于 Data Section 和 Element Section <!-- TODO -->
 
    > **注意**：一个 Wasm 模块只能拥有一个 Start Section，也就是说只能调用一个函数。并且调用的函数也不能拥有任何参数，同时也不能有任何的返回值。
+
+3. **Global Section**
+
+   ![GlobalSection](./image/GlobalSection.webp)
+
+   Global Section 的 ID 为 6。这个 Section 中**主要存放了整个模块中使用到的全局数据（变量）信息**。这些全局变量信息可以用来控制整个模块的状态。在这个 Section 中，对于每一个全局数据，都需要标记出它的值类型、可变性以及值对应的初始化表达式。
+
+4. **Custom Section**
+
+   Custom Section 的 ID 为 0。这个 Section **主要用来存放一些与模块本身主体结构无关的数据**，比如调试信息、source-map 信息等等。VM（Virtual Machine，虚拟机）在实例化并执行一个 Wasm 二进制模块中的指令时，对于可以识别的 Custom Section，将会以特定的方式为其提供相应的功能。而 VM 对于无法识别的 Custom Section 则会选择直接忽略。
+
+   VM 对于 Custom Section 的识别，主要是通过它 “头部” 信息中的 “name” 字段来进行。在目前的 MVP 标准中，有且仅有一个标准中明确定义的 Custom Section，也就是 “Name Section”。这个 Section 对应的头部信息中，“name” 字段的值即为字符串 “name”。在这个 Section 中存放了有关模块定义中 “可打印名称” 的一些信息。
+
+#### 2.3.3 互补 Section
+
+下面每一组的两个 Section 共同协作，一同描述了整个 Wasm 模块的某方面特征。
+
+1. **Import Section 和 Export Section**
+
+   ![Import Section 和 Export Section](./image/Import%20Section%20%E5%92%8C%20Export%20Section.webp)
+
+   首先是 Import Section，它的 ID 为 2。Import Section **主要用于作为 Wasm 模块的 “输入接口”**。在这个 Section 中，定义了所有从外界宿主环境导入到模块对象中的资源，这些资源将会在模块的内部被使用。
+
+   允许被导入到 Wasm 模块中的资源包括：函数（Function）、全局数据（Global）、线性内存对象（Memory）以及 Table 对象（Table）。
+
+   Export Section 的 ID 为 7，通过它，可以**将一些资源导出到虚拟机所在的宿主环境中**。允许被导出的资源类型同 Import Section 的可导入资源一致。而导出的资源应该如何被表达及处理，则需要由宿主环境运行时的具体实现来决定。
+
+2. **Function Section 和 Code Section**
+
+   ![Function Section 和 Code Section](./image/Function%20Section%20%E5%92%8C%20Code%20Section.webp)
+
+   Function Section 的 ID 为 3，**其中存放了这个模块中所有函数对应的函数类型信息**。在 Wasm 标准中，所有模块内使用到的函数都会通过整型的 indicies 来进行索引并调用。可以想象这样一个数组，在这个数组中的每一个单元格内都存放有一个函数指针，当需要调用某个函数时，通过 “指定数组下标” 的方式来进行索引就可以了。
+
+   而 Function Section 便描述了在这个数组中，从索引 0 开始，一直到数组末尾所有单元格内函数，所分别对应的函数类型信息。这些类型信息是由 [Type Section](#232-单体-section) 来描述的。
+
+   Type Section 存放了 Wasm 模块使用到的所有函数类型（签名）；Function Section 存放了模块内每个函数对应的函数类型，即具体的函数与类型对应关系；而在 Code Section 中存放的则是每个函数的具体定义，也就是实现部分。
+
+   Code Section 的 ID 为 10，它的组织结构从宏观上来看，同样可以将它理解成一个数组结构，这个数组中的每个单元格都**存放着某个函数的具体定义**，也就是函数体对应的一簇 Wasm 指令集合。每个 Code Section 中的单元格都对应着 Function Section 这个 “数组” 结构在相同索引位置的单元格。也就是说，Code Section 的 0 号单元格中存放着 Function Section 的 0 号单元格中所描述函数类型对应的具体实现。
+
+   > 当然，上述提到的各种 “数组” 结构，其实并不一定真的是由编程语言中的数组来实现的。只是从各个 Section 概念上的协作和数据引用方式来看，可以通过数组来模拟这样的交互流程。具体实现需要依以各个 VM 为准。
+
+3. **Table Section 和 Element Section**
+
+   ![Table Section 和 Element Section](./image/Table%20Section%20%E5%92%8C%20Element%20Section.webp)
+
+   Table Section 的 ID 为 4。在 MVP 标准中，它的作用并不大，只需要知道可以在其对应的 Table 结构中存放类型为 “anyFunc” 的函数指针，并且还可以通过指令 “call_indirect” 来调用这些函数指针所指向的函数。Table Section 的结构与 Function Section 类似，也都是由 “一个个小格子” 按顺序排列而成的，可以用数组的结构来类比着进行理解。
+
+   在实际的 VM 实现中，虚拟机会将模块的 Table 结构，初始化在独立于模块线性内存的区域中，这个区域无法被模块本身直接访问。因此 Table 中这些 “小格子” 内具体存放的值，对于 Wasm 模块本身来说是不可见的。
+
+   所以在使用 call_indirect 指令时，只能通过 indicies，也就是 “索引” 的方式，来指定和访问这些 “小格子” 中的内容。这在某种程度上，保证了 Table 中数据的安全性。在默认情况下，Table Section 是没有与任何内容相关联的，也就是说从二进制角度来看，在 Table Section 中，只存放了用于描述某个 Table 属性的一些元信息。比如：Table 中可以存放哪种类型的数据？Table 的大小信息等等。
+
+   那为了给 Table Section 所描述的 Table 对象填充实际的数据，还需要使用名为 Element Section 的 Section 结构。Element Section 的 ID 为 9，通过这个 Section，便可以为 Table 内部填充实际的数据。
+
+4. **Memory Section 和 Data Section**
+
+   ![Memory Section 和 Data Section](./image/Memory%20Section%20%E5%92%8C%20Data%20Section.webp)
+
+   Memory Section 的 ID 为 5。同 Table Section 的结构类似，借助 Memory Section，可以**描述一个 Wasm 模块内所使用的线性内存段的基本情况**，比如这段内存的初始大小、以及最大可用大小等等。
+
+   **Wasm 模块内的线性内存结构，主要用来以二进制字节的形式，存放各类模块可能使用到的数据**，比如一段字符串、一些数字值等等。
+
+   通过浏览器等宿主环境提供的比如 WebAssembly.Memory 对象，可以直接将一个 Wasm 模块内部使用的线性内存结构，以 “对象” 的形式从模块实例中导出。而被导出的内存对象，可以根据宿主环境的要求，做任何形式的变换和处理，或者也可以直接通过 Import Section，再次导入给其他的 Wasm 模块来进行使用。
+
+   同样地，在 Memory Section 中，也只是存放了描述模块线性内存属性的一些元信息，如果要为线性内存段填充实际的二进制数据，还需要使用另外的 Data Section。Data Section 的 ID 为 11。
+
+#### 2.3.4 魔数和版本号
+
+Section 信息固然十分重要，但另一个更重要的问题是：如何识别一个二进制文件是不是一个合法有效的 Wasm 模块文件呢？其实同 ELF 二进制文件一样，Wasm 也同样使用 “魔数” 来标记其二进制文件类型。所谓**魔数，可以简单地将它理解为具有特定含义/功能的一串数字**。
+
+一个标准 Wasm 二进制模块文件的头部数据是由具有特殊含义的字节组成的。其中开头的前四个字节分别为 “（高地址）0x6d 0x73 0x61 0x0（低地址）”，这四个字节对应的 ASCII 可见字符为 “asm”（第一个为空字符，不可见）。
+
+接下来的四个字节，用来表示当前 Wasm 二进制文件所使用的 Wasm 标准版本号。就目前来说，所有 Wasm 模块该四个字节的值均为 “（高地址）0x0 0x0 0x0 0x1（低地址）”，即表示版本 1。在实际解析执行 Wasm 模块文件时，VM 也会通过这几个字节来判断，当前正在解析的二进制文件是否是一个合法的 Wasm 二进制模块文件。
