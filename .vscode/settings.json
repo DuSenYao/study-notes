@@ -10,7 +10,8 @@
     "QUIC",
     "Skia",
     "SSIM",
-    "vorbis"
+    "vorbis",
+    "WASI"
   ],
   "html.customData": [".vscode/html.html-data.json"],
   "css.customData": [".vscode/css.css-data.json"],
