@@ -1,40 +1,52 @@
-# WebAssembly
++# WebAssembly
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
-- [WebAssembly](#webassembly)
-  - [一. 基础](#一-基础)
-  - [二. 核心原理](#二-核心原理)
-    - [2.1 堆栈机模型、寄存器机与累加器机](#21-堆栈机模型-寄存器机与累加器机)
-      - [2.1.1 堆栈机模型](#211-堆栈机模型)
-      - [2.1.2 累加器机](#212-累加器机)
-      - [2.1.3 寄存器机](#213-寄存器机)
-      - [2.1.4 三种计算模型对比](#214-三种计算模型对比)
-    - [2.2 ISA 与 V-ISA](#22-isa-与-v-isa)
-    - [2.3 Section 概览](#23-section-概览)
-      - [2.3.1 通用头部结构字段](#231-通用头部结构字段)
-      - [2.3.2 单体 Section](#232-单体-section)
-      - [2.3.3 互补 Section](#233-互补-section)
-      - [2.3.4 魔数和版本号](#234-魔数和版本号)
-    - [2.4 Wasm 使用的数据编码方式](#24-wasm-使用的数据编码方式)
-      - [2.4.1 字节序](#241-字节序)
-      - [2.4.2 LEB-128 整数编码](#242-leb-128-整数编码)
-        - [2.4.2.1 Unsigned LEB-128](#2421-unsigned-leb-128)
-        - [2.4.2.2 Signed LEB-128](#2422-signed-leb-128)
-      - [2.4.3 IEEE-754 浮点数编码](#243-ieee-754-浮点数编码)
-      - [2.4.4 UTF-8 字符串编码](#244-utf-8-字符串编码)
-      - [2.4.5 Wasm 数字类型](#245-wasm-数字类型)
-    - [2.5 WAT（WebAssembly Text Format）](#25-watwebassembly-text-format)
-      - [2.5.1 S- 表达式（S-Expression）](#251-s-表达式s-expression)
-      - [2.5.2 源码、字节码与 Flat-WAT](#252-源码-字节码与-flat-wat)
-      - [2.5.3 模块结构与 WAT](#253-模块结构与-wat)
-      - [2.5.4 WAT 与 WAST](#254-wat-与-wast)
-    - [2.6 WASI](#26-wasi)
-      - [2.6.1 Capability-based Security](#261-capability-based-security)
-      - [2.6.2 系统调用（System Call）](#262-系统调用system-call)
-      - [2.6.3 WebAssembly 操作系统接口（WASI）](#263-webassembly-操作系统接口wasi)
+- [一. 基础](#一-基础)
+- [二. 核心原理](#二-核心原理)
+  - [2.1 堆栈机模型、寄存器机与累加器机](#21-堆栈机模型-寄存器机与累加器机)
+    - [2.1.1 堆栈机模型](#211-堆栈机模型)
+    - [2.1.2 累加器机](#212-累加器机)
+    - [2.1.3 寄存器机](#213-寄存器机)
+    - [2.1.4 三种计算模型对比](#214-三种计算模型对比)
+  - [2.2 ISA 与 V-ISA](#22-isa-与-v-isa)
+  - [2.3 Section 概览](#23-section-概览)
+    - [2.3.1 通用头部结构字段](#231-通用头部结构字段)
+    - [2.3.2 单体 Section](#232-单体-section)
+    - [2.3.3 互补 Section](#233-互补-section)
+    - [2.3.4 魔数和版本号](#234-魔数和版本号)
+  - [2.4 Wasm 使用的数据编码方式](#24-wasm-使用的数据编码方式)
+    - [2.4.1 字节序](#241-字节序)
+    - [2.4.2 LEB-128 整数编码](#242-leb-128-整数编码)
+      - [2.4.2.1 Unsigned LEB-128](#2421-unsigned-leb-128)
+      - [2.4.2.2 Signed LEB-128](#2422-signed-leb-128)
+    - [2.4.3 IEEE-754 浮点数编码](#243-ieee-754-浮点数编码)
+    - [2.4.4 UTF-8 字符串编码](#244-utf-8-字符串编码)
+    - [2.4.5 Wasm 数字类型](#245-wasm-数字类型)
+  - [2.5 WAT（WebAssembly Text Format）](#25-watwebassembly-text-format)
+    - [2.5.1 S- 表达式（S-Expression）](#251-s-表达式s-expression)
+    - [2.5.2 源码、字节码与 Flat-WAT](#252-源码-字节码与-flat-wat)
+    - [2.5.3 模块结构与 WAT](#253-模块结构与-wat)
+    - [2.5.4 WAT 与 WAST](#254-wat-与-wast)
+  - [2.6 WASI](#26-wasi)
+    - [2.6.1 Capability-based Security](#261-capability-based-security)
+    - [2.6.2 系统调用（System Call）](#262-系统调用system-call)
+    - [2.6.3 WebAssembly 操作系统接口（WASI）](#263-webassembly-操作系统接口wasi)
+  - [2.7 API](#27-api)
+    - [2.7.1 Wasm 浏览器加载流程](#271-wasm-浏览器加载流程)
+    - [2.7.2 Wasm JavaScript API](#272-wasm-javascript-api)
+      - [2.7.2.1 模块对象](#2721-模块对象)
+      - [2.7.2.2 导入对象](#2722-导入对象)
+      - [2.7.2.3 错误对象](#2723-错误对象)
+      - [2.7.2.4 模块实例化方法](#2724-模块实例化方法)
+      - [2.7.2.5 模块编译方法](#2725-模块编译方法)
+    - [2.7.3 Wasm Web API](#273-wasm-web-api)
+      - [2.7.3.1 模块流式实例化方法](#2731-模块流式实例化方法)
+      - [2.7.3.2 模块流式编译方法](#2732-模块流式编译方法)
+  - [2.8 Wasm 运行时（Runtime）](#28-wasm-运行时runtime)
+    - [2.8.1 Wasm 内存模型](#281-wasm-内存模型)
 
 <!-- /code_chunk_output -->
 
@@ -740,13 +752,13 @@ Wasm 是一套新的 V-ISA（虚拟指令集架构），其中的这些虚拟指
 
 WASI 在 Wasm 字节码与虚拟机之间，增加了一层 “系统调用抽象层”。比如对于在 C/C++ 源码中使用的 fopen 函数，当将这部分源代码与专为 WASI 实现的 C 标准库 “wasi-libc” 进行编译时，源码中对 fopen 的函数调用过程，其内部会间接通过调用名为 `__wasi_path_open` 的函数来实现。这个 `__wasi_path_open` 函数，便是对实际系统调用的一个抽象。
 
-`__wasi_path_open` 函数的具体实现细节会交由各个虚拟机自行处理。也就是说，虚拟机需要在其 Runtime 运行时环境中提供，对 Wasm 模块字节码所使用到的 __wasi_path_open 函数的解析和执行能力的支持。而虚拟机在实际实现这些系统调用抽象层接口时，也需要通过实际的系统调用来进行。只不过这些细节上的处理，对于 Wasm 二进制模块来讲，是完全透明的。
+`__wasi_path_open` 函数的具体实现细节会交由各个虚拟机自行处理。也就是说，虚拟机需要在其 Runtime 运行时环境中提供，对 Wasm 模块字节码所使用到的 \_\_wasi_path_open 函数的解析和执行能力的支持。而虚拟机在实际实现这些系统调用抽象层接口时，也需要通过实际的系统调用来进行。只不过这些细节上的处理，对于 Wasm 二进制模块来讲，是完全透明的。
 
 可以将上述提到的 wasi-libc、Wasm 二进制模块、WASI 系统调用抽象层，以及虚拟机基础设施之间的关系，通过下图来直观地展示：
 
 ![WASI与虚拟机关系图](./image/WASI%E4%B8%8E%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%85%B3%E7%B3%BB%E5%9B%BE.webp)
 
-实际上，类似 __wasi_path_open 的这类以 `__wasi` 开头的，用于抽象实际系统调用的函数，便是 WASI 的核心组成部分。WASI 根据不同系统调用所提供的不同功能，将这些系统调用对应的 WASI 抽象函数接口，分别划分到了不同的子集合中。
+实际上，类似 **wasi_path_open 的这类以 `**wasi` 开头的，用于抽象实际系统调用的函数，便是 WASI 的核心组成部分。WASI 根据不同系统调用所提供的不同功能，将这些系统调用对应的 WASI 抽象函数接口，分别划分到了不同的子集合中。
 
 比如一个名为 “wasi-core” 的 WASI 标准子集合，包含有对应于 “文件操作” 与 “网络操作” 等相关系统调用的 WASI 抽象函数接口。其他如 “crypto”、“multimedia” 等子集合，甚至可以包含与实际系统调用无关的一系列 WASI 抽象系统调用接口。可以理解为 WASI 所描述的抽象系统调用，是针对 Wasm V-ISA 描述的抽象机器而言。针对这部分抽象系统的具体实现，则会依赖一部分实际的系统调用。
 
@@ -764,7 +776,7 @@ WASI 在设计和实现时，需要遵守 Wasm 的两个基本原则：
 
   实际上，基础设施在真正实现 WASI 标准时，便会采用 “Capability-based Security” 的方式来控制每一个 Wasm 模块实例所拥有的 capability。
 
-  举个例子，假设一个 Wasm 模块想要打开一个计算机本地文件，而且这个模块还是由使用了 fopen 函数的 C/C++ 源代码编译而来，那对应的虚拟机在实例化该 Wasm 模块时，便会将 fopen 对应的 WASI 系统调用抽象函数 “__wasi_path_open” 以某种方式（比如通过包装后的函数指针），当做一个 capability 从模块的 Import Section 传递给该模块进行使用。
+  举个例子，假设一个 Wasm 模块想要打开一个计算机本地文件，而且这个模块还是由使用了 fopen 函数的 C/C++ 源代码编译而来，那对应的虚拟机在实例化该 Wasm 模块时，便会将 fopen 对应的 WASI 系统调用抽象函数 “\_\_wasi_path_open” 以某种方式（比如通过包装后的函数指针），当做一个 capability 从模块的 Import Section 传递给该模块进行使用。
 
   通过这种方式，基础设施掌握了主动权。它可以决定是否要将某个 capability 提供给 Wasm 模块进行使用。若某个 Wasm 模块偷偷使用了一些不为开发者知情的系统调用，那么当该模块在虚拟机中进行实例化时，便会露出马脚。掌握这样的主动权，正适合如今基于众多不知来源的第三方库进行代码开发的现状。
 
@@ -772,7 +784,7 @@ WASI 在设计和实现时，需要遵守 Wasm 的两个基本原则：
 
 ### 2.7 API
 
-在目前与 Wasm 相关的一系列标准中，可以将这些标准主要分为两个部分：
+目前与 Wasm 相关的一系列标准中，主要分为两个部分：
 
 - **Wasm 核心标准**（Core Interfaces）：主要定义了与 “Wasm 字节码”、“Wasm 模块结构”、“WAT 可读文本格式” 以及模块验证与指令执行细节等相关的内容。
 
@@ -781,3 +793,290 @@ WASI 在设计和实现时，需要遵守 Wasm 的两个基本原则：
 #### 2.7.1 Wasm 浏览器加载流程
 
 ![Wasm 浏览器加载流程](./image/Wasm%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8A%A0%E8%BD%BD%E6%B5%81%E7%A8%8B.webp)
+
+1. **Fetch 阶段**
+
+   作为一个客户端 Web 应用，在这个阶段中，需要将被使用到的 Wasm 二进制模块，从网络上的某个位置通过 HTTP 请求的方式，加载到浏览器中。这个 Wasm 二进制模块的加载过程，同 Web 应用在浏览器中加载 JS 脚本文件等静态资源的过程，没有任何区别。对于 Wasm 模块，也可以选择将它放置到 CDN 中，或者经由 Service Worker 缓存，以加速资源的下载和后续使用过程。
+
+2. **Compile 阶段**
+
+   在这个阶段中，浏览器会将从远程位置获取到的 Wasm 模块二进制代码，编译为可执行的平台相关代码和数据结构。这些代码可以通过 “postMessage()” 方法，在各个 Worker 线程中进行分发，以让 Worker 线程来使用这些模块，进而防止主线程被阻塞。此时，浏览器引擎只是将 Wasm 的字节码编译为平台相关的代码，而这些代码还并没有开始执行。
+
+3. **Instantiate 阶段**
+
+   在这个阶段中，浏览器引擎开始执行在上一步中生成的代码。Wasm 模块可以通过定义 “Import Section” 来使用外界宿主环境中的一些资源。浏览器引擎在执行 Wasm 模块对应的代码时，会将那些 Wasm 模块规定需要从外界宿主环境中导入的资源，导入到正在实例化中的模块，以完成最后的实例化过程。这一阶段完成后，便可以得到一个动态的、保存有状态信息的 Wasm 模块实例对象。
+
+4. **Call 阶段**
+
+   可以直接通过上一阶段生成的动态 Wasm 模块对象，来调用从 Wasm 模块内导出的方法。
+
+#### 2.7.2 Wasm JavaScript API
+
+##### 2.7.2.1 模块对象
+
+首先就是如何在 JS 环境中表示 “Compile 编译” 与 “Instantiate 实例化” 这两个阶段的 “产物”。为此，Wasm 在 [JS API](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly) 标准中提供了如下两个对象与之分别对应：
+
+- [WebAssembly.Module](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Module)
+- [WebAssembly.Instance](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Instance)
+
+不仅如此，上面这两个 JS 对象本身也可以被作为类型构造函数使用，以用来直接构造对应类型的对象。也就是说，可以通过 “new” 的方式并传入相关参数，来构造这些类型的某个具体对象。比如，可以按照以下方式来生成一个 WebAssembly.Module 对象：
+
+```js
+// "..." 为有效的 Wasm 字节码数据；
+bufferSource = new Int8Array([
+  //...
+]);
+let module = new WebAssembly.Module(bufferSource);
+```
+
+这里的 WebAssembly.Module 构造函数接受一个包含有效 Wasm 二进制字节码的 ArrayBuffer 或者 TypedArray 对象。WebAssembly.Instance 构造函数的用法与 WebAssembly.Module 类似，只不过是构造函数的参数有所区别。
+
+##### 2.7.2.2 导入对象
+
+通过 Import Section，Wasm 模块便可以在实例化时接收并使用来自宿主环境中的数据。
+
+Web 浏览器作为 Wasm 模块运行时的一个宿主环境，通过 JS 的形式提供了可以被导入到 Wasm 模块中使用的数据类型，这些数据类型包括函数（Function）、全局数据（Global）、线性内存对象（Memory）以及 Table 对象（Table）。其中除 “函数” 类型外，其他数据类型分别对应着以下由 JS 对象表示的包装类型：
+
+- [WebAssembly.Global](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Global)
+- [WebAssembly.Memory](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Memory)
+- [WebAssembly.Table](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Table)
+
+而对于函数类型，可以直接使用 JS 语言中的 “函数” 来作为代替。
+
+同理，也可以通过 “直接构造” 的方式来创建上述这些 JS 对象。以 “WebAssembly.Memory” 为例，可以通过如下方式，来创建一个 WebAssembly.Memory 对象：
+
+```js
+let memory = new WebAssembly.Memory({
+  initial: 10,
+  maximum: 100
+});
+```
+
+这里通过为构造函数传递参数的方式，指定了所生成 WebAssembly.Memory 对象的一些属性。比如该对象所表示的 Wasm 线性内存其初始大小为 10 页，其最大可分配大小为 100 页。
+
+> **注意**：Wasm 线性内存的大小必须是 “Wasm 页” 大小的整数倍，而一个 “Wasm 页” 的大小在 MVP 标准中被定义为了 “64KiB”（注意和 64 KB 的区别。KiB 为 1024 字节，而 KB 为 1000 字节）。
+
+##### 2.7.2.3 错误对象
+
+除了上述几个比较重要的 JS WebAssembly 对象之外，还有另外几个与 “Error” 有关的表示某种错误的 “错误对象”。这些错误对象用以表示在整个 Wasm 加载、编译、实例化及函数执行流程中，在其各个阶段中所发生的错误。这些错误对象分别是：
+
+- [WebAssembly.CompileError](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/CompileError)：表示在 Wasm 模块编译阶段（Compile）发生的错误，比如模块的字节码编码格式错误、魔数不匹配。
+- [WebAssembly.LinkError](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/LinkError)：表示在 Wasm 模块实例化阶段（Instantiate）发生的错误，比如导入到 Wasm 模块实例 Import Section 的内容不正确。
+- [WebAssembly.RuntimeError](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/RuntimeError)：表示在 Wasm 模块运行时阶段（Call）发生的错误，比如常见的 “除零异常”。
+
+##### 2.7.2.4 模块实例化方法
+
+这个 JS API 主要用来实例化一个 Wasm 模块对象：
+
+- [WebAssembly.instantiate(bufferSource, importObject)](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate)
+
+这个方法接受一个包含有效 Wasm 模块二进制字节码的 ArrayBuffer 或 TypedArray 对象，然后返回一个将被解析为 WebAssembly.Module 的 Promise 对象。这里返回的 WebAssembly.Module 对象，代表着一个被编译完成的 Wasm 静态模块对象。
+
+整个方法接受两个参数。除第一个参数对应的 ArrayBuffer 或 TypedArray 类型外，第二个参数为一个 JS 对象，在其中包含有需要被导入到 Wasm 模块实例中的数据，这些数据将通过 Wasm 模块的 “Import Section” 被导入到模块实例中使用。
+
+方法在调用完成后会返回一个将被解析为 ResultObject 的 Promise 对象。ResultObject 对象包含有两个字段：
+
+- **module**：表示一个被编译好的 WebAssembly.Module 静态对象。
+
+- **instance**：instance 表示一个已经完成实例化的 WebAssembly.Instance 动态对象。所有从 Wasm 模块中导出的方法，都被 “挂载” 在这个 ResultObject 对象上。
+
+基于这个方法实现的 Wasm 模块初始化流程如下图所示。可以看到，整个流程是完全串行的。
+
+![基于WebAssembly.instantiate方法实现的Wasm模块初始化流程](./image/%E5%9F%BA%E4%BA%8EWebAssembly.instantiate%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0%E7%9A%84Wasm%E6%A8%A1%E5%9D%97%E5%88%9D%E5%A7%8B%E5%8C%96%E6%B5%81%E7%A8%8B.webp)
+
+> **注意**：WebAssembly.instantiate 方法还有另外的一个重载形式，也就是其第一个参数类型从含有 Wasm 模块字节码数据的 bufferSource，转变为已经编译好的静态 WebAssembly.Module 对象。这种重载形式通常用于 WebAssembly.Module 对象已经被提前编译好的情况。
+
+##### 2.7.2.5 模块编译方法
+
+WebAssembly.instantiate 方法，主要用于从 Wasm 字节码中一次性进行 Wasm 模块的编译和实例化过程，这是经常使用的一种形式。当然也以将编译和实例化两个步骤分开来进行。比如单独对于编译阶段，可以使用下面的 JS API：
+
+- [WebAssembly.compile(bufferSource)](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/compile)
+
+该方法接收一个含有有效 Wasm 字节码数据的 bufferSource，也就是 ArrayBuffer 或者 TypedArray 对象。返回的 Promise 对象在 Resolve 后，会返回一个编译好的静态 WebAssembly.Module 对象。
+
+#### 2.7.3 Wasm Web API
+
+Wasm 的 JS API 标准，主要定义了一些与 Wasm 相关的类型和操作，这些类型和操作与具体的平台无关。为了能够在最大程度上利用 Web 平台的一些特性，来加速 Wasm 模块对象的编译和实例化过程，Wasm 标准又通过添加 Wasm Web API 的形式，为 Web 平台上的 Wasm 相关操作提供了新的、高性能的编译和实例化接口。
+
+##### 2.7.3.1 模块流式实例化方法
+
+不同于 JS API 中的 WebAssembly.instantiate 方法，Web API 中定义的 “流式接口” 可以提前开始对 Wasm 模块进行编译和实例化过程，也可以称此方式为 “流式编译”。比如下面这个 API 便对应着 Wasm 模块的 “流式实例化” 接口：
+
+- [WebAssembly.instantiateStreaming(source, importObject)](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiateStreaming)
+
+为了能够支持 “流式编译”，该方法的第一个参数，将不再需要已经从远程加载好的完整 Wasm 模块二进制数据（bufferSource）。取而代之的，是一个尚未 Resolve 的 Response 对象。
+
+Response 对象（window.fetch 调用后的返回结果）是 Fetch API 的重要组成部分，这个对象代表了某个远程 HTTP 请求的响应数据。而该方法中第二个参数所使用的 Response 对象，则必须代表着对某个位于远程位置上的 Wasm 模块文件的请求响应数据。
+
+通过这种方式，Web 浏览器可以在从远程位置开始加载 Wasm 模块文件数据的同时，也一并启动对 Wasm 模块的编译和初始化工作。相较于上一个 JS API 需要在完全获取 Wasm 模块文件二进制数据后，才能够开始进行编译和实例化流程的方式，流式编译无疑在某种程度上提升了 Web 端运行 Wasm 应用的整体效率。
+
+基于流式编译进行的 Wasm 模块初始化流程如下图所示。可以看到，与之前 API 有所不同的是，Wasm 模块的编译和初始化可以提前开始，而不用再等待模块的远程加载完全结束。因此应用的整体初始化时间也会有所减少。
+
+![基于流式编译进行的 Wasm 模块初始化流程](./image/%E5%9F%BA%E4%BA%8E%E6%B5%81%E5%BC%8F%E7%BC%96%E8%AF%91%E8%BF%9B%E8%A1%8C%E7%9A%84%20Wasm%20%E6%A8%A1%E5%9D%97%E5%88%9D%E5%A7%8B%E5%8C%96%E6%B5%81%E7%A8%8B.webp)
+
+这是加载 wasm 代码一种非常有效的优化方式，同时返回 Module 及其第一个 Instance 实例。[例子](./example/instantiate-streaming.html)需要 Live Server 插件。
+
+##### 2.7.3.2 模块流式编译方法
+
+也存在着 “流式编译方法”。如下所示：
+
+- [WebAssembly.compileStreaming(source)](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/compileStreaming)
+
+该 API 的使用方式与 WebAssembly.instantiateStreaming 类似，第一个参数为 Fetch API 中的 Response 对象。API 调用后返回的 Promise 对象在 Resolve 之后，会返回一个编译好的静态 WebAssembly.Module 对象。同 Wasm 模块的 “流式实例化方法” 一样，“流式编译方法” 也可以在浏览器加载 Wasm 二进制模块文件的同时，提前开始对模块对象的编译过程。
+
+### 2.8 Wasm 运行时（Runtime）
+
+这里提到的 “运行时”，主要存在于流程图中的 “Call” 阶段。在这个阶段中，可以调用从 Wasm 模块对象中导出的函数。每一个经过实例化的 Wasm 模块对象，都会在运行时维护自己唯一的 “调用栈”。
+
+所有模块导出函数的实际调用过程，都会影响着栈容器中存放的数据，这些数据代表着每条 Wasm 指令的执行结果。当然，这些结果也同样可以被作为导出函数的返回值。
+
+调用栈一般是 “不透明” 的。也就是说，无法通过任何 API 或者方法直接接触到栈容器中存放的数据。因此，这也是 Wasm 保证执行安全的众多因素之一。
+
+除了调用栈，每一个实例化的 Wasm 模块对象都有着自己的（在 MVP 下只能有一个）线性内存段。在这个内存段中，以二进制形式存放着 Wasm 模块可以使用的所有数据资源。
+
+这些资源可以是来自于对 Wasm 模块导出方法调用后的结果，即通过 Wasm 模块内的相关指令对线性内存中的数据进行读写操作；也可以是在进行模块实例化时，将预先填充好的二进制数据资源以 WebAssembly.Memory 导入对象的形式，提前导入到模块实例中进行使用。
+
+浏览器在为 Wasm 模块对象分配线性内存时，会将这部分内存与 JS 现有的内存区域进行隔离，并单独管理，可以参考下面这张图。在以往的 JS Memory 中，可以存放 JS 中的一些数据类型，这些数据同时也可以被相应的 JS/Web API 直接访问。而当数据不再使用时，它们便会被 JS 引擎的 GC 进行垃圾回收。
+
+![Wasm 模块内存与JS 内存](./image/Wasm%20%E6%A8%A1%E5%9D%97%E5%86%85%E5%AD%98%E4%B8%8EJS%20%E5%86%85%E5%AD%98.webp)
+
+相反，图中绿色部分的 WebAssembly Memory 则有所不同。这部分内存可以被 Wasm 模块内部诸如 “i32.load” 与 “i32.store” 等指令直接使用，而外部浏览器宿主中的 JS/Web API 则无法直接进行访问。不仅如此，分配在这部分内存区域中的数据，受限于 MVP 中尚无 GC 相关的标准，因此需要 Wasm 模块自行进行清理和回收。
+
+Wasm 的内存访问安全性是众多人关心的一个话题。事实上并不用担心太多，因为当浏览器在执行 “i32.load” 与 “i32.store” 这些内存访问指令时，会首先检查指令所引用的内存地址偏移，是否超出了 Wasm 模块实例所拥有的内存地址范围。若引用地址不在上图中绿色范围以内，则会终止指令的执行，并抛出相应的异常。这个检查过程一般称之为 “Bound Check”。
+
+#### 2.8.1 Wasm 内存模型
+
+每一个 Wasm 模块实例都有着自己对应的线性内存段。准确来讲，也就是由 “Memory Section” 和 “Data Section” 共同 “描述” 的一个线性内存区域。在这个区域中，以二进制形式存放着模块所使用到的各种数据资源。
+
+ 事实上，每一个 Wasm 实例所能够合法访问的线性内存范围，仅限于上面讲到的这一部分内存段。对于宿主环境中的任何变量数据，如果 Wasm 模块实例想要使用，一般可以通过以下两种常见的方式：
+
+- 对于简单（字符\数字值等）数据类型，可以选择将其视为全局数据，通过 “Import Section” 导入到模块中使用。
+- 对于复杂数据，需要将其以 “字节” 的形式，拷贝到模块实例的线性内存段中来使用。
+
+在 Web 浏览器这个宿主环境中，一个内存实例通常可以由 JS 中的 ArrayBuffer 类型来进行表示。ArrayBuffer 中存放的是原始二进制数据，因此在需要读写这段数据时，必须指定一个 “操作视图（View）”。可以把 “操作视图” 理解为，在对这些二进制数据进行读写操作时，数据的 “解读方式”。
+
+假设想要将字符串 “Hello, world!” ，按照逐个字符的方式写入到线性内存段中，那么在进行写操作时，如何知道一个字符所应该占用的数据大小呢？
+
+根据实际需要，一个字符可能会占用 1 个字节到多个字节不等的大小。而这个 “占用大小” 便是数据的 “解读方式”。在 JS 中，可以使用 TypedArray 以某个具体类型作为视图，来操作 ArrayBuffer 中的数据。
+
+可以通过下面这张图，来理解 Wasm 模块线性内存与 Web 浏览器宿主环境，或者说与 JS 之间的互操作关系。
+
+![Wasm 模块线性内存与 Web 浏览器宿主环境](./image/Wasm%20%E6%A8%A1%E5%9D%97%E7%BA%BF%E6%80%A7%E5%86%85%E5%AD%98%E4%B8%8E%20Web%20%E6%B5%8F%E8%A7%88%E5%99%A8%E5%AE%BF%E4%B8%BB%E7%8E%AF%E5%A2%83.webp)
+
+当拥有了填充好数据的 ArrayBuffer 或 TypedArray 对象时，便可以构造自己的 WebAssembly.Memory 导入对象。然后在 Wasm 模块进行实例化时，将该对象导入到模块中，来作为模块实例的线性内存段进行使用。
+
+#### 2.8.2 局限性
+
+MVP 全称为 “Minimum Viable Product”，翻译过来是 “最小可用产品”。那既然是 “最小可用”，当然也就意味着它还有很多的不足。目前的局限性主要集中在以下几个方面：
+
+- **无法直接引用 DOM**
+
+  在 MVP 标准下，无法直接在 Wasm 二进制模块内引用外部宿主环境中的 “不透明”（即数据内部的实际结构和组成方式未知）数据类型，比如 DOM 元素。
+
+  因此目前通常的一种间接实现方式是使用 JS 函数来封装相应的 DOM 操作逻辑，然后将该函数作为导入对象，导入到模块中，由模块在特定时机再进行间接调用来使用。但相对来说，这种借助 JS 的间接调用方式，在某种程度上还是会产生无法弥补的性能损耗。
+
+- **复杂数据类型需要进行编解码**
+
+  还是类似的问题，对于除 “数字值” 以外的 “透明” 数据类型（比如字符串、字符），当想要将它们传递到 Wasm 模块中进行使用时，需要首先对这些数据进行编码（比如 UTF-8）。然后再将编码后的结果以二进制数据的形式存放到 Wasm 的线性内存段中。模块内部指令在实际使用时，再将这些数据进行解码。
+
+  因此，就目前 MVP 标准而言，Wasm 模块的线性内存段是与外部宿主环境进行直接信息交换的最重要 “场所”。
+
+## 三. 应用
+
+### 3.1 Wasm 与前端框架的融合方案
+
+根据 Wasm 现阶段所具有的这些能力以及 Wasm 与前端框架之间的可能融合程度，可以总结出如下四种方案：
+
+- **使用 Wasm 完全重写现有框架使用**
+
+  问题：
+    1. 有无法剥离的 JS 代码
+    2. 跨上下文频繁调用的开销
+
+- **Wasm 重写现有框架的核心逻辑**
+
+  在这种情况下，Web 应用的主要组成结构与使用 Wasm 完全重写现有框架使用类似，唯一的不同是增加了 Web 框架所对应的 JS 代码实现部分。
+
+  ![Wasm 重写现有框架的核心逻辑](./image/Wasm%20%E9%87%8D%E5%86%99%E7%8E%B0%E6%9C%89%E6%A1%86%E6%9E%B6%E7%9A%84%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91.webp)
+
+  相较于将整个框架都通过 Wasm 来实现，仅实现框架的核心逻辑部分，可以说更具有现实意义，而这也是现阶段大多数的框架开发者都在实践的方向。
+
+  所谓 “核心逻辑”，其实依框架的具体实现不同，无法通过统一、准确的描述来定义。但可以遵循的原则是，这部分逻辑不会涉及与 DOM 或者 Web API 的频繁交互，但其本身却又是 “计算密集（compute-intensive）”的。
+
+  这里的 “计算密集” 可以理解为：包含有大量的纯数学计算逻辑。Wasm 十分擅长处理这样的计算密集型逻辑。一个很具有代表性的，可以被 Wasm 重写的组件便是 React Fiber 架构中的 Reconciler（主要用来计算 React 中 VDOM 之间的差异）。
+
+- **使用 Wasm 配合框架增强应用的部分功能**
+
+  从本质上来看，框架本身的代码不会有任何的变化。而 Wasm 也不再着重于优化框架本身的性能。相对地，框架与 Wasm 将会配合起来使用，以优化整个应用的某一部分功能。下面这张图是在这个方案下，一个 Web 应用的基本组成结构。
+
+  ![Wasm 配合框架增强应用的部分功能](./image/Wasm%20%E9%85%8D%E5%90%88%E6%A1%86%E6%9E%B6%E5%A2%9E%E5%BC%BA%E5%BA%94%E7%94%A8%E7%9A%84%E9%83%A8%E5%88%86%E5%8A%9F%E8%83%BD.webp)
+
+  可以看到，这里 Wasm 本身只是作为一个模块，用于优化应用的某方面功能。而 Web 框架本身的源代码组成形式不会发生任何改变，应用仍然还是使用 JS 来构建其主体结构。
+
+  事实上，这是 Wasm 在 Web 上的一种最为典型和常见的应用方式。Wasm 并不尝试取代 JS，而是通过利用其优势来补足或者加以提升 Web 应用在某方面的短板。一个最为常见的例子便是前端的 “数据编解码”。
+
+  “编解码” 实际上是十分单纯的数学计算，那么这便是 Wasm 能够大显身手的地方。**通过替换 Web 应用中原有的基于 JS 实现的编解码逻辑，使用 Wasm 来实现这部分逻辑则会有着明显的性能提升**。而且由于这个过程不涉及与 Web API 的频繁交互，Wasm 所能够带来的性能提升程度更是显而易见的。
+
+- **使用其他语言构建 Web 前端框架**
+
+  在此方案下，将使用诸如 C++ 和 Rust 等静态类型语言来实现 Web 前端框架。不仅如此，也同样需要使用这些语言来编写 Web 应用。类似的框架有基于 Rust 语言的 Yew、Seed，以及基于 Go 语言 Vugu 等等。
+
+### 3.2 优秀的 WebAssembly 编译器与运行时
+
+**字节码联盟（Bytecode Alliance）**
+“字节码联盟” 成立于 2019 年末，是一个由个人和公司组成的团体。最初的一批创始成员为 Mozilla、Fastly、Intel 以及 Red Hat。联盟旨在通过协作的方式，来共同实现 Wasm 及 WASI 相关标准，并通过提出新标准的方式来共同打造 Wasm 在浏览器之外的未来。
+
+对于开发者来说，联盟希望能够为开发者提供健全的、基于各类安全策略构建的成熟开发工具链（虚拟机、编译器以及底层库）生态。这样开发者便可以将目光更多地专注于应用本身的设计与研发上，同时可以在各类环境中，快速地构建可运行在浏览器之外的 Wasm 应用，并且不用考虑安全性等基本问题。
+
+**前端安全问题**
+前端的安全性问题其主要原因在于，恶意代码拥有了本不该拥有的系统资源和系统接口访问权限。不能够 100% 地相信代码本身的行为方式，能够完全满足对安全性的要求。
+
+但基于 Wasm，可以在一定程度上解决这个问题。类比于操作系统上每个原生应用在运行时的独立进程，实际上，每一个 Wasm 模块在 out-of-web 环境中实例化运行时，也都有着自己独立的运行时沙盒环境，并且对应着独立的可用内存资源以及调用栈。但 Wasm 模块之间的隔离却不一定需要通过独立进程的方式来实现，因此从运行模型上来看，Wasm 的方式会更加轻量且高效。
+
+不仅如此，与传统操作系统中的 “进程” 不同，每一个实例化的 Wasm 模块，都只能够在实例化时使用被主动分配的系统资源（内存）与接口能力（系统调用），因此对于模块实例所拥有权限的控制力度会更为细腻。
+
+而且，相对于传统进程需要通过 “序列化” 与 “反序列化” 才能够在进程间传递信息（IPC）的方式不同，Wasm 实例之间的消息传递可以通过更加轻量的方式来完成。
+
+**解决方案 —— 纳米进程（Nano-Process）**
+根据上面讲过的 Wasm 在资源及权限控制上的相对优势，提出了一种新的 Wasm 应用构建模式 —— “Wasm Nanoprocess”。
+
+一般来说，一个完整的大型 Wasm 应用，可能会同时包含有多个相互依赖的底层 Wasm 模块。由于每一个模块实例都拥有着自己独立的数据资源及可用权限，因此可以称每一个实例化的模块为一个独立的 “nanoprocess”，翻译过来也就是 “纳米进程”。
+
+当一个含有恶意代码的 Wasm 模块被 “链接” 到整个应用的依赖树中时，应用各依赖模块所能够使用的资源及系统接口权限，便全部来自于最上层的调用者。也就是说需要在应用运行的入口模块中被指定，然后再由该模块向下层依赖模块进行分发。
+
+当恶意模块的内部代码需要使用某种未经授权的额外资源或能力时，整个模块依赖树的 “Import Section” 签名便会发生错误，这个错误会在运行时向上层用户抛出对应异常，提示某个模块的某些特定资源或者权限没有被导入。在这种情况下，特殊的权限调用便会引起注意。
+
+即便恶意代码获得了特定操作系统接口的执行权限，但恶意代码想要从其他应用依赖模块的实例中，获取对应内存段中的敏感信息，也并非易事。由于每个 Wasm 模块实例都拥有独立、隔离的线性内存段来存储数据，因此只有在模块主动向外部暴露（通过 “Export Section” ）特定数据，或者直接调用（动态链接）目标模块内的方法时，才能够将自身内存段中的数据传递过去。
+
+如下图所示，通过限制恶意代码对数据以及系统接口权限的访问和使用，“Wasm Nanoprocess” 这种应用构建模式，可以在最大程度上保证 Wasm 应用及其所依赖第三方模块的运行时安全性。
+
+![Wasm Nanoprocess](./image/Wasm%20Nanoprocess.webp)
+
+**虚拟机运行时**
+为了能够基于 “Nanoprocess” 模式来构建安全可靠的 Wasm 应用，一定少不了在 out-of-web 领域提供 Wasm 字节码解析和执行能力的基础设施。并且在一定程度上，还需要它们提供的 WASI 系统接口的访问能力。而 “字节码联盟” 便负责培养和发展这样一批，能够提供这些能力的优秀基础设施及相关组件。它们主要包括：Wasm 运行时（虚拟机）、Wasm 运行时组件（实现）以及 Wasm 语言相关的工具。
+
+- **[Wasmtime](https://wasmtime.dev/)**
+
+  Wamtime 是字节码联盟旗下的一个独立的 Wasm 运行时，它可以被独立作为 CLI 命令行工具进行使用，或者是被嵌入到其他的应用程序或系统中。Wamtime 具有很高的可配置性和可扩展性，因此可以被应用到很多的场景中，譬如 IoT 与云原生领域。
+
+  Wasmtime 基于优化的 Cranelift 引擎构建，因此它可以在运行时快速地生成高质量的机器码。Cranelift 是一个低层次的、可重定向的代码生成器。它可以将与目标无关的中间代码表示形式（IR）转换为可执行的机器代码。
+
+  除此之外，Wasmtime 还支持部分的 WASI 系统接口以及 Wasm Post-MVP 提案，以及对于诸如 C 和 Python 等语言的运行时绑定。这样便可以在这些语言的代码中，直接使用 Wasmtime 所提供的能力。
+
+- **[WAMR](https://github.com/bytecodealliance/wasm-micro-runtime)**
+
+  WAMR（WebAssembly Micro Runtime）同样是一款字节码联盟旗下的独立 Wasm 运行时，它基于 C 语言开发。不过相较于 Wasmtime，它更倾向于被应用在诸如 IoT、嵌入式芯片等对功耗和硬件资源要求较为严格的 Wasm 场景中。
+
+  WAMR 支持多种 Wasm 字节码的运行时 “翻译” 模式，比如 JIT 模式、AOT 模式以及解释器模式。其中在解释器模式下，整个运行时的大小仅有 85KB。在 AOT 模式下，仅有 50KB。不仅如此，它可以在将近 100 微秒的时间内启动应用，并在最小 100KB 的内存资源下，便可以启动一个 Wasm 实例。
+
+  WAMR 也同样支持 WASI 以及部分的 Wasm Post-MVP 提案。同时附带地，它还提供了一个用于快速构建 Wasm 应用的 WAMR 应用框架。
+
+- **[Wasmer](https://wasmer.io/)**
+
+  Wasmer 是另外一款独立于字节码联盟优秀的 Wasm 运行时。不同于 Wasmtime 与 WAMR，Wasmer 基于 Rust 编写，它在支持 Wasm 核心标准、部分 WASI 系统接口以及部分 Wasm Post-MVP 标准的基础之上，还同时提供了对多达数十种编程语言的 Wasm 运行时绑定支持。这意味着，可以在其他编程语言中使用 Wasmer 的能力来解析和执行 Wasm 字节码。
+
+  除此之外有一个很有趣的尝试， Wasmer 同时提供和维护 Wasm 包管理平台 —— Wapm。通过这个平台，可以发布新的或直接使用已有的 Wasm 包。这些包都借助于 WASI 抽象操作系统接口，提供了与本地应用相同的系统资源访问能力。
+
+- **[SSVM](https://github.com/WasmEdge/WasmEdge)**
+
+  它是一个专门针对云、AI 以及区块链应用程序设计的高性能、可扩展且经过硬件优化的 Wasm 虚拟机。SSVM 的 Wasm 运行时针对 ONNX AI 模型进行了硬件优化。同时也可以作为区块链平台的智能合约运行时引擎。
