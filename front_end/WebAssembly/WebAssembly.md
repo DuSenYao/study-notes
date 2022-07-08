@@ -1,52 +1,66 @@
-+# WebAssembly
+# WebAssembly
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
-- [一. 基础](#一-基础)
-- [二. 核心原理](#二-核心原理)
-  - [2.1 堆栈机模型、寄存器机与累加器机](#21-堆栈机模型-寄存器机与累加器机)
-    - [2.1.1 堆栈机模型](#211-堆栈机模型)
-    - [2.1.2 累加器机](#212-累加器机)
-    - [2.1.3 寄存器机](#213-寄存器机)
-    - [2.1.4 三种计算模型对比](#214-三种计算模型对比)
-  - [2.2 ISA 与 V-ISA](#22-isa-与-v-isa)
-  - [2.3 Section 概览](#23-section-概览)
-    - [2.3.1 通用头部结构字段](#231-通用头部结构字段)
-    - [2.3.2 单体 Section](#232-单体-section)
-    - [2.3.3 互补 Section](#233-互补-section)
-    - [2.3.4 魔数和版本号](#234-魔数和版本号)
-  - [2.4 Wasm 使用的数据编码方式](#24-wasm-使用的数据编码方式)
-    - [2.4.1 字节序](#241-字节序)
-    - [2.4.2 LEB-128 整数编码](#242-leb-128-整数编码)
-      - [2.4.2.1 Unsigned LEB-128](#2421-unsigned-leb-128)
-      - [2.4.2.2 Signed LEB-128](#2422-signed-leb-128)
-    - [2.4.3 IEEE-754 浮点数编码](#243-ieee-754-浮点数编码)
-    - [2.4.4 UTF-8 字符串编码](#244-utf-8-字符串编码)
-    - [2.4.5 Wasm 数字类型](#245-wasm-数字类型)
-  - [2.5 WAT（WebAssembly Text Format）](#25-watwebassembly-text-format)
-    - [2.5.1 S- 表达式（S-Expression）](#251-s-表达式s-expression)
-    - [2.5.2 源码、字节码与 Flat-WAT](#252-源码-字节码与-flat-wat)
-    - [2.5.3 模块结构与 WAT](#253-模块结构与-wat)
-    - [2.5.4 WAT 与 WAST](#254-wat-与-wast)
-  - [2.6 WASI](#26-wasi)
-    - [2.6.1 Capability-based Security](#261-capability-based-security)
-    - [2.6.2 系统调用（System Call）](#262-系统调用system-call)
-    - [2.6.3 WebAssembly 操作系统接口（WASI）](#263-webassembly-操作系统接口wasi)
-  - [2.7 API](#27-api)
-    - [2.7.1 Wasm 浏览器加载流程](#271-wasm-浏览器加载流程)
-    - [2.7.2 Wasm JavaScript API](#272-wasm-javascript-api)
-      - [2.7.2.1 模块对象](#2721-模块对象)
-      - [2.7.2.2 导入对象](#2722-导入对象)
-      - [2.7.2.3 错误对象](#2723-错误对象)
-      - [2.7.2.4 模块实例化方法](#2724-模块实例化方法)
-      - [2.7.2.5 模块编译方法](#2725-模块编译方法)
-    - [2.7.3 Wasm Web API](#273-wasm-web-api)
-      - [2.7.3.1 模块流式实例化方法](#2731-模块流式实例化方法)
-      - [2.7.3.2 模块流式编译方法](#2732-模块流式编译方法)
-  - [2.8 Wasm 运行时（Runtime）](#28-wasm-运行时runtime)
-    - [2.8.1 Wasm 内存模型](#281-wasm-内存模型)
+- [WebAssembly](#webassembly)
+  - [一. 基础](#一-基础)
+  - [二. 核心原理](#二-核心原理)
+    - [2.1 堆栈机模型、寄存器机与累加器机](#21-堆栈机模型-寄存器机与累加器机)
+      - [2.1.1 堆栈机模型](#211-堆栈机模型)
+      - [2.1.2 累加器机](#212-累加器机)
+      - [2.1.3 寄存器机](#213-寄存器机)
+      - [2.1.4 三种计算模型对比](#214-三种计算模型对比)
+    - [2.2 ISA 与 V-ISA](#22-isa-与-v-isa)
+    - [2.3 Section 概览](#23-section-概览)
+      - [2.3.1 通用头部结构字段](#231-通用头部结构字段)
+      - [2.3.2 单体 Section](#232-单体-section)
+      - [2.3.3 互补 Section](#233-互补-section)
+      - [2.3.4 魔数和版本号](#234-魔数和版本号)
+    - [2.4 Wasm 使用的数据编码方式](#24-wasm-使用的数据编码方式)
+      - [2.4.1 字节序](#241-字节序)
+      - [2.4.2 LEB-128 整数编码](#242-leb-128-整数编码)
+        - [2.4.2.1 Unsigned LEB-128](#2421-unsigned-leb-128)
+        - [2.4.2.2 Signed LEB-128](#2422-signed-leb-128)
+      - [2.4.3 IEEE-754 浮点数编码](#243-ieee-754-浮点数编码)
+      - [2.4.4 UTF-8 字符串编码](#244-utf-8-字符串编码)
+      - [2.4.5 Wasm 数字类型](#245-wasm-数字类型)
+    - [2.5 WAT（WebAssembly Text Format）](#25-watwebassembly-text-format)
+      - [2.5.1 S- 表达式（S-Expression）](#251-s-表达式s-expression)
+      - [2.5.2 源码、字节码与 Flat-WAT](#252-源码-字节码与-flat-wat)
+      - [2.5.3 模块结构与 WAT](#253-模块结构与-wat)
+      - [2.5.4 WAT 与 WAST](#254-wat-与-wast)
+    - [2.6 WASI](#26-wasi)
+      - [2.6.1 Capability-based Security](#261-capability-based-security)
+      - [2.6.2 系统调用（System Call）](#262-系统调用system-call)
+      - [2.6.3 WebAssembly 操作系统接口（WASI）](#263-webassembly-操作系统接口wasi)
+    - [2.7 API](#27-api)
+      - [2.7.1 Wasm 浏览器加载流程](#271-wasm-浏览器加载流程)
+      - [2.7.2 Wasm JavaScript API](#272-wasm-javascript-api)
+        - [2.7.2.1 模块对象](#2721-模块对象)
+        - [2.7.2.2 导入对象](#2722-导入对象)
+        - [2.7.2.3 错误对象](#2723-错误对象)
+        - [2.7.2.4 模块实例化方法](#2724-模块实例化方法)
+        - [2.7.2.5 模块编译方法](#2725-模块编译方法)
+      - [2.7.3 Wasm Web API](#273-wasm-web-api)
+        - [2.7.3.1 模块流式实例化方法](#2731-模块流式实例化方法)
+        - [2.7.3.2 模块流式编译方法](#2732-模块流式编译方法)
+    - [2.8 Wasm 运行时（Runtime）](#28-wasm-运行时runtime)
+      - [2.8.1 Wasm 内存模型](#281-wasm-内存模型)
+      - [2.8.2 局限性](#282-局限性)
+  - [三. 应用](#三-应用)
+    - [3.1 Wasm 与前端框架的融合方案](#31-wasm-与前端框架的融合方案)
+    - [3.2 优秀的 WebAssembly 编译器与运行时](#32-优秀的-webassembly-编译器与运行时)
+    - [3.3 将自定义的语言编译到 WebAssembly](#33-将自定义的语言编译到-webassembly)
+      - [3.3.1 传统编译器链路](#331-传统编译器链路)
+      - [3.3.2 LLVM](#332-llvm)
+    - [3.4 WebAssembly Post-MVP 提案](#34-webassembly-post-mvp-提案)
+      - [3.4.1 Wasm W3C 提案流程](#341-wasm-w3c-提案流程)
+  - [四. Wasm DIP 应用](#四-wasm-dip-应用)
+    - [4.1 滤镜的基本原理](#41-滤镜的基本原理)
+    - [4.2 Emscripten 的基本用法](#42-emscripten-的基本用法)
+    - [4.3](#43)
 
 <!-- /code_chunk_output -->
 
@@ -948,7 +962,7 @@ Wasm 的内存访问安全性是众多人关心的一个话题。事实上并不
 
 每一个 Wasm 模块实例都有着自己对应的线性内存段。准确来讲，也就是由 “Memory Section” 和 “Data Section” 共同 “描述” 的一个线性内存区域。在这个区域中，以二进制形式存放着模块所使用到的各种数据资源。
 
- 事实上，每一个 Wasm 实例所能够合法访问的线性内存范围，仅限于上面讲到的这一部分内存段。对于宿主环境中的任何变量数据，如果 Wasm 模块实例想要使用，一般可以通过以下两种常见的方式：
+事实上，每一个 Wasm 实例所能够合法访问的线性内存范围，仅限于上面讲到的这一部分内存段。对于宿主环境中的任何变量数据，如果 Wasm 模块实例想要使用，一般可以通过以下两种常见的方式：
 
 - 对于简单（字符\数字值等）数据类型，可以选择将其视为全局数据，通过 “Import Section” 导入到模块中使用。
 - 对于复杂数据，需要将其以 “字节” 的形式，拷贝到模块实例的线性内存段中来使用。
@@ -990,8 +1004,9 @@ MVP 全称为 “Minimum Viable Product”，翻译过来是 “最小可用产�
 - **使用 Wasm 完全重写现有框架使用**
 
   问题：
-    1. 有无法剥离的 JS 代码
-    2. 跨上下文频繁调用的开销
+
+  1. 有无法剥离的 JS 代码
+  2. 跨上下文频繁调用的开销
 
 - **Wasm 重写现有框架的核心逻辑**
 
@@ -1080,3 +1095,565 @@ MVP 全称为 “Minimum Viable Product”，翻译过来是 “最小可用产�
 - **[SSVM](https://github.com/WasmEdge/WasmEdge)**
 
   它是一个专门针对云、AI 以及区块链应用程序设计的高性能、可扩展且经过硬件优化的 Wasm 虚拟机。SSVM 的 Wasm 运行时针对 ONNX AI 模型进行了硬件优化。同时也可以作为区块链平台的智能合约运行时引擎。
+
+### 3.3 将自定义的语言编译到 WebAssembly
+
+应用 Wasm 的常见方式的类型：
+
+- 通过 Web 浏览器提供的 JS API 与 Web API ，来在 Web 应用中调用从 Wasm 模块中导出的函数。通过这种方式，可以充分利用 Wasm 的安全、高效及可移植性等优势。
+
+- 通过 WASI 抽象系统调用接口，以便在 out-of-web 应用中使用 Wasm。这种使用方式与 Web 端大同小异，不过区别是可以借助底层运行时的能力，使得构建出的 Wasm 应用可以在 Web 浏览器外的 Native 环境中与操作系统打交道，并同样享受着 Wasm 本身所带来的安全、高效及可移植性。
+
+假设想要设计开发一款自定义的静态编程语言，那么怎样才能够方便快捷地为它的编译器添加一个能力，可以让编译器支持将 Wasm 作为编译目标呢？
+
+#### 3.3.1 传统编译器链路
+
+对于传统的静态语言编译器来说，通常会采用较为流行的 “三段式” 链路结构。
+
+![传统编译器链路](./image/%E4%BC%A0%E7%BB%9F%E7%BC%96%E8%AF%91%E5%99%A8%E9%93%BE%E8%B7%AF.webp)
+
+三段式结构分别对应着整个编译器链路中三个最为重要的组成部分：
+
+- **编译器前端**（Compiler Frontend）：主要用于对输入的源代码进行诸如：词法、语法及语义分析，并生成其对应的 AST 抽象语法树，然后再根据 AST 来生成编译器内部的中间代码表示形式（IR）。
+
+- **中间代码优化器**（Optimizer）：主要用于对这些 IR 代码进行一定的优化，以减小最后生成的二进制文件大小，并同时提高二进制代码的执行效率。
+
+- **编译器后端**（Compiler Backend）：负责进行与本地架构平台相关的代码生成工作，主要会根据优化后的 IR 代码来进行寄存器分配和调优之类的工作，并生成对应的机器码，存储在构建出的二进制可执行文件中。
+
+流程的细节根据具体编程语言实现可能有所不同。这种分段式编译器链路的优势在于，当想要为其添加多种源语言或目标编译平台的支持时，只需要重新编写其中的一个 “分段”，便可以很轻松地复用整个编译链路中的其他部分。可以形象地通过下图来感受这种关系。
+
+![分段式编译器编译多种语言](./image/%E5%88%86%E6%AE%B5%E5%BC%8F%E7%BC%96%E8%AF%91%E5%99%A8%E7%BC%96%E8%AF%91%E5%A4%9A%E7%A7%8D%E8%AF%AD%E8%A8%80.webp)
+
+比如需要为编译器添加对另外一种源语言的支持时，只需要编写整个链路中的 “编译器前端” 部分即可。
+
+但是满足这种 “链路可分离” 要求的一个前提，需要整个链路中用于对接各个阶段的 “中间产物（IR）”，其存在形式必须是确定且不变的。编译器前端 “输送” 给中间优化器的 IR 代码格式，必须对所有为各种源语言设计的编译器前端保持一致。同理，从中间优化器输入到编译器后端的 “中间产物” 也是如此。
+
+然而一个现实的情况是，实际上在 LLVM 出现之前，在各类编程语言的编译器链路中，并没有采用完全统一的中间产物表示形式（包括 IR、AST 等在内）。因此如果想要对编译器链路中的某一部分进行重用，这个过程仍然会十分困难。
+
+#### 3.3.2 LLVM
+
+LLVM 的全称为 “Low Level Virtual Machine”，翻译成中文即 “低层次虚拟机”。最初的 LLVM 是 Chris Lattner 和 Vikram Adve 两人于 2000 年 12 月研发的一套综合性的软件工具链。在这套工具链中，包含了众多可用于开发者使用的相关组件，这些组件包括语言编译器、链接器、调试器等操作系统底层基础构建工具。
+
+LLVM 在开发初期，被定位为一套具有良好接口定义的可重用组件库。这意味着，可以在所开发的第三方应用程序中，使用由 LLVM 提供的众多成熟高效的编译链路解决方案。大到 “中间代码优化器”，小到代码生成器中的一个 “SelectionDAG 图生成组件”。这些方案以 “组件化” 的形式被管理在整套 LLVM 工具集中，可用于支持整个编译链路中各个阶段遇到的各种问题。
+
+除此之外，LLVM 还提供了众多可以直接使用的命令行工具。通过这些工具（如 llvm-as、llc、llvm-dis 等等），也可以快速地对经由 LLVM 组件生成的中间表示产物，进行一定的变换和处理，这极大地方便了应用开发和调试流程。
+
+**LLVM-IR**
+_在整个 LLVM 工具链体系中，最重要的组成部分，便是其统一的，用于表示编译器中间状态的代码格式 —— LLVM-IR_。在一个基于 LLVM 实现的编译器链路中，位于链路中间的优化器将会使用 LLVM-IR 来作为统一的输入与输出中间代码格式。
+
+在整个 LLVM 项目中，扮演着重要角色的 LLVM-IR 被定义成为一类具有明确语义的轻量级、低层次的类汇编语言，其具有足够强的表现力和较好的可扩展性。通过更加贴近底层硬件的语义表达方式，它可以将高级语言的语法清晰地映射到其自身。不仅如此，通过语义中提供的明确变量类型信息，优化器还可以对 LLVM-IR 代码进行更进一步的深度优化。
+
+因此，通过将 LLVM-IR 作为连接编译器链路各个组成部分的重要中间代码格式，开发者便可以以此为纽带，来利用整个 LLVM 工具集中的任何组件。唯一的要求是所接入的源语言需要被转换为 LLVM-IR 的格式（编译器前端）。同样，对任何新目标平台的支持，也都需要从 LLVM-IR 格式开始，再转换成具体的某种机器码（编译器后端）。
+
+在 LLVM-IR 的基础上，分段式编译链路可以被描绘成下图的形式。
+
+![基于 LLVM-IR 的分段式编译链路](./image/%E5%9F%BA%E4%BA%8E%20LLVM-IR%20%E7%9A%84%E5%88%86%E6%AE%B5%E5%BC%8F%E7%BC%96%E8%AF%91%E9%93%BE%E8%B7%AF.webp)
+
+**命令行：基于 LLVM 生成 Wasm 字节码**
+既然基于 LLVM-IR，可以方便快捷地为整个编译链路添加新的前端源语言，或者是后端目标平台。因此 Wasm 也同样可以作为一种目标平台，被实现在 LLVM 中（Wasm 作为一种 V-ISA，其实本身与 I386、X86-64 等架构平台没有太大的区别）。
+
+### 3.4 WebAssembly Post-MVP 提案
+
+Wasm 在 MVP 标准中定义了以下功能：
+
+- **可编译目标**
+
+  Wasm 实际上是一种新的 V-ISA 标准。“ISA” 翻译过来即 “指令集架构”。同 X86、ARM 等其他常见的物理指令集架构类似，这意味着可以将诸如 C/C++ 等高级静态编程语言的代码，编译为对应这些 (V)ISA 的机器代码。
+
+  这里 ISA 的前缀 “V” ，代表着它是一种 “虚拟的” 指令集架构。也就是说，不同于 X86 和 ARM，Wasm 指令集架构中的指令并不是为真实的物理硬件设计的。相反，这些虚拟指令被设计和应用于一种 “概念性” 的机器。而对于这个概念性机器的具体实现细节，则交由各个 VM 虚拟机以及 Runtime 运行时来负责。
+
+  而这便是 MVP 标准 “赋予” Wasm 的第一个能力 —— 可编译目标。作为一种指令集架构，MVP 标准下的 Wasm 仅提供了包括：“分支指令”、“内存操作指令”、“数学运算指令” 以及 “类型转换指令” 等几种最为常用的指令类型。因此，Wasm 这项技术在当前 MVP 标准下的能力是十分有限的，而 “数学密集计算” 这个场景便是它暂时所能够很好支持的几个重要的实践场景之一。
+
+- **字节码格式**
+
+  这是 Wasm MVP 标准中最为重要的一部分定义，即 “Wasm 字节码组成结构”。在其中定义了 Wasm 以 [“Section” 为单元的模块内部组成结构](#23-section-概览)，以及这些结构在[二进制层面的具体编码方式](#24-wasm-使用的数据编码方式)等。
+
+- **Web 可交互性**
+
+  MVP 标准中所定义的 “可交互性”，仅满足了 Web 与 Wasm 之间的最简单 “交流方式”。在这种交流方式下，JS 环境与 Wasm 环境之间仅能够传递最基本的数字值。
+
+  而对于复杂数据类型的传递，则需要通过 Wasm 线性内存段进行中转。不仅如此，对于诸如 JS 引擎等宿主环境中的 “不透明数据“，也无法直接在 Wasm 模块中使用。而这便是 MVP 标准暂时所欠缺的部分。
+
+#### 3.4.1 Wasm W3C 提案流程
+
+事实上，同 TC39 对 ECMAScript 的提案流程一样，自 Wasm 成为 W3C 的一项 “官方” 标准之后，核心团队对 Wasm Post-MVP 提案的发布也有了相应的标准化流程。这个流程与 TC39 所使用的 “Stage0-4” 的 “分阶段式” 提案发布流程大同小异。
+
+一项新的 Wasm 提案从想法的诞生到最后被正式加入标准，一共需要经历如下的[六个阶段](https://github.com/WebAssembly/meetings/blob/master/process/phases.md)：
+
+0. Pre-Proposal [Individual Contributor]
+1. Feature Proposal [Community Group]
+2. Proposed Spec Text Available [Community + Woking Group]
+3. Implementation Phase [Community + Working Group]
+4. Standardize the Feature [Working Group]
+5. The Feature is Standardized [Working Group]
+
+wasm 所有的提案可以在[这里](https://github.com/WebAssembly/proposals)看到，然后浏览器的支持情况或者 node 的支持情况 可以使用[这个](https://github.com/GoogleChromeLabs/wasm-feature-detect) npm 库进行判断。
+
+## 四. Wasm DIP 应用
+
+Wasm 在 Web 多媒体资源处理领域具有的极大优势。因此，将尝试构建的应用，便是这样一个基于 Wasm 的[在线 DIP 应用](./example/DIP/node-wasm-server.js)。
+
+DIP 的全称为 “Digital Image Processing”，即 “数字图像处理”。在将要构建的 Web 应用中，会为在线播放的流媒体资源，去添加一个特定的实时 “图像处理滤镜”，以改变视频本身的播放显示效果。由于添加实时滤镜需要在视频播放时，同步地对当前某一帧画面上的所有像素点，进行一定的像素值的数学处理变换，因此整个应用从某个角度来说，是一个 “计算密集型” 应用。首先，来看下这个应用在实际运行时的样子。
+
+![DIP 实际运行](./image/DIP%20%E5%AE%9E%E9%99%85%E8%BF%90%E8%A1%8C.gif)
+
+根据这张图，可以将整个应用的运行界面划分为三个部分：
+
+- 上方的视频显示区域。在这个矩形的区域中，将循环播放一段视频，并根据用户是否选择添加滤镜，来实时动态地改变这里的视频显示效果。
+
+- 紧接着视频下方的区域用来显示当前视频的实时播放帧率。通过显示播放帧率，将能够在应用运行时明显地看出，当在分别采用 JS 以及 Wasm 为视频资源 “添加” 滤镜时，两者在计算性能上的差异。
+
+- 再往下的一部分，便是整个应用的控制区域。在这个区域中，可以控制是否选择为视频添加滤镜效果。以及是使用 JS 还是 Wasm 来处理滤镜的添加过程。
+
+再来看整个应用的结构图：
+
+![DIP 应用结构图](./image/DIP%20%E5%BA%94%E7%94%A8%E7%BB%93%E6%9E%84%E5%9B%BE.webp)
+
+应用被划分为几个部分。首先，为了能够实时地处理视频数据，需要将 HTML `<video>` 标签所承载视频的每一帧，都绘制在一个 Canvas 对象上，并通过 Web API — `requestAnimationFrame` 来让这些帧动起来。然后这些数据将会根据用户所选择的设置，分别传递给 Wasm 模块或 JS 进行相应的滤镜处理。
+
+### 4.1 滤镜的基本原理
+
+为了了解什么是滤镜，需要先学习 DIP 领域中的一个基本概念 —— “卷积”。从一个直观的角度来看，对图像进行卷积的过程，其实就是通过一个具有固定尺寸的矩阵（也可以理解为二维数组），来对该图像中的每一个像素点的值进行重新计算的过程。这个过程通常也被称为 “滤波”。而固定尺寸的矩阵，一般被称为 “卷积核”。每一种类型的卷积核都会对图像产生不同的滤镜效果。卷积的计算过程也十分简单，主要分为以下几个步骤：
+
+1. 首先将卷积核矩阵翻转 180 度。
+2. 然后将图像上除最外一圈（考虑到 “边缘效应”，选择直接忽略边缘像素）的其他各像素点的灰度值，与对应的卷积核矩阵上的数值相乘，然后对所有相乘后得到的值求和，并将结果作为卷积核中间像素点对应图像上像素的灰度值。（这里的 “灰度值” 也可以由每个像素点的各 RGB 分量值来进行代替）。
+3. 重复上述步骤，直至图像中所有其他像素点均完成此计算过程。
+
+举个例子。首先，给出一个 3 x 3 大小的卷积核矩阵：
+
+![卷积核矩阵示例](./image/%E5%8D%B7%E7%A7%AF%E6%A0%B8%E7%9F%A9%E9%98%B5%E7%A4%BA%E4%BE%8B.webp)
+
+按照步骤，第一步需要对该矩阵进行 180 度的旋转，但由于该矩阵是中心对称的，因此经过旋转后的矩阵与原矩阵相比，没有任何变化。接下来，有 4 x 4 像素大小的图像，并使用上述卷积核来对此图像进行滤波操作。该图像中各像素点的 RGB 分量值如下所示：
+
+![卷积示例像素RGB分量值](./image/%E5%8D%B7%E7%A7%AF%E7%A4%BA%E4%BE%8B%E5%83%8F%E7%B4%A0RGB%E5%88%86%E9%87%8F%E5%80%BC.webp)
+
+按照规则，对于 3 x 3 大小的卷积核矩阵，可以直接忽略图像最外层像素的卷积处理。需要从第二行第二列的像素点开始进行卷积计算。
+
+首先，将之前翻转后的卷积核矩阵中心，与第二行第二列位置的这个像素点对齐，然后会发现，卷积核矩阵中的各个单元，正好与图像左上角 3 x 3 范围内的像素一一对应。这就是可以忽略对图像最外一层像素进行卷积处理的原因。因为在对这些像素点进行卷积计算时，卷积核矩阵覆盖的像素范围会超过图像的边界。
+
+![卷积计算](./image/%E5%8D%B7%E7%A7%AF%E8%AE%A1%E7%AE%97.webp)
+
+接着，开始计算。首先，把卷积核矩阵对应的 9 个单元格内，各像素点的 RGB 分量值与对应单元内的数值相乘，然后将这九个值进行求和。得到的结果值就是在卷积核矩阵中心单元格内，所对应像素的 RGB 分量值的卷积结果值。对于其他分量的卷积计算过程可以以此类推。
+
+以图像中第二行第二列的像素点为例，计算这个像素点 R 分量的卷积结果 R(c)：
+
+$$
+R(c) = 2 x 0 + -1 x 0 + 2 x 0 + -1 x 0 + 2 x 10 + -1 x 255 + 2 x 0 + -1 x 0 + 2 x 100 = -35
+$$
+
+可以看到，这个分量值在经过卷积计算后的结果值为 -35，而一个 RGB 分量的有效取值范围为 [0, 255]。因此，在实际的卷积计算过程中，还需增加另外一个规则，也就是：对于小于 0 的计算结果，用 0 代替，大于 255 的计算结果，则用 255 进行代替。按照这个规则，该像素值经过卷积计算后的实际结果值应该为 0。
+
+而在本次实践中，将会使用下面这个同样 3 x 3 大小的卷积核：
+
+![实战用卷积核](./image/%E5%AE%9E%E6%88%98%E7%94%A8%E5%8D%B7%E7%A7%AF%E6%A0%B8.webp)
+
+### 4.2 Emscripten 的基本用法
+
+[Emscripten](https://emscripten.org/) 是一个 “源到源” 语言编译器工具集，这个工具集可以将 C/C++ 代码编译成对应 JS 代码。
+
+既然是工具集，它便不是由单一的二进制可执行文件组成的，除了最为重要的编译器组件 emcc 以外，Emscripten 还同时提供了包含有特定功能宏定义的 C/C++ 头文件、一些 Python 脚本以及其他的附属命令行工具等。其中，emcc 的基本组成结构如下图所示：
+
+![emcc 的基本组成结构](./image/emcc%20%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%BB%84%E6%88%90%E7%BB%93%E6%9E%84.webp)
+
+可以看到，emcc 能够将输入的 C/C++ 代码，编译成对应的 JS 代码以及用于组成 Web 应用的 HTML 文件。
+
+起初，Emscripten 主要用于将 C/C++ 代码编译成对应的 ASM.js 代码，而随着后来 Wasm 的逐渐发展和流行，Emscripten 也开始支持将这些输入代码编译成 Wasm 二进制代码。这部分代码的转换功能，主要依赖于 LLVM 为支持 Wasm 而特意添加的编译器后端。
+
+因此，整个转换的大致流程可以简单归结为：C/C++ 源代码 -> LLVM IR -> Wasm。emcc 直接使用了 Clang 编译器的前端，把编译输入的 C/C++ 源代码转换到 LLVM-IR 中间代码。这些中间形式的代码有利于编译器进行特殊的优化，以便生成更加优质的目标代码。
+
+接下来，将尝试使用 Emscripten 编译如下这段 C/C++ 代码：
+
+```c++
+// main.cc
+#include <iostream>
+#include <emscripten.h>
+
+extern "C" {
+  EMSCRIPTEN_KEEPALIVE
+  int add(int x, int y) {
+    return x + y;
+  }
+}
+int main(int argc, char **argv) {
+  std::cout << add(10, 20) << std::endl;
+  return 0;
+}
+```
+
+在这段代码中，声明了一个函数 “add”，该函数接收两个整型参数，并返回这两个参数的算数和。整个函数的定义被放置在 `extern "C" {}` 结构中，以防止函数名被 C++ Name Mangling 改变。这样做的目的主要在于，可以确保当在宿主环境（比如浏览器）中调用该函数时，可以用基本与 C/C++ 源代码中保持一致的函数名，来直接调用这个函数。
+
+> **注意**：这里使用了名为 “EMSCRIPTEN_KEEPALIVE” 的宏标记了该函数。这个宏定义在头文件 “emscripten.h” 中，通过使用它，能够确保被 “标记” 的函数不会在编译器的编译过程中，被 DCE（Dead Code Elimination）过程处理掉。紧接着，定义了主函数 main，并在其中调用了该函数。最后通过 std::cout 将该函数的调用结果输出到 stdout。
+
+在代码编写完成后，可以使用下面的命令行来编译这段代码：
+
+```sh
+emcc main.cc -O3 -o main.html
+```
+
+wasm 是默认编译的，不需要任何特殊标志。如果不想要 WebAssembly，可以用类似的东西来禁用它：
+
+```sh
+emcc [..args..] -sWASM=0
+```
+
+在这个应用中，包含了所有需要使用到的 Wasm 模块文件、JS 代码以及 HTML 代码。为了能够在本地运行这个简单的 Web 应用，还需要准备一个简单的 Web 服务器，这里直接使用 Node.js 创建了一个简易的版本：
+
+```js
+const http = require('http');
+const url = require('url');
+const fs = require('fs');
+const path = require('path');
+
+const PORT = 8888; // 服务器监听的端口号；
+
+const mime = {
+  html: 'text/html;charset=UTF-8',
+  wasm: 'application/wasm' // 当遇到对 ".wasm" 格式文件的请求时，返回特定的 MIME 头；
+};
+
+http
+  .createServer((req, res) => {
+    let realPath = path.join(__dirname, `.${url.parse(req.url).pathname}`);
+    // 检查所访问文件是否存在，且是否可读；
+    fs.access(realPath, fs.constants.R_OK, err => {
+      if (err) {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end();
+      } else {
+        fs.readFile(realPath, 'binary', (err, file) => {
+          if (err) {
+            // 文件读取失败时返回 500；
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end();
+          } else {
+            // 根据请求的文件返回相应的文件内容；
+            let ext = path.extname(realPath);
+            ext = ext ? ext.slice(1) : 'unknown';
+            let contentType = mime[ext] || 'text/plain';
+            res.writeHead(200, { 'Content-Type': contentType });
+            res.write(file, 'binary');
+            res.end();
+          }
+        });
+      }
+    });
+  })
+  .listen(PORT);
+console.log('Server is runing at port: ' + PORT + '.');
+```
+
+这其中最为重要的一个地方就是对 “.wasm” 格式文件请求的处理。可以看到，这里当服务器收到一个对 “.wasm” 格式文件的 HTTP 请求时，会返回特殊的 MIME 类型 “application/wasm”。
+
+通过这种方式，明确告诉浏览器，这个文件是一个 Wasm 格式的文件，进而浏览器便可以允许应用使用针对 Wasm 文件的 “流式编译” 方式（也就是 WebAssembly.instantiateStreaming 这个 Web API），来加载和解析该文件，这种方式在加载的处理大体积 Wasm 文件时会有着非常明显的效率优势。
+
+在 C/C++ 代码中，可以通过标准库提供的一系列 API 来直接访问主机上的文件，甚至也可以通过调用本地主机的系统调用来使用多线程等功能。那么，这部分代码是如何被编译到 Wasm 里，并允许在 Web 浏览器中使用的呢？这一切，都要归功于 Emscripten 提供的一个虚拟主机运行时环境。
+
+如下面这张图所示，通常一个完整的 Wasm Web 应用，都会由三部分组成，即：Wasm 模块代码、JS 胶水代码以及一些对 Web API 的调用。
+
+![WasmAppCodebase](./image/WasmAppCodebase.webp)
+
+为了能够支持在 Web 浏览器中 “使用” 诸如 std::fopen 等 C/C++ 语言中，用于访问本机文件资源的标准库函数，Emscripten 会使用诸如 LocalStorage 之类的浏览器特性，来模拟完整的 POSIX 文件操作和相关的数据结构。当然，只不过这一切都是使用 JS 来模拟实现的。
+
+同样，在这个例子中，对于发送到 stdout 的数据，Emscripten 会通过 JS 直接映射并输出到页面上的指定的 textarea 区域中。类似的，对于多线程甚至 TCP 网络访问（POSIX Socket），Emscripten 也会相应地通过浏览器上的 Web Worker 以及 Web Socket 等方式来进行模拟。
+
+在上面的例子中，尝试了 Emscripten 最基本、最简单的，用于构建 Wasm Web 应用的一种方式。但该方法的弊端在于由 Emscripten 自动生成的 “胶水代码” 中，包含有通过 JS 模拟出的 POSIX 运行时环境的完整代码，因此在某些情况下，应用整体的体积可能还是稍显过大。在极端网络环境的情况下，Web 应用可能会显得力不从心。
+
+### 4.3 JS 逻辑
+
+#### 4.3.1 视频流的控制与显示逻辑
+
+1. 实现将 video 标签所加载的视频资源，实时渲染到 canvas 标题签所代表的画布对象上。
+
+   ![将视频实时渲染到Canvas所代表的画布对象上](./image/%E5%B0%86%E8%A7%86%E9%A2%91%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93%E5%88%B0Canvas%E6%89%80%E4%BB%A3%E8%A1%A8%E7%9A%84%E7%94%BB%E5%B8%83%E5%AF%B9%E8%B1%A1%E4%B8%8A.webp)
+
+   其中的核心逻辑是，通过 `CanvasRenderingContext2D.drawImage()` Web API，来将 video 标签所承载视频的当前帧内容，绘制到 canvas 上。这里使用到的 drawImage() 方法，支持设置多种类型的图像源，video 标签所对应的 “HTMLVideoElement” 便是其中的一种。
+
+   CanvasRenderingContext2D 接口是 Web API 中，Canvas API 的一部分。通过这个接口，能够获得一个可以在对应 Canvas 上进行 2D 绘图的 “渲染上下文”。
+
+   drawImage() 方法只能够绘制 video 标签对应视频流的 “当前帧” 内容，因此随着视频的播放，“当前帧” 内容也会随之发生改变。
+
+   为了能够让绘制到 canvas 上的画面可以随着视频的播放来实时更新，这里将使用 `window.requestAnimationFrame` Web API，来实时更新绘制在 canvas 上的画面内容。
+
+   ```js
+   // 获取相关的 HTML 元素；
+   let video = document.querySelector('.video');
+   let canvas = document.querySelector('.canvas');
+
+   // 使用 getContext 方法获取 <canvas> 标签对应的一个 CanvasRenderingContext2D 接口；
+   let context = canvas.getContext('2d');
+
+   // 自动播放 <video> 载入的视频；
+   let promise = video.play();
+   if (promise !== undefined) {
+     promise.catch(error => {
+       console.error('The video can not autoplay!');
+     });
+   }
+   // 定义绘制函数；
+   function draw() {
+     // 调用 drawImage 函数绘制图像到 <canvas>；
+     context.drawImage(video, 0, 0);
+     // 获得 <canvas> 上当前帧对应画面的像素数组；
+     pixels = context.getImageData(0, 0, video.videoWidth, video.videoHeight);
+     // ...
+     // 更新下一帧画面；
+     requestAnimationFrame(draw);
+   }
+   // <video> 视频资源加载完毕后执行；
+   video.addEventListener('loadeddata', () => {
+     // 根据 <video> 载入视频大小调整对应的 <canvas> 尺寸；
+     canvas.setAttribute('height', video.videoHeight);
+     canvas.setAttribute('width', video.videoWidth);
+     // 绘制函数入口；
+     draw(context);
+   });
+   ```
+
+#### 4.3.2 用户与网页的交互逻辑
+
+这部分代码比较简单，主要流程就是监听用户做出的更改，然后将这些更改后的值保存起来。
+
+```js
+// 全局状态；
+const STATUS = ['STOP', 'JS', 'WASM'];
+// 当前状态；
+let globalStatus = 'STOP';
+// 监听用户点击事件；
+document.querySelector('button').addEventListener('click', () => {
+  globalStatus = STATUS[Number(document.querySelector("input[name='options']:checked").value)];
+});
+```
+
+#### 4.3.3 实时帧率的计算逻辑
+
+作为开始真正构建 JS 版滤镜函数前的最后一步，先来实现帧率的实时计算逻辑，然后观察在不开启任何滤镜效果时的 canvas 渲染帧率情况。
+
+一个简单的帧率计算逻辑可以这样来实现：首先，把每一次从对画面像素开始进行处理，直到真正绘制到 canvas 这整个流程所耗费的时间，以毫秒为单位进行计算；然后用 1000 除以这个数值，即可得到一个估计的，在 1s 时间所内能够渲染的画面次数，也就是帧率。
+
+```js
+function calcFPS(vector) {
+  // 提取容器中的前 20 个元素来计算平均值；
+  const AVERAGE_RECORDS_COUNT = 20;
+  if (vector.length > AVERAGE_RECORDS_COUNT) {
+    vector.shift(-1); // 维护容器大小；
+  } else {
+    return 'NaN';
+  }
+  // 计算平均每帧在绘制过程中所消耗的时间；
+  let averageTime =
+    vector.reduce((pre, item) => {
+      return pre + item;
+    }, 0) / Math.abs(AVERAGE_RECORDS_COUNT);
+  // 估算出 1s 内能够绘制的帧数；
+  return (1000 / averageTime).toFixed(2);
+}
+```
+
+这里，为了能够让帧率的估算更加准确，为 JS 和 Wasm 这两个版本的滤镜实现，分别单独准备了用来保存每帧计算时延的全局数组。这些数组会保存着在最近 20 帧里，每一帧计算渲染时所花费的时间。
+
+然后，在上面代码中的函数 calcFPS 内，会通过对这 20 个帧时延记录取平均值，来求得一个更加稳定、相对准确的平均帧时延。最后，使用 1000 来除以这个平均帧时延，就能够得到一个估算出的，在 1s 时间内能够绘制的帧数，也就是帧率。
+
+#### 4.3.4 JS 滤镜方法的实现
+
+首先，根据规则，需要准备一个 3x3 大小的二维数组，来容纳 “卷积核” 矩阵。然后将该矩阵进行 180 度的翻转。最后得到的结果矩阵，将会在后续直接参与到各个像素点的滤镜计算过程：
+
+```js
+// 矩阵翻转函数；
+function flipKernel(kernel) {
+  const h = kernel.length;
+  const half = Math.floor(h / 2);
+  // 按中心对称的方式将矩阵中的数字上下、左右进行互换；
+  for (let i = 0; i < half; ++i) {
+    for (let j = 0; j < h; ++j) {
+      let _t = kernel[i][j];
+      kernel[i][j] = kernel[h - i - 1][h - j - 1];
+      kernel[h - i - 1][h - j - 1] = _t;
+    }
+  }
+  // 处理矩阵行数为奇数的情况；
+  if (h & 1) {
+    // 将中间行左右两侧对称位置的数进行互换；
+    for (let j = 0; j < half; ++j) {
+      let _t = kernel[half][j];
+      kernel[half][j] = kernel[half][h - j - 1];
+      kernel[half][h - j - 1] = _t;
+    }
+  }
+  return kernel;
+}
+// 得到经过翻转 180 度后的卷积核矩阵；
+const kernel = flipKernel([
+  [-1, -1, 1],
+  [-1, 14, -1],
+  [1, -1, -1]
+]);
+```
+
+在一切准备就绪后，来编写核心的 JS 滤镜处理函数 jsConvFilter。该处理函数一共接受四个参数。第一个参数是通过 getImageData 方法，从 canvas 对象上获取的当前帧画面的像素数组数据。
+
+getImageData 在执行完毕后会返回一个 ImageData 类型的对象，在该对象中有一个名为 data 的属性。data 属性实际上是一个 Uint8ClampedArray 类型的 “Typed Array”，其中便存放着所有像素点按顺序排放的 RGBA 分量值。
+
+![getImageData](./image/getImageData.webp)
+
+jsConvFilter 处理函数的第二和第三个参数为视频帧画面的宽和高；最后一个参数为所应用滤镜对应的 “卷积核” 矩阵数组。至此，可以构造如下的 JS 版本 “滤镜函数”：
+
+```js
+function jsConvFilter(data, width, height, kernel) {
+  const divisor = 4; // 分量调节参数；
+  const h = kernel.length,
+    w = h; // 保存卷积核数组的宽和高；
+  const half = Math.floor(h / 2);
+  // 根据卷积核的大小来忽略对边缘像素的处理；
+  for (let y = half; y < height - half; ++y) {
+    for (let x = half; x < width - half; ++x) {
+      // 每个像素点在像素分量数组中的起始位置；
+      const px = (y * width + x) * 4;
+      let r = 0,
+        g = 0,
+        b = 0;
+      // 与卷积核矩阵数组进行运算；
+      for (let cy = 0; cy < h; ++cy) {
+        for (let cx = 0; cx < w; ++cx) {
+          // 获取卷积核矩阵所覆盖位置的每一个像素的起始偏移位置；
+          const cpx = ((y + (cy - half)) * width + (x + (cx - half))) * 4;
+          // 对卷积核中心像素点的 RGB 各分量进行卷积计算(累加)；
+          r += data[cpx + 0] * kernel[cy][cx];
+          g += data[cpx + 1] * kernel[cy][cx];
+          b += data[cpx + 2] * kernel[cy][cx];
+        }
+      }
+      // 处理 RGB 三个分量的卷积结果；
+      data[px + 0] = r / divisor > 255 ? 255 : r / divisor < 0 ? 0 : r / divisor;
+      data[px + 1] = g / divisor > 255 ? 255 : g / divisor < 0 ? 0 : g / divisor;
+      data[px + 2] = b / divisor > 255 ? 255 : b / divisor < 0 ? 0 : b / divisor;
+    }
+  }
+  return data;
+}
+```
+
+**注意**：
+
+1. 在整个方法的实现过程中，使用了名为 divisor 的变量，来控制滤镜对视频帧画面产生的效果强度。divisor 的值越大，滤镜的效果就越弱。
+2. 在遍历整个帧画面的像素序列时（最外层的两个循环体），将循环控制变量 y 和 x 的初始值，设置为 `Math.floor(h/2)`，这样可以直接忽略对帧画面边缘像素的处理，进而也不用考虑图像卷积产生的 “边缘效应”。所谓 “边缘效应”，其实就是指当在处理帧画面的边缘像素时，由于卷积核其范围内的一部分 “单元格” 无法找到与之相对应的像素点，导致边缘像素实际上没有经过 “完整” 的滤镜计算过程，会产生与预期不符的滤镜处理效果。而这里为了简化流程，选择了直接忽略对边缘像素的处理过程。
+
+### 4.4 编写 C/C++ 函数源码
+
+首先，为了能够得到对应 Wasm 字节码格式的函数实现，需要首先准备由 C/C++ 等高级语言编写的源代码，然后再通过 Emscripten 将其编译到 Wasm 格式。这部分代码的主要逻辑，与 JS 版本滤镜函数其实现逻辑基本相同：
+
+```c++
+
+// dip.cc
+// 引入必要的头文件；
+#include <emscripten.h>
+#include <cmath>
+// 宏常量定义，表示卷积核矩阵的高和宽；
+#define KH 3
+#define KW 3
+// 声明两个数组，分别用于存放卷积核数据与每一帧对应的像素点数据；
+char kernel[KH][KW];
+unsigned char data[921600];
+// 将被导出的函数，放置在 extern "C" 中防止 Name Mangling；
+extern "C" {
+  // 获取卷积核数组的首地址；
+  EMSCRIPTEN_KEEPALIVE auto* cppGetkernelPtr() { return kernel; }
+  // 获取帧像素数组的首地址；
+  EMSCRIPTEN_KEEPALIVE auto* cppGetDataPtr() { return data; }
+  // 滤镜函数；
+  EMSCRIPTEN_KEEPALIVE void cppConvFilter(
+    int width,
+    int height,
+    int divisor) {
+    const int half = std::floor(KH / 2);
+    for (int y = half; y < height - half; ++y) {
+      for (int x = half; x < width - half; ++x) {
+        int px = (y * width + x) * 4;
+        int r = 0, g = 0, b = 0;
+        for (int cy = 0; cy < KH; ++cy) {
+          for (int cx = 0; cx < KW; ++cx) {
+            const int cpx = ((y + (cy - half)) * width + (x + (cx - half))) * 4;
+            r += data[cpx + 0] * kernel[cy][cx];
+            g += data[cpx + 1] * kernel[cy][cx];
+            b += data[cpx + 2] * kernel[cy][cx];
+          }
+        }
+        data[px + 0] = ((r / divisor) > 255) ? 255 : ((r / divisor) < 0) ? 0 : r / divisor;
+        data[px + 1] = ((g / divisor) > 255) ? 255 : ((g / divisor) < 0) ? 0 : g / divisor;
+        data[px + 2] = ((b / divisor) > 255) ? 255 : ((b / divisor) < 0) ? 0 : b / divisor;
+      }
+    }
+  }
+}
+```
+
+在这段代码中，将定义的所有函数均以 “cpp” 作为其前缀来命名，表明这个函数的实际定义来自于对应的 C/C++ 代码实现。其中，“cppConvFilter” 函数为主要的滤镜计算函数。在该函数中，保持着几乎与 JS 版滤镜函数同样的实现逻辑。
+
+在代码的开始，首先以 `#include` 的方式，包含了很多需要使用到的 C/C++ 头文件。其中 “emscripten.h” 头文件便由 Emscripten 工具链提供，其中包含着众多与 Wasm 编译相关的宏和函数定义。
+
+另外的 “cmath” 头文件，是原始 C 标准库中的 “math.h” 头文件在 C++ 中的对应。两者在所提供函数的功能上基本没有区别。将使用该头文件中提供的 “std::floor” 函数，去参与滤镜的计算过程。
+
+接下来，使用 “#define” 定义了两个宏常量 “KH” 与 “KW”，分别表示卷积核的 “高” 与 “宽”。并同时使用这两个常量，定义了用来存放实际卷积核矩阵数据的二维数组 “kernel”。类似的，还定义了用来存放每一帧对应像素数据的一维数组 “data”。
+
+由于在 C/C++ 中，无法声明全局的动态大小数组，因此需要提前计算出，由 Web API `CanvasRenderingContext2D.getImageData` 所返回的，存放有每一帧对应像素数据的那个 Uint8ClampedArray 数组，在 C/C++ 中对应到 unsigned char 类型数组时的大小。
+
+由于这两个数组所存储的单个元素其类型完全相同，因此直接使用这个得到的 Uint8ClampedArray 数组的大小，来作为对应 C/C++ 中 “data” 数组的大小。经过实践，得到的数组大小为 “921600”。
+
+在 extern "C" {} 结构中，声明了所有需要导出到外部宿主环境（这里为浏览器的 JS 环境）中使用的函数。其中除了 cppConvFilter 函数以外，还有另外的 cppGetkernelPtr 和 cppGetDataPtr 函数。这两个函数主要用来获取先前声明的数组 kernel 与 data 的首地址。通过这种方式，便可以在外部的 JS 环境中，向定义在 C/C++ 中的这两个数组结构填充实际的运行时数据了。
+
+**使用 Emscripten 进行编译**
+这次不需要它生成 JS 胶水文件以及 HTML 文件，需要的仅是一个根据 C/C++ 代码生成的 Wasm 二进制模块文件，这种仅生成 Wasm 模块文件的方式，通常将其称为 “Standalone 模式”。对应的编译命令如下所示：
+
+```sh
+emcc dip.cc -O3 --no-entry -o dip.wasm
+```
+
+相比于之前的编译命令，这里做了两个更改。首先，将 “-o” 参数所指定的输出文件格式由原来 “.html” 变更为 “.wasm”。这样，可以告诉 Emscripten 希望以 “Standalone” 的方式来编译输入的 C/C++ 源码。“–no-entry” 参数告诉编译器，Wasm 模块没有声明 “main” 函数，因此不需要与 CRT（C Runtime Library）相关的功能进行交互。
+
+**整合上下文资源**
+至此，便可以将这个通过 Emscripten 编译得到的名为 “dip.wasm” 的 Wasm 模块文件，整合到现阶段项目的 JS 代码中。这里使用 `WebAssembly.instantiateStreaming` 的方式来加载这个模块文件：
+
+```js
+let { instance } = await WebAssembly.instantiateStreaming(fetch('./dip.wasm'));
+let { cppConvFilter, cppGetkernelPtr, cppGetDataPtr, memory } = instance.exports;
+```
+
+上面的代码除了从 instance.exports 对象中导出了定义在 Wasm 模块内的函数以外，还有另一个名为 memory 的对象。这个 memory 对象便代表着模块实例所使用到的线性内存段。线性内存段在 JS 中的表示形式，也就是一个 ArrayBuffer 对象。
+
+当然，这里 memory 实际上是一个名为 WebAssembly.Memory 的包装类对象，而该对象上的 “buffer” 属性中，便实际存放着对应模块线性内存的 ArrayBuffer 对象。
+
+下面，便可以通过调用相应的方法来完成 Wasm 滤镜函数与 Web 应用的整合。
+
+首先，需要将在 JS 代码中获得到的卷积核矩阵数据，以及每一帧所对应的画面像素数据，填充到之前在 C/C++ 代码中定义的相应数组中。为了完成这一步，需要首先调用从模块实例中导出的 “cppGetDataPtr” 和 “cppGetkernelPtr” 两个方法，来分别获得这两个数组的首地址，也就是在模块实例线性内存段中的具体偏移位置。
+
+然后，将使用 “Uint8Array” 与 “Int8Array” 这两个 TypedArray 类型来作为模块线性内存的操作视图，并向其中写入数据。
+
+待数据填充完毕后，便可以调用从模块中导出的 “cppConvFilter” 方法来为原始的像素数据添加滤镜。
+
+待方法调用完毕后，将通过 TypedArray 的 subarray 方法来返回一个，包含有已处理完毕像素数据的新的 TypedArray，这些数据随后将会通过名为 CanvasRenderingContext2D.putImageData() 的 API 被重新绘制在 Canvas 对象上，以实现画面的更新。
+
+```js
+// 获取 C/C++ 中存有卷积核矩阵和帧像素数据的数组，在 Wasm 线性内存段中的偏移位置；
+const dataOffset = cppGetDataPtr();
+const kernOffset = cppGetkernelPtr();
+// 扁平化卷积核的二维数组到一位数组，以方便数据的填充；
+const flatKernel = kernel.reduce((acc, cur) => acc.concat(cur), []);
+// 为 Wasm 模块的线性内存段设置两个用于进行数据操作的视图，分别对应卷积核矩阵和帧像素数据；
+let Uint8View = new Uint8Array(memory.buffer);
+let Int8View = new Int8Array(memory.buffer);
+// 填充卷积核矩阵数据；
+Int8View.set(flatKernel, kernOffset);
+// 封装的 Wasm 滤镜处理函数；
+function filterWASM(pixelData, width, height) {
+  const arLen = pixelData.length;
+  // 填充当前帧画面的像素数据；
+  Uint8View.set(pixelData, dataOffset);
+  // 调用滤镜处理函数；
+  cppConvFilter(width, height, 4);
+  // 返回经过处理的数据；
+  return Uint8View.subarray(dataOffset, dataOffset + arLen);
+}
+```
+
+> **注意**：之前在 JS 中使用的卷积核矩阵数组，实际上是以二维数组的形式存在的。而为了能够方便地将这部分数据填充到 Wasm 线性内存中，这里将其扁平化成了一维数组，并存放到变量 flatKernel 中。另外，仅将那些在视频播放过程中可能会发生变化的部分（这里主要是指每一帧需要填充到 Wasm 模块实例线性内存的像素数据），都单独整和到了名为 filterWasm 的函数中，这样在动画的播放过程中，可以减少不必要的数据传递过程。
+
+### 4.5 Wasm 应用的调试与分析
