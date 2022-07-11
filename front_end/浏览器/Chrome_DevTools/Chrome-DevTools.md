@@ -221,6 +221,35 @@ Elements 使用双面板模式 `DOM 面板` + `CSS 面板`，它根据屏幕可�
 
 > 在 `Command Menu` 里，使用 `!`，就可以根据名字来筛选预设代码片段。
 
+### 2.5 关闭同源安全模式
+
+跨域和同源策略是经常遇见的问题：`No 'Access-Control-Allow-Origin' header is present on the requested resource`。
+
+跨域是仅仅存在浏览器端，为了安全策略而采用的一种方案。如果是仅仅是本地调试的话，完全可以把这个安全策略禁用掉，让所有的跨域限制都放开。
+
+**window 步骤**：
+
+1. 新建一个 chrome 快捷方式，右键 “属性”。
+2. “快捷方式” 选项卡里选择 “目标”，添加 `--args --disable-web-security --user-data-dir`
+
+**mac 步骤**：
+
+```sh
+open -n /Applications/Google\ Chrome.app/ --args --disable-web-security --ignore-certificate-errors --user-data-dir=/Users/${此处完成用户名}/MyChromeDevUserData/
+```
+
+### 2.6 log 和 network 保留日志
+
+有一些页面需要去通过查看 log 或者 network 接口去调试需求的同时，代码逻辑中还存在刷新，导致日志被清空。可以利用 chrome 的 preserve log 将所有的日志一直保留下去。
+
+**console 保留日志**：
+
+![console 保留日志](./image/console%E4%BF%9D%E7%95%99%E6%97%A5%E5%BF%97.png)
+
+**Network 保留日志**：
+
+![Network保留日志](./image/Network%E4%BF%9D%E7%95%99%E6%97%A5%E5%BF%97.png)
+
 ## 三. Console 篇
 
 ### 3.1 Console 中的 `$`
@@ -244,7 +273,7 @@ Elements 使用双面板模式 `DOM 面板` + `CSS 面板`，它根据屏幕可�
 - 媒体能力
 
   ```js
-  let query = { type: "file", audio: { contentType: "audio/ogg" } };
+  let query = { type: 'file', audio: { contentType: 'audio/ogg' } };
   console.table(await navigator.mediaCapabilities.decodingInfo(query));
   ```
 
@@ -306,22 +335,22 @@ window.devtoolsFormatters = [
       const content = `${JSON.stringify(obj, null, 2)}`;
 
       try {
-        return ["div", { style }, content];
+        return ['div', { style }, content];
       } catch (err) {
         return null; // use the default formatter
       }
     },
     hasBody() {
       return false;
-    },
-  },
+    }
+  }
 ];
 
 console.clown = function (obj) {
   console.log({ ...obj, __clown: true });
 };
 
-console.clown({ message: "hello!" });
+console.clown({ message: 'hello!' });
 ```
 
 ### 3.5 对象 & 方法
@@ -331,7 +360,7 @@ console.clown({ message: "hello!" });
 `DevTools` 里的 `queryObjects` 函数，可以查询 `特定的时刻 + 特定的执行上下文` 有哪些对象：
 
 ```js
-new String("example");
+new String('example');
 queryObjects(String);
 ```
 
@@ -348,11 +377,11 @@ class Person {
   }
 
   greet() {
-    return this.getMessage("greeting", "tom");
+    return this.getMessage('greeting', 'tom');
   }
 
   getMessage(type, js) {
-    if (type === "greeting") {
+    if (type === 'greeting') {
       return `Hello, I'm ${this.name}!`;
     }
   }
@@ -390,7 +419,7 @@ console.assert(assertion, msg [, subst1, ..., substN]);
 `console.log` 可以通过 `{}` 将参数包装，可以将一组数据打印成一个对象，这是 `ECMAScript 2015` 引入的 `enhanced object literal（增强对象文字面量）`。
 
 ```js
-const name = "tom";
+const name = 'tom';
 let date = new Date();
 var age = 18;
 let isHealthy = true;
@@ -421,8 +450,8 @@ console.log({ name, date, age, isHealthy });
 可以使用以下两个 `console` 方法，来检测某段代码的执行时间：
 
 ```js
-console.time("a"); // 开启一个计时器
-console.timeEnd("a"); // 结束计时并且将结果在 console 中打印出来
+console.time('a'); // 开启一个计时器
+console.timeEnd('a'); // 结束计时并且将结果在 console 中打印出来
 ```
 
 #### 3.6.7 让 `console.log` 基于调用堆栈自动缩进
@@ -433,22 +462,22 @@ console.timeEnd("a"); // 结束计时并且将结果在 console 中打印出来
 function log(message) {
   console.log(
     // 这句话是重点。使用 new 出来的 Error 对象的 stack 信息中的换行符，换行符出现的次数 等同于 它在堆栈调用时的深度。
-    "  ".repeat(new Error().stack.match(/\n/g).length - 2) + message
+    '  '.repeat(new Error().stack.match(/\n/g).length - 2) + message
   );
 }
 
 function foo() {
-  log("foo");
+  log('foo');
   return bar() + bar();
 }
 
 function bar() {
-  log("bar");
+  log('bar');
   return baz() + baz();
 }
 
 function baz() {
-  log("baz");
+  log('baz');
   return 17;
 }
 
@@ -464,8 +493,8 @@ foo();
 
 ```js
 function getInput(options, callback) {
-  if (typeof callback == "function") {
-    callback(options, "add");
+  if (typeof callback == 'function') {
+    callback(options, 'add');
   }
 }
 // console.log 是一个函数，可以作为回调函数
@@ -477,7 +506,7 @@ getInput([1, 2], console.log); // [1, 2] 'add'
 如果给打印文本加上 `%c` ，那么 `console.log` 的第二个参数就变成了 CSS 规则：
 
 ```js
-console.log("%c999", "color:#f40;font-size:40px");
+console.log('%c999', 'color:#f40;font-size:40px');
 ```
 
 #### 3.6.10 实时表达式

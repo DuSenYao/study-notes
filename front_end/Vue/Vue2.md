@@ -485,7 +485,11 @@ Vue.component('todo-item', {
       现在为每个 todo-item 提供 todo 对象，todo 对象是变量，即其内容可以是动态的。
       也需要为每个组件提供一个“key”。
     -->
-    <todo-item v-for="item in groceryList" v-bind:todo="item" v-bind:key="item.id"></todo-item>
+    <todo-item
+      v-for="item in groceryList"
+      v-bind:todo="item"
+      v-bind:key="item.id"
+    ></todo-item>
   </ol>
 </div>
 ```
@@ -1098,7 +1102,10 @@ var watchExampleVM = new Vue({
 可以在对象中传入更多字段来动态切换多个 class。此外，v-bind:class 指令也可以与普通的 class attribute 共存。当有如下模板：
 
 ```html
-<div class="static" v-bind:class="{ active: isActive, 'text-danger': hasError }"></div>
+<div
+  class="static"
+  v-bind:class="{ active: isActive, 'text-danger': hasError }"
+></div>
 ```
 
 ```js
@@ -1354,11 +1361,17 @@ Vue 会尽可能高效地渲染元素，通常会复用已有元素而不是从�
 ```html
 <template v-if="loginType === 'username'">
   <label>Username</label>
-  <input placeholder="Enter your username" key="username-input" />
+  <input
+    placeholder="Enter your username"
+    key="username-input"
+  />
 </template>
 <template v-else>
   <label>Email</label>
-  <input placeholder="Enter your email address" key="email-input" />
+  <input
+    placeholder="Enter your email address"
+    key="email-input"
+  />
 </template>
 ```
 
@@ -1402,7 +1415,12 @@ Vue 会尽可能高效地渲染元素，通常会复用已有元素而不是从�
 
 ```html
 <ul id="example-1">
-  <li v-for="item in items" :key="item.message">{{ item.message }}</li>
+  <li
+    v-for="item in items"
+    :key="item.message"
+  >
+    {{ item.message }}
+  </li>
 </ul>
 ```
 
@@ -1444,7 +1462,10 @@ var example2 = new Vue({
 也可以用 `v-for` 来遍历一个对象的 property。
 
 ```html
-<ul id="v-for-object" class="demo">
+<ul
+  id="v-for-object"
+  class="demo"
+>
   <li v-for="value in object">{{ value }}</li>
 </ul>
 ```
@@ -1485,7 +1506,10 @@ new Vue({
 为了给 Vue 一个提示，以便它能跟踪每个节点的身份，从而重用和重新排序现有元素，需要为每项提供一个唯一 `key` attribute：
 
 ```html
-<div v-for="item in items" v-bind:key="item.id">
+<div
+  v-for="item in items"
+  v-bind:key="item.id"
+>
   <!-- 内容 -->
 </div>
 ```
@@ -1584,7 +1608,10 @@ methods: {
 <ul>
   <template v-for="item in items">
     <li>{{ item.msg }}</li>
-    <li class="divider" role="presentation"></li>
+    <li
+      class="divider"
+      role="presentation"
+    ></li>
   </template>
 </ul>
 ```
@@ -1596,7 +1623,12 @@ methods: {
 当它们处于同一节点，`v-for` 的优先级比 `v-if` 更高，这意味着 `v-if` 将分别重复运行于每个 `v-for` 循环中。当只想为部分项渲染节点时，这种优先级的机制会十分有用，如下：
 
 ```html
-<li v-for="todo in todos" v-if="!todo.isComplete">{{ todo }}</li>
+<li
+  v-for="todo in todos"
+  v-if="!todo.isComplete"
+>
+  {{ todo }}
+</li>
 ```
 
 上面的代码将只渲染未完成的 todo。
@@ -1615,7 +1647,10 @@ methods: {
 在自定义组件上，可以像在任何普通元素上一样使用 `v-for`。
 
 ```html
-<my-component v-for="item in items" :key="item.id"></my-component>
+<my-component
+  v-for="item in items"
+  :key="item.id"
+></my-component>
 ```
 
 > 2.2.0+ 的版本里，当在组件上使用 `v-for` 时，`key` 现在是必须的。
@@ -1639,7 +1674,11 @@ methods: {
 <div id="todo-list-example">
   <form v-on:submit.prevent="addNewTodo">
     <label for="new-todo">Add a todo</label>
-    <input v-model="newTodoText" id="new-todo" placeholder="E.g. Feed the cat" />
+    <input
+      v-model="newTodoText"
+      id="new-todo"
+      placeholder="E.g. Feed the cat"
+    />
     <button>Add</button>
   </form>
   <ul>
@@ -1925,7 +1964,10 @@ methods: {
 ##### 1.10.1.1 文本
 
 ```html
-<input v-model="message" placeholder="edit me" />
+<input
+  v-model="message"
+  placeholder="edit me"
+/>
 <p>Message is: {{ message }}</p>
 ```
 
@@ -1935,7 +1977,10 @@ methods: {
 <span>Multiline message is:</span>
 <p style="white-space: pre-line;">{{ message }}</p>
 <br />
-<textarea v-model="message" placeholder="add multiple lines"></textarea>
+<textarea
+  v-model="message"
+  placeholder="add multiple lines"
+></textarea>
 ```
 
 > 在文本区域插值 (`<textarea>{{text}}</textarea>`) 并不会生效，应用 `v-model` 来代替。
@@ -1945,17 +1990,37 @@ methods: {
 单个复选框，绑定到布尔值：
 
 ```html
-<input type="checkbox" id="checkbox" v-model="checked" /> <label for="checkbox">{{ checked }}</label>
+<input
+  type="checkbox"
+  id="checkbox"
+  v-model="checked"
+/>
+<label for="checkbox">{{ checked }}</label>
 ```
 
 多个复选框，绑定到同一个数组：
 
 ```html
-<input type="checkbox" id="jack" value="Jack" v-model="checkedNames" />
+<input
+  type="checkbox"
+  id="jack"
+  value="Jack"
+  v-model="checkedNames"
+/>
 <label for="jack">Jack</label>
-<input type="checkbox" id="john" value="John" v-model="checkedNames" />
+<input
+  type="checkbox"
+  id="john"
+  value="John"
+  v-model="checkedNames"
+/>
 <label for="john">John</label>
-<input type="checkbox" id="mike" value="Mike" v-model="checkedNames" />
+<input
+  type="checkbox"
+  id="mike"
+  value="Mike"
+  v-model="checkedNames"
+/>
 <label for="mike">Mike</label>
 <br />
 <span>Checked names: {{ checkedNames }}</span>
@@ -1974,10 +2039,20 @@ new Vue({
 
 ```html
 <div id="example-4">
-  <input type="radio" id="one" value="One" v-model="picked" />
+  <input
+    type="radio"
+    id="one"
+    value="One"
+    v-model="picked"
+  />
   <label for="one">One</label>
   <br />
-  <input type="radio" id="two" value="Two" v-model="picked" />
+  <input
+    type="radio"
+    id="two"
+    value="Two"
+    v-model="picked"
+  />
   <label for="two">Two</label>
   <br />
   <span>Picked: {{ picked }}</span>
@@ -2000,7 +2075,12 @@ new Vue({
 ```html
 <div id="example-5">
   <select v-model="selected">
-    <option disabled value="">请选择</option>
+    <option
+      disabled
+      value=""
+    >
+      请选择
+    </option>
     <option>A</option>
     <option>B</option>
     <option>C</option>
@@ -2024,7 +2104,11 @@ new Vue({
 
 ```html
 <div id="example-6">
-  <select v-model="selected" multiple style="width: 50px;">
+  <select
+    v-model="selected"
+    multiple
+    style="width: 50px;"
+  >
     <option>A</option>
     <option>B</option>
     <option>C</option>
@@ -2047,7 +2131,12 @@ new Vue({
 
 ```html
 <select v-model="selected">
-  <option v-for="option in options" v-bind:value="option.value">{{ option.text }}</option>
+  <option
+    v-for="option in options"
+    v-bind:value="option.value"
+  >
+    {{ option.text }}
+  </option>
 </select>
 <span>Selected: {{ selected }}</span>
 ```
@@ -2072,10 +2161,17 @@ new Vue({
 
 ```html
 <!-- 当选中时，`picked` 为字符串 "a" -->
-<input type="radio" v-model="picked" value="a" />
+<input
+  type="radio"
+  v-model="picked"
+  value="a"
+/>
 
 <!-- `toggle` 为 true 或 false -->
-<input type="checkbox" v-model="toggle" />
+<input
+  type="checkbox"
+  v-model="toggle"
+/>
 
 <!-- 当选中第一个选项时，`selected` 为字符串 "abc" -->
 <select v-model="selected">
@@ -2088,7 +2184,12 @@ new Vue({
 ##### 1.10.2.1 复选框
 
 ```html
-<input type="checkbox" v-model="toggle" true-value="yes" false-value="no" />
+<input
+  type="checkbox"
+  v-model="toggle"
+  true-value="yes"
+  false-value="no"
+/>
 ```
 
 ```js
@@ -2103,7 +2204,11 @@ vm.toggle === 'no';
 ##### 1.10.2.2 单选按钮
 
 ```html
-<input type="radio" v-model="pick" v-bind:value="a" />
+<input
+  type="radio"
+  v-model="pick"
+  v-bind:value="a"
+/>
 ```
 
 ```js
@@ -2142,7 +2247,10 @@ vm.selected.number; // => 123
 如果想自动将用户的输入值转为数值类型，可以给 `v-model` 添加 `number` 修饰符：
 
 ```html
-<input v-model.number="age" type="number" />
+<input
+  v-model.number="age"
+  type="number"
+/>
 ```
 
 这通常很有用，因为即使在 `type="number"` 时，HTML 输入元素的值也总会返回字符串。如果这个值无法被 `parseFloat()` 解析，则会返回原始的值。
@@ -2278,7 +2386,11 @@ new Vue({
 并想要为每篇博文渲染一个组件：
 
 ```html
-<blog-post v-for="post in posts" v-bind:key="post.id" v-bind:title="post.title"></blog-post>
+<blog-post
+  v-for="post in posts"
+  v-bind:key="post.id"
+  v-bind:title="post.title"
+></blog-post>
 ```
 
 如上所示，可以使用 `v-bind` 来动态传递 prop。这在一开始不清楚要渲染的具体内容，比如从一个 API 获取博文列表的时候，是非常有用的。
@@ -2323,7 +2435,11 @@ new Vue({
 所以是时候重构一下这个 `<blog-post>` 组件了，让它变成接受一个单独的 `post` prop：
 
 ```html
-<blog-post v-for="post in posts" v-bind:key="post.id" v-bind:post="post"></blog-post>
+<blog-post
+  v-for="post in posts"
+  v-bind:key="post.id"
+  v-bind:post="post"
+></blog-post>
 ```
 
 ```js
@@ -2365,7 +2481,11 @@ new Vue({
 ```html
 <div id="blog-posts-events-demo">
   <div :style="{ fontSize: postFontSize + 'em' }">
-    <blog-post v-for="post in posts" v-bind:key="post.id" v-bind:post="post"></blog-post>
+    <blog-post
+      v-for="post in posts"
+      v-bind:key="post.id"
+      v-bind:post="post"
+    ></blog-post>
   </div>
 </div>
 ```
@@ -2390,7 +2510,10 @@ Vue.component('blog-post', {
 当点击这个按钮时，需要告诉父级组件放大所有博文的文本。Vue 实例提供了一个自定义事件的系统来解决这个问题。父级组件可以像处理 native DOM 事件一样通过 `v-on` 监听子组件实例的任意事件：
 
 ```html
-<blog-post ... v-on:enlarge-text="postFontSize += 0.1"></blog-post>
+<blog-post
+  ...
+  v-on:enlarge-text="postFontSize += 0.1"
+></blog-post>
 ```
 
 同时子组件可以通过调用内建的 `$emit` 方法并传入事件名称来触发一个事件：
@@ -2412,13 +2535,19 @@ Vue.component('blog-post', {
 然后当在父级组件监听这个事件的时候，可以通过 `$event` 访问到被抛出的这个值：
 
 ```html
-<blog-post ... v-on:enlarge-text="postFontSize += $event"></blog-post>
+<blog-post
+  ...
+  v-on:enlarge-text="postFontSize += $event"
+></blog-post>
 ```
 
 或者，如果这个事件处理函数是一个方法：
 
 ```html
-<blog-post ... v-on:enlarge-text="onEnlargeText"></blog-post>
+<blog-post
+  ...
+  v-on:enlarge-text="onEnlargeText"
+></blog-post>
 ```
 
 那么这个值将会作为第一个参数传入这个方法：
@@ -2442,13 +2571,19 @@ methods: {
 等价于：
 
 ```html
-<input v-bind:value="searchText" v-on:input="searchText = $event.target.value" />
+<input
+  v-bind:value="searchText"
+  v-on:input="searchText = $event.target.value"
+/>
 ```
 
 当用在组件上时，`v-model` 则会这样：
 
 ```html
-<custom-input v-bind:value="searchText" v-on:input="searchText = $event"></custom-input>
+<custom-input
+  v-bind:value="searchText"
+  v-on:input="searchText = $event"
+></custom-input>
 ```
 
 为了让它正常工作，这个组件内的 `<input>` 必须：
@@ -2501,7 +2636,10 @@ Vue.component('alert-box', {
 有的时候，在不同组件之间进行动态切换是非常有用的，比如在一个多标签的界面里。可以通过 Vue 的 `<component>` 元素加一个特殊的 `is` attribute 来实现：
 
 ```html
-<div id="dynamic-component-demo" class="demo">
+<div
+  id="dynamic-component-demo"
+  class="demo"
+>
   <button
     v-for="tab in tabs"
     v-bind:key="tab"
@@ -2511,7 +2649,10 @@ Vue.component('alert-box', {
     {{ tab }}
   </button>
 
-  <component v-bind:is="currentTabComponent" class="tab"></component>
+  <component
+    v-bind:is="currentTabComponent"
+    class="tab"
+  ></component>
 </div>
 ```
 
@@ -2541,7 +2682,10 @@ new Vue({
 ```
 
 ```html
-<div id="dynamic-component-demo" class="demo">
+<div
+  id="dynamic-component-demo"
+  class="demo"
+>
   <button
     v-for="tab in tabs"
     v-bind:key="tab.name"
@@ -2551,7 +2695,10 @@ new Vue({
     {{ tab.name }}
   </button>
 
-  <component v-bind:is="currentTab.component" class="tab"></component>
+  <component
+    v-bind:is="currentTab.component"
+    class="tab"
+  ></component>
 </div>
 ```
 
@@ -2967,7 +3114,10 @@ post: {
 等价于:
 
 ```html
-<blog-post v-bind:id="post.id" v-bind:title="post.title"></blog-post>
+<blog-post
+  v-bind:id="post.id"
+  v-bind:title="post.title"
+></blog-post>
 ```
 
 #### 2.2.4 单向数据流
@@ -3101,13 +3251,19 @@ Vue.component('blog-post', {
 如果 `<bootstrap-date-input>` 的模板是这样的：
 
 ```html
-<input type="date" class="form-control" />
+<input
+  type="date"
+  class="form-control"
+/>
 ```
 
 为了给日期选择器插件定制一个主题，可能需要像这样添加一个特别的类名：
 
 ```html
-<bootstrap-date-input data-date-picker="activated" class="date-picker-theme-dark"></bootstrap-date-input>
+<bootstrap-date-input
+  data-date-picker="activated"
+  class="date-picker-theme-dark"
+></bootstrap-date-input>
 ```
 
 在这种情况下，定义了两个不同的 `class` 的值：
@@ -3161,7 +3317,11 @@ Vue.component('base-input', {
 这个模式允许在使用基础组件的时候更像是使用原始的 HTML 元素，而不会担心哪个元素是真正的根元素：
 
 ```html
-<base-input v-model="username" required placeholder="Enter your username"></base-input>
+<base-input
+  v-model="username"
+  required
+  placeholder="Enter your username"
+></base-input>
 ```
 
 ### 2.3 自定义事件
@@ -3231,7 +3391,11 @@ Vue.component('base-checkbox', {
 ```html
 <label>
   {{ label }}
-  <input v-bind="$attrs" v-bind:value="value" v-on:input="$emit('input', $event.target.value)" />
+  <input
+    v-bind="$attrs"
+    v-bind:value="value"
+    v-on:input="$emit('input', $event.target.value)"
+  />
 </label>
 ```
 
@@ -3299,7 +3463,10 @@ this.$emit('update:title', newTitle);
 然后父组件可以监听那个事件并根据需要更新一个本地的数据 property。例如：
 
 ```html
-<text-document v-bind:title="doc.title" v-on:update:title="doc.title = $event"></text-document>
+<text-document
+  v-bind:title="doc.title"
+  v-on:update:title="doc.title = $event"
+></text-document>
 ```
 
 为了方便起见，为这种模式提供一个缩写，即 `.sync` 修饰符：
@@ -3337,7 +3504,10 @@ Vue 实现了一套内容分发的 API，这套 API 的设计灵感源自 Web Co
 然后在 `<navigation-link>` 的模板中可能会写为：
 
 ```html
-<a v-bind:href="url" class="nav-link">
+<a
+  v-bind:href="url"
+  class="nav-link"
+>
   <slot></slot>
 </a>
 ```
@@ -3670,7 +3840,12 @@ function (slotProps) {
 
 ```html
 <ul>
-  <li v-for="todo in filteredTodos" v-bind:key="todo.id">{{ todo.text }}</li>
+  <li
+    v-for="todo in filteredTodos"
+    v-bind:key="todo.id"
+  >
+    {{ todo.text }}
+  </li>
 </ul>
 ```
 
@@ -3678,12 +3853,18 @@ function (slotProps) {
 
 ```html
 <ul>
-  <li v-for="todo in filteredTodos" v-bind:key="todo.id">
+  <li
+    v-for="todo in filteredTodos"
+    v-bind:key="todo.id"
+  >
     <!--
     为每个 todo 准备了一个插槽，
     将 `todo` 对象作为一个插槽的 prop 传入。
     -->
-    <slot name="todo" v-bind:todo="todo">
+    <slot
+      name="todo"
+      v-bind:todo="todo"
+    >
       <!-- 后备内容 -->
       {{ todo.text }}
     </slot>
@@ -3970,7 +4151,11 @@ new Vue({
 示例：
 
 ```html
-<link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css" />
+<link
+  href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1"
+  rel="stylesheet"
+  type="text/css"
+/>
 
 <div id="example-3">
   <button @click="show = !show">Toggle render</button>
@@ -4095,7 +4280,12 @@ Velocity 和 jQuery.animate 的工作方式类似，也是用来实现 JavaScrip
 
 <div id="example-4">
   <button @click="show = !show">Toggle</button>
-  <transition v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:leave="leave" v-bind:css="false">
+  <transition
+    v-on:before-enter="beforeEnter"
+    v-on:enter="enter"
+    v-on:leave="leave"
+    v-bind:css="false"
+  >
     <p v-if="show">Demo</p>
   </transition>
 </div>
@@ -4195,8 +4385,18 @@ new Vue({
 
 ```html
 <transition>
-  <button v-if="isEditing" key="save">Save</button>
-  <button v-else key="edit">Edit</button>
+  <button
+    v-if="isEditing"
+    key="save"
+  >
+    Save
+  </button>
+  <button
+    v-else
+    key="edit"
+  >
+    Edit
+  </button>
 </transition>
 ```
 
@@ -4214,9 +4414,24 @@ new Vue({
 
 ```html
 <transition>
-  <button v-if="docState === 'saved'" key="saved">Edit</button>
-  <button v-if="docState === 'edited'" key="edited">Save</button>
-  <button v-if="docState === 'editing'" key="editing">Cancel</button>
+  <button
+    v-if="docState === 'saved'"
+    key="saved"
+  >
+    Edit
+  </button>
+  <button
+    v-if="docState === 'edited'"
+    key="edited"
+  >
+    Save
+  </button>
+  <button
+    v-if="docState === 'editing'"
+    key="editing"
+  >
+    Cancel
+  </button>
 </transition>
 ```
 
@@ -4256,7 +4471,10 @@ computed: {
 用 `out-in` 重写之前的开关按钮过渡：
 
 ```html
-<transition name="fade" mode="out-in">
+<transition
+  name="fade"
+  mode="out-in"
+>
   <!-- ... the buttons ... -->
 </transition>
 ```
@@ -4270,7 +4488,10 @@ computed: {
 多个组件的过渡简单很多 - 不需要使用 `key` attribute。相反，只需要使用[动态组件](#1118-动态组件)：
 
 ```html
-<transition name="component-fade" mode="out-in">
+<transition
+  name="component-fade"
+  mode="out-in"
+>
   <component v-bind:is="view"></component>
 </transition>
 ```
@@ -4322,11 +4543,23 @@ new Vue({
 现在由一个简单的例子深入，进入和离开的过渡使用之前一样的 CSS 类名。
 
 ```html
-<div id="list-demo" class="demo">
+<div
+  id="list-demo"
+  class="demo"
+>
   <button v-on:click="add">Add</button>
   <button v-on:click="remove">Remove</button>
-  <transition-group name="list" tag="p">
-    <span v-for="item in items" v-bind:key="item" class="list-item"> {{ item }} </span>
+  <transition-group
+    name="list"
+    tag="p"
+  >
+    <span
+      v-for="item in items"
+      v-bind:key="item"
+      class="list-item"
+    >
+      {{ item }}
+    </span>
   </transition-group>
 </div>
 ```
@@ -4379,10 +4612,21 @@ new Vue({
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.14.1/lodash.min.js"></script>
 
-<div id="flip-list-demo" class="demo">
+<div
+  id="flip-list-demo"
+  class="demo"
+>
   <button v-on:click="shuffle">Shuffle</button>
-  <transition-group name="flip-list" tag="ul">
-    <li v-for="item in items" v-bind:key="item">{{ item }}</li>
+  <transition-group
+    name="flip-list"
+    tag="ul"
+  >
+    <li
+      v-for="item in items"
+      v-bind:key="item"
+    >
+      {{ item }}
+    </li>
   </transition-group>
 </div>
 ```
@@ -4416,12 +4660,24 @@ new Vue({
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.14.1/lodash.min.js"></script>
 
-<div id="list-complete-demo" class="demo">
+<div
+  id="list-complete-demo"
+  class="demo"
+>
   <button v-on:click="shuffle">Shuffle</button>
   <button v-on:click="add">Add</button>
   <button v-on:click="remove">Remove</button>
-  <transition-group name="list-complete" tag="p">
-    <span v-for="item in items" v-bind:key="item" class="list-complete-item"> {{ item }} </span>
+  <transition-group
+    name="list-complete"
+    tag="p"
+  >
+    <span
+      v-for="item in items"
+      v-bind:key="item"
+      class="list-complete-item"
+    >
+      {{ item }}
+    </span>
   </transition-group>
 </div>
 ```
@@ -4487,7 +4743,13 @@ FLIP 动画不仅可以实现单列过渡，[多维网格也同样可以过渡](
     v-on:enter="enter"
     v-on:leave="leave"
   >
-    <li v-for="(item, index) in computedList" v-bind:key="item.msg" v-bind:data-index="index">{{ item.msg }}</li>
+    <li
+      v-for="(item, index) in computedList"
+      v-bind:key="item.msg"
+      v-bind:data-index="index"
+    >
+      {{ item.msg }}
+    </li>
   </transition-group>
 </div>
 ```
@@ -4605,16 +4867,44 @@ Vue.component('my-special-transition', {
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
 
-<div id="dynamic-fade-demo" class="demo">
+<div
+  id="dynamic-fade-demo"
+  class="demo"
+>
   Fade In:
-  <input type="range" v-model="fadeInDuration" min="0" v-bind:max="maxFadeDuration" />
+  <input
+    type="range"
+    v-model="fadeInDuration"
+    min="0"
+    v-bind:max="maxFadeDuration"
+  />
   Fade Out:
-  <input type="range" v-model="fadeOutDuration" min="0" v-bind:max="maxFadeDuration" />
-  <transition v-bind:css="false" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:leave="leave">
+  <input
+    type="range"
+    v-model="fadeOutDuration"
+    min="0"
+    v-bind:max="maxFadeDuration"
+  />
+  <transition
+    v-bind:css="false"
+    v-on:before-enter="beforeEnter"
+    v-on:enter="enter"
+    v-on:leave="leave"
+  >
     <p v-if="show">hello</p>
   </transition>
-  <button v-if="stop" v-on:click="stop = false; show = false">Start animating</button>
-  <button v-else v-on:click="stop = true">Stop it!</button>
+  <button
+    v-if="stop"
+    v-on:click="stop = false; show = false"
+  >
+    Start animating
+  </button>
+  <button
+    v-else
+    v-on:click="stop = true"
+  >
+    Stop it!
+  </button>
 </div>
 ```
 
@@ -4688,7 +4978,11 @@ Vue 的过渡系统提供了非常多简单的方法设置进入、离开和列�
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.4/gsap.min.js"></script>
 
 <div id="animated-number-demo">
-  <input v-model.number="number" type="number" step="20" />
+  <input
+    v-model.number="number"
+    type="number"
+    step="20"
+  />
   <p>{{ animatedNumber }}</p>
 </div>
 ```
@@ -4720,10 +5014,17 @@ new Vue({
 <script src="https://cdn.jsdelivr.net/npm/color-js@1.0.3"></script>
 
 <div id="example-7">
-  <input v-model="colorQuery" v-on:keyup.enter="updateColor" placeholder="Enter a color" />
+  <input
+    v-model="colorQuery"
+    v-on:keyup.enter="updateColor"
+    placeholder="Enter a color"
+  />
   <button v-on:click="updateColor">Update</button>
   <p>Preview:</p>
-  <span v-bind:style="{ backgroundColor: tweenedCSSColor }" class="example-7-color-preview"></span>
+  <span
+    v-bind:style="{ backgroundColor: tweenedCSSColor }"
+    class="example-7-color-preview"
+  ></span>
   <p>{{ tweenedCSSColor }}</p>
 </div>
 ```
@@ -4800,8 +5101,18 @@ new Vue({
 <script src="https://cdn.jsdelivr.net/npm/tween.js@16.3.4"></script>
 
 <div id="example-8">
-  <input v-model.number="firstNumber" type="number" step="20" /> +
-  <input v-model.number="secondNumber" type="number" step="20" /> = {{ result }}
+  <input
+    v-model.number="firstNumber"
+    type="number"
+    step="20"
+  />
+  +
+  <input
+    v-model.number="secondNumber"
+    type="number"
+    step="20"
+  />
+  = {{ result }}
   <p>
     <animated-integer v-bind:value="firstNumber"></animated-integer> +
     <animated-integer v-bind:value="secondNumber"></animated-integer> =
@@ -5117,7 +5428,10 @@ unbind：只调用一次，指令与元素解绑时调用。
 这是一个使用了这些 property 的自定义钩子样例：
 
 ```html
-<div id="hook-arguments-example" v-demo:foo.a.b="message"></div>
+<div
+  id="hook-arguments-example"
+  v-demo:foo.a.b="message"
+></div>
 ```
 
 ```js
@@ -5244,7 +5558,12 @@ Vue 推荐在绝大多数情况下使用模板来创建 HTML。然而在一些�
 
 ```html
 <h1>
-  <a name="hello-world" href="#hello-world"> Hello world! </a>
+  <a
+    name="hello-world"
+    href="#hello-world"
+  >
+    Hello world!
+  </a>
 </h1>
 ```
 
@@ -5257,7 +5576,10 @@ Vue 推荐在绝大多数情况下使用模板来创建 HTML。然而在一些�
 当开始写一个只能通过 `level` prop 动态生成标题（heading）的组件时，可能想到这样实现：
 
 ```html
-<script type="text/x-template" id="anchored-heading-template">
+<script
+  type="text/x-template"
+  id="anchored-heading-template"
+>
   <h1 v-if="level === 1">
     <slot></slot>
   </h1>
@@ -5831,7 +6153,11 @@ Vue.component('my-functional-button', {
 
 ```html
 <template functional>
-  <button class="btn btn-primary" v-bind="data.attrs" v-on="listeners">
+  <button
+    class="btn btn-primary"
+    v-bind="data.attrs"
+    v-on="listeners"
+  >
     <slot />
   </button>
 </template>
@@ -6652,7 +6978,12 @@ Vue 会自动转义 HTML 内容，以避免向应用意外注入可执行的 HTM
 来看这个示例：
 
 ```html
-<a v-bind:href="sanitizedUrl" v-bind:style="userProvidedStyles"> click me </a>
+<a
+  v-bind:href="sanitizedUrl"
+  v-bind:style="userProvidedStyles"
+>
+  click me
+</a>
 ```
 
 假设 `sanitizedUrl` 已经被过滤过了，所以这已经是一个完全真实的 URL 且没有 JavaScript。但通过 `userProvidedStyles`，恶意用户仍可以提供 CSS 来进行“点击诈骗”，例如将链接的样式设置为一个透明的方框覆盖在“登录”按钮之上。然后再把 `https://user-controlled-website.com/` 做成你的应用的登录页的样子，它们就可能获取一个用户真实的登录信息。
@@ -6925,14 +7256,15 @@ methods: {
    {
      "version": "0.2.0",
      "configurations": [
+        // webpack 4 用
        {
          "type": "chrome",
          "request": "launch",
          "name": "vuejs: chrome",
-         "url": "http://localhost:8080",
+         "url": "http://localhost:7878",
          "webRoot": "${workspaceFolder}/src",
-         "breakOnLoad": true,
          "sourceMapPathOverrides": {
+           // 对应浏览器 sources下 webpack:/// 的 .目录 和 src目录
            "webpack:///src/*": "${webRoot}/*",
            "webpack:///./src/*.js": "${webRoot}/*.js"
          }

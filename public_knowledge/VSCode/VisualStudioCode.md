@@ -17,7 +17,7 @@
     - [1.9 文件管理](#19-文件管理)
   - [二. 常用知识](#二-常用知识)
     - [2.1 全部搜索-高级搜索选项](#21-全部搜索-高级搜索选项)
-    - [2.2 编程语言定义代码块的起始和结束区域的 标记](#22-编程语言定义代码块的起始和结束区域的-标记)
+    - [2.2 编程语言定义代码块的起始和结束区域的标记](#22-编程语言定义代码块的起始和结束区域的标记)
     - [2.3 自动检测代码缩进](#23-自动检测代码缩进)
     - [2.4 命令行打开](#24-命令行打开)
     - [2.5 打开结果视图查看一个符号的所有引用](#25-打开结果视图查看一个符号的所有引用)
@@ -53,26 +53,25 @@
       - [3.4.3 用户界面](#343-用户界面)
       - [3.4.4 源代码管理](#344-源代码管理)
     - [3.5 调试与运行](#35-调试与运行)
-      - [3.5.1 插件调试器](#351-插件调试器)
-      - [3.5.2 调试模式与运行模式](#352-调试模式与运行模式)
-      - [3.5.3 launch.json 调试配置](#353-launchjson-调试配置)
-      - [3.5.4 launch.json 属性](#354-launchjson-属性)
-      - [3.5.5 全局的 launch.json 配置](#355-全局的-launchjson-配置)
-      - [3.5.6 多目标调试](#356-多目标调试)
+      - [3.5.1 launch.json 调试配置](#351-launchjson-调试配置)
+      - [3.5.2 launch.json 属性](#352-launchjson-属性)
+      - [3.5.3 全局的 launch.json 配置](#353-全局的-launchjson-配置)
+      - [3.5.4 多目标调试](#354-多目标调试)
+      - [3.5.5 断点的使用](#355-断点的使用)
+      - [3.5.6 面板](#356-面板)
   - [四. 插件](#四-插件)
     - [4.1 插件市场](#41-插件市场)
     - [4.2 优秀的插件](#42-优秀的插件)
       - [4.2.1 REST Client](#421-rest-client)
       - [4.2.2 Code Runner](#422-code-runner)
-      - [4.2.3 Bracket Pair Colorizer 2](#423-bracket-pair-colorizer-2)
-      - [4.2.4 indent-rainbow](#424-indent-rainbow)
-      - [4.2.5 Peacock](#425-peacock)
-      - [4.2.6 Git 集成](#426-git-集成)
-      - [4.2.7 Web 开发利器](#427-web-开发利器)
-      - [4.2.8 提高开发性能](#428-提高开发性能)
-      - [4.2.9 好用的工具类插件](#429-好用的工具类插件)
-      - [4.2.10 容器开发](#4210-容器开发)
-      - [4.2.11 移动开发](#4211-移动开发)
+      - [4.2.3 indent-rainbow](#423-indent-rainbow)
+      - [4.2.4 Peacock](#424-peacock)
+      - [4.2.5 Git 集成](#425-git-集成)
+      - [4.2.6 Web 开发利器](#426-web-开发利器)
+      - [4.2.7 提高开发性能](#427-提高开发性能)
+      - [4.2.8 好用的工具类插件](#428-好用的工具类插件)
+      - [4.2.9 容器开发](#429-容器开发)
+      - [4.2.10 移动开发](#4210-移动开发)
   - [五. 语言深入](#五-语言深入)
     - [5.1 JavaScript](#51-javascript)
     - [5.2 代码编辑](#52-代码编辑)
@@ -293,8 +292,7 @@ VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过�
 
 1. **语言维度**：定义代码对于哪些语言生效，每一个代码片段都可以在一种、多种或所有语言的范围内生效。
 
-   - 一种语言的代码片段会被定义在对应语言的代码片段定义文件中
-     例: JavaScript 的代码片段被定义在 `javascript.json` 中
+   - 一种语言的代码片段会被定义在对应语言的代码片段定义文件中，如：JavaScript 的代码片段被定义在 `javascript.json` 中
 
    - 多语言的代码片段被定义在以 `.code-snippets` 为结尾的 JSON 文件中，这个文件中有一个 `scope` 属性，它会包含一个或多个语言 ID，从而定义当前的代码片段对哪些语言生效，如果没有 `scope` 属性，当前的代码片段会对所有语言生效。
 
@@ -323,7 +321,7 @@ VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过�
 - `TM_LINE_INDEX`：从 0 开始计数的行号
 - `TM_LINE_NUMBER`：从 1 开始计数的行号
 - `TM_FILENAME`：当前文件的文件名
-- `TM_FILENAME_BASE`: 当前文件的文件名（不包含扩展名）
+- `TM_FILENAME_BASE`：当前文件的文件名（不包含扩展名）
 - `TM_DIRECTORY`：当前文件的目录名
 - `CLIPBOARD`：当前粘贴板的文本内容
 - `WORKSPACE_NAME`：当前工作区的目录名
@@ -426,16 +424,19 @@ Task 被配置在 `.vscode` 文件夹下的 `tasks.json` 文件中。
 
 ##### 3.3.1.1 配置 Task 的属性
 
-- label：在用户界面上展示的 Task 标签
-- type：Task 的类型，分为 `shell` 和 `process` 两种，具体如下所示：
-  - shell：作为 Shell 命令运行（如 bash、cmd、PowerShell 等）
-  - process：作为一个进程运行
-- command：真正执行的命令
-- windows：Windows 中的特定属性。相应的属性会在 Windows 系统 中覆盖默认的属性定义。
-- group：定义 Task 属于哪一个组。分为 `test` 和 `build`、`none`。
-- presentation：定义用户界面如何处理 Task 的输出。
-- options：定义 cwd（当前工作目录）、env（环境变量）和 shell 的值。
-- runOptions：定义 Task 何时运行及如何运行
+- `label`：在用户界面上展示的 Task 标签
+
+- `type`：Task 的类型，分为 `shell` 和 `process` 两种，具体如下所示：
+
+  - `shell`：作为 Shell 命令运行（如 bash、cmd、PowerShell 等）
+  - `process`：作为一个进程运行
+
+- `command`：真正执行的命令
+- `windows`：Windows 中的特定属性。相应的属性会在 Windows 系统 中覆盖默认的属性定义。
+- `group`：定义 Task 属于哪一个组。分为 `test` 和 `build`、`none`。
+- `presentation`：定义用户界面如何处理 Task 的输出。
+- `options`：定义 cwd（当前工作目录）、env（环境变量）和 shell 的值。
+- `runOptions`：定义 Task 何时运行及如何运行
 
 ##### 3.3.1.2 问题匹配器
 
@@ -477,28 +478,34 @@ Task 被配置在 `.vscode` 文件夹下的 `tasks.json` 文件中。
 
 控制集成终端的输出行为，所有与输出相关的行为，都可以通过 `tasks.json` 中的 `presentation` 属性来定义，主要包含以下属性：
 
-- reveal：控制集成终端是否显示。
-  - always：集成终端总是会在 Task 启动时显示。默认设置。
-  - never：集成终端不会主动显示。
-  - silent：当输出是错误和警告时，集成终端才会显示。
-- focus：控制集成终端在显示时是否取得焦点。默认值是 false。
-- echo：控制被执行的命令是否在集成终端中输出。默认值是 true。
-- showReuseMessage：控制是否显示"终端将被任务重用，按任意键关闭"提示信息。默认值是 true。
-- panel：控制不同的 Task 在运行时是否共享同一个集成终端。其设置包含以下三种：
-  - shared：共享集成终端。其他 Task 的运行输出结果也显示在相同的集成终端中。默认设置。
-  - dedicated：Task 会有一个专用的集成终端。如果相应的 Task 再次运行，集成终端就会被复用。但是，其他 Task 的运行输出结果会显示在不同的集成终端中。
-  - new：每次运行 Task 都会创建一个新的集成终端。
-- clear：控制在 Task 运行前，是否清除集成终端的输出。默认值是 false。
-- group：控制 Task 是否在同一个集成终端中运行。如果不同 Task 的 group 属性相同，那么它们会复用同一个集成终端。
+- `reveal`：控制集成终端是否显示。
+
+  - `always`：集成终端总是会在 Task 启动时显示。默认设置。
+  - `never`：集成终端不会主动显示。
+  - `silent`：当输出是错误和警告时，集成终端才会显示。
+
+- `focus`：控制集成终端在显示时是否取得焦点。默认值是 false。
+- `echo`：控制被执行的命令是否在集成终端中输出。默认值是 true。
+- `showReuseMessage`：控制是否显示"终端将被任务重用，按任意键关闭"提示信息。默认值是 true。
+
+- `panel`：控制不同的 Task 在运行时是否共享同一个集成终端。其设置包含以下三种：
+
+  - `shared`：共享集成终端。其他 Task 的运行输出结果也显示在相同的集成终端中。默认设置。
+  - `dedicated`：Task 会有一个专用的集成终端。如果相应的 Task 再次运行，集成终端就会被复用。但是，其他 Task 的运行输出结果会显示在不同的集成终端中。
+  - `new`：每次运行 Task 都会创建一个新的集成终端。
+
+- `clear`：控制在 Task 运行前，是否清除集成终端的输出。默认值是 false。
+- `group`：控制 Task 是否在同一个集成终端中运行。如果不同 Task 的 group 属性相同，那么它们会复用同一个集成终端。
 
 ##### 3.3.1.5 运行行为
 
 通过 `tasks.json` 中的 `runOptions` 属性可以定义 Task 的运行行为，`runOptions` 属性主要包含以下属性：
 
-- reevaluateOnRerun：在执行 `Rerun Last Task` 命令时，控制是否重新计算变量。默认值是 true。
-- runOn：指定何时运行 Task。
-  - default：只有在运行 `Run Task` 命令时，才会触发运行
-  - folderOpen：当包含这个 `tasks.json` 的文件夹被打开时，便会触发运行。在运行前，VSCode 会询问是否要运行。
+- `reevaluateOnRerun`：在执行 `Rerun Last Task` 命令时，控制是否重新计算变量。默认值是 true。
+
+- `runOn`：指定何时运行 Task。
+  - `default`：只有在运行 `Run Task` 命令时，才会触发运行
+  - `folderOpen`：当包含这个 `tasks.json` 的文件夹被打开时，便会触发运行。在运行前，VSCode 会询问是否要运行。
 
 ##### 3.3.1.6 变量替换
 
@@ -526,22 +533,31 @@ Task 被配置在 `.vscode` 文件夹下的 `tasks.json` 文件中。
    - `${userHome}`：用户主页，如：C:\Users\dsy
 
 2. 环境变量
+
    通过 `${env:Name}` 的语法，可以引用环境变量。
 
 3. 配置变量
+
    通过 `${config:Name}` 的语法，可以引用 VSCode 的设置项。例：`${config:editor.fontSize}` 会得到编辑器的字体大小
 
 4. 输入变量
+
    有些时候，在运行 Task 时，每次都需要传入不同的变量，通过输入变量，可以轻松地对 Task 进行定制化。输入变量的语法是 `${input:variableID}`，variableID 引用了 `tasks.json` 中的 inputs 部分的配置内容。
+
    VSCode 支持以下三种类型的输入变量：
-   - promptString：展示输入框，并获得用户的输入字符串
+
+   - `promptString`：展示输入框，并获得用户的输入字符串
+
      - description：在文本输入框中展示的描述信息
      - default：输入的默认值
-   - pickString：展示一个下拉列表，让用户选择其中一个选项
+
+   - `pickString`：展示一个下拉列表，让用户选择其中一个选项
+
      - description：在下拉列表的输入框中展示的描述信息
      - options：选项数组，使用户可以在下拉列表中进行选择
      - default：输入的默认值。其值必须为下拉列表选项中的一个
-   - command：运行任意的命令
+
+   - `command`：运行任意的命令
      - command：要运行的命令
      - args：运行命令的参数（可选）
 
@@ -590,10 +606,10 @@ Task 的属性被定义在全局范围。除非具体的某一个 Task 定义了
 
 ###### 3.4.2.2 `*.code-workspace` 工作区文件的属性
 
-- path：文件夹的路径，可以是绝对路径，也可以是相对路径
-- name：文件的显示名
-- settings：为了避免各个文件设置的冲突，可以通过设置全局的工作区配置，对当前工作区的所有文件夹进行设置
-- extensions：插件推荐，可以为当前的工作区项目推荐相应的插件。
+- `path`：文件夹的路径，可以是绝对路径，也可以是相对路径
+- `name`：文件的显示名
+- `settings`：为了避免各个文件设置的冲突，可以通过设置全局的工作区配置，对当前工作区的所有文件夹进行设置
+- `extensions`：插件推荐，可以为当前的工作区项目推荐相应的插件。
   - 通过在 `extensions.recommendations` 数组中添加插件的 ID({publisherName}.{extensionName}) 实现插件推荐
   - 在插件列表中推荐插件的右下角，点击齿轮标志中有选项 _添加到工作区建议_
 
@@ -612,32 +628,29 @@ Task 的属性被定义在全局范围。除非具体的某一个 Task 定义了
 
 ### 3.5 调试与运行
 
-#### 3.5.1 插件调试器
+VSCode 内置了对 Node.js 运行时的调试支持，无须安装额外的插件就能调试 JS 和 TS。其他编程语言，需要额外安装相应的调试器插件。内置的 Node.js 调试器及其他调试器插件支持以下两种模式：
 
-VSCode 内置了对 Node.js 运行时的调试支持，无须安装额外的插件就能调试 JS 和 TS。其他编程语言，需要额外安装相应的调试器插件。
+- 调试：快捷键为 F5
+- 运行：快捷键为 Ctrl + F5
 
-#### 3.5.2 调试模式与运行模式
-
-在 VSCode 中，内置的 Node.js 调试器及其他调试器插件支持以下两种模式：
-
-- 调试：快捷键为 F5，命令为 Start Debugging
-- 运行：快捷键为 Ctrl + F5，命令为 Run Without Debugging
-
-#### 3.5.3 launch.json 调试配置
+#### 3.5.1 launch.json 调试配置
 
 对于一些更加复杂的调试场景，需要创建调试配置，以便后续进行定制化调试。VSCode 的调试配置被存储在 `.vscode` 文件夹的 `launch.json` 文件中。可以通过以下步骤来创建一个调试配置：
 
 1. 运行 -> 添加配置
-2. VSCode 会在 **.vscode** 文件夹中创建并打开一个 `launch.json` 文件，文件中定义了调试所需要的的配置。
+2. VSCode 会在 `.vscode` 文件夹中创建并打开一个 `launch.json` 文件，文件中定义了调试所需要的的配置。
 
-#### 3.5.4 launch.json 属性
+#### 3.5.2 launch.json 属性
 
 - **必要属性**
 
   - type：调试器的类型。例如:内置的 Node.js 调试器是 node
+
   - request：调试的模式，有以下两种模式：
-    - launch：启动程序(该程序定义在 program 设置项中)并调试
+
+    - launch：启动程序（该程序定义在 program 设置项中）并调试
     - attach：将程序附加到一个正在运行的进程中进行调试。
+
   - name：调试配置的名字
 
 - **可选项**
@@ -648,25 +661,71 @@ VSCode 内置了对 Node.js 运行时的调试支持，无须安装额外的插�
   - internalConsoleOptions：定义调试控制台的显示
   - serverReadyAction：设置在调试时自动在浏览器中打开 URL
 
-- 大多数调试器插件还支持以下属性
+- **大多数调试器插件还支持以下属性**
+
   - program：要运行的可执行文件或源代码的路径
   - args：要传递给 program 的参数
   - env：环境变量
   - cwd：调试器的工作目录，默认值是 `${workspaceFolder}`
   - port：要附加到进程的端口
   - stopOnEntry：是否在程序入口进行断点
+
   - console：指定程序输出的位置
     - internalConsole：VSCode 的调试控制台
     - integratedTerminal：VSCode 的集成终端
     - externalTerminal：系统的终端
 
-#### 3.5.5 全局的 launch.json 配置
+#### 3.5.3 全局的 launch.json 配置
 
 VSCode 支持添加全局的 `launch.json` 配置。可以在全局的 `settings.json` 文件中使用 `launch` 属性设置全局的的调试配置。
 
-#### 3.5.6 多目标调试
+#### 3.5.4 多目标调试
 
 VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `launch.json` 文件中，通过 `compound` 属性，可以配置多目标调试。
+
+#### 3.5.5 断点的使用
+
+在程序中添加断点，只需要点击左侧的边栏即可添加断点。
+
+**日志断点**
+日志断点是普通断点的一种变体，区别在于**不会中断调试**，而是可以把信息记录到控制台。日志断点对于调试无法暂停或停止的服务时特别有用。步骤如下：
+
+1. 右击需要添加日志断点行的行标，选择**添加记录点**。
+2. 输入要日志断点的信息，可以用 `{}` 使用变量。
+
+**条件断点**
+条件断点是表达式结果为 true 时才会进行断点，步骤如下：
+
+1. 右击需要添加日志断点行的行标，选择**添加条件断点**。
+2. 填写表达式
+
+**命中计数断点**
+只有该行代码命中了指定次数，才会进行断点。步骤如下：
+
+1. 选择条件断点，切换为命中次数选项，填写命中次数。
+
+**内联断点**
+仅当执行到达与内联断点关联的列时，才会命中内联断点。这在调试在一行中包含多个语句的缩小代码时特别有用。比如 for 循环，短路运算符等一行代码包含多个表达式时会特别有用。步骤如下：
+
+1. 在指定位置按 Shift + F9
+2. 调试之后，每次运行到该内联处的代码都会中断
+
+#### 3.5.6 面板
+
+**变量面板**
+: 变量面板可以查看所有变量，在变量上点击右键，可以设置变量值、复制变量值等操作。聚焦于数据面板时，可以通过键入值来搜索过滤。还可以控制是否筛选。
+
+**监听面板**
+可以将变量添加到监听面板，实时观察变量的变化。方式有以下两种：
+
+1. 在变量面板通过右键选择 “添加到监视” 将变量添加到监听面板。
+2. 直接在监听面板选择添加按钮进行变量添加。
+
+**调用堆栈**
+在断点时，方便的查看堆栈信息。
+
+**断点面板**
+对断点进行统一的控制。既可以控制单个断点的开关，也可以控制全部断点的开关。还能直接删除全部断点。
 
 ## 四. 插件
 
@@ -725,32 +784,18 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
 - 自定义运行逻辑
   在 settings.json 文件中，添加 `code-runner.executorMap` 设置，然后就可以对不同的语言设置自定义的运行逻辑了。
 
-#### 4.2.3 Bracket Pair Colorizer 2
-
-它为代码中的各种结对的括号提供了颜色高亮等功能。
-
-> 转到另一个括号的快捷键：`Ctrl + Shift + \`
-
-- 常用设置项
-  - bracket-pair-colorizer-2.forceUniqueOpeningColor：颜色的唯一性设置
-  - bracket-pair-colorizer-2.colorMode：颜色的模式
-    - Consecutive：所有的括号共享一个颜色集合
-    - Independent：不同类型的括号使用自己的颜色集合
-  - bracket-pair-colorizer-2.highlightActiveScope：是否对当前范围的括号进行高亮显示。
-  - bracket-pair-colorizer-2.activeScopeCSS：设置颜色高亮显示的括号的 CSS
-
-#### 4.2.4 indent-rainbow
+#### 4.2.3 indent-rainbow
 
 缩进颜色支持
 
-#### 4.2.5 Peacock
+#### 4.2.4 Peacock
 
 为 VSCode 窗口配置颜色。
 
 - 命令面板 -> Peacock：Change to a Favorite Color 选择颜色
 - 设置 -> peacock.surpriseMeOnStartup 是否为新开的 VSCode 窗口随机选择一个颜色
 
-#### 4.2.6 Git 集成
+#### 4.2.5 Git 集成
 
 - GitHub Pull requests
   GitHub 的代码审查插件
@@ -758,7 +803,7 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
 - GitLens
   功能非常丰富的 git 插件
 
-#### 4.2.7 Web 开发利器
+#### 4.2.6 Web 开发利器
 
 - **Debugger for Chrome**
   Debugger for Chrome 插件除了可以调试运行在 Google Chrome 浏览器中的 JS 代码，还可以调试运行在支持 Chrome DevTools Protocol 的浏览器中的 JS 代码，如:Chromium 浏览器和其他基于 Blink 渲染引擎的浏览器。
@@ -787,7 +832,7 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
   - 执行 SQL 脚本，并且以表格的形式展示结果
   - 把 SQL 脚本运行的运行结果以 JSON 或 CSV 格式保存
 
-#### 4.2.8 提高开发性能
+#### 4.2.7 提高开发性能
 
 - **Code Spell Checker**
   可以对代码进行拼写检查，并且提供了自动修复的功能
@@ -802,24 +847,25 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
   插件为 .log 日志文件和 VSCode 的输出面板提供了语法高亮功能。方便进行日志分析。
 
 - **Debug Visualizer**
-  插件提供了实时的可视化调试方式，可以一键解析代码结构，并支持多种主流的编程语言。打开命令面板输入并执行 Debug Visualizer
+  插件提供了实时的可视化调试方式，可以一键解析数据结构，并支持多种主流的编程语言。
 
 - **EditorConfig for VSCode**
   可以在不同的编辑器和 IDE 之间定义和维护一致的编码样式。通过一个名为 `.editorconfig` 的文件，可以定义统一的编码样式。
+
   在安装了 EditorConfig for VSCode 插件后，打开任何一个文件时，插件都会从当前文件夹开始向它的父文件夹寻找 `.editorconfig` 文件，直到找到一个最上层的 `.editorconfig` 文件，或者找到一个包含 `root=true` 的 `.editorconfig` 文件。
 
   > `.editorconfig` 文件的匹配规则是从上往下的，即先定义的规则优先级比后定义的要高。
 
-  EditorConfig for VSCode 插件支持以下设置项:
+  EditorConfig for VSCode 插件支持以下设置项：
 
-  - indent_style：设置缩进分割，可以设置为 tab 或 space
-  - indent_size：设置缩进的大小
-  - tab_width：设置 tab 的大小，默认情况下与 indent_size 的值相同
-  - end_of_line：设置结尾换行符，可设置为 If、cr 或 crIf
-  - insert_final_newline：保存文件时，是否在文件末尾添加换行符
-  - trim_trailing_whitespace：保存文件时，是否删除多余的空白字符
+  - `indent_style`：设置缩进分割，可以设置为 tab 或 space
+  - `indent_size`：设置缩进的大小
+  - `tab_width`：设置 tab 的大小，默认情况下与 indent_size 的值相同
+  - `end_of_line`：设置结尾换行符，可设置为 If、cr 或 crIf
+  - `insert_final_newline`：保存文件时，是否在文件末尾添加换行符
+  - `trim_trailing_whitespace`：保存文件时，是否删除多余的空白字符
 
-#### 4.2.9 好用的工具类插件
+#### 4.2.8 好用的工具类插件
 
 - **Polacode**
   插件可以把选中的代码导出为图片格式，并且完全保留代码在 VSCode 中原本的字体和颜色主题。在命令面板中，输入 Polacode 并执行。
@@ -833,7 +879,7 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
 - **Paste JSON as code**
   可以把 JSON 或 TS 转换成其他编程语言，包括 TS、Python、GO、Ruby、Java、Swift、C++、JS 等。
 
-#### 4.2.10 容器开发
+#### 4.2.9 容器开发
 
 - **Docker**
   为 **Docker** 和 Docker Compare 提供了语法高亮、静态代码检查、智能代码提示等语言功能。此外，插件还提供了 Docker 资源管理器，可以方便地查看和管理 Docker 容器、镜像、网络等。
@@ -841,7 +887,7 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
 - **Kubernetes**
   插件为 Kubernetes 开发提供了极为丰富的功能，可以在 VSCode 中开发、部署和调试 Kubernetes 应用程序。
 
-#### 4.2.11 移动开发
+#### 4.2.10 移动开发
 
 - **Flutter**
   可以让开发者高效地编辑、运行并调试 Flutter 应用程序，并支持 Dart 语言。
@@ -1541,21 +1587,22 @@ Vetur 插件为 Vue 开发提供了极为丰富的支持，功能包括但不限
    ```
 
 3. 配置 Webpack
+
    需要为 Webpack 配置源代码映射的设置项。在 Vue 项目的根目录中创建一个**vue.config.js**文件，然后在文件中填入以下配置：
 
-   ```json
-   (module.exports = {
-     "configureWebpack": {
-       "devtool": "source-map"
+   ```js
+   module.exports = {
+     configureWebpack: {
+       devtool: 'source-map'
      }
-   })
+   };
    ```
 
 4. 使用 `npm run serve` 运行 Vue 应用
 
 5. 启动调试
-   启动调试之前，要确保 Vue 的程序 `http://localhost:8080` 已经运行
-   有三种方式启动调试:
+
+   启动调试之前，要确保 Vue 的程序 `http://localhost:8080` 已经运行，有三种方式启动调试：
 
    - 在顶部的菜单栏中选择 `Debug-Start Debugging`
    - 使用 `F5` 快捷键
@@ -1563,7 +1610,7 @@ Vetur 插件为 Vue 开发提供了极为丰富的支持，功能包括但不限
 
 #### 6.4.4 静态代码检查
 
-Vetur 插件总内置了 **Vue ESLint** 插件(eslint-plugin-vue)，为 Vue 提供了强大的静态代码检查功能。对于检查出的错误或警告，会在代码下方显示波浪线，把鼠标悬停在代码上，会显示详细的错误提示信息。
+Vetur 插件总内置了 **Vue ESLint** 插件（eslint-plugin-vue），为 Vue 提供了强大的静态代码检查功能。对于检查出的错误或警告，会在代码下方显示波浪线，把鼠标悬停在代码上，会显示详细的错误提示信息。
 
 #### 6.4.5 Vue 设置 VSCode 识别别名
 

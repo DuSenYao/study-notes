@@ -2,19 +2,19 @@
   // 使用 IntelliSense 了解相关属性。
   // 悬停以查看现有属性的描述。
   // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
-  "version": "0.2.0",
+  "version": "0.1.0",
   "configurations": [
     // 解决文件地址中有UTF-8字符，导致报错的问题
     {
-      "type": "pwa-node",
+      "type": "node",
       "request": "launch",
-      "name": "Launch program pwa-node",
+      "name": "Launch program node",
       "attachSimplePort": 0,
       "program": "${file}"
     },
     // TS文件编译并调试
     {
-      "type": "pwa-node",
+      "type": "node",
       "request": "launch",
       "name": "TS Launch Node",
       "skipFiles": ["<node_internals>/**"],
@@ -43,13 +43,6 @@
       "request": "launch",
       "url": "http://localhost/mypage.html",
       "webRoot": "${workspaceFolder}/wwwroot"
-    },
-    // 在chrome调试当前文件
-    {
-      "name": "Launch chrome Current File",
-      "type": "chrome",
-      "request": "launch",
-      "file": "${file}"
     },
     // 将VSCode附加到Chrome浏览器，需要在远程调试模式下启动Chrome浏览器，在命令行输入命令来启动Chrom浏览器。
     {
