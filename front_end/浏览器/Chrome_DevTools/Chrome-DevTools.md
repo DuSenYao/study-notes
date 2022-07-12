@@ -513,6 +513,16 @@ console.log('%c999', 'color:#f40;font-size:40px');
 
 在 `Console` 区域的上方，有一个 "眼睛" 的符号，点击眼睛符号，就可以在那里定义任何 JS 表达式。它会不断更新，所以表达的结果将永远是最新的。支持同时定义多个。
 
+### 3.7 在控制台快速发起请求
+
+联调或修 BUG 的场景，针对同样的请求，有时候需要修改入参重新发起：
+
+1. 选中 Network
+2. 点击 Fetch/XHR
+3. 选择 Copy as fetch
+4. 控制台粘贴代码
+5. 修改参数，回车
+
 ## 四. NetWork 篇
 
 网络面板由控制器、过滤器、抓图信息、时间线、详细列表和下载信息概要这 6 个区域构成。
@@ -626,7 +636,7 @@ console.log('%c999', 'color:#f40;font-size:40px');
 
 ### 4.6 XHR/fetch 断点
 
-如果，想要对已发送的 `ajax` 请求进行捕获可以使用 `XHR/fetch breakpoint`。这个只能在 `Source` 面板中设置
+如果，想要对已发送的 `ajax` 请求进行捕获可以使用 `XHR/fetch breakpoint`。这个只能在 `Source` 面板中设置：
 
 ![XHR/fetch断点](./image/XHR-fetch请求断点.png)
 

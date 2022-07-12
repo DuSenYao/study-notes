@@ -62,16 +62,12 @@
   - [四. 插件](#四-插件)
     - [4.1 插件市场](#41-插件市场)
     - [4.2 优秀的插件](#42-优秀的插件)
-      - [4.2.1 REST Client](#421-rest-client)
-      - [4.2.2 Code Runner](#422-code-runner)
-      - [4.2.3 indent-rainbow](#423-indent-rainbow)
-      - [4.2.4 Peacock](#424-peacock)
-      - [4.2.5 Git 集成](#425-git-集成)
-      - [4.2.6 Web 开发利器](#426-web-开发利器)
-      - [4.2.7 提高开发性能](#427-提高开发性能)
-      - [4.2.8 好用的工具类插件](#428-好用的工具类插件)
-      - [4.2.9 容器开发](#429-容器开发)
-      - [4.2.10 移动开发](#4210-移动开发)
+      - [4.2.1 Web 开发利器](#421-web-开发利器)
+      - [4.2.2 提高开发性能](#422-提高开发性能)
+      - [4.2.3 好用的工具类插件](#423-好用的工具类插件)
+      - [4.2.4 容器开发](#424-容器开发)
+      - [4.2.5 移动开发](#425-移动开发)
+      - [4.2.6 其他](#426-其他)
   - [五. 语言深入](#五-语言深入)
     - [5.1 JavaScript](#51-javascript)
     - [5.2 代码编辑](#52-代码编辑)
@@ -740,70 +736,7 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
 
 ### 4.2 优秀的插件
 
-#### 4.2.1 REST Client
-
-测试 REST API 的工具。REST API 是前后端分离最佳实践，是开发的一套标准或者说是一套规范。REST Client 支持 `cURL` 和 `RFC2616` 这两种业界标准来调用 REST API。
-
-> 例：[test.http](./演示文件/test.http)
-
-- HTTP 语言
-  REST Client 插件添加了 HTTP 语言的定义，支持把以 `.http` 或 `.rest` 结尾的文件中的代码当作 HTTP 语言进行处理，提供了语法高亮、代码智能提示、代码注释等功能。通过 `###` 分隔符，同一个 http 文件中可以涵盖多个 HTTP 请求。
-
-- 代码生成
-  在 HTTP 语言文件的右键菜单中，可以通过 `Generate Code Snippet` 命令来将 HTTP 请求生成不同编程语言的代码。
-
-- 高阶功能
-  - 身份认证：REST Client 支持 Basic Auth、SSL Client Certificates、Azure Active Directory 等多种验证机制。
-  - 支持 Cookies
-  - 支持 HTTP3xx 的重定向
-  - 支持多种变量：环境变量、文件变量、预定义的系统变量等
-
-#### 4.2.2 Code Runner
-
-代码一键运行，支持 40 多种语言
-
-- 代码一键运行
-
-  - 通过快捷键 `Ctrl+Alt+N`
-  - 打开命令面板，输入并执行 Run Code
-  - 在编辑区域的右键菜单中单击 Run Code
-  - 在左侧的文件管理器中找到要运行的文件，在其右键菜单中单击 Run Code
-  - 单击文件右上角的"运行"小三角按钮
-
-> **注意**：Code Runner 插件并不包含各个编程语言的编译器。需要自行安装相应编程语言的编译器，并且把路径添加到 PATH 环境变量中。
-
-- 停止代码运行
-
-  - 通过 `Ctrl+Alt+M` 快捷键
-  - 命令面板，输入并执行 Stop Code Run
-  - 在输出面板的右键菜单中单击 Stop Code Run
-
-- 在集成终端中运行代码
-  默认情况下，Code Runner 会把运行输出结果打印在输出面板中。在 Code Runner 插件的 GitHub 上，用户最多的问题是如何解决乱码问题和怎样支持输入。通过 `Run Code configuration: Run In Terminal` 设置，把代码放到 VSCode 内置的集成终端来运行，就可以解决上面的两个问题。
-
-- 自定义运行逻辑
-  在 settings.json 文件中，添加 `code-runner.executorMap` 设置，然后就可以对不同的语言设置自定义的运行逻辑了。
-
-#### 4.2.3 indent-rainbow
-
-缩进颜色支持
-
-#### 4.2.4 Peacock
-
-为 VSCode 窗口配置颜色。
-
-- 命令面板 -> Peacock：Change to a Favorite Color 选择颜色
-- 设置 -> peacock.surpriseMeOnStartup 是否为新开的 VSCode 窗口随机选择一个颜色
-
-#### 4.2.5 Git 集成
-
-- GitHub Pull requests
-  GitHub 的代码审查插件
-
-- GitLens
-  功能非常丰富的 git 插件
-
-#### 4.2.6 Web 开发利器
+#### 4.2.1 Web 开发利器
 
 - **Debugger for Chrome**
   Debugger for Chrome 插件除了可以调试运行在 Google Chrome 浏览器中的 JS 代码，还可以调试运行在支持 Chrome DevTools Protocol 的浏览器中的 JS 代码，如:Chromium 浏览器和其他基于 Blink 渲染引擎的浏览器。
@@ -832,7 +765,7 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
   - 执行 SQL 脚本，并且以表格的形式展示结果
   - 把 SQL 脚本运行的运行结果以 JSON 或 CSV 格式保存
 
-#### 4.2.7 提高开发性能
+#### 4.2.2 提高开发性能
 
 - **Code Spell Checker**
   可以对代码进行拼写检查，并且提供了自动修复的功能
@@ -865,7 +798,7 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
   - `insert_final_newline`：保存文件时，是否在文件末尾添加换行符
   - `trim_trailing_whitespace`：保存文件时，是否删除多余的空白字符
 
-#### 4.2.8 好用的工具类插件
+#### 4.2.3 好用的工具类插件
 
 - **Polacode**
   插件可以把选中的代码导出为图片格式，并且完全保留代码在 VSCode 中原本的字体和颜色主题。在命令面板中，输入 Polacode 并执行。
@@ -879,7 +812,7 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
 - **Paste JSON as code**
   可以把 JSON 或 TS 转换成其他编程语言，包括 TS、Python、GO、Ruby、Java、Swift、C++、JS 等。
 
-#### 4.2.9 容器开发
+#### 4.2.4 容器开发
 
 - **Docker**
   为 **Docker** 和 Docker Compare 提供了语法高亮、静态代码检查、智能代码提示等语言功能。此外，插件还提供了 Docker 资源管理器，可以方便地查看和管理 Docker 容器、镜像、网络等。
@@ -887,7 +820,7 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
 - **Kubernetes**
   插件为 Kubernetes 开发提供了极为丰富的功能，可以在 VSCode 中开发、部署和调试 Kubernetes 应用程序。
 
-#### 4.2.10 移动开发
+#### 4.2.5 移动开发
 
 - **Flutter**
   可以让开发者高效地编辑、运行并调试 Flutter 应用程序，并支持 Dart 语言。
@@ -897,6 +830,67 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
 
 - **Ionic Snippets**
   为加速 Ionic 开发提供了丰富的代码片段
+
+#### 4.2.6 其他
+
+**REST Client**
+测试 REST API 的工具。REST API 是前后端分离最佳实践，是开发的一套标准或者说是一套规范。REST Client 支持 `cURL` 和 `RFC2616` 这两种业界标准来调用 REST API。
+
+> 例：[test.http](./演示文件/test.http)
+
+- HTTP 语言
+  REST Client 插件添加了 HTTP 语言的定义，支持把以 `.http` 或 `.rest` 结尾的文件中的代码当作 HTTP 语言进行处理，提供了语法高亮、代码智能提示、代码注释等功能。通过 `###` 分隔符，同一个 http 文件中可以涵盖多个 HTTP 请求。
+
+- 代码生成
+  在 HTTP 语言文件的右键菜单中，可以通过 `Generate Code Snippet` 命令来将 HTTP 请求生成不同编程语言的代码。
+
+- 高阶功能
+  - 身份认证：REST Client 支持 Basic Auth、SSL Client Certificates、Azure Active Directory 等多种验证机制。
+  - 支持 Cookies
+  - 支持 HTTP3xx 的重定向
+  - 支持多种变量：环境变量、文件变量、预定义的系统变量等
+
+**Code Runner**
+代码一键运行，支持 40 多种语言
+
+- 代码一键运行
+
+  - 通过快捷键 `Ctrl+Alt+N`
+  - 打开命令面板，输入并执行 Run Code
+  - 在编辑区域的右键菜单中单击 Run Code
+  - 在左侧的文件管理器中找到要运行的文件，在其右键菜单中单击 Run Code
+  - 单击文件右上角的"运行"小三角按钮
+
+> **注意**：Code Runner 插件并不包含各个编程语言的编译器。需要自行安装相应编程语言的编译器，并且把路径添加到 PATH 环境变量中。
+
+- 停止代码运行
+
+  - 通过 `Ctrl+Alt+M` 快捷键
+  - 命令面板，输入并执行 Stop Code Run
+  - 在输出面板的右键菜单中单击 Stop Code Run
+
+- 在集成终端中运行代码
+  默认情况下，Code Runner 会把运行输出结果打印在输出面板中。在 Code Runner 插件的 GitHub 上，用户最多的问题是如何解决乱码问题和怎样支持输入。通过 `Run Code configuration: Run In Terminal` 设置，把代码放到 VSCode 内置的集成终端来运行，就可以解决上面的两个问题。
+
+- 自定义运行逻辑
+  在 settings.json 文件中，添加 `code-runner.executorMap` 设置，然后就可以对不同的语言设置自定义的运行逻辑了。
+
+**indent-rainbow**
+缩进颜色支持
+
+**Peacock**
+为 VSCode 窗口配置颜色。
+
+- 命令面板 -> Peacock：Change to a Favorite Color 选择颜色
+- 设置 -> peacock.surpriseMeOnStartup 是否为新开的 VSCode 窗口随机选择一个颜色
+
+**Git 集成**：
+
+- GitHub Pull requests
+  GitHub 的代码审查插件
+
+- GitLens
+  功能非常丰富的 git 插件
 
 ## 五. 语言深入
 
@@ -912,9 +906,9 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
 
 Node.js 和 JS 的区别和联系：
 
-- Node.js 是一个 JS 运行时。JS 可以运行在 浏览器 或 Node.js 中
-- 在浏览器运行时中，JS 可以访问 document、window 等浏览器对象
-- 在 Node.js 运行时中，JS 可以访问与操作系统、文件系统等相关的 API
+- Node.js 是一个 JS 运行时。JS 可以运行在 浏览器 或 Node.js 中。
+- 在浏览器运行时中，JS 可以访问 document、window 等浏览器对象。
+- 在 Node.js 运行时中，JS 可以访问与操作系统、文件系统等相关的 API。
 
 ### 5.2 代码编辑
 
@@ -990,7 +984,7 @@ VSCode 对 JS 支持以下几种重构命令：
 
 通过 Organize Imports 源代码操作，可以对 JS 的 import 语句进行排序，并且移除没有使用的导入语句，使用方式：
 
-- 右键菜单选择 **Source Action** 选项，然后选择 **Organize Imports** 命令
+- 右键菜单选择 **Source Action** 选项，然后选择 `Organize Imports` 命令
 
 - 快捷键 `Shift + Alt + O`
 
@@ -1382,7 +1376,7 @@ VSCode 为 HTML 语言提供了代码格式化的支持，代码格式化的操�
 
 - 格式化文档（Shift + Alt + F）：格式化当前的整个文件
 
-- 格式化选定文件（Ctrl + K -> Ctrl+F）: 格式当前文件所选定的文本
+- 格式化选定文件（Ctrl + K -> Ctrl+F）：格式当前文件所选定的文本
 
 HTML 代码格式化是基于 js-beautify npm 库进行的，通过 `"html.format.\*"` 中的设置可以对 HTML 代码格式化进行定制。
 
@@ -1636,9 +1630,6 @@ Vetur 插件总内置了 **Vue ESLint** 插件（eslint-plugin-vue），为 Vue 
 }
 ```
 
-**注意**：
-
-1. `jsconfig.json` 中配置的别名要与 `vue.config.js` 中的别名对应。
-2. 目前只跳转支持 `.js` 文件，不支持 `.vue`
+**注意**：`jsconfig.json` 中配置的别名要与 `vue.config.js` 中的别名对应。
 
 ## 七. 远程开发

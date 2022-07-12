@@ -676,7 +676,7 @@ WAT 除了可以通过 “S- 表达式” 的形式，来描述一个定义在 W
 因此，在日常的 Wasm 学习、开发和调试过程中，更推荐使用 “.wat” 这个后缀，来作为包含有 WAT 代码的文本文件扩展名。这样可以保障该文件能够具有足够高的兼容性，能够适配大多数的编译工具，甚至是浏览器来进行识别和解析。
 
 **WAT 相关工具**
-需要安装名为 [WABT](https://github.com/WebAssembly/wabt#building-using-cmake-directly-linux-and-macos)（The WebAssembly Binary Toolkit）的 Wasm 工具集。
+需要安装名为 [WABT](https://github.com/WebAssembly/wabt#building-windows)（The WebAssembly Binary Toolkit）的 Wasm 工具集。
 
 - **wasm2wat**：该工具主要用于将指定文件内的 Wasm 二进制代码转译为对应的 WAT 可读文本代码。
 - **wat2wasm**：该工具的作用恰好与 wasm2wat 相反。它可以将输入文件内的 WAT 可读文本代码转译为对应的 Wasm 二进制代码。
@@ -838,7 +838,7 @@ WASI 在设计和实现时，需要遵守 Wasm 的两个基本原则：
 ```js
 // "..." 为有效的 Wasm 字节码数据；
 bufferSource = new Int8Array([
-  //...
+  // ...
 ]);
 let module = new WebAssembly.Module(bufferSource);
 ```
@@ -1070,7 +1070,7 @@ MVP 全称为 “Minimum Viable Product”，翻译过来是 “最小可用产�
 **虚拟机运行时**
 为了能够基于 “Nanoprocess” 模式来构建安全可靠的 Wasm 应用，一定少不了在 out-of-web 领域提供 Wasm 字节码解析和执行能力的基础设施。并且在一定程度上，还需要它们提供的 WASI 系统接口的访问能力。而 “字节码联盟” 便负责培养和发展这样一批，能够提供这些能力的优秀基础设施及相关组件。它们主要包括：Wasm 运行时（虚拟机）、Wasm 运行时组件（实现）以及 Wasm 语言相关的工具。
 
-- **[Wasmtime](https://wasmtime.dev/)**
+- **[Wasmtime](https://github.com/bytecodealliance/wasmtime)**
 
   Wamtime 是字节码联盟旗下的一个独立的 Wasm 运行时，它可以被独立作为 CLI 命令行工具进行使用，或者是被嵌入到其他的应用程序或系统中。Wamtime 具有很高的可配置性和可扩展性，因此可以被应用到很多的场景中，譬如 IoT 与云原生领域。
 
@@ -1657,3 +1657,183 @@ function filterWASM(pixelData, width, height) {
 > **注意**：之前在 JS 中使用的卷积核矩阵数组，实际上是以二维数组的形式存在的。而为了能够方便地将这部分数据填充到 Wasm 线性内存中，这里将其扁平化成了一维数组，并存放到变量 flatKernel 中。另外，仅将那些在视频播放过程中可能会发生变化的部分（这里主要是指每一帧需要填充到 Wasm 模块实例线性内存的像素数据），都单独整和到了名为 filterWasm 的函数中，这样在动画的播放过程中，可以减少不必要的数据传递过程。
 
 ### 4.5 Wasm 应用的调试与分析
+
+调试方案可以划分为：
+
+- **Web**：对应于运行在 Web 浏览器中的 Wasm 应用，这些应用仅使用到了 Wasm 核心标准中的特性。
+
+- **out-of-web**：对应于运行在如 Wasmtime 等 Wasm 运行时中的 Wasm 应用，这部分应用还将会使用到除 Wasm 核心标准之外的 WASI 抽象操作系统接口标准。
+
+#### 4.5.1 编译时调试
+
+作为开发 Wasm 应用的一个必不可少的流程，“编译” 是一个无论如何也要跨过去的 “槛”。但总是有着各种各样的原因，导致应用在编译阶段会出现问题。
+
+Emscripten 作为构建可运行于 Web 浏览器上的 Wasm 应用的首选编译工具之一，它提供了众多的调试选项，可以在编译过程中输出详细的调试信息以供排错之用：
+
+- **[EMCC_DEBUG](https://emscripten.org/docs/porting/Debugging.html?highlight=emcc_debug)**
+
+  以上面的 DIP 应用为例，在实际使用 emcc 编译该项目时，可以通过为编译命令添加 “EMCC_DEBUG” 环境变量的方式，来让 emcc 以 “调试模式” 的方式来编译项目，修改后的编译命令如下所示：
+
+  ```sh
+  # Linux or macOS
+  EMCC_DEBUG=1 emcc dip.cc -o hello.html
+
+  # Windows
+  set EMCC_DEBUG=1
+  emcc dip.cc -O3 --no-entry -o dip.wasm
+  set EMCC_DEBUG=0
+  ```
+
+  这里命令行中设置的环境变量 “EMCC_DEBUG” 支持三个值：0、1 与 2。其中 “0” 表示关闭调试模式，也就是默认不加该环境变量时的情况；“1” 表示输出编译时的调试性信息，同时生成包含有编译器各个阶段运行信息的中间文件。这些输出信息和文件可用于对整个 emcc 编译流程的各个步骤进行调试。以下为 emcc 的编译输出信息及所生成中间文件的截图。
+
+  ![emcc 编译时输出的调试性信息](./image/emcc%20%E7%BC%96%E8%AF%91%E6%97%B6%E8%BE%93%E5%87%BA%E7%9A%84%E8%B0%83%E8%AF%95%E6%80%A7%E4%BF%A1%E6%81%AF.webp)
+
+  在编译时输出的调试性信息中，包含有 emcc 在实际编译源代码时其各个编译阶段所实际调用的命令行信息（命令 + 参数）。比如在编译阶段调用的 clang++、链接阶段调用的 wasm-ld，甚至在优化阶段还会调用的 node 等等。
+
+  通过这些输出的详细命令行参数，就能够知道 emcc 在对源代码的实际编译过程中，使用了哪些编译器参数，以及哪些缺少或错误添加的参数会影响源代码的编译流程。通过这种方式，能够在一定程度上辅助你找到项目编译失败的 “根源”。
+
+  而当为 “EMCC_DEBUG” 设置的值为 “2” 时，emcc 会生成更多的包含有中间调试性信息的文件，在这些文件中将包含有与 JavaScript 优化器相关的编译时信息。
+
+- **-s [DEBUGGER_FLAG=VALUE]**
+
+  除了 “EMCC_DEBUG” 之外，emcc 还有很多针对特定场景的编译器调试选项可以使用。而这些选项都需要以 “emcc -s [DEBUGGER_FLAG=VALUE]” 的方式，来将其应用到编译命令行中。
+
+  比如 “ASSERTIONS” 选项。该选项可用于启用 emcc 对常见内存分配错误的运行时断言检查。其值可以被设置为 “0”，“1” 或 “2”。其中，“0” 表示禁用该选项，另外的 “1” 和 “2” 随着数字的逐渐增大，表示所启用相关测试集的增多。
+
+  类似的，还有其他如 “SAFE_HEAP” 等[编译器调试选项](https://github.com/emscripten-core/emscripten/blob/master/src/settings.js)可以使用。
+
+#### 4.5.2 运行时调试
+
+为了能够调试运行在 Web 浏览器中的 Wasm 应用，需要在通过 Emscripten 编译应用时，为编译命令指定特殊的 “调试参数”，以保留这些与调试相关的信息。而这个参数就是 “-g”。
+
+“-g” 参数控制了 emcc 的编译调试等级，每一个调试等级都会保留更多的相应调试性信息。整个等级体系被分为 0-4 五个级别。在其中 “-g4” 级别会保留最多的调试性信息。
+
+不仅如此，在 “-g4” 这个级别下，emcc 还会生成可用于在 Web 浏览器中进行 “源码级” 调试的特殊 DWARF 信息。通过这些特殊格式的信息，便可以直接在 Web 浏览器中对 Wasm 模块编译之前的源代码进行诸如 “设置断点”、“单步跟踪” 等调试手段。
+
+对于使用 Rust 语言编写的 Wasm 模块来说，可以通过类似地为 rustc 添加 “-g” 参数的方式，来让编译器将 DWARF 调试信息加入到生成的 Wasm 模块中。而对于直接使用 cargo 编译的 Wasm 项目来说，调试信息将会自动被默认加入到生成的模块中。
+
+#### 4.5.3 Wasmtime
+
+out-of-web 领域中的 Wasm 应用借助于 [WASI](#26-wasi)，可以在保证良好可移植性的情况下，进一步与各类操作系统资源打交道。而为了能够在 Web 浏览器之外的环境中执行 Wasm 模块中的字节码，则需要诸如 Wasmtime、Lucet 等各类 Wasm 运行时的支持。
+
+对比于在 Native 环境中直接编译而成的可执行文件来说，这些基于 WASI 构建的 Wasm 模块可以具有与这些原生可执行程序同等的能力，前提是只要 WASI 标准中支持相应的操作系统调用抽象接口即可。
+
+能力虽然可以相同，但两者的运行时环境却完全不同。对于原生可执行程序来说，它们的实际执行过程会交由操作系统来统一负责。而对于 Wasm 模块来说，无论是运行在 Web 平台之上，还是应用于 out-of-web 领域中的 Wasm 字节码，它们都需要通过 Wasm 运行时（引擎）来提供字节码的实际执行能力。这也就造成了两者在调试过程和方法上的区别。
+
+为了能够尽量使两者的调试方式保持一致，Wasmtime（一个 Wasm 运行时）便提供了这样的一种能力，可以使用诸如 LLDB 与 GDB 等专用于原生可执行程序的调试工具，来直接调试 Wasm 的二进制模块文件。不过需要注意的是，为了能够确保这个特性具有最大的可用性，需要使用最新版的 LLDB、GDB 以及 Wasmtime。在此基础之上，便可以仅通过如下这行命令，来在 LLDB 中调试 Wasm 字节码。
+
+```sh
+lldb -- wasmtime -g app.wasm
+```
+
+#### 4.5.4 其他调试工具
+
+对于其他的 Wasm 相关调试工具，主要推荐使用 “[WABT](https://github.com/WebAssembly/wabt)” 。WABT 内置了众多可以直接对 Wasm 字节码或者 WAT 可读文本代码进行转换和分析的工具。比如用于将 WAT 格式转换为 Wasm 字节码的工具 “wat2wasm”、用于将 WAT 转换为 Flat-WAT 的工具 “wat-desugar” 等等。
+
+除此之外，还有一些可以针对 Wasm 字节码进行 “反编译” 的工具，比如 “wasm-decompile” 工具可以将 Wasm 字节码反向转换为 “类 C 语法格式” 的可读代码。其可读性相较于 WAT 来说可以说是又更近了一步。
+
+### 4.6 应用 WASI 及其相关生态
+
+WASI 本身作为一种抽象的操作系统调用接口，对上层的应用开发者来说，没有较为直接的影响。甚至对于同样的一段可以被编译为本地可执行应用程序的代码来说，只需要适当调整编译器的相关设置，就可以在不做任何代码更改的情况下，编译出所对应的 WASI 版本代码（也就是 Wasm 字节码）。然后再配合相应的 Wasm 虚拟机，就能够以 “另一种方式” 来执行这些代码了。
+
+总的来说可以看到，相较于传统的可执行文件，WASI 应用程序的整个 “生命周期” 基本上只有 “编译” 与 “运行” 两个阶段会有所不同。
+
+1. **编码**
+
+   ```c++
+   // wasi-app.c
+   #include <stdio.h>
+   #define BUF_SIZE 1024
+
+   int main(int argc, char **argv) {
+     size_t counter = 0;
+     char buf[BUF_SIZE];
+     int c;
+     while ((c = getchar()) != '\n') {
+       buf[counter++] = c;
+     }
+     if (counter > 0) {
+       printf("The input content is: %s\n", buf);
+       // write content to local file.
+       FILE* fd;
+       if ((fd = fopen("wasi-static.txt", "w"))) {
+         fwrite(buf, sizeof(char), counter, fd);
+       } else {
+         perror("Open static file failed!");
+       }
+     }
+     return 0;
+   }
+   ```
+
+   这段代码所对应的功能是：程序在实际运行时，会首先要求用户输入一些随机的文本字符，而当用户输入 “回车键（\n）” 后，之前输入的所有内容都将会被回显到命令行中。
+
+   除此之外，这些输入的文本字符也会被同时保存到当前目录下名为 “wasi-static.txt” 的文本文件中。而无论在程序运行时该文本文件是否存在，应用都将会重新创建或清空该文件，并写入新的内容。
+
+   这里为了完成上面的功能，在代码中使用了诸如 “fopen” 与 “fwrite” 等用于操作系统文件资源的 C 标准库函数。这些函数在被编译至 Native 可执行文件后，会通过间接调用 “操作系统调用” 的方式，来实现与文件等系统资源的实际交互过程。
+
+2. **Native 可执行程序**
+
+   接下来，将上述这段代码编译为本地可执行文件，并尝试运行这个程序以观察应用的实际运行效果。对应的编译和运行命令如下所示：
+
+   ```sh
+   clang  wasi-app.c -o wasi-app && ./wasi-app
+   ```
+
+3. **交叉编译**
+
+   接下来，将尝试把上面这段 C/C++ 代码编译成对应的 Wasm 字节码，并使用 Wasmtime 来执行它。而为了完成这个工作，首先需要了解整个编译链路的基本情况。
+
+   LLVM 工具链已经具备可以将 LLVM-IR 编译为 Wasm 字节码的编译器后端能力。因此，基于 LLVM 构建的编译器 Clang，便也可以同样享受这个能力。而这里需要做的就是借助 Clang 来进行针对 WASI 的 “交叉编译”。
+
+   那为什么说是 “交叉编译（Cross-Compilation）” 呢？其实无论是 Wasm32 还是 Wasm64，它们都是指一种 “指令集架构”，也就是 “(V)ISA”。而 ISA 本身只是规定了与指令相关的一些信息，比如：有哪些指令？指令的用法和作用？以及这些指令对应的 OpCode 编码是什么？等等。
+
+   但回到 “WASI”。它是一种基于 Wasm 指令集的 “平台类型”。所谓 “平台”，可以用诸如 Linux、Windows 等各种不同的操作系统类型来进行类比。WASI 指定了一种自己独有的操作系统接口使用方式，那就如同 Linux 与 Windows 都有其各自不同的操作系统调用号一样。这将会影响着 C/C++ 代码应该如何与对应平台的不同操作系统调用进行编译整合。
+
+   - 基于 Clang 的编译管道
+     通常在 Clang 中，一个大致的交叉编译流程如下图所示。
+
+     ![Clang 交叉编译流程](./image/Clang%20%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91%E6%B5%81%E7%A8%8B.webp)
+
+     可以看到，其实同正常的编译流程十分类似，输入到编译器的 C/C++ 源代码会通过适用于对应目标平台的头文件，来引用诸如 “C 标准库” 中的函数。
+
+     而在编译链路中，应用本身对应的对象文件将会与标准库对应的动态或静态库文件再进行链接，以提取所引用函数的实际定义部分。最后，再根据所指定的平台类型，将编译输出的内容转换为对应的平台代码格式。
+
+     在上面的流程中，输入到编译链路的源代码，以及针对 WASI 平台适用的标准库头文件、静态库以及动态库则将需要由自行提供。在 Clang 中，将通过 “–sysroot” 参数来指定这些标准库相关文件的所在位置；参数 “–target” 则负责指定交叉编译的目标平台。接下来，将通过 WASI SDK 的帮助来简化上述流程。
+
+   - [WASI SDK](https://github.com/WebAssembly/wasi-sdk)
+
+     顾名思义，“WASI SDK” 是一套能够帮助简化 WASI 交叉编译的 “开发工具集”。但与其说它是开发工具集，不如说它整合了用于支持 WASI 交叉编译的一切文件和工具资源，其中包括：基于 “wasi-libc” 编译构建的适用于 WASI 平台的 C 标准库、可用于支持 WASI 交叉编译的最新版 Clang 编译器，以及其他的相关必要配置信息等等。
+
+     它的安装过程十分简单，只需要将其下载到本地，然后解压缩即可。假设此时已经将 WASI SDK 下载到当前目录，并得到了解压缩后的文件夹（wasi-sdk-11.0）。
+
+     首先来看看对应的交叉编译命令是怎样的：
+
+     ```sh
+     ./wasi-sdk-11.0/bin/clang \
+     --target=wasm32-wasi \
+     --sysroot=./wasi-sdk-11.0/share/wasi-sysroot \
+     wasi-app.c -o wasi-app.wasm
+     ```
+
+     这里直接使用了由 WASI SDK 提供的 Clang 编译器来进行这次交叉编译。然后使用了 “–sysroot” 参数来指定适用于 WASI 的标准库相关文件其所在目录。这里可以看到，通过参数 “–target” 所指定的平台类型 “wasm32-wasi” 便是 LLVM 所支持的、针对于 WASI 的平台编译类型。编译完成后，便可以得到一个 Wasm 文件 “wasi-app.wasm”。最后，将使用 Wasmtime 来运行这个 Wasm 模块。如果一切顺利，可以看到同 Native 可执行程序一样的运行结果。
+
+4. **Wamtime 运行**
+
+   按照正常的思路，可能会通过下面的方式来尝试运行这个 Wasm 文件：
+
+   ```sh
+   wasmtime wasi-app.wasm
+   ```
+
+   而当命令实际执行时，会发现 Wasmtime 却给出了这样的一条错误提示：“Capabilities insufficient”，这便是 “Capability-based Security” 在 WASI 身上的体现。
+
+   Wasmtime 在实际执行 “wasi-app.wasm” 文件中的字节码时，发现这个 WASI 应用使用到了文件操作相关的操作系统接口，而对于一个普通的 WASI 应用来说，这些接口在正常情况下是无法被直接使用的。换句话说，默认情况下的 WASI 应用是不具备 “文件操作” 相关的 Capability 的。这些 Capability 需要在实际运行应用时主动 “授予” 给应用，方式如下所示。
+
+   ```sh
+   wasmtime wasi-app.wasm --dir=.
+   ```
+
+   这里在通过 Wasmtime 运行 WASI 应用时，为其指定了一个额外的 “–dir=.” 参数。通过该参数，Wasmtime 可以将其所指定的文件路径（.）“映射” 到 WASI 应用中，以供其使用。
+
+当然，对于其他的支持 WASI 的 Wasm 运行时来说，它们也会以类似的方式来实现 Capability-based Security 这一 WASI 最为重要的安全模型。而这一模型也是 WASI+Wasm 能够在一定程度上 “取代” Docker 进行应用沙盒化的基础。

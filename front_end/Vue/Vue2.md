@@ -7281,15 +7281,15 @@ methods: {
    }
    ```
 
-4. 设置断点，并启动 Vue 应用，来到 Debug 视图，选择“vuejs：chrome/firefox”配置，然后按 F5 或点击绿色的 play 按钮。
+4. 设置断点，并启动 Vue 应用，来到 Debug 视图，选择 “vuejs：chrome/firefox” 配置，然后按 F5 或点击绿色的 play 按钮。
 
 #### 8.1.1 替代方案
 
 ##### 8.1.1.1 Vue Devtools
 
-使用 Chrome 版本和 Firefox 版本的 Vue.js devtools。使用 devtools 有很多好处，比如它可以让能够实时编辑数据 property 并立即看到其反映出来的变化。另一个主要的好处是能够为 Vuex 提供时间旅行式的调试体验。
+使用 devtools 有很多好处，比如它可以让能够实时编辑数据 property 并立即看到其反映出来的变化。另一个主要的好处是能够为 Vuex 提供时间旅行式的调试体验。
 
-> 注意 : 如果页面使用了一个生产环境/压缩后的 Vue.js 构建版本 (例如来自一个 CDN 的标准的链接)，devtools 的审查功能是默认被禁用的，所以 Vue 面板不会出现。如果切换到一个非压缩版本，可能需要强制刷新该页面来看到它。
+> **注意**：如果页面使用了一个生产环境/压缩后的 Vue.js 构建版本（例如来自一个 CDN 的标准的链接），devtools 的审查功能是默认被禁用的，所以 Vue 面板不会出现。如果切换到一个非压缩版本，可能需要强制刷新该页面来看到它。
 
 ##### 8.1.1.2 简单的 debugger 语句
 
@@ -7316,7 +7316,7 @@ export default {
 
 ### 9.1 template 和 JSX 的对比以及它们的本质
 
-**template**:
+**template**：
 
 - 模板语法（HTML 的扩展）
 - 数据绑定使用 Mustache 语法（双大括号）
@@ -7327,9 +7327,9 @@ export default {
 
 优缺点：学习成本低、大量内置指令简化开发、组件作用域 CSS，但是灵活性低
 
-**JSX**:
+**JSX**：
 
-- JavaScript 语法的扩展
+- JS 语法的扩展
 - 数据绑定使用单引号
 
 ```jsx
