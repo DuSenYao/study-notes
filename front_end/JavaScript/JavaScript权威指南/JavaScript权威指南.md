@@ -3285,6 +3285,20 @@ let squares = [1, 2, 3, 4].map(x => x * x); // squares == [1, 4, 9, 16]
 **箭头函数与其他函数极其重要的区别**
 箭头函数从定义自己的环境继承 this 关键字的值，而不是像以其他方式定义的函数那样定义自己的调用上下文。这是箭头函数的一个重要且非常有用的特性。箭头函数与其他函数还有一个区别，就是它们没有 `prototype` 属性。这意味着箭头函数不能作为新类的[构造函数](#92-类和构造函数)。
 
+因为这个区别，所以使用箭头函数一定要关注函数内部 this 需要指向哪里，**原形方法**、**对象方法**、**动态上下文中的回调函数** 中的 this 指向不同，会导致执行结果完全不同：
+
+```js
+const obj = {
+  name: '张三',
+  getName() {
+    console.log(this); // this 指向了 obj
+  },
+  getName1: () => {
+    console.log(this); // this 在浏览器中指向了 Window 全局对象
+  }
+};
+```
+
 #### 8.1.4 嵌套函数
 
 在 JS 中，函数可以嵌套在其他函数中。例如：
@@ -11314,7 +11328,11 @@ name=%3Cimg%20src=%22x.png%22%20onload=%22alert(%27hacked%27)%22/%3E
 把这个经过 URL 转义的参数解码后，就会导致下面的 HTML 被注入文档：
 
 ```html
-Hello <img src="x.png" onload="alert('hacked')" />
+Hello
+<img
+  src="x.png"
+  onload="alert('hacked')"
+/>
 ```
 
 于是，在图片加载后，`onload` 属性中的 JS 字符串就会执行。全局 alert() 函数将显示一个模态对话框。显示一个对话框没什么大不了，但这演示了在这个网站上显示未经处理的 HTML 会导致任意代码执行的可能性。
@@ -12010,7 +12028,12 @@ document.head.insertAdjacentHTML('beforeend', '<style>body{transform: rotate(180
 现在假设 HTML 文档中包含一个有 “fadeable” 类的元素：
 
 ```html
-<div id="subscribe" class="fadeable notification">...</div>
+<div
+  id="subscribe"
+  class="fadeable notification"
+>
+  ...
+</div>
 ```
 
 在 JS 中，可以为它添加 “transparent” 类：
@@ -12193,8 +12216,14 @@ tableBody.append(clone);
 <p>
   The document has one marble: <inline-circle></inline-circle>
   The HTML parser instantiates two more marbles:
-  <inline-circle diameter="1.2em" color="blue"></inline-circle>
-  <inline-circle diameter=".6em" color="gold"></inline-circle>
+  <inline-circle
+    diameter="1.2em"
+    color="blue"
+  ></inline-circle>
+  <inline-circle
+    diameter=".6em"
+    color="gold"
+  ></inline-circle>
   How many marbles does The document contain now?
 </p>
 ```
@@ -12524,9 +12553,19 @@ SVG 图片可以使用 HTML 的 `<img>` 标签来显示，也可以直接在 HTM
 
 ```html
 <p>This is a red square:</p>
-<canvas id="square" width="10" height="10"></canvas>.
+<canvas
+  id="square"
+  width="10"
+  height="10"
+></canvas
+>.
 <p>This is a blue circle:</p>
-<canvas id="circle" width="10" height="10"></canvas>.
+<canvas
+  id="circle"
+  width="10"
+  height="10"
+></canvas
+>.
 <script>
   let canvas = document.querySelector('#square'); // 取得第一个画布元素
   let context = canvas.getContext('2d'); // 取得 2D 绘图上下文
@@ -13473,7 +13512,10 @@ SSE 的一个典型应用是类似在线聊天一样的多用户协作。聊天�
   <body>
     <!-- 聊天室的 UI 只有一个文本输入字段 -->
     <!-- 新聊天消息会插入这个输入字段前面 -->
-    <input id="input" style="width: 100%; padding: 10px; border: solid black 2px" />
+    <input
+      id="input"
+      style="width: 100%; padding: 10px; border: solid black 2px"
+    />
     <script>
       // 注重一些UI的细节
       let nick= prompt("Enter your nickname"); // 取得用户昵称

@@ -61,7 +61,7 @@
 
 #### 2.2.2 在 class 或 Object 中使用新的函数声明方式
 
-ES6 推出了一种更简洁的函数声明方式，在 class 或 Object 中声明函数, 不需要写 `function`，只要 名字 + () 即可：
+ES6 推出了一种更简洁的函数声明方式，在 class 或 Object 中声明函数, 不需要写 `function`，只要 `名字 + ()` 即可：
 
 ```js
 const use = {
