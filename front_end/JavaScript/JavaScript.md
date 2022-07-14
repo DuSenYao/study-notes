@@ -995,9 +995,9 @@ this.a = 2;
 
 ### 3.4 var 的声明与赋值
 
-var 声明作用域函数执行的作用域，也就是，var 会穿透 for、if 等语句。
+var 的声明作用域是函数执行的作用域，也就是，var 会穿透 for、if 等语句。
 
-**立即执行的函数表达式(IIFE)**
+**立即执行的函数表达式（IIFE）**
 在只有 var，没有 let 的旧 JS 时代，诞生了一个技巧，叫做：立即执行的函数表达式（IIFE），通过创建一个函数，并且立即执行，来构造一个新的域，从而控制 var 的作用范围。
 
 由于语法规定了 `function` 开头的是函数声明，所以想要让函数变成函数表达式，必须加点东西，推荐使用 `void` 关键字。
@@ -1013,12 +1013,19 @@ void (function () {
 void 是运算符，其后跟一个表达式，无论 void 后的表达式是什么都会执行，void 操作符都会返回 undefined。void 在 JS 中一般有 3 种作用：
 
 1. **返回 undefined**
-   undefined 在 JS 中不是保留字，可以定义 undefined 这个变量，使用全局的 undefined 可能会被局部变量覆盖，所以使用 void 0 来代替 undefined。
+
+   在 ES6 以前，undefined 在 JS 中不是保留字，可以定义 undefined 这个变量，使用全局的 undefined 可能会被局部变量覆盖，所以使用 void 0 来代替 undefined。
 
 2. **执行无用操作**
-   如果有 a 链接，不希望点击的时候跳转，不写又会刷新，通常使用：`<a href="javascript:void(0)">` 来执行空操作
 
-3. **执行后面的表达式**，例如：var a = 1; void a++; // a = 2;
+   如果有 a 链接，不希望点击的时候跳转，不写又会刷新，通常使用：`<a href="javascript:void(0)">` 来执行空操作。
+
+3. **执行后面的表达式**
+
+   ```js
+   var a = 1;
+   void a++; // a = 2;
+   ```
 
 ### 3.5 let
 
@@ -1511,7 +1518,10 @@ JS 有两种源文件：
 浏览器支持用 `<script>` 引入模块，但必须给 `<script>` 标签添加 `type="module"`。如果引入脚本，则不需要 type。
 
 ```js
-<script type="module" src="xxxxx.js"></script>
+<script
+  type="module"
+  src="xxxxx.js"
+></script>
 ```
 
 > `<script>` 标签如果不加 `type="module"`，默认加载的文件是脚本而非模块，如果在脚本中写了 `export`，会抛错。
