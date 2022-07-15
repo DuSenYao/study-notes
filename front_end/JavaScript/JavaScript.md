@@ -292,11 +292,13 @@ console.log(typeof symbolT); // Symbol
 
 在 JS 中没有任何方法可以改变私有的 Class 属性，所以，`Object.prototype.toString` 是可以准确识别对象对应的基本类型的方法，它比 `instanceof` 更准确，需要注意 `.call()` 会产生装箱操作，所以需要配合 `typeof` 来区分基本类型还是对象类型。
 
-`instanceof` 运算符用来判断一个构造函数的 prototype 属性(或对象的**proto**) 所指向的对象是否存在另外一个要检测对象的原型链上。
+`instanceof` 运算符用来判断一个构造函数的 prototype 属性（或对象的 `__proto__`）所指向的对象是否存在另外一个要检测对象的原型链上。
 
 **拆箱转换**
 在 JS 标准中，规定了 `toPrimitive` 函数，它是对象类型到基本类型的转换（即拆箱转换）。
+
 对象到 String 和 Number 的转换都遵循 "先拆箱再转换" 的规则，通过拆箱转换，把对象先转为基本类型，再从基本类型转为对应的 String 或 Number。
+
 所以，拆箱转换会先尝试调用 `valueOf` 和 `toString` 来获取拆箱后的基本类型，如果 `typeOf` 和 `toString` 都不存在或没有返回基本类型，则会报类型错误 TypeError。
 
 ```js
@@ -487,21 +489,21 @@ console.log(o.a); // 3
 
 如果抛开 JS 用于模拟 Java 的复杂语法设施（如 new、Function Object、函数的 prototype 属性等），可以用两条概括：
 
-1. 如果所有对象都有私有字段 [`[[prototype]]`](#__proto__)（即**proto**），就是对象的原形
+1. 如果所有对象都有私有字段 [`__proto__`](/front_end/JavaScript/JavaScript权威指南/JavaScript权威指南.md#143-prototype-特性)，就是对象的原形。
 
-2. 读一个属性，如果对象没有，则会继续访问对象的原形，直到原形为空或找到为止
+2. 读一个属性，如果对象没有，则会继续访问对象的原形，直到原形为空或找到为止。
 
-ES6 以来，JS 提供了一系列的内置函数，以便更为直接的访问操纵原形
+ES6 以来，JS 提供了一系列的内置函数，以便更为直接的访问操纵原形：
 
-- `Object.create` : 根据指定的原形创建新对象，原形可以是 null
-- `Object.getPrototypeOf` : 获得一个对象的原形
-- `Object.setPrototypeOf` : 设置一个对象的原形
+- `Object.create`：根据指定的原形创建新对象，原形可以是 null。
+- `Object.getPrototypeOf`：获得一个对象的原形。
+- `Object.setPrototypeOf`：设置一个对象的原形。
 
 利用这三个方法，可以完全抛开类的思维，利用原型来实现抽象和复用。
 
 ```js
 // 创建一个对象cat
-var cat = {
+let cat = {
   say() {
     console.log('meow~');
   },
@@ -513,7 +515,7 @@ var cat = {
 /*
  *  使用 Object.create 根据cat对象做了一些修改创建了一个tiger对象
  */
-var tiger = Object.create(cat, {
+let tiger = Object.create(cat, {
   say: {
     writable: true,
     configurable: true,
@@ -525,19 +527,19 @@ var tiger = Object.create(cat, {
 });
 
 // 使用Object.create 创建其他cat对象，可以通过控制原始cat对象来控制所有cat对象的行为
-var anotherCat = Object.create(cat);
+let anotherCat = Object.create(cat);
 anotherCat.say(); // meow~
 anotherCat.jump(); // jump
 
 // 使用Object.getPrototypeOf 来获得一个对象的原形
 console.log(Object.getPrototypeOf(anotherCat)); // {say: ƒ, jump: ƒ}
 
-var anotherTiger = Object.create(tiger);
+let anotherTiger = Object.create(tiger);
 anotherTiger.say(); // roar!
 anotherTiger.jump(); // jump
 console.log(Object.getPrototypeOf(anotherTiger)); // {say: ƒ}
 
-var blueTiger = new Object();
+let blueTiger = new Object();
 blueTiger.name = '小明';
 blueTiger.eat = () => {
   console.log('eat meat');
@@ -2919,10 +2921,3 @@ condition ? branch1 : branch2;
 ```
 
 > **注意**：条件表达式也像逻辑表达式一样，可能忽略后面表达式的计算。这一点跟 C 语言的条件表达式是不一样的。三目运算实际上就是 JS 中的右值表达式 RightHandSideExpression，是可以放到赋值运算后面的表达式。
-
----
-
-<span id="__proto__"> 1. `[[prototype]]`
-: `[[prototype]]` 是对象的私有属性，而 prototype 是只有函数才有的属性，`[[prototype]]` 是 JS 的非标准但许多浏览器实现的属性，即 **proto** ，`Object.[[prototype]] === Object.getPrototypeOf(someObject) === someObject.__proto__` (`Object.[[prototype]]` 浏览器不支持这样操作，Object.getPrototypeOf()是 ES6 的方法)
-所有的 JS 对象都有一个指向它的原形对象的内部链接 `[[prototype]]`，但只有函数才有 prototype 这个属性
-</span>
