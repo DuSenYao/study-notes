@@ -63,6 +63,18 @@
       - [3.7.1 单态多态与超态](#371-单态多态与超态)
   - [四. 事件循环和垃圾回收](#四-事件循环和垃圾回收)
     - [4.1 回调函数的实现：消息队列](#41-回调函数的实现消息队列)
+      - [4.1.1 UI 线程的宏观架构](#411-ui-线程的宏观架构)
+      - [4.1.2 异步回调函数的调用时机](#412-异步回调函数的调用时机)
+    - [4.2 V8 实现微任务](#42-v8-实现微任务)
+      - [4.2.1 主线程 调用栈 消息队列](#421-主线程-调用栈-消息队列)
+      - [4.2.2 微任务解决了宏任务执行时机不可控的问题](#422-微任务解决了宏任务执行时机不可控的问题)
+      - [4.2.3 在微任务中循环地触发新的微任务会导致页面卡死](#423-在微任务中循环地触发新的微任务会导致页面卡死)
+    - [4.3 V8 实现 async/await](#43-v8-实现-asyncawait)
+      - [4.3.1 回调地狱](#431-回调地狱)
+      - [4.3.2 使用 Promise 解决回调地狱中编码不线性的问题](#432-使用-promise-解决回调地狱中编码不线性的问题)
+      - [4.3.3 使用 Generator 函数实现更加线性化逻辑](#433-使用-generator-函数实现更加线性化逻辑)
+      - [4.3.4 async/await：异步编程的 “终极” 方案](#434-asyncawait异步编程的-终极-方案)
+    - [4.4 垃圾数据的产生](#44-垃圾数据的产生)
 
 <!-- /code_chunk_output -->
 
@@ -1914,3 +1926,553 @@ setTimeout(foo, 3000);
 所谓 UI 线程，是指运行窗口的线程，当运行一个窗口时，无论该页面是 Windows 上的窗口系统，还是 Android 或者 iOS 上的窗口系统，它们都需要处理各种事件，诸如有触发绘制页面的事件，有鼠标点击、拖拽、放大缩小的事件，有资源下载、文件读写的事件，等等。
 
 在页面线程中，当一个事件被触发时，比如用户使用鼠标点击了页面，系统需要将该事件提交给 UI 线程来处理。
+
+在大部分情况下，UI 线程并不能立即响应和处理这些事件，比如在移动鼠标的过程中，每移动一个像素都会产生一个事件，所以鼠标移动的事件会频繁地被触发。在这种情况下，页面线程可能正在处理前一个事件，那么最新的事件就无法被立即执行。
+
+针对这种情况，V8 为 UI 线程提供一个消息队列，并将这些待执行的事件添加到消息队列中，然后 UI 线程会不断循环地从消息队列中取出事件、执行事件。**把 UI 线程每次从消息队列中取出事件，执行事件的过程称为一个任务**。整个流程大致如下所示：
+
+![通用UI线程架构](./image/%E9%80%9A%E7%94%A8UI%E7%BA%BF%E7%A8%8B%E6%9E%B6%E6%9E%84.webp)
+
+可以用一段 JS 代码来模拟下这个过程：
+
+```js
+function UIMainThread() {
+  while (queue.waitForMessage()) {
+    Task task = queue.getNext();
+    processNextMessage(task);
+  }
+}
+```
+
+在这段代码中，queue 是消息队列，queue.waitForMessage() 会同步地等待消息队列中的消息到达，如果当前没有任何消息等待被处理，则这个函数会将 UI 线程挂起。如果消息队列中有消息，则使用 queue.getNext() 取出下一个要执行的消息，并交由 processNextMessage 函数来处理消息。
+
+这就是通用的 UI 线程的结构，有消息队列，通过鼠标、键盘、触控板等产生的消息都会被添加进消息队列，主线程会循环地从消息队列中取出消息并执行。
+
+#### 4.1.2 异步回调函数的调用时机
+
+![异步函数的执行时机](./image/%E5%BC%82%E6%AD%A5%E5%87%BD%E6%95%B0%E7%9A%84%E6%89%A7%E8%A1%8C%E6%97%B6%E6%9C%BA.webp)
+
+比如在页面主线程中正在执行 A 任务，在执行 A 任务的过程中调用 setTimeout(foo, 3000)，在执行 setTimeout 函数的过程中，宿主就会将 foo 函数封装成一个事件，并添加到消息队列中，然后 setTimeout 函数执行结束。
+
+主线程会不间断地从消息队列中取出新的任务，执行新的任务，等到时机合适，便取出 setTimeout 设置的 foo 函数的回调的任务，然后就可以直接执行 foo 函数的调用了。
+
+还有一类比较复杂一点的流程，最典型的是通过 XMLHttpRequest 所触发的回调，它和 setTimeout 有一些区别。
+
+因为 XMLHttpRequest 是用来下载网络资源的，但是实际的下载过程却并不适合在主线程上执行，因为下载任务会消耗比较久的时间，如果在 UI 线程上执行，那么会阻塞 UI 线程，这就会拖慢 UI 界面的交互和绘制的效果。所以当主线程从消息队列中取出来了这类下载任务之后，会将其分配给网络线程，让其在网络线程上执行下载过程，这样就不会影响到主线程的执行了。
+
+![XMLHttpRequest 触发回调函数](./image/XMLHttpRequest%20触发回调函数.webp)
+
+结合上图，通用的 UI 线程处理下载事件，大致可以分为以下几步：
+
+1. UI 线程会从消息队列中取出一个任务，并分析该任务。
+2. 分析过程中发现该任务是一个下载请求，那么主线程就会将该任务交给网络线程去执行。
+3. 网络线程接到请求之后，便会和服务器端建立连接，并发出下载请求。
+4. 网络线程不断地收到服务器端传过来的数据。
+5. 网络线程每次接收到数据时，都会将设置的回调函数和返回的数据信息，如大小、返回了多少字节、返回的数据在内存中存放的位置等信息封装成一个新的事件，并将该事件放到消息队列中。
+6. UI 线程继续循环地读取消息队列中的事件，如果是下载状态的事件，那么 UI 线程会执行回调函数，程序员便可以在回调函数内部编写更新下载进度的状态的代码；
+7. 直到最后接收到下载结束事件，UI 线程会显示该页面下载完成。
+
+这就是 XMLHttpRequest 所触发的回调流程，除了下载以外，JS 中获取系统设备信息、文件读取等都是采用了类似的方式来实现的。
+
+### 4.2 V8 实现微任务
+
+基于上面基础的 UI 框架，JS 又延伸出很多新的技术，其中应用最广泛的当属：
+
+- **宏任务**
+
+  宏任务是**指消息队列中的等待被主线程执行的事件**。每个宏任务在执行时，V8 都会重新创建栈，然后随着宏任务中函数调用，栈也随之变化，最终，当该宏任务执行结束时，整个栈又会被清空，接着主线程继续执行下一个宏任务。
+
+- **微任务**
+
+  可以把**微任务看成是一个需要异步执行的函数，执行时机是在主函数执行结束之后、当前宏任务结束之前**。
+
+JS 中之所以要引入微任务，主要是由于主线程执行消息队列中宏任务的时间颗粒度太粗了，无法胜任一些对精度和实时性要求较高的场景，那么**微任务可以在实时性和效率之间做一个有效的权衡**。另外使用微任务，可以改变现在的异步编程模型，使得可以使用同步形式的代码来编写异步调用。
+
+![微任务相关的知识栈](./image/%E5%BE%AE%E4%BB%BB%E5%8A%A1%E7%9B%B8%E5%85%B3%E7%9A%84%E7%9F%A5%E8%AF%86%E6%A0%88.webp)
+
+从图中可以看出，微任务是基于消息队列、事件循环、UI 主线程还有堆栈而来的，然后基于微任务，又可以延伸出协程、Promise、Generator、await/async 等现代前端经常使用的一些技术。也就是说，如果对消息队列、主线程还有调用栈理解的不够深入，在研究微任务时，就容易一头雾水。
+
+#### 4.2.1 主线程 调用栈 消息队列
+
+先从主线程和调用栈开始分析。调用栈是一种数据结构，用来管理在主线程上执行的函数的调用关系。接下来通过执行下面这段代码，来分析下调用栈是如何管理主线程上函数调用的。
+
+```js
+function bar() {}
+function foo(fun) {
+  fun();
+}
+foo(bar);
+```
+
+当 V8 准备执行这段代码时，会先将全局执行上下文压入到调用栈中，如下图所示：
+
+![全局执行上下文压入调用栈](./image/%E5%85%A8%E5%B1%80%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87%E5%8E%8B%E5%85%A5%E8%B0%83%E7%94%A8%E6%A0%88.webp)
+
+然后 V8 便开始在主线程上执行 foo 函数，首先它会创建 foo 函数的执行上下文，并将其压入栈中，那么此时调用栈、主线程的关系如下图所示：
+
+![调用栈和主线程的关系](./image/%E8%B0%83%E7%94%A8%E6%A0%88%E5%92%8C%E4%B8%BB%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%85%B3%E7%B3%BB.webp)
+
+然后，foo 函数又调用了 bar 函数，那么当 V8 执行 bar 函数时，同样要创建 bar 函数的执行上下文，并将其压入栈中，最终效果如下图所示：
+
+![调用bar函数](./image/%E8%B0%83%E7%94%A8bar%E5%87%BD%E6%95%B0.webp)
+
+等 bar 函数执行结束，V8 就会从栈中弹出 bar 函数的执行上下文，此时的效果如下所示：
+
+![bar函数执行结束](./image/bar%E5%87%BD%E6%95%B0%E6%89%A7%E8%A1%8C%E7%BB%93%E6%9D%9F.webp)
+
+最后，foo 函数执行结束，V8 会将 foo 函数的执行上下文从栈中弹出，效果如下所示：
+
+![foo函数执行结束](./image/foo%E5%87%BD%E6%95%B0%E6%89%A7%E8%A1%8C%E7%BB%93%E6%9D%9F.webp)
+
+以上就是调用栈管理主线程上函数调用的方式，不过，这种方式会带来一种问题，那就是栈溢出。比如下面这段代码：
+
+```js
+function foo() {
+  foo();
+}
+foo();
+```
+
+由于 foo 函数内部嵌套调用它自己，所以在调用 foo 函数的时候，它的栈会一直向上增长，但是由于栈空间在内存中是连续的，所以通常我们都会限制调用栈的大小，如果当函数嵌套层数过深时，过多的执行上下文堆积在栈中便会导致栈溢出，最终如下图所示：
+
+![栈溢出](./image/%E6%A0%88%E6%BA%A2%E5%87%BA.webp)
+
+可以使用 setTimeout 来解决栈溢出的问题，setTimeout 的本质是将同步函数调用改成异步函数调用，这里的异步调用是将 foo 封装成事件，并将其添加进消息队列中，然后主线程再按照一定规则循环地从消息队列中读取下一个任务。使用 setTimeout 改造后代码代码如下所示：
+
+```js
+function foo() {
+  setTimeout(foo, 0);
+}
+foo();
+```
+
+现在从调用栈、主线程、消息队列这三者的角度来分析这段代码的执行流程了。
+
+首先，主线程会从消息队列中取出需要执行的宏任务，假设当前取出的任务就是要执行的这段代码，这时候主线程便会进入代码的执行状态。这时关于主线程、消息队列、调用栈的关系如下图所示：
+
+![取出最新的任务](./image/%E5%8F%96%E5%87%BA%E6%9C%80%E6%96%B0%E7%9A%84%E4%BB%BB%E5%8A%A1.webp)
+
+接下来 V8 就要执行 foo 函数了，同样执行 foo 函数时，会创建 foo 函数的执行上下文，并将其压入栈中，最终效果如下图所示：
+
+![调用栈-主线程-消息队列-调用foo函数](./image/%E8%B0%83%E7%94%A8%E6%A0%88-%E4%B8%BB%E7%BA%BF%E7%A8%8B-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97-%E8%B0%83%E7%94%A8foo%E5%87%BD%E6%95%B0.webp)
+
+当 V8 执行执行 foo 函数中的 setTimeout 时，setTimeout 会将 foo 函数封装成一个新的宏任务，并将其添加到消息队列中，在 V8 执行 setTimeout 函数时的状态图如下所示：
+
+![执行 setTimeout 函数](./image/%E6%89%A7%E8%A1%8C%20setTimeout%20%E5%87%BD%E6%95%B0.webp)
+
+等 foo 函数执行结束，V8 就会结束当前的宏任务，调用栈也会被清空，调用栈被清空后状态如下图所示：
+
+![结束宏任务并清空调用栈](./image/%E7%BB%93%E6%9D%9F%E5%AE%8F%E4%BB%BB%E5%8A%A1%E5%B9%B6%E6%B8%85%E7%A9%BA%E8%B0%83%E7%94%A8%E6%A0%88.webp)
+
+因为 foo 函数并不是在当前的父函数内部被执行的，而是封装成了宏任务，并丢进了消息队列中，然后等待主线程从消息队列中取出该任务，再执行该回调函数 foo，这样就解决了栈溢出的问题。
+
+#### 4.2.2 微任务解决了宏任务执行时机不可控的问题
+
+不过，对于栈溢出问题，虽然可以通过将某些函数封装成宏任务的方式来解决，但是宏任务需要先被放到消息队列中，如果某些宏任务的执行时间过久，那么就会影响到消息队列后面的宏任务的执行，而且这个影响是不可控的，因为无法知道前面的宏任务需要多久才能执行完成。
+
+于是 JS 中又引入了微任务，微任务会在当前的任务快要执行结束时执行，利用微任务，就能比较精准地控制回调函数的执行时机。
+
+通俗地理解，V8 会为每个宏任务维护一个微任务队列。当 V8 执行一段 JS 时，会为这段代码创建一个环境对象，微任务队列就是存放在该环境对象中的。当通过 Promise.resolve 生成一个微任务，该微任务会被 V8 自动添加进微任务队列，等整段代码快要执行结束时，该环境对象也随之被销毁，但是在销毁之前，V8 会先处理微任务队列中的微任务。
+
+理解微任务的执行时机，需要记住以下两点：
+
+- 首先，如果当前的任务中产生了一个微任务，通过 Promise.resolve() 或者 Promise.reject() 都会触发微任务，触发的微任务不会在当前的函数中被执行，所以执行微任务时，不会导致栈的无限扩张。
+
+- 其次，和异步调用不同，微任务依然会在当前任务执行结束之前被执行，这也就意味着在当前微任务执行结束之前，消息队列中的其他任务是不可能被执行的。
+
+因此在函数内部触发的微任务，一定比在函数内部触发的宏任务要优先执行。为了验证这个观点，来分析一段代码：
+
+```js
+function bar() {
+  console.log('bar');
+  Promise.resolve().then(str => console.log('micro-bar'));
+  setTimeout(str => console.log('macro-bar'), 0);
+}
+
+function foo() {
+  console.log('foo');
+  Promise.resolve().then(str => console.log('micro-foo'));
+  setTimeout(str => console.log('macro-foo'), 0);
+
+  bar();
+}
+foo();
+console.log('global');
+Promise.resolve().then(str => console.log('micro-global'));
+setTimeout(str => console.log('macro-global'), 0);
+```
+
+执行这段代码，最终打印出来的顺序是：
+
+```txt
+foo
+bar
+global
+micro-foo
+micro-bar
+micro-global
+macro-foo
+macro-bar
+macro-global
+```
+
+可以清晰地看出，微任务是处于宏任务之前执行的。接下来，详细分析下 V8 是怎么执行这段 JS 代码的：
+
+1. **初始化**
+
+   首先，当 V8 执行这段代码时，会将全局执行上下文压入调用栈中，并在执行上下文中创建一个空的微任务队列。那么此时：
+
+   - 调用栈中包含了全局执行上下文
+   - 微任务队列为空
+
+   ![微任务示例-第一步](./image/%E5%BE%AE%E4%BB%BB%E5%8A%A1%E7%A4%BA%E4%BE%8B-%E7%AC%AC%E4%B8%80%E6%AD%A5.webp)
+
+2. **执行 foo 函数中的调用**
+
+   V8 会先创建 foo 函数的执行上下文，并将其压入到栈中。接着执行 Promise.resolve，这会触发一个 micro-foo1 微任务，V8 会将该微任务添加进微任务队列。然后执行 setTimeout 方法。该方法会触发了一个 macro-foo1 宏任务，V8 会将该宏任务添加进消息队列。此时：
+
+   - 调用栈中包含了全局执行上下文、foo 函数的执行上下文。
+   - 微任务队列有了一个微任务，micro-foo。
+   - 消息队列中存放了一个通过 setTimeout 设置的宏任务，macro-foo。
+
+   此时的消息队列、主线程和调用栈的状态图如下所示：
+
+   ![微任务示例-第二步](./image/%E5%BE%AE%E4%BB%BB%E5%8A%A1%E7%A4%BA%E4%BE%8B-%E7%AC%AC%E4%BA%8C%E6%AD%A5.webp)
+
+3. **foo 函数调用了 bar 函数**
+
+   V8 需要再创建 bar 函数的执行上下文，并将其压入栈中，接着执行 Promise.resolve，这会触发一个 micro-bar 微任务，该微任务会被添加进微任务队列。然后执行 setTimeout 方法，这也会触发一个 macro-bar 宏任务，宏任务同样也会被添加进消息队列。此时：
+
+   - 调用栈中包含了全局执行上下文、foo 函数的执行上下文、bar 的执行上下文。
+   - 微任务队列中的微任务是 micro-foo、micro-bar。
+   - 消息队列中，宏任务的状态是 macro-foo、macro-bar。
+
+   此时的消息队列、主线程和调用栈的状态图如下所示：
+
+   ![微任务示例-第三步](./image/%E5%BE%AE%E4%BB%BB%E5%8A%A1%E7%A4%BA%E4%BE%8B-%E7%AC%AC%E4%B8%89%E6%AD%A5.webp)
+
+4. **bar 和 foo 函数执行结束并退出**
+
+   先是 bar 函数执行结束并退出，bar 函数的执行上下文从栈中弹出，紧接着 foo 函数执行结束并退出，foo 函数的执行上下文也随之从栈中被弹出。此时：
+
+   - 调用栈中包含了全局执行上下文
+   - 微任务队列中的微任务同样还是 micro-foo、micro-bar
+   - 消息队列中宏任务的状态同样还是 macro-foo、macro-bar
+
+   此时的消息队列、主线程和调用栈的状态图如下所示：
+
+   ![微任务示例-第四步](./image/%E5%BE%AE%E4%BB%BB%E5%8A%A1%E7%A4%BA%E4%BE%8B-%E7%AC%AC%E5%9B%9B%E6%AD%A5.webp)
+
+5. **执行全局环境中的代码**
+
+   主线程执行完了 foo 函数，紧接着就要执行全局环境中的 Promise.resolve 了，这会触发一个 micro-global 微任务，V8 会将该微任务添加进微任务队列。接着又执行 setTimeout 方法，该方法会触发了一个 macro-global 宏任务，V8 会将该宏任务添加进消息队列。此时：
+
+   - 调用栈中包含的是全局执行上下文
+   - 微任务队列中的微任务同样还是 micro-foo、micro-bar、micro-global
+   - 消息队列中宏任务的状态同样还是 macro-foo、macro-bar、macro-global
+
+   此时的消息队列、主线程和调用栈的状态图如下所示：
+
+   ![微任务示例-第五步](./image/%E5%BE%AE%E4%BB%BB%E5%8A%A1%E7%A4%BA%E4%BE%8B-%E7%AC%AC%E4%BA%94%E6%AD%A5.webp)
+
+6. **执行微任务队列**
+
+   等到这段代码即将执行完成时，V8 便要销毁这段代码的环境对象，此时环境对象的析构函数被调用（注意，这里的析构函数是 C++ 中的概念），这里就是 V8 执行微任务的一个检查点，这时候 V8 会检查微任务队列，如果微任务队列中存在微任务，那么 V8 会依次取出微任务，并按照顺行执行。因为微任务队列中的任务分别是：micro-foo、micro-bar、micro-global，所以执行的顺序也是如此。
+
+   此时的消息队列、主线程和调用栈的状态图如下所示：
+
+   ![微任务示例-第六步](./image/%E5%BE%AE%E4%BB%BB%E5%8A%A1%E7%A4%BA%E4%BE%8B-%E7%AC%AC%E5%85%AD%E6%AD%A5.webp)
+
+7. **重复执行宏任务**
+
+   等微任务队列中的所有微任务都执行完成之后，当前的宏任务也就执行结束了，接下来主线程会继续重复执行取出任务、执行任务的过程。由于正常情况下，取出宏任务的顺序是按照先进先出的顺序，所有最后打印出来的顺序是：macro-foo、macro-bar、macro-global。
+
+   等所有的任务执行完成之后，消息队列、主线程和调用栈的状态图如下所示：
+
+   ![微任务示例-第七步](./image/%E5%BE%AE%E4%BB%BB%E5%8A%A1%E7%A4%BA%E4%BE%8B-%E7%AC%AC%E4%B8%83%E6%AD%A5.webp)
+
+微任务和宏任务的执行时机是不同的，微任务是在当前的任务快要执行结束之前执行的，宏任务是消息队列中的任务，主线程执行完一个宏任务之后，便会接着从消息队列中取出下一个宏任务并执行。
+
+#### 4.2.3 在微任务中循环地触发新的微任务会导致页面卡死
+
+```js
+function foo() {
+  return Promise.resolve().then(foo);
+}
+foo();
+```
+
+当执行 foo 函数时，由于 foo 函数中调用了 Promise.resolve()，这会触发一个微任务，那么此时，V8 会将该微任务添加进微任务队列中，退出当前 foo 函数的执行。
+
+然后，V8 在准备退出当前的宏任务之前，会检查微任务队列，发现微任务队列中有一个微任务，于是先执行微任务。由于这个微任务就是调用 foo 函数本身，所以在执行微任务的过程中，需要继续调用 foo 函数，在执行 foo 函数的过程中，又会触发了同样的微任务。
+
+那么这个循环就会一直持续下去，当前的宏任务无法退出，也就意味着消息队列中其他的宏任务是无法被执行的，比如通过鼠标、键盘所产生的事件。这些事件会一直保存在消息队列中，页面无法响应这些事件，具体的体现就是页面的卡死。
+
+不过，由于 V8 每次执行微任务时，都会退出当前 foo 函数的调用栈，所以这段代码是不会造成栈溢出的。
+
+### 4.3 V8 实现 async/await
+
+JS 是基于单线程设计的，最终造成了 JS 中出现大量回调的场景。当 JS 中有大量的异步操作时，会降低代码的可读性, 其中最容易造成的就是回调地狱的问题。
+
+#### 4.3.1 回调地狱
+
+假设有个需求，要求从网络获取某个用户的用户名，获取用户名称的步骤是先通过一个 id_url 来获取用户 ID，然后再使用获取到的用户 ID 作为另外一个 name_url 的参数，以获取用户名。
+
+最容易想到的方案是使用 XMLHttpRequest，并按照前后顺序异步请求这两个 URL。
+
+```js
+// result_callback：下载结果的回调函数
+// url：需要获取URL的内容
+const id_url = 'https://raw.githubusercontent.com/binaryacademy/geektime-v8/master/id';
+const name_url = 'https://raw.githubusercontent.com/binaryacademy/geektime-v8/master/name';
+
+function GetUrlContent(result_callback, url) {
+  let request = new XMLHttpRequest();
+
+  request.open('GET', url);
+
+  request.responseType = 'text';
+
+  request.onload = function () {
+    result_callback(request.response);
+  };
+
+  request.send();
+}
+
+function IDCallback(id) {
+  console.log(id);
+
+  let new_name_url = name_url + '?id=' + id;
+
+  GetUrlContent(NameCallback, new_name_url);
+}
+
+function NameCallback(name) {
+  console.log(name);
+}
+
+GetUrlContent(IDCallback, id_url);
+```
+
+可以看到，每次请求网络内容，都需要设置一个回调函数，用来返回异步请求的结果，这些穿插在代码之间的回调函数打乱了代码原有的顺序，比如正常的代码顺序是先获取 ID，再获取用户名。但是由于使用了异步回调函数，获取用户名代码的位置，反而在获取用户 ID 的代码之上了，这就直接导致了代码逻辑的不连贯、不线性，非常不符合人的直觉。
+
+因此，异步回调模式影响编码方式，如果在代码中过多地使用异步回调函数，会将整个代码逻辑打乱，从而让代码变得难以理解，这也就是回调地狱问题。
+
+#### 4.3.2 使用 Promise 解决回调地狱中编码不线性的问题
+
+为了解决回调地狱问题，JS 做了大量探索，最开始引入了 Promise 来解决部分回调地狱的问题，比如最新的 fetch 就使用 Promise 的技术，可以使用它来改造上面这段代码：
+
+```js
+fetch(id_url)
+  .then(response => {
+    return response.text();
+  })
+
+  .then(response => {
+    let new_name_url = name_url + '?id=' + response;
+
+    return fetch(new_name_url);
+  })
+
+  .then(response => {
+    return response.text();
+  })
+
+  .then(response => {
+    console.log(response); //输出最终的结果
+  });
+```
+
+可以看到，改造后的代码是先获取用户 ID，等到返回了结果之后，再利用用户 ID 生成新的获取用户名称的 URL，然后再获取用户名，最终返回用户名。使用 Promise，就可以按照线性的思路来编写代码，非常符合人的直觉。所以说，**使用 Promise 可以解决回调地狱中编码不线性的问题**。
+
+#### 4.3.3 使用 Generator 函数实现更加线性化逻辑
+
+虽然使用 Promise 可以解决回调地狱中编码不线性的问题，但这种方式充满了 Promise 的 then() 方法，如果处理流程比较复杂的话，那么整段代码将充斥着大量的 then，异步逻辑之间依然被 then 方法打断了，因此这种方式的语义化不明显，代码不能很好地表示执行流程。
+
+那么能不能更进一步，像编写同步代码的方式来编写异步代码，比如：
+
+```js
+function getResult() {
+  let id = getUserID();
+  let name = getUserName(id);
+  return name;
+}
+```
+
+由于 getUserID() 和 getUserName() 都是异步请求，如果要实现这种线性的编码方式，那么一个可行的方案就是**执行到异步请求的时候，暂停当前函数，等异步请求返回了结果，再恢复该函数**。
+
+具体地讲，执行到 getUserID() 时暂停 GetResult 函数，然后浏览器在后台处理实际的请求过程，待 ID 数据返回时，再来恢复 GetResult 函数。接下来再执行 getUserName 来获取到用户名，由于 getUserName() 也是一个异步请求，所以在使用 getUserName() 的同时，依然需要暂停 GetResult 函数的执行，等到 getUserName() 返回了用户名数据，再恢复 GetResult 函数的执行，最终 getUserName() 函数返回了 name 信息。
+
+![使用编写同步代码的方式编写异步代码的可行思维模型](./image/%E4%BD%BF%E7%94%A8%E7%BC%96%E5%86%99%E5%90%8C%E6%AD%A5%E4%BB%A3%E7%A0%81%E7%9A%84%E6%96%B9%E5%BC%8F%E7%BC%96%E5%86%99%E5%BC%82%E6%AD%A5%E4%BB%A3%E7%A0%81%E7%9A%84%E5%8F%AF%E8%A1%8C%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B.webp)
+
+可以看出，这个模型的关键就是实现**函数暂停执行**和**函数恢复执行**，而生成器就是为了实现暂停函数和恢复函数而设计的。
+
+**生成器函数是一个带星号函数，配合 yield 就可以实现函数的暂停和恢复**，生成器的具体使用方式：
+
+```js
+function* getResult() {
+  yield 'getUserID';
+  yield 'getUserName';
+  return 'name';
+}
+
+let result = getResult();
+
+console.log(result.next().value);
+console.log(result.next().value);
+console.log(result.next().value);
+```
+
+执行上面这段代码，观察输出结果，会发现函数 getResult 并不是一次执行完的，而是全局代码和 getResult 函数交替执行。
+
+这就是**生成器函数的特性，在生成器内部，如果遇到 yield 关键字，那么 V8 将返回关键字后面的内容给外部，并暂停该生成器函数的执行**。生成器暂停执行后，外部的代码便开始执行，外部代码如果想要恢复生成器的执行，可以使用 result.next 方法。
+
+V8 使用**协程**实现了生成器函数的暂停执行和恢复执行。**协程是一种比线程更加轻量级的存在**。可以把协程看成是跑在线程上的任务，一个线程上可以存在多个协程，但是在线程上同时只能执行一个协程。比如，当前执行的是 A 协程，要启动 B 协程，那么 A 协程就需要将主线程的控制权交给 B 协程，这就体现在 A 协程暂停执行，B 协程恢复执行；同样，也可以从 B 协程中启动 A 协程。通常，如果从 A 协程启动 B 协程，就把 A 协程称为 B 协程的父协程。
+
+正如一个进程可以拥有多个线程一样，一个线程也可以拥有多个协程。每一时刻，该线程只能执行其中某一个协程。最重要的是，协程不是被操作系统内核所管理，而完全是由程序所控制（也就是在用户态执行）。这样带来的好处就是性能得到了很大的提升，不会像线程切换那样消耗资源。
+
+下面是上面那段代码的执行过程的 “协程执行流程图”，可以对照着代码来分析：
+
+![协程执行流程图](./image/%E5%8D%8F%E7%A8%8B%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.webp)
+
+因为生成器可以暂停函数的执行，所以，可以将所有异步调用的方式，写成同步调用的方式，比如使用生成器来实现上面的需求，代码如下所示：
+
+```js
+function* getResult() {
+  let id_res = yield fetch(id_url);
+  console.log(id_res);
+  let id_text = yield id_res.text();
+  console.log(id_text);
+
+  let new_name_url = name_url + '?id=' + id_text;
+  console.log(new_name_url);
+
+  let name_res = yield fetch(new_name_url);
+  console.log(name_res);
+  let name_text = yield name_res.text();
+  console.log(name_text);
+}
+
+let result = getResult();
+result
+  .next()
+  .value.then(response => {
+    return result.next(response).value;
+  })
+  .then(response => {
+    return result.next(response).value;
+  })
+  .then(response => {
+    return result.next(response).value;
+  })
+  .then(response => {
+    return result.next(response).value;
+  });
+```
+
+这样，可以将同步、异步逻辑全部写进生成器函数 getResult 的内部，然后，在外面依次使用一段代码来控制生成器的暂停和恢复执行。以上，就是协程和 Promise 相互配合执行的大致流程。
+
+通常，把执行生成器的代码封装成一个函数，这个函数驱动了 getResult 函数继续往下执行，把这个执行生成器代码的函数称为**执行器**（可参考著名的 co 框架），如下面这种方式：
+
+```js
+function* getResult() {
+  let id_res = yield fetch(id_url);
+  console.log(id_res);
+  let id_text = yield id_res.text();
+  console.log(id_text);
+
+  let new_name_url = name_url + '?id=' + id_text;
+  console.log(new_name_url);
+
+  let name_res = yield fetch(new_name_url);
+  console.log(name_res);
+  let name_text = yield name_res.text();
+  console.log(name_text);
+}
+co(getResult());
+```
+
+#### 4.3.4 async/await：异步编程的 “终极” 方案
+
+由于生成器函数可以暂停，因此可以在生成器内部编写完整的异步逻辑代码，不过生成器依然需要使用额外的 co 函数来驱动生成器函数的执行，这一点非常不友好。
+
+基于这个原因，**ES7 引入了 async/await，这是 JS 异步编程的一个重大改进，它改进了生成器的缺点，提供了在不阻塞主线程的情况下使用同步代码实现异步访问资源的能力**。可以参考下面这段使用 async/await 改造后的代码：
+
+```js
+async function getResult() {
+  try {
+    let id_res = await fetch(id_url);
+    let id_text = await id_res.text();
+    console.log(id_text);
+
+    let new_name_url = name_url + '?id=' + id_text;
+    console.log(new_name_url);
+
+    let name_res = await fetch(new_name_url);
+    let name_text = await name_res.text();
+    console.log(name_text);
+  } catch (err) {
+    console.error(err);
+  }
+}
+getResult();
+```
+
+整个异步处理的逻辑都是使用同步代码的方式来实现的，而且还支持 try/catch 来捕获异常，这就是完全在写同步代码，所以非常符合人的线性思维。
+
+虽然这种方式看起来像是同步代码，但是实际上它又是异步执行的，也就是说，在执行到 await fetch 的时候，整个函数会暂停等待 fetch 的执行结果，等到函数返回时，再恢复该函数，然后继续往下执行。
+
+其实 async/await 技术背后的秘密就是 Promise 和生成器应用，往底层说，就是微任务和协程应用。要搞清楚 async 和 await 的工作原理，就得对 async 和 await 分开分析。
+
+根据 MDN 定义，async 是一个通过**异步执行并隐式返回 Promise 作为结果**的函数。这里需要重点关注异步执行这个词，简单地理解，如果在 async 函数里面使用了 await，那么此时 async 函数就会暂停执行，并等待合适的时机来恢复执行，所以说 async 是一个异步执行的函数。
+
+暂停之后，什么时机恢复 async 函数的执行呢？要解释这个问题，先来看看，V8 是如何处理 await 后面的内容的。
+
+通常，await 可以等待两种类型的表达式：
+
+- 任何普通表达式
+- 一个 Promise 对象的表达式
+
+如果 await 等待的是一个 Promise 对象，它就会暂停执行生成器函数，直到 Promise 对象的状态变成 resolve，才会恢复执行，然后得到 resolve 的值，作为 await 表达式的运算结果。
+
+```js
+function NeverResolvePromise() {
+  return new Promise((resolve, reject) => {});
+}
+async function getResult() {
+  let a = await NeverResolvePromise();
+  console.log(a);
+}
+getResult();
+console.log(0);
+```
+
+这一段代码，使用 await 等待一个没有 resolve 的 Promise，那么这也就意味着，getResult 函数会一直等待下去。
+
+和生成器函数一样，使用了 async 声明的函数在执行时，也是一个单独的协程，可以使用 await 来暂停该协程，由于 await 等待的是一个 Promise 对象，可以 resolve 来恢复该协程。
+
+下面是协程视角的代码执行流程图，可以对照参考下：
+
+![协程视角的代码执行流程图](./image/%E5%8D%8F%E7%A8%8B%E8%A7%86%E8%A7%92%E7%9A%84%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.webp)
+
+如果 await 等待的对象已经变成了 resolve 状态，那么 V8 就会恢复该协程的执行。
+
+如果 await 等待的是一个非 Promise 对象，比如 await 100，那么 V8 会隐式地将 await 后面的 100 包装成一个已经 resolve 的对象，其效果等价于下面这段代码：
+
+```js
+function ResolvePromise() {
+  return new Promise((resolve, reject) => {
+    resolve(100);
+  });
+}
+async function getResult() {
+  // let a = await 100;
+  let a = await ResolvePromise();
+  console.log(a);
+}
+getResult();
+console.log(3);
+```
+
+### 4.4 垃圾数据的产生
