@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Ordinary polygon</title>
+  </head>
+  <body>
+    <canvas
+      width="500"
+      height="120"
+      style="border: 1px solid #ccc"
+    ></canvas>
+
+    <script>
+      /*
+       * 示例 15-5：使用 moveTo()、lineTo() 和 closePath() 绘制普通多边形
+       * 定义 n 边的普通多边形，以(x, y) 为中心，r 为半径
+       * 顶点沿圆形周长间隔相同的距离
+       *第一个顶点放在正上方，或者放在指定的角度上顺时针旋转，除非最后一个参数为 true
+       */
+      function polygon(c, n, x, y, r, angled = 0, counterclockwise = false) {
+        let angle = angled;
+        c.moveTo(
+          x + r * Math.sin(angle), // 从第一个顶点开始一条新子路径
+          y - r * Math.cos(angle)
+        ); // 使用三角函数计算位置
+        let delta = (2 * Math.PI) / n; // 顶点间的角度距离
+        for (let i = 1; i < n; i++) {
+          // 对剩下的每个顶点
+          angle += counterclockwise ? -delta : delta; // 调整角度
+          c.lineTo(
+            x + r * Math.sin(angle), // 添加到下一个顶点的线
+            y - r * Math.cos(angle)
+          );
+        }
+        c.closePath(); // 把最后一个顶点连接到第一个顶点
+      }
+
+      window.onload = () => {
+        // 假设只有一个画布，获得其上下文对象以便画图
+        let c = document.querySelector('canvas').getContext('2d');
+
+        // 开始一段新路径并添加多边形子路径
+        c.beginPath();
+        polygon(c, 3, 50, 70, 50); // 三角形
+        polygon(c, 4, 150, 60, 50, Math.PI / 4); // 正方形
+        polygon(c, 5, 255, 55, 50); // 五边形
+        polygon(c, 6, 365, 53, 50, Math.PI / 6); // 六边形
+        polygon(c, 4, 365, 53, 20, Math.PI / 4, true); // 六边形中再画一个小正方形
+
+        // 设置一些属性控制图形的外观
+        c.fillStyle = '#ccc'; // 内部浅灰色
+        c.strokeStyle = '#008'; // 轮廓深蓝色
+        c.lineWidth = 5; // 宽度 5 像素
+
+        // 现在通过以下调用来绘制所有多边形（每个都在自己的子路径中）
+        c.fill(); // 填充形状
+        c.stroke(); // 描画轮廓
+      };
+    </script>
+  </body>
+</html>

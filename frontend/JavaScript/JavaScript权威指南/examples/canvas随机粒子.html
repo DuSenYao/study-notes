@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>canvas 随机粒子</title>
+    <style>
+      body,
+      html {
+        margin: 0;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        background-color: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+
+    <script>
+      let ctx = document.getElementById('canvas');
+      let content = ctx.getContext('2d');
+      let round = [];
+      let WIDTH = document.documentElement.clientWidth;
+      let HEIGHT = document.documentElement.clientHeight;
+      let initRoundPopulation = 80;
+
+      ctx.width = WIDTH;
+      ctx.height = HEIGHT;
+
+      function Round_item(index, x, y) {
+        this.index = index;
+        this.x = x;
+        this.y = y;
+        this.r = Math.random() * 2 + 1;
+        let alpha = (Math.floor(Math.random() * 10) + 1) / 10 / 2;
+        this.color = `rgba(255,255,255,${alpha})`;
+      }
+
+      Round_item.prototype.draw = function () {
+        content.fillStyle = this.color;
+        content.shadowBlur = this.r * 2;
+        content.beginPath();
+        content.arc(this.x, this.y, this.r, 0, 2 * Math.PI, false);
+        content.closePath();
+        content.fill();
+      };
+
+      function animate() {
+        content.clearRect(0, 0, WIDTH, HEIGHT);
+
+        for (let i in round) {
+          round[i].move();
+        }
+        requestAnimationFrame(animate);
+      }
+
+      Round_item.prototype.move = function () {
+        this.y -= 0.15;
+        if (this.y <= -10) {
+          this.y = HEIGHT + 10;
+        }
+        this.draw();
+      };
+
+      function init() {
+        for (let i = 0; i < initRoundPopulation; i++) {
+          round[i] = new Round_item(i, Math.random() * WIDTH, Math.random() * HEIGHT);
+          round[i].draw();
+        }
+        animate();
+      }
+
+      init();
+    </script>
+  </body>
+</html>

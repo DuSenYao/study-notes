@@ -14,10 +14,10 @@
       - [1.2.2 Git 查看](#122-git-查看)
         - [1.2.2.1 git status](#1221-git-status)
         - [1.2.2.2 git diff](#1222-git-diff)
-        - [1.2.2.3 git log <-number> <分支名>](#1223-git-log-number-分支名)
+        - [1.2.2.3 git log](#1223-git-log)
         - [1.2.2.4 git reflog](#1224-git-reflog)
         - [1.2.2.5 git blame](#1225-git-blame)
-        - [1.2.2.6 git cat-file -[t|s|p] 哈希值](#1226-git-cat-file-tsp-哈希值)
+        - [1.2.2.6 git cat-file](#1226-git-cat-file)
         - [1.2.2.7 git config](#1227-git-config)
       - [1.2.3 文件操作](#123-文件操作)
         - [1.2.3.1 git add ./文件名/文件夹名](#1231-git-add-文件名文件夹名)
@@ -34,8 +34,8 @@
         - [1.2.5.2 git checkout [分支名]](#1252-git-checkout-分支名)
         - [1.2.5.3 git merge](#1253-git-merge)
       - [1.2.6 版本操作](#126-版本操作)
-        - [1.2.6.1 git commit -m "message"](#1261-git-commit-m-message)
-        - [1.2.6.2 git reset [--soft | --mixed | --hard] [HEAD] [-- file]](#1262-git-reset-soft-mixed-hard-head-file)
+        - [1.2.6.1 git commit](#1261-git-commit)
+        - [1.2.6.2 git reset](#1262-git-reset)
         - [1.2.6.3 git rebase](#1263-git-rebase)
       - [1.2.7 其他](#127-其他)
         - [1.2.7.1 gitk](#1271-gitk)
@@ -44,7 +44,7 @@
     - [1.3 基础知识](#13-基础知识)
       - [1.3.1 Git 基本工作流程](#131-git-基本工作流程)
       - [1.3.2 .git 文件夹下的文件](#132-git-文件夹下的文件)
-      - [1.3.3 git 中 commit、tree 和 blob 三个对象的关系](#133-git-中-commit-tree-和-blob-三个对象的关系)
+      - [1.3.3 git 中 commit tree 和 blob 三个对象的关系](#133-git-中-commit-tree-和-blob-三个对象的关系)
       - [1.3.4 git 的底层运行流程](#134-git-的底层运行流程)
       - [1.3.5 分离头指针情况下的注意事项](#135-分离头指针情况下的注意事项)
       - [1.3. 6 HEAD 与 branch](#13-6-head-与-branch)
@@ -53,7 +53,7 @@
       - [1.3.9 Git 解决的问题](#139-git-解决的问题)
       - [1.3.10 将 Git 的默认编辑器设置为 VSCode](#1310-将-git-的默认编辑器设置为-vscode)
     - [1.4 Git 集成使用禁忌](#14-git-集成使用禁忌)
-      - [1.4.1 git push -f](#141-git-push-f)
+      - [1.4.1 git push 的强制推送](#141-git-push-的强制推送)
       - [1.4.2 禁止向集成分支执行变更历史的操作](#142-禁止向集成分支执行变更历史的操作)
   - [二. GitHub](#二-github)
     - [2.1 GitHub 基础](#21-github-基础)
@@ -156,7 +156,7 @@ git diff 003e2f133adc5a53f21a72ca5b62eb08566121d1...e77f6c3cc85fd535c36df30813ed
 git diff temp master --Git.md
 ```
 
-##### 1.2.2.3 git log <-number> <分支名>
+##### 1.2.2.3 git log
 
 查看历史提交记录：
 
@@ -189,7 +189,7 @@ git log -2
 git blame hello.ts
 ```
 
-##### 1.2.2.6 git cat-file -[t|s|p] 哈希值
+##### 1.2.2.6 git cat-file
 
 查看 Git 对象的属性：
 
@@ -430,14 +430,15 @@ git merge dev
 
 #### 1.2.6 版本操作
 
-##### 1.2.6.1 git commit -m "message"
+##### 1.2.6.1 git commit
 
 主要是将暂存区里的改动给提交到本地的版本库，message 填写摘要
 
+- `-m 'message'`：命令行提交格式，message 不能为空
 - `-a`：跳过暂存区，从工作区直接提交到本地版本库
 - `--amend`：追加提交，在**不增加**一个新的 commit 的情况下，将新修改的代码追加到**前一次**的 commit 中
 
-##### 1.2.6.2 git reset [--soft | --mixed | --hard] [HEAD] [-- file]
+##### 1.2.6.2 git reset
 
 用于回退版本，可以指定暂存区退回某一次提交的版本
 
@@ -465,10 +466,10 @@ git merge dev
 
   ```sh
   # 回退上上上一个版本
-  git reset –hard HEAD~3
+  git reset -–hard HEAD~3
 
   # 回退到某个版本回退点之前的所有信息
-  git reset –hard bae128
+  git reset -–hard bae128
 
   # 将本地的状态回退到和远程的某个分支一样
   git reset --hard origin/master
@@ -573,7 +574,7 @@ C --> A: git merge FETCH_HEAD
 
 - `objects文件夹`：存放所有的**git 对象**，**对象哈希值前 `2` 位作为文件夹名称，后 `38` 位作为对象文件名**, 可通过 `git cat-file -p` 命令，拼接文件夹名称 + 文件名查看
 
-#### 1.3.3 git 中 commit、tree 和 blob 三个对象的关系
+#### 1.3.3 git 中 commit tree 和 blob 三个对象的关系
 
 `commit`是一个提交，它里面有一个`tree`对象**对应唯一的 tree**，这个 tree 里面又有包含了 **多个 tree 和 blob 对象** ，每个 tree 对象又包含了多个 tree 和 blob，文件的的最终形式是 **blob**。对于 blob，git 会认为文件内容相同时，就使用同一个 blob，这样就极大的避免了频繁提交时，git 的存储空间大幅上升。
 
@@ -646,9 +647,9 @@ git config --global core.editor "code -w"
 
 ### 1.4 Git 集成使用禁忌
 
-#### 1.4.1 git push -f
+#### 1.4.1 git push 的强制推送
 
-强制推送，即使不是 `fast-forward` [^1]
+强制推送 `-f`，即使不是 `fast-forward` [^1]
 [^1]: 当前分支合并到另一分支时，如果没有分歧，就会直接移动文件指针。这个过程叫做`fast-forward`。fast-forward 能够保证不会强制覆盖别人的代码，确保了多人协同开发。尽量不要使用 non fast forward 方法提交代码。
 
 **危害**

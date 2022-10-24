@@ -1476,7 +1476,7 @@ Emmet 是 Web 开发者必不可少的工具，为 HTML 和 CSS 提供了丰富�
 
 #### 6.3.2 在 HTML 中使用 Emmet
 
-在 HTML 文件中输入以下 [Emmet](/front_end/前端工具/Emmet.md) 缩写：`#page>div.log+ul#navigation>li\*5>a{Item $}`
+在 HTML 文件中输入以下 [Emmet](/frontend/前端工具/Emmet.md) 缩写：`#page>div.log+ul#navigation>li\*5>a{Item $}`
 
 在输入 Emmet 缩写的过程中，Emmet 缩写会出现在建议列表中，并且会有相应的 HTML 预览。按下 `Tab` 键或 `Enter` 键，VSCode 会在 HTML 文件中插入代码。
 

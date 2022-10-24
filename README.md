@@ -9,53 +9,60 @@
 - front-end
 
   - 浏览器
-    - [Chrome-DevTools](/front_end/浏览器/Chrome_DevTools/Chrome-DevTools.md)
-    - [浏览器工作原理与实践](/front_end/浏览器/浏览器工作原理与实践/浏览器工作原理与实践.md)
-    - [浏览器实现原理与 API](/front_end/浏览器/浏览器的实现原理与API/浏览器实现原理与API.md)
 
-  - [前端缓存](/front_end/前端缓存/前端缓存.md)
+    - [Chrome-DevTools](/frontend/浏览器/Chrome_DevTools/Chrome-DevTools.md)
+    - [浏览器工作原理与实践](/frontend/浏览器/浏览器工作原理与实践/浏览器工作原理与实践.md)
+    - [浏览器实现原理与 API](/frontend/浏览器/浏览器的实现原理与API/浏览器实现原理与API.md)
+
+  - [前端缓存](/frontend/前端缓存/前端缓存.md)
 
   - 前端安全
-    - [Web安全攻防实战](/front_end/前端安全/Web安全攻防实战.md)
 
-  - [前端综合应用](/front_end/前端工程实践/前端综合应用.md)
+    - [Web 安全攻防实战](/frontend/前端安全/Web安全攻防实战.md)
 
-  - [前端性能优化](/front_end/前端性能优化/前端性能优化.md)
+  - [前端综合应用](/frontend/前端工程实践/前端综合应用.md)
+
+  - [前端性能优化](/frontend/前端性能优化/前端性能优化.md)
 
   - 常用工具
-    - [Emmet](/front_end/常用工具/Emmet.md)
 
-  - [CSS](/front_end/CSS/CSS.md)
-    - [精通CSS-高级Web标准解决方案](/front_end/CSS/精通CSS/精通CSS-高级Web标准解决方案.md)
-    - [SCSS](/front_end/CSS/SCSS/Scss.md)
-    - [CSS选择器](/front_end/CSS/CSS选择器/CSS选择器.md)
+    - [Emmet](/frontend/常用工具/Emmet.md)
 
-  - [HTML](/front_end/HTML/HTML.md)
+  - [CSS](/frontend/CSS/CSS.md)
 
-  - [JavaScript](/front_end/JavaScript/JavaScript.md)
-    - [JavaScript 权威指南](/front_end/JavaScript/JavaScript权威指南/JavaScript权威指南.md)
-    - [JS 代码规范](/front_end/JavaScript/JS代码规范.md)
-    - [JS 开发优化技巧](/front_end/JavaScript/JS开发优化技巧.md)
-    - [JS 设计模式](/front_end/JavaScript/JS设计模式.md)
+    - [精通 CSS-高级 Web 标准解决方案](/frontend/CSS/精通CSS/精通CSS-高级Web标准解决方案.md)
+    - [SCSS](/frontend/CSS/SCSS/Scss.md)
+    - [CSS 选择器](/frontend/CSS/CSS选择器/CSS选择器.md)
 
-  - [TypeScript](/front_end/TypeScript/TypeScript.md)
+  - [HTML](/frontend/HTML/HTML.md)
+
+  - [JavaScript](/frontend/JavaScript/JavaScript.md)
+
+    - [JavaScript 权威指南](/frontend/JavaScript/JavaScript权威指南/JavaScript权威指南.md)
+    - [JS 代码规范](/frontend/JavaScript/JS代码规范.md)
+    - [JS 开发优化技巧](/frontend/JavaScript/JS开发优化技巧.md)
+    - [JS 设计模式](/frontend/JavaScript/JS设计模式.md)
+
+  - [TypeScript](/frontend/TypeScript/TypeScript.md)
 
   - Node.js
 
   - Vue
-    - [Vue2](/front_end/Vue/Vue2.md)
-    - [Vue3](/front_end/Vue/Vue3/Vue3.md)
-    - [Vue-CLI](/front_end/Vue/Vue-CLI.md)
-    - [Vue-loader](/front_end/Vue/Vue-loader.md)
-    - [Vue-router](/front_end/Vue/Vue-router.md)
-    - [Vuex](/front_end/Vue/Vuex.md)
-    - [Vue 风格指南](/front_end/Vue/Vue风格指南.md)
 
-  - [微信小程序](/front_end/微信小程序/微信小程序.md)
+    - [Vue2](/frontend/Vue/Vue2.md)
+    - [Vue3](/frontend/Vue/Vue3/Vue3.md)
+    - [Vue-CLI](/frontend/Vue/Vue-CLI.md)
+    - [Vue-loader](/frontend/Vue/Vue-loader.md)
+    - [Vue-router](/frontend/Vue/Vue-router.md)
+    - [Vuex](/frontend/Vue/Vuex.md)
+    - [Vue 风格指南](/frontend/Vue/Vue风格指南.md)
+
+  - [微信小程序](/frontend/微信小程序/微信小程序.md)
 
 - back-end
 
 - public-knowledge
+
   - [工作学习要点](/public_knowledge/工作与学习要点/工作学习要点.md)
 
   - [Git](/public_knowledge/Git/Git.md)
@@ -65,6 +72,7 @@
   - [RegRxp](/public_knowledge/regular_expression/正则表达式.md)
 
   - English
+
     - [English](/public_knowledge/English/English.md)
     - [VocabularyManual](/public_knowledge/English/VocabularyManual.md)
 
