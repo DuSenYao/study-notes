@@ -30,7 +30,7 @@
       "skipFiles": ["<node_internals>/**"],
       "program": "${file}"
     },
-    // 通过把processId属性设置为${command:PickProcess}，可以使调试器在启动时动态地显示Node.js进程列表
+    // 通过把 processId 属性设置为 ${command:PickProcess}，可以使调试器在启动时动态地显示 Node.js 进程列表
     {
       "name": "Attach to Process",
       "type": "node",
@@ -42,9 +42,9 @@
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost/mypage.html",
-      "webRoot": "${workspaceFolder}/wwwroot"
+      "webRoot": "${workspaceFolder}/root"
     },
-    // 将VSCode附加到Chrome浏览器，需要在远程调试模式下启动Chrome浏览器，在命令行输入命令来启动Chrom浏览器。
+    // 将 VSCode 附加到 Chrome 浏览器，需要在远程调试模式下启动 Chrome 浏览器，在命令行输入命令来启动 Chrome 浏览器
     {
       "name": "Attach to url with files served from ./out",
       "type": "chrome",
@@ -54,9 +54,9 @@
       "webRoot": "${workspaceFolder}/out"
     },
     {
-      "type": "chrome",
+      "name": "Launch Chrome",
       "request": "launch",
-      "name": "Launch Chrome Vue",
+      "type": "chrome",
       "url": "http://localhost:8080",
       "webRoot": "${workspaceFolder}"
     },

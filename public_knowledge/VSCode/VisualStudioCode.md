@@ -745,7 +745,9 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
 
   如果想要将 VSCode 附加到 Chrome 浏览器，需要在远程调试模式下启动 Chrome 浏览器，针对不同系统，在命令行输入不同的命令来启动 Chrome 浏览器。
 
-  - 在 Windows 下：`<path to chrome>/chrome.exe --remote-debugging-port-9222`
+  - 在 Windows 下：`<path to chrome>/chrome.exe --remote-debugging-port=9222`
+    也可以直接打开 Chrome 快捷方式的属性 -> 目标，在最后添加 空格 + `--remote-debugging-port=9222`
+
   - 在 macOS 下：`/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote--debugging-port=9222`
   - 在 Linux 下：`google-chrome --remote-debugging-port=9222`
 
@@ -757,8 +759,7 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
   > 例：[launch.json](/.vscode/launch.json) 中的 "Launch firefox Current File"
 
 - **SQL Server(mssql)**
-  支持连接到 Microsoft SQL Server，还支持连接到 Azure SQL Database 和 Azure Synapse Analytics。
-  插件主要包含以下几个功能:
+  支持连接到 Microsoft SQL Server，还支持连接到 Azure SQL Database 和 Azure Synapse Analytics。插件主要包含以下几个功能：
 
   - 创建和管理数据库连接，以及最近使用的数据库连接
   - T-SQL 的编辑支持，包括智能提示、代码片段、语法高亮、错误检测等
@@ -1097,8 +1098,8 @@ VSCode 的调试配置会被存储在 `.vscode` 文件夹下的 launch.json 文�
 | **args**                             | 传给 Node.js 应用程序的参数                                                                                              |
 | **cwd**                              | 指定调试器的工作目录。默认值是 `${workspaceFolder}`(在 VSCode 中打开的文件夹的完整路径)                                  |
 | **runtimeExecutable**                | Node.js 运行时的绝对路径。默认值为 node                                                                                  |
-| **runtimeArgs**                      | 传给 Node.js 运行时的参数。                                                                                              |
-| **runtimeVersion**                   | 定义 Node.js 运行时的版本                                                                                                |
+| **runtimeArgs**                      | 传给运行时的参数。                                                                                                       |
+| **runtimeVersion**                   | 定义运行时的版本                                                                                                         |
 | **env**                              | 设置环境变量                                                                                                             |
 | **envFile**                          | 设置.env 文件的路径                                                                                                      |
 | **console**                          | 设置程序输出在哪里。该属性的可选值如下:                                                                                  |
@@ -1108,6 +1109,7 @@ VSCode 的调试配置会被存储在 `.vscode` 文件夹下的 launch.json 文�
 | -                                    | -                                                                                                                        |
 | **outputCapture**                    | 如果设置为 std，那么 Node.js 进程的 stdout（标准输出）和 stderr（标准错误）就会显示在调试控制台中。                      |
 | **autoAttachChildProcesses**         | 是否自动附加被调试进程中的所有子进程。默认值为 false。                                                                   |
+| **userDataDir**                      | 指定用户数据目录，保存比如浏览记录、cookies、插件、书签、网站的数据等                                                    |
 | 只能被定义在 **attach** 的调试配置中 |
 | **processId**                        | 可以定义附加的进程 ID，如果被设置为 `${command:PickProcess}`，那么可以在调试器启动时显示的进程列表中选择需要调试的进程。 |
 
@@ -1560,21 +1562,26 @@ Vetur 插件为 Vue 开发提供了极为丰富的支持，功能包括但不限
          "type": "chrome",
          "request": "launch",
          "name": "vuejs: chrome",
-         "url": "http://localhost:8080",
+         "url": "http://localhost:7878",
          "webRoot": "${workspaceFolder}/src",
-         "breakOnLoad": true,
          "sourceMapPathOverrides": {
-           "webpack:///src/*": "${webRoot}/*",
-           "webpack:///./src/*.js": "${webRoot}/*.js"
+           // 对应浏览器 sources下 webpack:/// 的 .目录 和 src目录
+           "webpack://project_name/src/*": "${webRoot}/*",
+           "webpack://project_name/./src/*.js": "${webRoot}/*.js"
          }
        },
        {
-         "type": "firefox",
-         "request": "launch",
-         "name": "vuejs: firefox",
-         "url": "http://localhost:8080",
+         "name": "vuejs: attach chrome",
+         "type": "chrome",
+         "request": "attach",
+         "port": 9222,
          "webRoot": "${workspaceFolder}/src",
-         "pathMappings": [{ "url": "webpack:///src/", "path": "${webRoot}/" }]
+         "url": "http://localhost:7878",
+         "sourceMapPathOverrides": {
+           // 对应浏览器 sources下 webpack:/// 的 .目录 和 src目录
+           "webpack://gcls_sys_learn_web/src/*": "${webRoot}/*",
+           "webpack://gcls_sys_learn_web/./src/*.js": "${webRoot}/*.js"
+         }
        }
      ]
    }
@@ -1592,7 +1599,7 @@ Vetur 插件为 Vue 开发提供了极为丰富的支持，功能包括但不限
    };
    ```
 
-4. 使用 `npm run serve` 运行 Vue 应用
+4. 使用 `npm run dev` 运行 Vue 应用
 
 5. 启动调试
 
