@@ -262,7 +262,7 @@ VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过�
 
 #### 3.1.2 自定义代码片段
 
-左下角管理 -> 配置用户代码片段，或 命令面板的 `Preferences:Configure User Snippets`。代码片段的定义文件是 JSON 格式的，并且支持 C 语言风格的注释。
+左下角管理 -> 配置用户代码片段，或命令面板的 `Preferences:Configure User Snippets`。代码片段的定义文件是 JSON 格式的，并且支持 C 语言风格的注释。
 
 #### 3.1.3 创建
 
@@ -284,6 +284,8 @@ VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过�
 }
 ```
 
+也可以使用这个[网站](https://snippet-generator.app/)快捷生成。生成的代码需要做一些修改，`${workspaceFolder}` 这部分和 snippets 的语法有冲突，所以需要加上个 `\\` 来转义。
+
 #### 3.1.4 代码片段的生效范围
 
 1. **语言维度**：定义代码对于哪些语言生效，每一个代码片段都可以在一种、多种或所有语言的范围内生效。
@@ -293,7 +295,8 @@ VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过�
    - 多语言的代码片段被定义在以 `.code-snippets` 为结尾的 JSON 文件中，这个文件中有一个 `scope` 属性，它会包含一个或多个语言 ID，从而定义当前的代码片段对哪些语言生效，如果没有 `scope` 属性，当前的代码片段会对所有语言生效。
 
 2. **项目维度**：定义代码片段实在当前项目中生效还是在全局范围内生效
-   创建代码片段时的，**New Snippets file for '...'** 选项创建的是当前项目的代码片段，当前项目的代码片段的定义文件位于 **.vscode** 文件夹下的 **.code-snippets** 结尾的 JSON 文件中。对于多人协同开发的项目，当前项目维度的代码片段会十分有用。
+
+   创建代码片段时的，`New Snippets file for '...'` 选项创建的是当前项目的代码片段，当前项目的代码片段的定义文件位于 `.vscode` 文件夹下的 `.code-snippets` 结尾的 JSON 文件中。对于多人协同开发的项目，当前项目维度的代码片段会十分有用。
 
 #### 3.1.5 代码片段的语法
 
@@ -306,42 +309,53 @@ VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过�
 **选择**
 : 占位符可以把多个值作为文本内容。多个值以逗号分隔，并且用管道字符包围，如: `${1|noe,two,three|}`。当代码片段被插入后，跳转到对应的占位符时，会出现下拉列表，以便选择对应的文本。
 
-**变量**（variable）
+**[变量](https://code.visualstudio.com/docs/editor/userdefinedsnippets#_variables)**（variable）
 : 通过 `$variable` 或 `${variable:default}` 可以插入变量的值。当变量为空时，会插入默认值或空字符串。
 
-可以使用的变量，如下所示：
+- 可以使用的变量，如下所示：
 
-- `TM_SELECTED_TEXT`：当前被选中的文本
-- `TM_CURRENT_LINE`：当前光标所在行的文本
-- `TM_CURRENT_WORD`：当前光标所在的单词
-- `TM_LINE_INDEX`：从 0 开始计数的行号
-- `TM_LINE_NUMBER`：从 1 开始计数的行号
-- `TM_FILENAME`：当前文件的文件名
-- `TM_FILENAME_BASE`：当前文件的文件名（不包含扩展名）
-- `TM_DIRECTORY`：当前文件的目录名
-- `CLIPBOARD`：当前粘贴板的文本内容
-- `WORKSPACE_NAME`：当前工作区的目录名
+  - `TM_SELECTED_TEXT`：当前被选中的文本
+  - `TM_CURRENT_LINE`：当前光标所在行的文本
+  - `TM_CURRENT_WORD`：当前光标所在的单词
+  - `TM_LINE_INDEX`：从 0 开始计数的行号
+  - `TM_LINE_NUMBER`：从 1 开始计数的行号
+  - `TM_FILENAME`：当前文件的文件名
+  - `TM_FILENAME_BASE`：当前文件的文件名（不包含扩展名）
+  - `TM_DIRECTORY`：当前文件的目录名
+  - `TM_FILEPATH`：当前文档的完整文件路径
+  - `RELATIVE_FILEPATH`：当前文档的相对（相对于打开的工作区或文件夹）文件路径
+  - `CLIPBOARD`：当前粘贴板的文本内容
+  - `WORKSPACE_NAME`：当前工作区的目录名
+  - `WORKSPACE_FOLDER`：打开的工作区或文件夹的路径
+  - `CURSOR_INDEX`：基于零索引的光标编号
+  - `CURSOR_NUMBER`：基于一个索引的光标编号
 
-下面的变量可以用来插入**日期**和**时间**：
+- 下面的变量可以用来插入**日期**和**时间**：
 
-- `CURRENT_YEAR`：当前的年份
-- `CURRENT_YEAR_SHORT`：当前年份的后两位数字
-- `CURRENT_MONTH`：当前月份的两位数字（如‘02’）
-- `CURRENT_MONTH_NAME`：当前月份的全称（如‘July’）
-- `CURRENT_MONTH_NAME_SHORT`：当前月份的简称（如‘Jul’）
-- `CURRENT_DATE`：当前月份的今天（如‘25’）
-- `CURRENT_DAY_NAME`：当前是星期几（如‘Monday’）
-- `CURRENT_DAY_NAME_SHORT`：当前是星期几（简称，如‘Mon’）
-- `CURRENT_HOUR`：当前的小时数（24 小时制）
-- `CURRENT_MINUTE`：当前的分钟数
-- `CURRENT_SECOND`：当前的秒数
-- `CURRENT_SECONDS_UNIX`：UNIX 时间(从 UTC1970 年 1 月 1 日 0:0:0 开始到现在的总秒数)
+  - `CURRENT_YEAR`：当前的年份
+  - `CURRENT_YEAR_SHORT`：当前年份的后两位数字
+  - `CURRENT_MONTH`：当前月份的两位数字（如‘02’）
+  - `CURRENT_MONTH_NAME`：当前月份的全称（如‘July’）
+  - `CURRENT_MONTH_NAME_SHORT`：当前月份的简称（如‘Jul’）
+  - `CURRENT_DATE`：当前月份的今天（如‘25’）
+  - `CURRENT_DAY_NAME`：当前是星期几（如‘Monday’）
+  - `CURRENT_DAY_NAME_SHORT`：当前是星期几（简称，如‘Mon’）
+  - `CURRENT_HOUR`：当前的小时数（24 小时制）
+  - `CURRENT_MINUTE`：当前的分钟数
+  - `CURRENT_SECOND`：当前的秒数
+  - `CURRENT_SECONDS_UNIX`：UNIX 时间(从 UTC1970 年 1 月 1 日 0:0:0 开始到现在的总秒数)
 
-下面的变量可以用来插入注释，并且会根据不同的语言插入相应的注释：
+- 要插入随机值：
 
-- `BLOCK_COMMENT_START`：块注释的开始字符。比如，HTML 是 `<!--`
-- `BLOCK_COMMENT_END`：块注释的结束符。比如，HTML 是 `-->`
-- `LINE_COMMENT`：行注释，比如，HTML 是 `<!-- -->`
+  - `RANDOM`：6 个随机十进制数字
+  - `RANDOM_HEX`：6 个随机十六进制数字
+  - `UUID`：版本 4 UUID
+
+- 下面的变量可以用来插入注释，并且会根据不同的语言插入相应的注释：
+
+  - `BLOCK_COMMENT_START`：块注释的开始字符。比如，HTML 是 `<!--`
+  - `BLOCK_COMMENT_END`：块注释的结束符。比如，HTML 是 `-->`
+  - `LINE_COMMENT`：行注释，比如，HTML 是 `<!-- -->`
 
 #### 3.1.6 定义代码片段快捷键
 

@@ -1724,8 +1724,8 @@ object 类型仅能够赋值给以下三种类型：
 
 ```ts
 interface ObjectConstructor {
-create(o: object | null, ... ): any;
-// 省略了其他成员
+  create(o: object | null, ... ): any;
+  // 省略了其他成员
 }
 ```
 

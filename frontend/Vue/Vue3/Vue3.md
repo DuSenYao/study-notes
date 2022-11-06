@@ -11,9 +11,8 @@
     - [1.3 Vue2 升级到 Vue3](#13-vue2-升级到-vue3)
   - [二. Vue3 基础](#二-vue3-基础)
     - [2.1 项目启动](#21-项目启动)
-    - [2.2 新的代码组织方式：Composition API + script setup](#22-新的代码组织方式composition-api-script-setup)
-    - [2.3 巧妙的响应式](#23-巧妙的响应式)
-      - [2.3.1 响应式原理](#231-响应式原理)
+    - [2.2 巧妙的响应式](#22-巧妙的响应式)
+      - [2.2.1 响应式原理](#221-响应式原理)
   - [三. 实际应用](#三-实际应用)
     - [3.1 路由](#31-路由)
       - [3.1.1 前后端开发模式的演变](#311-前后端开发模式的演变)
@@ -175,9 +174,9 @@
 
    Vue 3 还内置了 Fragment、Teleport 和 Suspense 三个新组件：
 
-   - Fragment：Vue 3 组件不再要求有一个唯一的根节点，清除了很多无用的占位 div。
-   - Teleport：允许组件渲染在别的元素内，主要开发弹窗组件的时候特别有用。
-   - Suspense：异步组件，更方便开发有异步请求的组件。
+   - **Fragment**：Vue 3 组件不再要求有一个唯一的根节点，清除了很多无用的占位 div。
+   - **Teleport**：允许组件渲染在别的元素内，主要开发弹窗组件的时候特别有用。
+   - **Suspense**：异步组件，更方便开发有异步请求的组件。
 
 7. **新一代工程化工具 vite**
 
@@ -342,17 +341,13 @@ Vue3 推荐使用 [Vite](https://vitejs.bootcss.com/guide/) 创建项目，因�
 
 ![Vue3项目通用架构](./image/Vue3项目通用架构.webp)
 
-### 2.2 新的代码组织方式：Composition API + script setup
-
-Composition API 可以更好地组织代码结构，而 `<script setup>` 本质上是以一种更精简的方式来书写 Composition API。具体看 [vue3-demo](https://github.com/DuSenYao/vue3-demo)。
-
-### 2.3 巧妙的响应式
+### 2.2 巧妙的响应式
 
 响应式一直都是 Vue 的特色功能之一。与之相比，JS 里面的变量，是没有响应式这个概念的。但使用 JS 的某种机制，把 count 包裹一层，每当对 count 进行修改时，就去同步更新 double 的值，那么就有一种 double 自动跟着 count 的变化而变化的感觉，这就算是响应式的雏形了。
 
 ![响应式雏形](./image/响应式雏形.webp)
 
-#### 2.3.1 响应式原理
+#### 2.2.1 响应式原理
 
 Vue 中用过三种响应式解决方案，分别是 defineProperty、Proxy 和 value setter。首先来看 Vue 2 的 [defineProperty API](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)。
 
@@ -698,10 +693,7 @@ count.value.split(''); // => Property 'split' does not exist on type 'number'
 也可以显式地去规定 ref、reactive 和 computed 输入的属性，下面代码中分别演示了 ref、reactive 和 computed 限制类型的写法，每个函数都可以使用默认的参数推导，也可以显式地通过泛型去限制。
 
 ```vue
-<script
-  setup
-  lang="ts"
->
+<script setup lang="ts">
 import { computed, reactive, ref } from '@vue/runtime-core';
 
 interface Geek {
