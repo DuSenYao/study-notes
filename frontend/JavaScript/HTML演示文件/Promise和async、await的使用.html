@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <!--rel 属性规定了当前文档与被链接文档/资源之间的关系 stylesheet 指向要导入的样式表的URL-->
-<link rel="stylesheet" href="css/base.css">
+<link
+  rel="stylesheet"
+  href="css/base.css"
+/>
 
 <!--Promise是JS语言提供的一种标准化的异步管理方式-->
 <div class="main">
   <!--使用then方法回调-->
-  <button onclick="sleep(1000).then( () => console.log('finished') )" >Promise的基本用法</button>
+  <button onclick="sleep(1000).then( () => console.log('finished') )">Promise的基本用法</button>
   <button onclick="promiseExecutionOrder()">promise的执行顺序</button>
   <button onclick="blendPromise()">微任务与宏任务的执行顺序</button>
   <button onclick="pricedePromise()">微任务始终先于宏任务执行</button>
@@ -14,140 +17,136 @@
   <button onclick="showName2()">async函数的嵌套</button>
 </div>
 
-<div id="traffic-lights" style="margin:0 auto;background-color:aqua;width: 50px;height: 50px;border-radius: 50%;border: 1px solid #ccc;" onclick="trafficLights()"></div>
+<div
+  id="traffic-lights"
+  style="margin: 0 auto; background-color: aqua; width: 50px; height: 50px; border-radius: 50%; border: 1px solid #ccc"
+  onclick="trafficLights()"
+></div>
 <script>
   // 宿主发起的任务称为宏观任务， JS引擎发起的任务称为微观任务
-  function sleep(duration)
-  {
-    return new Promise(function(resolve, reject) {
+  function sleep(duration) {
+    return new Promise(function (resolve, reject) {
       setTimeout(resolve, duration);
-    })
+    });
   }
 
   // promise 的执行顺序
-  function promiseExecutionOrder()
-  {
-    var r = new Promise(function(resolve, reject) {
-      console.log("a");
-      try
-      {
+  function promiseExecutionOrder() {
+    let r = new Promise(function (resolve, reject) {
+      console.log('a');
+      try {
         // resolve的作用：将Promise对象的状态由“未完成”变为“成功”（即从pending变为fulfilled），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去
-        resolve("b");
-      }
-      catch(err)
-      {
+        resolve('b');
+      } catch (err) {
         // reject的作用：将Promise对象的状态从“未完成”变为“失败”（即从pending变为rejected），在异步操作失败时调用，将异步操作报的错误，作为参数传递出去
         reject(err);
       }
     });
     // 在进入 console.log("c")之前，r 已经得到了 resolve，但是 Promise 的 resolve 始终是异步操作，所以b是在c的后面，Promise永远在队列尾部添加微观任务
     r.then(
-      res => { console.log(res) },  // 处理成功
-      err => {console.log(err)}     // 处理失败
+      res => {
+        console.log(res);
+      }, // 处理成功
+      err => {
+        console.log(err);
+      } // 处理失败
     );
-    console.log("c");
+    console.log('c');
     // a c b 执行顺序
   }
 
-  function blendPromise()
-  {
-    var r = new Promise(function(resolve, reject){
-      console.log("a");
+  function blendPromise() {
+    let r = new Promise(function (resolve, reject) {
+      console.log('a');
       resolve();
     });
     // 不论代码执行顺序如何，d一定在b之后，因为Promise产生的是JS引擎内部的微任务，而setTimeout是浏览器API，它产生宏任务，微任务始终先于宏任务执行
-    setTimeout(() => console.log("d") , 0);
-    r.then( () => { console.log("b") });
-    console.log("c");
+    setTimeout(() => console.log('d'), 0);
+    r.then(() => {
+      console.log('b');
+    });
+    console.log('c');
     // a c b d 执行顺序
   }
 
-  function pricedePromise()
-  {
-    setTimeout( () => { console.log("d")}, 0);
-    var r = new Promise(function(resolve, reject) {
+  function pricedePromise() {
+    setTimeout(() => {
+      console.log('d');
+    }, 0);
+    let r = new Promise(function (resolve, reject) {
       resolve();
     });
     r.then(() => {
       // 强制1秒的执行耗时
-      var begin = Date.now();
+      let begin = Date.now();
       while (Date.now() - begin < 1000);
-      console.log("c1");
-      new Promise(function(resolve, reject) {
+      console.log('c1');
+      new Promise(function (resolve, reject) {
         resolve();
-      }).then(() => console.log("c2") );
+      }).then(() => console.log('c2'));
     });
     // c1 c2 d 执行顺序
   }
 
-
   // 使用 Promise 把 setTimeout 封装成可以异步的函数
-  function encapsulationSetTimeout(duration)
-  {
-    return new Promise(function(resolve, reject){
+  function encapsulationSetTimeout(duration) {
+    return new Promise(function (resolve, reject) {
       // console.log("b");
       // setTimeout 把整个代码分成了两个宏观任务
       setTimeout(resolve, duration);
-    })
+    });
   }
-  function encapsulation()
-  {
-    console.log("a");
-    encapsulationSetTimeout(5000).then( () => { console.log("c") } );
-    //a b c 执行顺序
+  function encapsulation() {
+    console.log('a');
+    encapsulationSetTimeout(5000).then(() => {
+      console.log('c');
+    });
+    // a b c 执行顺序
   }
 
   // async 函数必定返回 Promise
-  async function foo()
-  {
-    console.log("a");
+  async function foo() {
+    console.log('a');
     // 使用await来等待一个Promise
     await encapsulationSetTimeout(2000);
-    console.log("c")
+    console.log('c');
     // a b c  执行顺序
   }
 
   // async函数的嵌套
-  async function showName(name)
-  {
+  async function showName(name) {
     await encapsulationSetTimeout(2000);
     console.log(name);
   }
 
-  async function showName2()
-  {
-    await showName("Tom");
-    await showName("Bob");
+  async function showName2() {
+    await showName('Tom');
+    await showName('Bob');
     // Tom Bob
   }
 
   // 红绿灯 红灯3秒 黄灯两秒 绿灯一秒
-  async function trafficLights()
-  {
+  async function trafficLights() {
     // 条件为true，while循环一直执行代码块
-    while(true)
-    {
-      await changeColor(3000, "red");
-      await changeColor(2000, "yellow");
-      await changeColor(1000, "green");
+    while (true) {
+      await changeColor(3000, 'red');
+      await changeColor(2000, 'yellow');
+      await changeColor(1000, 'green');
     }
   }
 
   // async函数必定返回 Promise
-  async function changeColor(duration, color)
-  {
+  async function changeColor(duration, color) {
     // 设置div颜色
-    document.getElementById("traffic-lights").style.background = color;
+    document.getElementById('traffic-lights').style.background = color;
     // await 等待一个 Promise 返回，没有则一直中止
     await wait(duration);
   }
 
   // 所有返回 Promise 的函数都可以认为是异步函数
-  function wait(duration)
-  {
-    return new Promise(function(resolve, reject){
+  function wait(duration) {
+    return new Promise(function (resolve, reject) {
       setTimeout(resolve, duration);
     });
   }
-
 </script>

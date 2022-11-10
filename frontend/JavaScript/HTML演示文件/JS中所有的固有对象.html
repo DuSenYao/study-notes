@@ -1,45 +1,88 @@
 <!DOCTYPE html>
-<link rel="stylesheet" href="css/base.css">
+<link
+  rel="stylesheet"
+  href="css/base.css"
+/>
 
 <button onclick="JSIntrinsicObject()">JS所有的固有对象</button>
 
 <script>
-  function JSIntrinsicObject()
-  {
-    var set = new Set();
-    var objects = [ eval, isFinite, isNaN, parseFloat, parseInt, decodeURI, decodeURIComponent, encodeURI, encodeURIComponent, Array, Date, RegExp, Promise, Proxy, Map, WeakMap, Set, WeakSet, Function, Boolean, String, Number, Symbol, Object, Error, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError, ArrayBuffer, SharedArrayBuffer, DataView, Float32Array, Float64Array, Int8Array, Int16Array, Int32Array, Uint8Array, Uint16Array, Uint32Array, Uint8ClampedArray, Atomics, JSON, Math, Reflect ];
+  function JSIntrinsicObject() {
+    let set = new Set();
+    let objects = [
+      eval,
+      isFinite,
+      isNaN,
+      parseFloat,
+      parseInt,
+      decodeURI,
+      decodeURIComponent,
+      encodeURI,
+      encodeURIComponent,
+      Array,
+      Date,
+      RegExp,
+      Promise,
+      Proxy,
+      Map,
+      WeakMap,
+      Set,
+      WeakSet,
+      Function,
+      Boolean,
+      String,
+      Number,
+      Symbol,
+      Object,
+      Error,
+      EvalError,
+      RangeError,
+      ReferenceError,
+      SyntaxError,
+      TypeError,
+      URIError,
+      ArrayBuffer,
+      SharedArrayBuffer,
+      DataView,
+      Float32Array,
+      Float64Array,
+      Int8Array,
+      Int16Array,
+      Int32Array,
+      Uint8Array,
+      Uint16Array,
+      Uint32Array,
+      Uint8ClampedArray,
+      Atomics,
+      JSON,
+      Math,
+      Reflect
+    ];
 
-    objects.forEach(o => set.add()); // forEach() 方法用于调用数组的每个元素，并将元素传递给回调函数。
+    objects.forEach(() => set.add()); // forEach() 方法用于调用数组的每个元素，并将元素传递给回调函数。
 
-    for(var i = 0; i < objects.length; i++) 
-    {
-      var o = objects[i];
-      for(var p of Object.getOwnPropertyNames(o))
-      { 
-        var d = Object.getOwnPropertyDescriptor(o, p)
-        if( (d.value !== null && typeof d.value === "object") || (typeof d.value === "function")) 
-        {
-          if(!set.has(d.value))
-          { 
-            set.add(d.value), objects.push(d.value); 
+    for (let i = 0; i < objects.length; i++) {
+      let o = objects[i];
+      for (let p of Object.getOwnPropertyNames(o)) {
+        let d = Object.getOwnPropertyDescriptor(o, p);
+        if ((d.value !== null && typeof d.value === 'object') || typeof d.value === 'function') {
+          if (!set.has(d.value)) {
+            set.add(d.value), objects.push(d.value);
           }
         }
-        if( d.get ) 
-        {
-          if(!set.has(d.get))
-          {
-            set.add(d.get), objects.push(d.get); 
+        if (d.get) {
+          if (!set.has(d.get)) {
+            set.add(d.get), objects.push(d.get);
           }
         }
-        if( d.set )
-        {
-          if(!set.has(d.set))
-          {
-            set.add(d.set), objects.push(d.set); 
+        if (d.set) {
+          if (!set.has(d.set)) {
+            set.add(d.set);
+            objects.push(d.set);
           }
         }
       }
     }
-    //console.log(set.forEach(o => { console.log(o); } ));
+    // console.log(set.forEach(o => { console.log(o); } ));
   }
 </script>

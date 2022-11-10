@@ -1,39 +1,36 @@
 <!DOCTYPE html>
-<link rel="stylesheet" href="css/base.css">
+<link
+  rel="stylesheet"
+  href="css/base.css"
+/>
 
 <button onclick="symbol()">测试Symbol.iterator迭代器</button>
 <button onclick="symbol2()">向o对象传参</button>
 
 <script>
   // Symbol.iterator 为每一个对象定义了默认的迭代器。该迭代器可以被 for...of 循环使用。当需要对一个对象进行迭代时（比如开始用于一个for..of循环中），它的Symbol.iterator方法都会在不传参的情况下被调用，返回的迭代器用于获取要迭代的值。
-  var o = new Object;
+  let o = new Object();
   // 为o对象添加一个Symbol.iterator属性，Symbol.iterator是一个默认迭代器，在o对象不传参的情况下调用
-  o[Symbol.iterator] = function ()
-  {
-    var v = 0;
+  o[Symbol.iterator] = function () {
+    let v = 0;
     return {
-      next: function()
-      {
+      next() {
         // done 代表 v > 10 时完成了这个迭代器
-        return { value: v++, done: v > 10}
+        return { value: v++, done: v > 10 };
       }
-    }
-  }
+    };
+  };
 
-  function symbol()
-  {
-    for(var v of o)
-    {
+  function symbol() {
+    for (let v of o) {
       console.log(v);
     }
   }
 
-  function symbol2()
-  {
+  function symbol2() {
     // 在重新定义o对象后，原来的Symbol.iterator属性会失效
     o = [1, 2, 3];
-    for(var v of o)
-    {
+    for (let v of o) {
       console.log(v);
     }
   }

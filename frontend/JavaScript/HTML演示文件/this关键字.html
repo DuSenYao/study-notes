@@ -1,164 +1,147 @@
 <!DOCTYPE html>
-<link rel="stylesheet" href="css/base.css" >
+<link
+  rel="stylesheet"
+  href="css/base.css"
+/>
 
 <div class="main">
-    <button onclick="showThis()">普通函数中的this</button>
-    <button onclick="sThis()">不同的引用打印this</button>
-    <button onclick="arrowThis()">箭头函数打印this</button>
-    <button onclick="showClassThis()">class类打印this</button>
-    <button onclick="cutThis()">切换上下文</button>
-    <button onclick="strictThis()">严格模式</button>
-    <button onclick="nestingThis()">嵌套箭头函数中的this</button>
-    <button onclick="callThis()">操作this的内置函数 call</button>
-    <button onclick="applyThis()">操作this的内置函数 apply</button>
-    <button onclick="bindDemo()">操作this的内置函数 bind</button>
+  <button onclick="showThis()">普通函数中的this</button>
+  <button onclick="sThis()">不同的引用打印this</button>
+  <button onclick="arrowThis()">箭头函数打印this</button>
+  <button onclick="showClassThis()">class类打印this</button>
+  <button onclick="cutThis()">切换上下文</button>
+  <button onclick="strictThis()">严格模式</button>
+  <button onclick="nestingThis()">嵌套箭头函数中的this</button>
+  <button onclick="callThis()">操作this的内置函数 call</button>
+  <button onclick="applyThis()">操作this的内置函数 apply</button>
+  <button onclick="bindDemo()">操作this的内置函数 bind</button>
 </div>
 
 <script>
-  function showThis()
-  {
-    console.log(this); // Window 一般指向全局对象
+  function showThis() {
+    console.log(this); // 一般指向全局对象
   }
 
   // 使用两个引用调用同一个函数，得到了不同的 this 值
   // 普通函数的this值由“调用它所使用的引用”决定，原因在于：获取函数的表达式时，它实际上返回的不是函数本身，而是一个Reference类型。
-  function sThis()
-  {
-      var o = {
-          "showThis" : showThis
-      }
-      showThis(); // 在浏览器中为 Window
-      // Reference 类型由两部分组成：一个对象和一个属性值。o.showThis 产生的 Reference 类型，即由对象 o 和属性值“showThis”构成。
-      // Reference 类型中的对象被当作 this 值，传入了执行函数时的上下文当中。
-      o.showThis(); // o
+  function sThis() {
+    let o = {
+      showThis
+    };
+    showThis(); // 在浏览器中为 Window
+    // Reference 类型由两部分组成：一个对象和一个属性值。o.showThis 产生的 Reference 类型，即由对象 o 和属性值“showThis”构成。
+    // Reference 类型中的对象被当作 this 值，传入了执行函数时的上下文当中。
+    o.showThis(); // o
   }
 
-  function arrowThis()
-  {
+  function arrowThis() {
     const showThis = () => {
       console.log(this);
-    }
+    };
 
-    var o = {
-      "showThis" : showThis
-    }
+    let o = {
+      showThis
+    };
     // 箭头函数，不论用什么引用来调用它，都不影响它的 this 值，它会继承外层函数调用的 this 绑定(无论 this 绑定到什么)
-    showThis();    // Window
-    o.showThis();  // Window
+    showThis(); // Window
+    o.showThis(); // Window
   }
 
-  function showClassThis()
-  {
+  function showClassThis() {
     // class 默认为严格模式
-    class C{
+    class C {
       showThis() {
         console.log(this);
       }
     }
-    var o = new C();
-    var showThis = o.showThis;
+    let o = new C();
+    let showThis = o.showThis;
     // 在严格模式下，this 严格按照调用时传入的值，可能为null或undefined
-    showThis();   // undefined
+    showThis(); // undefined
     o.showThis(); // o
   }
 
   // 切换上下文
-  function cutThis()
-  {
-    var b = 2;
-    function foo()
-    {
+  function cutThis() {
+    let b = 2;
+    function foo() {
       // foo能访问b（定义时语法环境）
       console.log(b); // 2
       // 不能访问执行时语法环境，这就是执行上下文的切换机制
       console.log(a); // error
     }
 
-    void function()
-    {
-      var a = 1;
+    void (function () {
+      let a = 1;
       foo();
-    }();
+    })();
   }
 
   // 在严格模式下，class类和普通函数的 this 是一样的
-  function strictThis()
-  {
-    "use strict"
-    function showThis()
-    {
+  function strictThis() {
+    function showThis() {
       console.log(this);
     }
-    var o = { "showThis" : showThis };
+    let o = { showThis };
 
-    showThis();    // undefined
-    o.showThis();  // o
+    showThis(); // undefined
+    o.showThis(); // o
   }
 
   // 嵌套的箭头函数中的代码都指向外层this
-  function nestingThis()
-  {
-    var o = {};
-    o.foo = function foo()
-    {
+  function nestingThis() {
+    let o = {};
+    o.foo = function foo() {
       console.log(this);
       return () => {
         console.log(this);
         return () => console.log(this);
-      }
-    }
+      };
+    };
     // 调用三个函数，获得的 this 值都是o
     o.foo()()(); // o o o
   }
 
-//---------------------------------------- 操作 this 的内置函数 ------------------------------------------------------------
-function callThis()
-{
-  function foo(a, b, c)
-  {
-    console.log(this);    // {}
-    console.log(a, b, c); // 1 2 3
-  }
-
-  foo.call({}, 1, 2, 3);
-}
-
-function applyThis()
-{
-  function foo(a, b, c)
-  {
-    console.log(this);    // {}
-    console.log(a, b, c); // 4 5 6
-  }
-
-  foo.apply({}, [4, 5, 6]);
-}
-
-function bindThis()
-{
-  function foo(a, b, c)
-  {
-    console.log(this);    // {}
-    console.log(a, b, c); // 1 2 3
-  }
-  // bind() 方法创建一个新的函数，在 bind() 被调用时，这个新函数的 this 被指定为 bind() 的第一个参数，而其余参数将作为新函数的参数，供调用时使用
-  foo.bind({}, 1, 2, 3)();
-}
-
-function bindDemo()
-{
-  const module = {
-    x : 36,
-    getX : function ()
-    {
-      return this.x;
+  // ---------------------------------------- 操作 this 的内置函数 ------------------------------------------------------------
+  function callThis() {
+    function foo(a, b, c) {
+      console.log(this); // {}
+      console.log(a, b, c); // 1 2 3
     }
-  }
-  const unboundGetX = module.getX;
-  console.log(unboundGetX());  // undefined this指向了全局对象
 
-  // bind()创建一个新的绑定函数，module被指定为新函数的 this
-  const boundGetX = unboundGetX.bind(module);
-  console.log(boundGetX());    // 36
-}
+    foo.call({}, 1, 2, 3);
+  }
+
+  function applyThis() {
+    function foo(a, b, c) {
+      console.log(this); // {}
+      console.log(a, b, c); // 4 5 6
+    }
+
+    foo.apply({}, [4, 5, 6]);
+  }
+
+  function bindThis() {
+    function foo(a, b, c) {
+      console.log(this); // {}
+      console.log(a, b, c); // 1 2 3
+    }
+    // bind() 方法创建一个新的函数，在 bind() 被调用时，这个新函数的 this 被指定为 bind() 的第一个参数，而其余参数将作为新函数的参数，供调用时使用
+    foo.bind({}, 1, 2, 3)();
+  }
+
+  function bindDemo() {
+    const module = {
+      x: 36,
+      getX() {
+        return this.x;
+      }
+    };
+    const unboundGetX = module.getX;
+    console.log(unboundGetX()); // undefined this指向了全局对象
+
+    // bind()创建一个新的绑定函数，module被指定为新函数的 this
+    const boundGetX = unboundGetX.bind(module);
+    console.log(boundGetX()); // 36
+  }
 </script>

@@ -5,69 +5,55 @@
 <!-- code_chunk_output -->
 
 - [VSCode 编辑器](#vscode-编辑器)
-  - [一. 常用命令](#一-常用命令)
-    - [1.1 通用快捷键](#11-通用快捷键)
-    - [1.2 跳转](#12-跳转)
-    - [1.3 基本编辑](#13-基本编辑)
-    - [1.4 编程语言编辑](#14-编程语言编辑)
-    - [1.5 搜索与替换](#15-搜索与替换)
-    - [1.6 多光标与选择](#16-多光标与选择)
-    - [1.7 窗口显示](#17-窗口显示)
-    - [1.8 编辑器管理](#18-编辑器管理)
-    - [1.9 文件管理](#19-文件管理)
-  - [二. 常用知识](#二-常用知识)
-    - [2.1 全部搜索-高级搜索选项](#21-全部搜索-高级搜索选项)
-    - [2.2 编程语言定义代码块的起始和结束区域的标记](#22-编程语言定义代码块的起始和结束区域的标记)
-    - [2.3 自动检测代码缩进](#23-自动检测代码缩进)
-    - [2.4 命令行打开](#24-命令行打开)
-    - [2.5 打开结果视图查看一个符号的所有引用](#25-打开结果视图查看一个符号的所有引用)
-    - [2.6 跳转符号按类型进行分组](#26-跳转符号按类型进行分组)
-    - [2.7 配置语言的文件关联](#27-配置语言的文件关联)
-  - [三. 常用功能](#三-常用功能)
-    - [3.1 代码片段](#31-代码片段)
-      - [3.1.1 使用代码片段](#311-使用代码片段)
-      - [3.1.2 自定义代码片段](#312-自定义代码片段)
-      - [3.1.3 创建](#313-创建)
-      - [3.1.4 代码片段的生效范围](#314-代码片段的生效范围)
-      - [3.1.5 代码片段的语法](#315-代码片段的语法)
-      - [3.1.6 定义代码片段快捷键](#316-定义代码片段快捷键)
-    - [3.2 Git 版本控制插件](#32-git-版本控制插件)
-      - [3.2.1 Git 分支](#321-git-分支)
-      - [3.2.2 合并冲突](#322-合并冲突)
-      - [3.2.3 设置 Git 默认编辑器](#323-设置-git-默认编辑器)
-    - [3.3 Task 自动化任务](#33-task-自动化任务)
-      - [3.3.1 配置并运行 Task](#331-配置并运行-task)
-        - [3.3.1.1 配置 Task 的属性](#3311-配置-task-的属性)
-        - [3.3.1.2 问题匹配器](#3312-问题匹配器)
-        - [3.3.1.3 命令参数](#3313-命令参数)
-        - [3.3.1.4 输出行为](#3314-输出行为)
-        - [3.3.1.5 运行行为](#3315-运行行为)
-        - [3.3.1.6 变量替换](#3316-变量替换)
-      - [3.3.2 操作系统的相关属性](#332-操作系统的相关属性)
-      - [3.3.3 后台运行的 Task](#333-后台运行的-task)
-    - [3.4 多项目工作区（multi-root Workspaces）](#34-多项目工作区multi-root-workspaces)
-      - [3.4.1 添加多文件夹](#341-添加多文件夹)
-      - [3.4.2 工作区文件](#342-工作区文件)
-        - [3.4.2.1 打开工作区文件](#3421-打开工作区文件)
-          - [3.4.2.2 `*.code-workspace` 工作区文件的属性](#3422-code-workspace-工作区文件的属性)
-      - [3.4.3 用户界面](#343-用户界面)
-      - [3.4.4 源代码管理](#344-源代码管理)
-    - [3.5 调试与运行](#35-调试与运行)
-      - [3.5.1 launch.json 调试配置](#351-launchjson-调试配置)
-      - [3.5.2 launch.json 属性](#352-launchjson-属性)
-      - [3.5.3 全局的 launch.json 配置](#353-全局的-launchjson-配置)
-      - [3.5.4 多目标调试](#354-多目标调试)
-      - [3.5.5 断点的使用](#355-断点的使用)
-      - [3.5.6 面板](#356-面板)
+  - [一. 常用知识](#一-常用知识)
+    - [1.1 常用快捷键](#11-常用快捷键)
+      - [1.1.1 通用](#111-通用)
+      - [1.1.2 跳转](#112-跳转)
+      - [1.1.3 基本编辑](#113-基本编辑)
+      - [1.1.4 编程语言编辑](#114-编程语言编辑)
+      - [1.1.5 搜索与替换](#115-搜索与替换)
+      - [1.1.6 多光标与选择](#116-多光标与选择)
+      - [1.1.7 窗口显示](#117-窗口显示)
+      - [1.1.8 编辑器管理](#118-编辑器管理)
+      - [1.1.9 文件管理](#119-文件管理)
+    - [1.2 全部搜索-高级搜索选项](#12-全部搜索-高级搜索选项)
+    - [1.3 编程语言定义代码块的起始和结束区域的标记](#13-编程语言定义代码块的起始和结束区域的标记)
+    - [1.4 命令行打开](#14-命令行打开)
+    - [1.5 打开结果视图查看一个符号的所有引用](#15-打开结果视图查看一个符号的所有引用)
+    - [1.6 跳转符号按类型进行分组](#16-跳转符号按类型进行分组)
+    - [1.7 配置语言的文件关联](#17-配置语言的文件关联)
+  - [二. 常用功能](#二-常用功能)
+    - [2.1 代码片段](#21-代码片段)
+      - [2.1.1 使用代码片段](#211-使用代码片段)
+      - [2.1.2 自定义代码片段](#212-自定义代码片段)
+      - [2.1.3 代码片段的生效范围](#213-代码片段的生效范围)
+      - [2.1.4 代码片段的语法](#214-代码片段的语法)
+      - [2.1.5 定义代码片段快捷键](#215-定义代码片段快捷键)
+    - [2.2 Git 控制](#22-git-控制)
+      - [2.2.1 合并冲突](#221-合并冲突)
+      - [2.2.2 设置 Git 默认编辑器](#222-设置-git-默认编辑器)
+    - [2.3 Task 自动化任务](#23-task-自动化任务)
+      - [2.3.1 配置并运行 Task](#231-配置并运行-task)
+      - [2.3.2 Task 的属性](#232-task-的属性)
+        - [2.3.2.1 输出行为](#2321-输出行为)
+        - [2.3.2.2 运行行为](#2322-运行行为)
+        - [2.3.2.3 变量替换](#2323-变量替换)
+    - [2.4 多项目工作区（multi-root Workspaces）](#24-多项目工作区multi-root-workspaces)
+      - [2.4.1 工作区文件](#241-工作区文件)
+      - [2.4.2 与单文件夹的区别](#242-与单文件夹的区别)
+  - [三. 调试](#三-调试)
+    - [3.1 launch.json](#31-launchjson)
+    - [3.2 launch.json 属性](#32-launchjson-属性)
+      - [3.2.1 重要属性](#321-重要属性)
+      - [3.2.2 可以被定义在 launch 和 attach 的配置属性](#322-可以被定义在-launch-和-attach-的配置属性)
+      - [3.2.3 只能被定义在 launch 的配置属性](#323-只能被定义在-launch-的配置属性)
+      - [3.2.4 只能被定义在 attach 的配置属性](#324-只能被定义在-attach-的配置属性)
+      - [3.2.5 操作系统相关属性](#325-操作系统相关属性)
+      - [3.2.6 远程调试相关属性](#326-远程调试相关属性)
+    - [3.3 断点的种类和使用](#33-断点的种类和使用)
+    - [3.4 调试面板](#34-调试面板)
   - [四. 插件](#四-插件)
-    - [4.1 插件市场](#41-插件市场)
-    - [4.2 优秀的插件](#42-优秀的插件)
-      - [4.2.1 Web 开发利器](#421-web-开发利器)
-      - [4.2.2 提高开发性能](#422-提高开发性能)
-      - [4.2.3 好用的工具类插件](#423-好用的工具类插件)
-      - [4.2.4 容器开发](#424-容器开发)
-      - [4.2.5 移动开发](#425-移动开发)
-      - [4.2.6 其他](#426-其他)
+    - [4.1 有趣的插件](#41-有趣的插件)
   - [五. 语言深入](#五-语言深入)
     - [5.1 JavaScript](#51-javascript)
     - [5.2 代码编辑](#52-代码编辑)
@@ -82,17 +68,8 @@
       - [5.2.9 文件移动时更新导入语句](#529-文件移动时更新导入语句)
       - [5.2.10 引用的 CodeLens](#5210-引用的-codelens)
       - [5.2.11 类型检查](#5211-类型检查)
-      - [5.2.12 调试](#5212-调试)
-        - [5.2.12.1 服务器端调试](#52121-服务器端调试)
-          - [5.2.12.1.1 一键调试](#521211-一键调试)
-          - [5.2.12.1.2 创建调试配置](#521212-创建调试配置)
-          - [5.2.12.1.3 调试配置属性](#521213-调试配置属性)
-          - [5.2.12.1.4 附加到 Node.js 程序](#521214-附加到-nodejs-程序)
-          - [5.2.12.1.5 远程调试](#521215-远程调试)
-          - [5.2.12.1.6 客户端调试](#521216-客户端调试)
       - [5.2.13 静态代码检查](#5213-静态代码检查)
       - [5.2.14 测试](#5214-测试)
-      - [5.2.15 JS 插件推荐](#5215-js-插件推荐)
     - [5.3 TypeScript](#53-typescript)
       - [5.3.1 准备工作](#531-准备工作)
       - [5.3.2 编译](#532-编译)
@@ -119,7 +96,6 @@
       - [6.2.6 跳转到 CSS 符号](#626-跳转到-css-符号)
       - [6.2.7 悬停预览](#627-悬停预览)
       - [6.2.8 自定义 CSS 数据格式](#628-自定义-css-数据格式)
-      - [6.2.9 CSS 插件提示](#629-css-插件提示)
     - [6.3 Emmet](#63-emmet)
       - [6.3.1 Emmet 的支持范围](#631-emmet-的支持范围)
       - [6.3.2 在 HTML 中使用 Emmet](#632-在-html-中使用-emmet)
@@ -129,19 +105,19 @@
       - [6.3.6 自定义 Emmet 片段](#636-自定义-emmet-片段)
     - [6.4 Vue](#64-vue)
       - [6.4.1 快速开始](#641-快速开始)
-      - [6.4.2 Vetur 插件](#642-vetur-插件)
-      - [6.4.3 调试 Vue](#643-调试-vue)
-      - [6.4.4 静态代码检查](#644-静态代码检查)
-      - [6.4.5 Vue 设置 VSCode 识别别名](#645-vue-设置-vscode-识别别名)
+      - [6.4.2 调试 Vue](#642-调试-vue)
+      - [6.4.3 Vue 设置 VSCode 识别别名](#643-vue-设置-vscode-识别别名)
   - [七. 远程开发](#七-远程开发)
 
 <!-- /code_chunk_output -->
 
 ---
 
-## 一. 常用命令
+## 一. 常用知识
 
-### 1.1 通用快捷键
+### 1.1 常用快捷键
+
+#### 1.1.1 通用
 
 - `Ctrl + Shift + P` 或 `F1`：打开命令面板
 - `Ctrl + K Ctrl + S`：打开快捷键编辑器
@@ -150,7 +126,7 @@
 - Ctrl + `：打开集成终端
 - `Shift + Alt + 鼠标左键`：列选择
 
-### 1.2 跳转
+#### 1.1.2 跳转
 
 - `Ctrl + P`：跳转到最近打开的文件
 - `Ctrl + Shift + Tab / Ctrl + Tab`：在已打开的文件中跳转
@@ -159,7 +135,7 @@
 - `Home/end`：光标移动到当前行的起始/结尾
 - `Ctrl + Home/end`：光标移动到当前文档的起始/结尾
 
-### 1.3 基本编辑
+#### 1.1.3 基本编辑
 
 - `Ctrl + Shift + [ / ]`：折叠或展开当前代码块
 - `Alt + ← / →`：向前/向编辑位置后跳转
@@ -168,7 +144,7 @@
 - `Shift + Alt + ↑ / ↓`：把当前行内容向上/下复制
 - `Ctrl + /`：添加或删除当前行的注释
 
-### 1.4 编程语言编辑
+#### 1.1.4 编程语言编辑
 
 - `Ctrl + Shift + I`：格式化文档
 - `Ctrl + K Ctrl + F`：格式化选定内容
@@ -179,14 +155,14 @@
 - `Ctrl + .`：快速修复
 - `Ctrl + Shift + \`：在匹配的括号之间跳转
 
-### 1.5 搜索与替换
+#### 1.1.5 搜索与替换
 
 - `Ctrl + F`：搜索
 - `Ctrl + H`：替换
 - `Ctrl + Shift + F`：全局搜索
 - `Ctrl + Shift + H`：全局替换
 
-### 1.6 多光标与选择
+#### 1.1.6 多光标与选择
 
 - `Alt + 鼠标左键`：插入一个新的光标
 - `Ctrl + Alt + ↑ / ↓`：在上/下方添加一个光标
@@ -195,16 +171,16 @@
 - `Ctrl + L`：选中当前行
 - `Shift + Alt + ← / →`：缩小/扩大选中的范围
 
-### 1.7 窗口显示
+#### 1.1.7 窗口显示
 
 - `Ctrl + =/-`：窗口放大/缩小
 
-### 1.8 编辑器管理
+#### 1.1.8 编辑器管理
 
 - `Ctrl + \`：向右分割编辑器
 - `Ctrl +1/2/3`：把焦点移动到不同的编辑器组
 
-### 1.9 文件管理
+#### 1.1.9 文件管理
 
 - `Ctrl + N`：新建文件
 - `Ctrl + Shift + N`：新建编辑器
@@ -212,13 +188,11 @@
 - `Ctrl + Tab`：向前在已打开的文件中选择一个
 - `Ctrl + Shift + Tab`：向后在已打开的文件中选择一个
 
-## 二. 常用知识
+### 1.2 全部搜索-高级搜索选项
 
-### 2.1 全部搜索-高级搜索选项
+单击全部搜索输入框下方的省略号或使用 `Ctrl + Shift + J` 快捷键，可以调出高级搜索选项：**要包含的文件**和**排除的文件**，需要以 `.` 开头并且全拼，文件后缀名用 `,` 分隔。
 
-单击全部搜索输入框下方的省略号或使用 `Ctrl + Shift + J` 快捷键，可以调出高级搜索选项: **要包含的文件**和**排除的文件**，需要以 `.` 开头并且全拼，文件后缀名用 `,` 分隔。
-
-### 2.2 编程语言定义代码块的起始和结束区域的标记
+### 1.3 编程语言定义代码块的起始和结束区域的标记
 
 | 编程语言      | 起始区域                       | 结束区域                           |
 | ------------- | ------------------------------ | ---------------------------------- |
@@ -230,46 +204,39 @@
 | TypeScript/JS | // #region                     | // #endregion                      |
 | Markdown      | \<!--#region-->                | \<!--endregion-->                  |
 
-### 2.3 自动检测代码缩进
-
-VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过自动检测所得出的缩进配置，会覆盖默认配置。可以点击下方的空格缩进选择操作。
-
-### 2.4 命令行打开
+### 1.4 命令行打开
 
 在命令行中输入 `code .` ，可以启动 VSCode 并直接打开当前文件夹
 
-### 2.5 打开结果视图查看一个符号的所有引用
+### 1.5 打开结果视图查看一个符号的所有引用
 
 `Shift + Alt + F12` 快捷键或编辑菜单中的 Find All Reference，可以打开结果视图查看一个符号的所有引用。
 
-### 2.6 跳转符号按类型进行分组
+### 1.6 跳转符号按类型进行分组
 
 `Ctrl + Shift + O` 可以跳转到当前文件中的不同符号，通过输入 `:`，所有的符号都会按类型进行分组。
 
-### 2.7 配置语言的文件关联
+### 1.7 配置语言的文件关联
 
 通过 `files.associations` 设置项，可以把一个新的文件扩展名添加到已有的编程语言中。
 
-## 三. 常用功能
+## 二. 常用功能
 
-### 3.1 代码片段
+### 2.1 代码片段
 
-#### 3.1.1 使用代码片段
+#### 2.1.1 使用代码片段
 
 1. 通过 `Ctrl + Shift + P` 快捷键打开命令面板，输入并执行 `Insert Snippet` 命令，会显示适合当前语言的所有代码片段的列表。
 
 2. 在编辑器中编写代码时，VSCode 会提供智能提示功能，通过智能提示即可插入代码片段。
 
-#### 3.1.2 自定义代码片段
+#### 2.1.2 自定义代码片段
 
-左下角管理 -> 配置用户代码片段，或命令面板的 `Preferences:Configure User Snippets`。代码片段的定义文件是 JSON 格式的，并且支持 C 语言风格的注释。
-
-#### 3.1.3 创建
+命令面板的 `Preferences: Configure User Snippets`。代码片段的定义文件是 jsonc 格式的，支持 C 语言风格的注释：
 
 ```json
 "For Loop": { // 代码片段名称
-  // 定义了代码片段在 IntelliSense 中触发的单词。
-  // 字符串的子串也可以作为触发条件。fc 也会匹配 for-const
+  // 定义了代码片段在 IntelliSense 中触发的单词。字符串的子串也可以作为触发条件。fc 也会匹配 for-const
   "prefix": ["for", "for-const"],
   // body 包含了三个占位符 ${2:element} ${1:array} 和 $0，在插入代码片段后，可以通过 Tab 键在占位符之间按顺序进行跳转
   // 冒号后面是默认的文本，前面的数字是出现的顺序，0 是最终的位置
@@ -286,7 +253,7 @@ VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过�
 
 也可以使用这个[网站](https://snippet-generator.app/)快捷生成。生成的代码需要做一些修改，`${workspaceFolder}` 这部分和 snippets 的语法有冲突，所以需要加上个 `\\` 来转义。
 
-#### 3.1.4 代码片段的生效范围
+#### 2.1.3 代码片段的生效范围
 
 1. **语言维度**：定义代码对于哪些语言生效，每一个代码片段都可以在一种、多种或所有语言的范围内生效。
 
@@ -298,7 +265,7 @@ VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过�
 
    创建代码片段时的，`New Snippets file for '...'` 选项创建的是当前项目的代码片段，当前项目的代码片段的定义文件位于 `.vscode` 文件夹下的 `.code-snippets` 结尾的 JSON 文件中。对于多人协同开发的项目，当前项目维度的代码片段会十分有用。
 
-#### 3.1.5 代码片段的语法
+#### 2.1.4 代码片段的语法
 
 **Tabstops**
 : 通过 Tabstops，可以使光标在代码片段中跳转。可以使用 `$1`、`$2`、`$3`等代码片段中的字符来指定光标的位置。光标会根据指定的位置对`$1`、`$2`、`$3` 等依次进行遍历。比较特殊的字符是 `$0`，它是光标抵达的最后一个字符。对于**数字一样**的 Tabstops，在编辑代码片段时，Tabstops 中的文本内容也会**随之更新**。
@@ -357,7 +324,7 @@ VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过�
   - `BLOCK_COMMENT_END`：块注释的结束符。比如，HTML 是 `-->`
   - `LINE_COMMENT`：行注释，比如，HTML 是 `<!-- -->`
 
-#### 3.1.6 定义代码片段快捷键
+#### 2.1.5 定义代码片段快捷键
 
 打开命令面板，输入并执行 **Preferences:Open Keyboard Shortcuts(JSON)** 命令，可以打开定义快捷键的 **keybindings.json** 文件：
 
@@ -376,9 +343,7 @@ VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过�
 
 > **注意**：有的语言默认不开启快速提示，可以在 `settings.json` 文件中针对语言设置 **"editor.quickSuggestions": true**。
 
-### 3.2 Git 版本控制插件
-
-#### 3.2.1 Git 分支
+### 2.2 Git 控制
 
 左下角的状态栏会显示当前所在的 Git 分支。
 
@@ -388,7 +353,7 @@ VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过�
 - **绿色条**：表明新增了代码
 - **红色小三角**：表明当前位置删除了代码
 
-#### 3.2.2 合并冲突
+#### 2.2.1 合并冲突
 
 当 VSCode 检测到 Git 合并冲突时，冲突的部分会被高亮显示，还会有不同的内联操作帮助快速解决冲突，如下所示：
 
@@ -397,22 +362,21 @@ VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过�
 - `Accept Both Changes`：保留所有的更改
 - `Compare Changes`：在 diff 视图中比较更改
 
-#### 3.2.3 设置 Git 默认编辑器
+#### 2.2.2 设置 Git 默认编辑器
 
 1. 命令行中运行 `git config --global core.editor "code --wait"`，把 VSCode 设为 Git 的默认编辑器
 2. 命令行中运行 `git config --global -e`，会调出 VSCode 来打开全局的 `.gitconfig` 文件，以配置 Git
-3. 在 **.gitconfig**文件中添加以下配置，把 VSCode 设置成 Git 的比较及合并工具
 
-```text
-[diff]
-  tool = default-difftool
-[difftool "default-difftool"]
-  cmd = code --wait --diff $LOCAL $REMOTE
-[merge]
-  tool = code
-```
+   ```gitconfig
+   [diff]
+     tool = default-difftool
+   [difftool "default-difftool"]
+     cmd = code --wait --diff $LOCAL $REMOTE
+   [merge]
+     tool = code
+   ```
 
-### 3.3 Task 自动化任务
+### 2.3 Task 自动化任务
 
 许多工具都可以把重复的任务自动化，包括代码静态检查、编译、打包、测试、部署等。如：
 
@@ -420,71 +384,67 @@ VSCode 会自动检测打开的文档来确定所使用的代码缩进，通过�
 - **静态检查**：ESLint、TSLint 等
 - **代码构建**：Make、Ant、Gulp 等
 
-Task（任务）可以被用来**运行脚本**或**启动一个进程**。因此，许多工具都可以通过 Task 直接在 VSCode 中运行，而不需要额外再命令行中输入命令。
+Task（任务）可以被用来**运行脚本**或**启动一个进程**。因此，许多工具都可以通过 Task 直接在 VSCode 中运行，而不需要额外再命令行中输入命令。Task 被配置在 `.vscode` 文件夹下的 `tasks.json` 文件中。
 
-Task 被配置在 `.vscode` 文件夹下的 `tasks.json` 文件中。
-
-> **注意**：Task 只能配置在有文件夹打开的项目中。
-
-#### 3.3.1 配置并运行 Task
+#### 2.3.1 配置并运行 Task
 
 **配置**：终端 -> 配置任务
 
 **运行**：点击 终端 -> 运行任务，会显示出所有可以运行的 Task，选择一个 Task 后，会选择要针对何种错误和警告扫描 Task 的输出。选择后，一个新的终端被创建，命令在终端中执行。按下任意键，终端会被关闭。
 
-##### 3.3.1.1 配置 Task 的属性
+#### 2.3.2 Task 的属性
 
 - `label`：在用户界面上展示的 Task 标签
 
-- `type`：Task 的类型，分为 `shell` 和 `process` 两种，具体如下所示：
+- `type`：Task 的类型，分为以下两种：
 
   - `shell`：作为 Shell 命令运行（如 bash、cmd、PowerShell 等）
   - `process`：作为一个进程运行
 
 - `command`：真正执行的命令
-- `windows`：Windows 中的特定属性。相应的属性会在 Windows 系统 中覆盖默认的属性定义。
+- `windows`：Windows 中的特定属性。相应的属性会在 Windows 系统中覆盖默认的属性定义。
+- `linux`：特定于 Linux 的属性。
+- `osx`：特定于 macOS 的属性。
 - `group`：定义 Task 属于哪一个组。分为 `test` 和 `build`、`none`。
 - `presentation`：定义用户界面如何处理 Task 的输出。
 - `options`：定义 cwd（当前工作目录）、env（环境变量）和 shell 的值。
 - `runOptions`：定义 Task 何时运行及如何运行
 
-##### 3.3.1.2 问题匹配器
+- `problemMatcher`：要使用的问题匹配程序。可以是一个字符串或一个问题匹配程序定义，也可以是一个字符串数组和多个问题匹配程序。
 
-通过问题匹配器，可以对 Task 的输出进行扫描，找到对应的错误和警告。VSCode 中内置了一系列的问题匹配器，可以在 `tasks.json` 中使用 `problemMatcher` 属性来定义对应相应的问题匹配器。不同语言的 `problemMatcher` 属性如下所示：
+  通过问题匹配器，可以对 Task 的输出进行扫描，找到对应的错误和警告。VSCode 中内置了一系列的问题匹配器，不同语言的属性如下所示：
 
-| 编程语言               | 问题匹配器        |
-| ---------------------- | ----------------- |
-| TypeScript             | `$tsc`            |
-| TypeScript Watch       | `$tsc-watch`      |
-| JSHint                 | `$jshint`         |
-| JSHint Stylish         | `$jshint-stylish` |
-| ESLint Compact         | `$eslint-compact` |
-| ESLint Stylish         | `$eslint-stylish` |
-| Go                     | `$go`             |
-| CSHarp and VB Compiler | `$msCompile`      |
-| Lessc compiler         | `$lessc`          |
-| Node Sass compiler     | `$node-sass`      |
+  | 编程语言               | 问题匹配器        |
+  | ---------------------- | ----------------- |
+  | TypeScript             | `$tsc`            |
+  | TypeScript Watch       | `$tsc-watch`      |
+  | JSHint                 | `$jshint`         |
+  | JSHint Stylish         | `$jshint-stylish` |
+  | ESLint Compact         | `$eslint-compact` |
+  | ESLint Stylish         | `$eslint-stylish` |
+  | Go                     | `$go`             |
+  | CSHarp and VB Compiler | `$msCompile`      |
+  | Lessc compiler         | `$lessc`          |
+  | Node Sass compiler     | `$node-sass`      |
 
-##### 3.3.1.3 命令参数
+- `args`：调用任务时要传递给命令的参数。
 
-对于复杂的命令可以在 `tasks.json` 中使用 `args` 属性来定义命令的参数：
+  ```jsonc
+  {
+    "label": "dir",
+    "type": "shell",
+    "command": "dir /b"
+  },
+  // 等于
+  {
+    "label": "dir",
+    "type": "shell",
+    "command": "dir",
+    "args": ["/b"]
+  }
+  ```
 
-```json
-{
-  "label": "dir",
-  "type": "shell",
-  "command": "dir /b"
-}
-// 等于
-{
-  "label": "dir",
-  "type": "shell",
-  "command": "dir",
-  "args": ["/b"]
-}
-```
-
-##### 3.3.1.4 输出行为
+##### 2.3.2.1 输出行为
 
 控制集成终端的输出行为，所有与输出相关的行为，都可以通过 `tasks.json` 中的 `presentation` 属性来定义，主要包含以下属性：
 
@@ -507,7 +467,7 @@ Task 被配置在 `.vscode` 文件夹下的 `tasks.json` 文件中。
 - `clear`：控制在 Task 运行前，是否清除集成终端的输出。默认值是 false。
 - `group`：控制 Task 是否在同一个集成终端中运行。如果不同 Task 的 group 属性相同，那么它们会复用同一个集成终端。
 
-##### 3.3.1.5 运行行为
+##### 2.3.2.2 运行行为
 
 通过 `tasks.json` 中的 `runOptions` 属性可以定义 Task 的运行行为，`runOptions` 属性主要包含以下属性：
 
@@ -517,229 +477,466 @@ Task 被配置在 `.vscode` 文件夹下的 `tasks.json` 文件中。
   - `default`：只有在运行 `Run Task` 命令时，才会触发运行
   - `folderOpen`：当包含这个 `tasks.json` 的文件夹被打开时，便会触发运行。在运行前，VSCode 会询问是否要运行。
 
-##### 3.3.1.6 变量替换
+##### 2.3.2.3 变量替换
 
-在 `tasks.json` 中，VSCode 可以进行变量替换。
+- 预定义的变量
 
-1. 预定义的变量
+  - `${workspaceFolder}`：在 VSCode 中打开的文件夹的完整路径
+  - `${workspaceFolderBasename}`：在 VSCode 中打开的文件夹名
+  - `${fileWorkspaceFolder}`：VSCode 中打开的文件的工作区文件夹路径
+  - `${fileDirnameBasename}`：VSCode 中打开的文件所在的文件夹的名称
+  - `${pathSeparator}`：操作系统用于分隔文件路径中的组件的字符
+  - `${file}`：当前打开文件的完整路径
+  - `${relativeFile}`：当前打开的文件的相对 workspaceFolder 的路径
+  - `${relativeFileDirname}`：当前打开的文件的文件夹的相对 workspaceFolder 路径
+  - `${fileBasename}`：当前打开的文件的文件名
+  - `${fileBasenameNoExtension}`：当前打开的文件的文件名，不包含扩展名
+  - `${fileDirname}`：当前打开的文件的文件夹的完整路径
+  - `${fileExtname}` :当前打开的文件的扩展名
+  - `${cwd}`：Task 启动时的工作目录
+  - `${lineNumber}`：当前光标所在的行号
+  - `${selectedText}`：当前 打开的文件中选中的文本
+  - `${execPath}`：VSCode 可执行文件的完整路径
+  - `${defaultBuildTask}`：默认的 Build Task 的名字
+  - `${userHome}`：用户主页，如：C:\Users\dsy
 
-   - `${workspaceFolder}`：在 VSCode 中打开的文件夹的完整路径
-   - `${workspaceFolderBasename}`：在 VSCode 中打开的文件夹名
-   - `${fileWorkspaceFolder}`：VSCode 中打开的文件的工作区文件夹路径
-   - `${fileDirnameBasename}`：VSCode 中打开的文件所在的文件夹的名称
-   - `${pathSeparator}`：操作系统用于分隔文件路径中的组件的字符
-   - `${file}`：当前打开文件的完整路径
-   - `${relativeFile}`：当前打开的文件的相对 workspaceFolder 的路径
-   - `${relativeFileDirname}`：当前打开的文件的文件夹的相对 workspaceFolder 路径
-   - `${fileBasename}`：当前打开的文件的文件名
-   - `${fileBasenameNoExtension}`：当前打开的文件的文件名，不包含扩展名
-   - `${fileDirname}`：当前打开的文件的文件夹的完整路径
-   - `${fileExtname}` :当前打开的文件的扩展名
-   - `${cwd}`：Task 启动时的工作目录
-   - `${lineNumber}`：当前光标所在的行号
-   - `${selectedText}`：当前 打开的文件中选中的文本
-   - `${execPath}`：VSCode 可执行文件的完整路径
-   - `${defaultBuildTask}`：默认的 Build Task 的名字
-   - `${userHome}`：用户主页，如：C:\Users\dsy
+- 环境变量
 
-2. 环境变量
+  通过 `${env:Name}` 的语法，可以引用环境变量。
 
-   通过 `${env:Name}` 的语法，可以引用环境变量。
+- 配置变量
 
-3. 配置变量
+  通过 `${config:Name}` 的语法，可以引用 VSCode 的设置项。例：`${config:editor.fontSize}` 会得到编辑器的字体大小
 
-   通过 `${config:Name}` 的语法，可以引用 VSCode 的设置项。例：`${config:editor.fontSize}` 会得到编辑器的字体大小
+- 输入变量
 
-4. 输入变量
+  有些时候，在运行 Task 时，每次都需要传入不同的变量，通过输入变量，可以轻松地对 Task 进行定制化。输入变量的语法是 `${input:variableID}`，variableID 引用了 `tasks.json` 中的 inputs 部分的配置内容。
 
-   有些时候，在运行 Task 时，每次都需要传入不同的变量，通过输入变量，可以轻松地对 Task 进行定制化。输入变量的语法是 `${input:variableID}`，variableID 引用了 `tasks.json` 中的 inputs 部分的配置内容。
+  VSCode 支持以下三种类型的输入变量：
 
-   VSCode 支持以下三种类型的输入变量：
+  - `promptString`：展示输入框，并获得用户的输入字符串
 
-   - `promptString`：展示输入框，并获得用户的输入字符串
+    - `description`：在文本输入框中展示的描述信息
+    - `default`：输入的默认值
 
-     - description：在文本输入框中展示的描述信息
-     - default：输入的默认值
+  - `pickString`：展示一个下拉列表，让用户选择其中一个选项
 
-   - `pickString`：展示一个下拉列表，让用户选择其中一个选项
+    - `description`：在下拉列表的输入框中展示的描述信息
+    - `options`：选项数组，使用户可以在下拉列表中进行选择
+    - `default`：输入的默认值。其值必须为下拉列表选项中的一个
 
-     - description：在下拉列表的输入框中展示的描述信息
-     - options：选项数组，使用户可以在下拉列表中进行选择
-     - default：输入的默认值。其值必须为下拉列表选项中的一个
+  - `command`：运行任意的命令
+    - `command`：要运行的命令
+    - `args`：运行命令的参数（可选）
 
-   - `command`：运行任意的命令
-     - command：要运行的命令
-     - args：运行命令的参数（可选）
+### 2.4 多项目工作区（multi-root Workspaces）
 
-#### 3.3.2 操作系统的相关属性
+**添加多文件夹**：
 
-不同操作系统中的 Task 命令也可能不同。在 Windows 上使用 `windows` 属性，在 Linux 上使用 `linux` 属性，在 macOS 上使用 `osx` 属性。
+- 文件 -> 将文件夹添加到工作区，选择要添加的文件夹。
+- 可以通过拖拽把文件夹添加到工作区，可以同时选择多个文件夹拖拽。
+- 文件 -> 打开文件夹，可以选择多个文件夹打开。
+- 通过命令行的 `--add` 参数，可以把多个文件夹添加到最近活跃的 VSCode 窗口中。
 
-Task 的属性被定义在全局范围。除非具体的某一个 Task 定义了相应的属性，否则就使用全局属性。
+  ```sh
+  code --add folder1 folder2
+  ```
 
-#### 3.3.3 后台运行的 Task
+#### 2.4.1 工作区文件
 
-一些工具可以在后台运行，当文件更新时，便会触发相应的操作。
-
-> **例**：TypeScript 的编译器 tsc 通过 `--watch` 参数对此功能提供了内置的支持。
-
-### 3.4 多项目工作区（multi-root Workspaces）
-
-在 VSCode 中，可以方便地管理多个文件夹。
-
-#### 3.4.1 添加多文件夹
-
-- 添加文件夹
-  文件 -> 将文件夹添加到工作区，选择要添加的文件夹。
-
-- 拖拽
-  可以通过拖拽把文件夹添加到工作区，可以同时选择多个文件夹拖拽。
-
-- 选择多个文件夹并打开
-  文件 -> 打开文件夹，可以选择多个文件夹打开。
-
-- 通过命令行添加文件夹
-  通过命令行的 `--add` 参数，可以把多个文件夹添加到最近活跃的 VSCode 窗口中。
-  例：`code --add folder1 folder2`
-
-#### 3.4.2 工作区文件
-
-在工作区添加多个文件后，工作区会被命名为 **无标题（工作区）**。在关闭多文件夹窗口时，会询问是否要保存工作区文件，选择保存工作区文件，VSCode 会创建一个扩展名为 `.code-workspace` 的文件。
+在工作区添加多个文件后，工作区会被命名为**无标题（工作区）**。在关闭多文件夹窗口时，会询问是否要保存工作区文件，选择保存工作区文件，VSCode 会创建一个扩展名为 `.code-workspace` 的文件。
 
 文件 -> 将工作区另存为，可以把当前工作区的信息保存到 `*.code-workspace` 工作区文件中。
 
-##### 3.4.2.1 打开工作区文件
+`*.code-workspace` 工作区文件有以下属性：
 
-- 双击 `.code-workspace` 工作区文件
-- 文件 -> 打开工作区
-- 文件 -> 打开最近的文件
+- `folders`：包含多个对象的数组，每个对象的属性有两个：
 
-###### 3.4.2.2 `*.code-workspace` 工作区文件的属性
+  - `path`：文件夹的路径，可以是绝对路径，也可以是相对路径
+  - `name`：文件夹的可选名称
 
-- `path`：文件夹的路径，可以是绝对路径，也可以是相对路径
-- `name`：文件的显示名
 - `settings`：为了避免各个文件设置的冲突，可以通过设置全局的工作区配置，对当前工作区的所有文件夹进行设置
-- `extensions`：插件推荐，可以为当前的工作区项目推荐相应的插件。
-  - 通过在 `extensions.recommendations` 数组中添加插件的 ID({publisherName}.{extensionName}) 实现插件推荐
-  - 在插件列表中推荐插件的右下角，点击齿轮标志中有选项 _添加到工作区建议_
 
-#### 3.4.3 用户界面
+- `extensions`：插件建议
 
-与单文件夹界面的区别：
+  - `recommendations`：向此工作区的用户推荐的扩展列表。扩展的标识符始终为 `${publisher}.${name}`。
+  - `unwantedRecommendations`：不应向此工作区的用户推荐的扩展列表。扩展的标识符始终为 `${publisher}.${name}`。例如: "vscode.csharp"。
 
-- 显示相对路径和符号
-- 面包屑导航会显示多文件夹的文件夹名
-- `Ctrl + P` 快速打开文件时，文件列表会显示文件夹名
-- 搜索时，搜索结果会按照文件夹来分组显示
+- `launch`：工作区启动配置
 
-#### 3.4.4 源代码管理
+- `tasks`：任务定义文件
 
-多文件夹项目如果有多个 git 的文件夹，那么在源代码管理视图中会显示 SOURCE CONTROL PROVIDERS，在 SOURCE CONTROL PROVIDERS 中点击代码仓库，可以在下方看到代码更改的详情。
+```jsonc
+{
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "../folder1"
+    }
+  ],
+  "settings": {},
+  "extensions": { "recommendations": [], "unwantedRecommendations": [] },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [],
+    "compounds": []
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "My Task",
+        "command": "echo hello",
+        "type": "shell",
+        "args": [],
+        "problemMatcher": ["$tsc"],
+        "presentation": {
+          "reveal": "always"
+        },
+        "group": "build"
+      }
+    ]
+  }
+}
+```
 
-### 3.5 调试与运行
+#### 2.4.2 与单文件夹的区别
+
+- **界面区别**：
+
+  - 显示相对路径和符号
+  - 面包屑导航会显示多文件夹的文件夹名
+  - `Ctrl + P` 快速打开文件时，文件列表会显示文件夹名
+  - 搜索时，搜索结果会按照文件夹来分组显示
+
+- **源代码管理区别**：
+
+  多文件夹项目如果有多个 git 的文件夹，那么在源代码管理视图中会显示 SOURCE CONTROL PROVIDERS，在 SOURCE CONTROL PROVIDERS 中点击代码仓库，可以在下方看到代码更改的详情。
+
+## 三. 调试
 
 VSCode 内置了对 Node.js 运行时的调试支持，无须安装额外的插件就能调试 JS 和 TS。其他编程语言，需要额外安装相应的调试器插件。内置的 Node.js 调试器及其他调试器插件支持以下两种模式：
 
 - 调试：快捷键为 F5
 - 运行：快捷键为 Ctrl + F5
 
-#### 3.5.1 launch.json 调试配置
+### 3.1 launch.json
 
 对于一些更加复杂的调试场景，需要创建调试配置，以便后续进行定制化调试。VSCode 的调试配置被存储在 `.vscode` 文件夹的 `launch.json` 文件中。可以通过以下步骤来创建一个调试配置：
 
 1. 运行 -> 添加配置
 2. VSCode 会在 `.vscode` 文件夹中创建并打开一个 `launch.json` 文件，文件中定义了调试所需要的的配置。
 
-#### 3.5.2 launch.json 属性
+VSCode 还支持添加全局的 `launch.json` 配置。可以在全局的 `settings.json` 文件中使用 `launch` 属性设置全局的的调试配置。
 
-- **必要属性**
+### 3.2 launch.json 属性
 
-  - type：调试器的类型。例如:内置的 Node.js 调试器是 node
+launch.json 有 3 个属性：
 
-  - request：调试的模式，有以下两种模式：
+- `version`：版本
+- `configurations`：配置列表
+- `compounds`：复合列表。每个复合可引用多个配置进行多目标调试，这些配置将一起启动。
 
-    - launch：启动程序（该程序定义在 program 设置项中）并调试
-    - attach：将程序附加到一个正在运行的进程中进行调试。
+下面主要看 configurations 的属性：
 
-  - name：调试配置的名字
+#### 3.2.1 重要属性
 
-- **可选项**
+- `name`：调试配置的名字
+- `type`：调试器的类型。例如：内置的 Node.js 调试器是 node。
 
-  - presentation：使用 order、group 和 hidden 属性来定义调试配置的显示
-  - preLaunchTask：定义在调试前要运行的任务
-  - postDebugTask：定义在调试结束时要运行的任务
-  - internalConsoleOptions：定义调试控制台的显示
-  - serverReadyAction：设置在调试时自动在浏览器中打开 URL
+- `request`：请求配置类型，有以下两种类型：
 
-- **大多数调试器插件还支持以下属性**
+  - `launch`：启动程序（该程序定义在 program 设置项中）并调试
+  - `attach`：将程序附加到一个正在运行的进程中进行调试
 
-  - program：要运行的可执行文件或源代码的路径
-  - args：要传递给 program 的参数
-  - env：环境变量
-  - cwd：调试器的工作目录，默认值是 `${workspaceFolder}`
-  - port：要附加到进程的端口
-  - stopOnEntry：是否在程序入口进行断点
+    如果想要附加到 Chrome 浏览器，针对不同系统，在命令行输入不同的命令来启动 Chrome 浏览器：
 
-  - console：指定程序输出的位置
-    - internalConsole：VSCode 的调试控制台
-    - integratedTerminal：VSCode 的集成终端
-    - externalTerminal：系统的终端
+    - 在 Windows 下：`<path to chrome>/chrome.exe --remote-debugging-port=9222`，也可以打开 Chrome 快捷方式的属性 -> 目标，在最后添加 空格 + `--remote-debugging-port=9222`
+    - 在 macOS 下：`/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote--debugging-port=9222`
+    - 在 Linux 下：`google-chrome --remote-debugging-port=9222`
 
-#### 3.5.3 全局的 launch.json 配置
+    ```json
+    {
+      "name": "vueJs: attach chrome",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}",
+      "url": "http://localhost:7878"
+    }
+    ```
 
-VSCode 支持添加全局的 `launch.json` 配置。可以在全局的 `settings.json` 文件中使用 `launch` 属性设置全局的的调试配置。
+- `webRoot`：此设置指定 Web 服务器根工作区的绝对路径。用于将 `/app.js` 等路径解析为磁盘上的文件。pathMapping 的速记方式为 "/"。
 
-#### 3.5.4 多目标调试
+#### 3.2.2 可以被定义在 launch 和 attach 的配置属性
 
-VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `launch.json` 文件中，通过 `compound` 属性，可以配置多目标调试。
+- `protocol`：调试协议
+- `port`：调试端口
+- `restart`：连接超时或失败是否重连。重连的间隔和次数可以配置。默认值为 false，如果想设置为 true，可以通过在对象中指定 `delay` 和 `maxAttempts` 来自定义间隔和最大尝试次数，delay 单位为毫秒。
 
-#### 3.5.5 断点的使用
+  ```json
+  {
+    "restart": {
+      "delay": 1000,
+      "maxAttempts": 3
+    }
+  }
+  ```
 
-在程序中添加断点，只需要点击左侧的边栏即可添加断点。
+- `timeout`：定义何时重启一个调试会话。单位为毫秒。
+- `stopOnEntry`：是否在程序入口设置断点
+- `smartStep`：在调试过程中，是否智能地忽略没有定义在源代码映射中的文件
 
-**日志断点**
-日志断点是普通断点的一种变体，区别在于**不会中断调试**，而是可以把信息记录到控制台。日志断点对于调试无法暂停或停止的服务时特别有用。步骤如下：
+- `outFiles`：定义生成的 JS 文件的位置
+- `env`：设置环境变量
+- `envFile`：包含环境变量定义的文件的绝对路径。
+- `skipFiles`：定义在调试过程中需要忽略的文件
 
-1. 右击需要添加日志断点行的行标，选择**添加记录点**。
-2. 输入要日志断点的信息，可以用 `{}` 使用变量。
+- `trace`：是否输出诊断信息
+- `presentation`：对多个调试配置做分组和排序，group 相同的在同一组，根据 order 从小到大排序
 
-**条件断点**
-条件断点是表达式结果为 true 时才会进行断点，步骤如下：
+  ```json
+  {
+    "name": "Launch Chrome",
+    "request": "launch",
+    "type": "chrome",
+    "url": "http://localhost:8080",
+    "webRoot": "${workspaceFolder}",
+    "presentation": {
+      "hidden": false,
+      "group": "Chrome",
+      "order": 1
+    }
+  }
+  ```
 
-1. 右击需要添加日志断点行的行标，选择**添加条件断点**。
-2. 填写表达式
+- `preLaunchTask`：定义在调试前要运行的任务
+- `postDebugTask`：定义在调试结束时要运行的任务
+- `internalConsoleOptions`：定义调试控制台的显示
+- `serverReadyAction`：设置在调试时自动在浏览器中打开 URL
+- `cascadeTerminateToConfigurations`：当此调试会话终止时，也将停止的调试会话列表。
 
-**命中计数断点**
-只有该行代码命中了指定次数，才会进行断点。步骤如下：
+- `sourceMaps`：是否使用 sourcemap 映射（如存在），默认 true
+- `sourceMapRenames`：是否在 sourcemap 使用 “名称” 映射。这需要请求源内容，后者在使用某些调试程序时，速度会很慢。
+- `sourceMapPathOverrides`
 
-1. 选择条件断点，切换为命中次数选项，填写命中次数。
+  代码是经过编译打包然后在浏览器运行的，但调试时却可以直接调试源码，这是通过 sourcemap 做到的。调试工具都支持 sourcemap，并且是默认开启的。
+  可以将 `sourceMaps` 设为 false 来关闭。这样调试的就是编译后的代码了。
 
-**内联断点**
-仅当执行到达与内联断点关联的列时，才会命中内联断点。这在调试在一行中包含多个语句的缩小代码时特别有用。比如 for 循环，短路运算符等一行代码包含多个表达式时会特别有用。步骤如下：
+  在开启 sourcemap 的情况下，用 Chrome DevTools 可以看到，源文件的路径是 /static/js/bundle.js：
 
-1. 在指定位置按 Shift + F9
-2. 调试之后，每次运行到该内联处的代码都会中断
+  ![源文件路径](./image/%E6%BA%90%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84.webp)
 
-#### 3.5.6 面板
+  被 sourcemap 到了 /Users/guang/code/test-react-debug/src/index.js：
 
-**变量面板**
-: 变量面板可以查看所有变量，在变量上点击右键，可以设置变量值、复制变量值等操作。聚焦于数据面板时，可以通过键入值来搜索过滤。还可以控制是否筛选。
+  ![源码路径](./image/%E6%BA%90%E7%A0%81%E8%B7%AF%E5%BE%84.webp)
 
-**监听面板**
-可以将变量添加到监听面板，实时观察变量的变化。方式有以下两种：
+  而在 VSCode 里，这个路径是有对应的文件的，所以就会打开对应文件的编辑器，这样就可以边调试边修改代码。但有的时候，sourcemap 到的文件路径在本地里找不到，这时候代码就只读了，因为没有地方保存。这种情况就需要通过 `sourceMapPathOverrides` 对 sourcemap 到的路径再做一次映射：
 
-1. 在变量面板通过右键选择 “添加到监视” 将变量添加到监听面板。
-2. 直接在监听面板选择添加按钮进行变量添加。
+  ![sourcemap映射](./image/sourcemap%E6%98%A0%E5%B0%84.webp)
 
-**调用堆栈**
-在断点时，方便的查看堆栈信息。
+  默认有这么三个配置：
 
-**断点面板**
-对断点进行统一的控制。既可以控制单个断点的开关，也可以控制全部断点的开关。还能直接删除全部断点。
+  ```json
+  {
+    "sourceMapPathOverrides": {
+      "meteor://💻app/*": "${workspaceFolder}/*",
+      "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
+      "webpack://?:*/*": "${workspaceFolder}/*"
+    }
+  }
+  ```
+
+  分别是把 meteor、webpack 开头的 path 映射到了本地的目录下。其中 `?:*` 代表匹配任意字符，但不映射，而 `*` 是用于匹配字符并映射的。
+
+#### 3.2.3 只能被定义在 launch 的配置属性
+
+- `program`：Node.js 应用程序的绝对路径
+- `args`：传给 Node.js 应用程序的参数
+- `cwd`：指定调试器的工作目录。默认值是 `${workspaceFolder}`（在 VSCode 中打开的文件夹的完整路径）
+
+- `runtimeArgs`：传给运行时的参数。
+
+  比如每次打开网页都默认调起 Chrome DevTools，就可以加一个 `--auto-open-devtools-for-tabs` 的启动参数：
+
+  ```json
+  {
+    "request": "launch",
+    "runtimeArgs": ["--auto-open-devtools-for-tabs"]
+  }
+  ```
+
+  想要无痕模式启动，也就是不加载插件，没有登录状态，就可以加一个 `--incognito` 的启动参数。其实 `userDataDir` 就是指定了 --user-data-dir 的启动参数。
+
+- `runtimeVersion`：定义运行时的版本
+- `file`：要在浏览器中打开的本地 HTML 文件。
+
+  ```json
+  {
+    "name": "Launch Chrome",
+    "request": "launch",
+    "type": "pwa-chrome",
+    "file": "${workspaceFolder}/index.html",
+    "webRoot": "${workspaceFolder}"
+  }
+  ```
+
+  要修改调试的内容需要把 url 映射到本地文件才行，所以有下面的 `pathMapping` 的配置。
+
+- `pathMapping`：将 URL 路径映射到本地文件夹，以将浏览器中的脚本解析为磁盘上的脚本
+
+  ```json
+  {
+    "pathMapping": {
+      "/static/js/": "${workspaceFolder}/src/"
+    }
+  }
+  ```
+
+- `console`：设置程序输出在哪里，该属性的可选值如下：
+
+  - `internalConsole`：在 VSCode 的调试控制台输出，该值为默认值
+  - `integratedTerminal`：在 VSCode 的集成终端输出
+  - `externalTerminal`：在系统的终端输出
+
+- `outputCapture`：如果设置为 std，那么 Node.js 进程的 stdout（标准输出）和 stderr（标准错误）就会显示在调试控制台中。
+
+- `userDataDir`
+
+  user data dir 是保存用户数据的地方，比如浏览记录、cookies、插件、书签、网站的数据等。用户数据目录有个特点，就是只能被一个 Chrome 实例所访问，如果之前启动了 Chrome 用了这个默认的 user data dir，那就不能再启动一个 Chrome 实例用它了。如果再跑一个就会报错 `Unable to attach to browser`。
+
+  所以用调试模式启动 Chrome 的时候，需要单独指定一下 user data dir 的位置。或者把之前的 Chrome 实例关掉，这样才能用默认的。
+
+  默认为 true，代表创建一个临时目录来保存用户数据。也可以设置为 false，使用默认 user data dir 启动 chrome。这样的好处就是登录状态、历史记录都有。也可以指定一个自定义的路径，这样用户数据就会保存在那个目录下。
+
+  更重要的是，安装的 Vue DevTools 等插件都是在默认用户数据目录的，要是用临时数据目录跑调试，这些就都没了。当 `userDataDir` 设置为 true 的时候，Vue DevTools 插件是没有的，需要再安装。这个问题可以用 `runtimeExecutable` 解决。
+
+- `runtimeExecutable`：运行时可执行文件路径。默认值为 node。
+
+  调试网页的 JS，需要先把 Chrome 跑起来，默认跑的是 Google Chrome，其实它还有另外一个版本 Canary。这是给开发者用的每日构建版，能够快速体验新特性，但是不稳定。可以在[官网](https://www.google.com/intl/zh-CN/chrome/canary/)下载。然后指定 `runtimeExecutable` 为 canary，使用默认的用户数据目录启动。这样就可以调试用 canary，平时用 chrome 了，两者不共用同一个数据目录。
+
+  `runtimeExecutable` 还可以指定用别的浏览器跑，可以是 stable，也就是稳定的 Google Chrome，或者 canary 还可以是 custom，然后用 CHROME_PATH 环境变量指定浏览器的地址。
+
+#### 3.2.4 只能被定义在 attach 的配置属性
+
+- `processId`：可以定义附加的进程 ID，如果被设置为 `${command:PickProcess}`，那么可以在调试器启动时显示的进程列表中选择需要调试的进程。
+
+  ```jsonc
+  {
+    "name": "Attach to Process",
+    "type": "node",
+    "request": "attach",
+    "processId": "${command:PickProcess}"
+  }
+  ```
+
+- `attachExistingChildren`：是否尝试附加到已生成的子进程。默认值为 false。
+- `autoAttachChildProcesses`：自动将调试器附加到新的子进程。默认值为 true。
+
+#### 3.2.5 操作系统相关属性
+
+- `windows`：特定于 Windows 的启动配置属性。
+- `linux`：特定于 Linux 的启动配置属性。
+- `osx`：特定于 macOS 的启动配置属性。
+
+#### 3.2.6 远程调试相关属性
+
+- `address`：要调试的进程的 TCP/IP 地址。默认值为 “localhost”。
+- `websocketAddress`：要附加到的确切 websocket 地址。如果未指定，将使用 `address` 和 `port`。
+- `localRoot`：定义本地的根目录。
+- `remoteRoot`：定义远程的根目录。
+
+VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 文件中添加一个 `address` 属性即可。
+
+```json
+{
+  "type": "node",
+  "request": "attach",
+  "name": "Attach to remote",
+  "address": "TCP/IP address of process to be debugged",
+  // 9229 是 node --inspect 和 --inspect-brk 的默认调试端口
+  "port": 9229
+}
+```
+
+默认情况下，VSCode 会把远程 Node.js 程序文件中的源代码展示在本地，但这些文件都是只读的。可以对文件中的源代码进行单步调试，但不可以修改它。
+
+如果想在 VSCode 中打开可编辑的源代码，那么就需要**设置远程文件夹与本地文件夹的映射**。在 launch.json 文件中。可以通过添加 `localRoot` 和 `remoteRoot` 属性来进行映射。`localRoot` 用于定义本地文件夹的根目录，`remoteRoot` 则用于定义远程文件夹的根目录。
+
+```jsonc
+{
+  "type": "node",
+  "request": "attach",
+  "name": "Attach to remote Edit Source code",
+  "address": "TCP/IP address of process to  be debugger",
+  "port": 9229,
+  "localRoot": "${workspaceFolder}",
+  "remoteRoot": "C:\\User\\username\\project\\server"
+}
+```
+
+### 3.3 断点的种类和使用
+
+- **普通断点**
+  有两种方式添加普通断点：
+
+  1. 单击左侧边栏
+  2. 右键左侧边栏，选择添加断点
+
+- **异常断点**
+
+  代码抛了异常，想知道在哪抛的，这时候就可以用异常断点。
+
+  ![异常断点](./image/%E5%BC%82%E5%B8%B8%E6%96%AD%E7%82%B9.png)
+
+  - `Caught Exception`：在被 catch 处理的异常出断住。
+  - `Uncaught Exception`：在没有被处理的错误或者 Promise 的 reject 处断住。更常用。
+
+- **日志断点**
+  日志断点是普通断点的一种变体，区别在于**不会中断调试**，而是可以把信息记录到控制台。日志断点对于调试无法暂停或停止的服务时特别有用。步骤如下：
+
+  1. 右击需要添加日志断点行的行标，选择**添加记录点**。
+  2. 输入要日志断点的信息，可以用 `{}` 使用变量。
+
+- **条件断点**
+  条件断点是表达式结果为 true 时才会进行断点：
+
+  1. 右击需要添加日志断点行的行标，选择**添加条件断点**。
+  2. 填写表达式
+
+- **命中计数断点**
+  只有该行代码命中了指定次数，才会进行断点：
+
+  1. 选择条件断点，切换为命中次数选项，填写命中次数。
+
+- **内联断点**
+  仅当执行到达与内联断点关联的列时，才会命中内联断点。这在调试在一行中包含多个语句的缩小代码时特别有用。比如 for 循环，短路运算符等一行代码包含多个表达式时会特别有用。步骤如下：
+
+  1. 在指定位置按 Shift + F9
+  2. 调试之后，每次运行到该内联处的代码都会中断
+
+除了 VSCode 的断点，还有网页的 [DOM 断点](/frontend/浏览器/Chrome_DevTools/Chrome-DevTools.md#519-dom-断点)、[事件监听器断点](/frontend/浏览器/Chrome_DevTools/Chrome-DevTools.md#811-event-listener-断点)、[url 请求断点](/frontend/浏览器/Chrome_DevTools/Chrome-DevTools.md#46-xhrfetch-断点)。
+
+### 3.4 调试面板
+
+- **变量面板**
+  变量面板可以查看所有变量，在变量上点击右键，可以设置变量值、复制变量值等操作。聚焦于数据面板时，可以通过键入值来搜索过滤。还可以控制是否筛选。
+
+- **监听面板**
+  可以将变量添加到监听面板，实时观察变量的变化。方式有以下两种：
+
+  1. 在变量面板通过右键选择 “添加到监视” 将变量添加到监听面板。
+  2. 直接在监听面板选择添加按钮进行变量添加。
+
+- **调用堆栈**
+  在断点时，方便的查看堆栈信息。
+
+- **断点面板**
+  对断点进行统一的控制。既可以控制单个断点的开关，也可以控制全部断点的开关。还能直接删除全部断点。
 
 ## 四. 插件
-
-### 4.1 插件市场
 
 [插件市场](https://marketplace.visualstudio.com/vscode)，首页有四个分组：
 
@@ -748,105 +945,7 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
 - Most Popular：插件总安装量榜
 - Recently Added：最新发布的插件
 
-### 4.2 优秀的插件
-
-#### 4.2.1 Web 开发利器
-
-- **Debugger for Chrome**
-  Debugger for Chrome 插件除了可以调试运行在 Google Chrome 浏览器中的 JS 代码，还可以调试运行在支持 Chrome DevTools Protocol 的浏览器中的 JS 代码，如:Chromium 浏览器和其他基于 Blink 渲染引擎的浏览器。
-
-  > 例：[launch.json](/.vscode/launch.json) 中的 "Launch chrome Current File"
-
-  如果想要将 VSCode 附加到 Chrome 浏览器，需要在远程调试模式下启动 Chrome 浏览器，针对不同系统，在命令行输入不同的命令来启动 Chrome 浏览器。
-
-  - 在 Windows 下：`<path to chrome>/chrome.exe --remote-debugging-port=9222`
-    也可以直接打开 Chrome 快捷方式的属性 -> 目标，在最后添加 空格 + `--remote-debugging-port=9222`
-
-  - 在 macOS 下：`/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote--debugging-port=9222`
-  - 在 Linux 下：`google-chrome --remote-debugging-port=9222`
-
-  > 例：[launch.json](/.vscode/launch.json) 中的 "Attach to url with files served from ./out"
-
-- **Debugger for Firefox**
-  Debugger for Firefox 插件除了可以调试运行在 Firefox 浏览器中的 JS 代码，还可以调试 Firefox 浏览器插件。需要设置 Firefox 浏览器启动文件的绝对路径。
-
-  > 例：[launch.json](/.vscode/launch.json) 中的 "Launch firefox Current File"
-
-- **SQL Server(mssql)**
-  支持连接到 Microsoft SQL Server，还支持连接到 Azure SQL Database 和 Azure Synapse Analytics。插件主要包含以下几个功能：
-
-  - 创建和管理数据库连接，以及最近使用的数据库连接
-  - T-SQL 的编辑支持，包括智能提示、代码片段、语法高亮、错误检测等
-  - 执行 SQL 脚本，并且以表格的形式展示结果
-  - 把 SQL 脚本运行的运行结果以 JSON 或 CSV 格式保存
-
-#### 4.2.2 提高开发性能
-
-- **Code Spell Checker**
-  可以对代码进行拼写检查，并且提供了自动修复的功能
-
-- **Better Comments**
-  为数十种语言提供了更好的代码注释功能。插件把注释分为警告、高亮、待办事项等分类，并提供了不同的颜色显示。
-
-- **Image Preview**
-  通过这个插件，可以方便快捷的预览图片，支持 SVG、PNG、JPG、GIF 等多种图片格式。
-
-- **Output Colorizer**
-  插件为 .log 日志文件和 VSCode 的输出面板提供了语法高亮功能。方便进行日志分析。
-
-- **Debug Visualizer**
-  插件提供了实时的可视化调试方式，可以一键解析数据结构，并支持多种主流的编程语言。
-
-- **EditorConfig for VSCode**
-  可以在不同的编辑器和 IDE 之间定义和维护一致的编码样式。通过一个名为 `.editorconfig` 的文件，可以定义统一的编码样式。
-
-  在安装了 EditorConfig for VSCode 插件后，打开任何一个文件时，插件都会从当前文件夹开始向它的父文件夹寻找 `.editorconfig` 文件，直到找到一个最上层的 `.editorconfig` 文件，或者找到一个包含 `root=true` 的 `.editorconfig` 文件。
-
-  > `.editorconfig` 文件的匹配规则是从上往下的，即先定义的规则优先级比后定义的要高。
-
-  EditorConfig for VSCode 插件支持以下设置项：
-
-  - `indent_style`：设置缩进分割，可以设置为 tab 或 space
-  - `indent_size`：设置缩进的大小
-  - `tab_width`：设置 tab 的大小，默认情况下与 indent_size 的值相同
-  - `end_of_line`：设置结尾换行符，可设置为 If、cr 或 crIf
-  - `insert_final_newline`：保存文件时，是否在文件末尾添加换行符
-  - `trim_trailing_whitespace`：保存文件时，是否删除多余的空白字符
-
-#### 4.2.3 好用的工具类插件
-
-- **Polacode**
-  插件可以把选中的代码导出为图片格式，并且完全保留代码在 VSCode 中原本的字体和颜色主题。在命令面板中，输入 Polacode 并执行。
-
-- **TODO Tree**
-  插件可以把当前工作区中所有代码的 TODO 标签的内容显示在树状视图中。可以方便的通过树状视图在不同的 TODO 标签中跳转。
-
-- **Bookmarks**
-  可以为任何一行代码添加书签，并跳转到不同的书签。
-
-- **Paste JSON as code**
-  可以把 JSON 或 TS 转换成其他编程语言，包括 TS、Python、GO、Ruby、Java、Swift、C++、JS 等。
-
-#### 4.2.4 容器开发
-
-- **Docker**
-  为 **Docker** 和 Docker Compare 提供了语法高亮、静态代码检查、智能代码提示等语言功能。此外，插件还提供了 Docker 资源管理器，可以方便地查看和管理 Docker 容器、镜像、网络等。
-
-- **Kubernetes**
-  插件为 Kubernetes 开发提供了极为丰富的功能，可以在 VSCode 中开发、部署和调试 Kubernetes 应用程序。
-
-#### 4.2.5 移动开发
-
-- **Flutter**
-  可以让开发者高效地编辑、运行并调试 Flutter 应用程序，并支持 Dart 语言。
-
-- **Cordova tools**
-  为 Apache Cordova 开发提供了代码提示、调试、集成命令等功能。
-
-- **Ionic Snippets**
-  为加速 Ionic 开发提供了丰富的代码片段
-
-#### 4.2.6 其他
+### 4.1 有趣的插件
 
 **REST Client**
 测试 REST API 的工具。REST API 是前后端分离最佳实践，是开发的一套标准或者说是一套规范。REST Client 支持 `cURL` 和 `RFC2616` 这两种业界标准来调用 REST API。
@@ -888,10 +987,8 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
   默认情况下，Code Runner 会把运行输出结果打印在输出面板中。在 Code Runner 插件的 GitHub 上，用户最多的问题是如何解决乱码问题和怎样支持输入。通过 `Run Code configuration: Run In Terminal` 设置，把代码放到 VSCode 内置的集成终端来运行，就可以解决上面的两个问题。
 
 - 自定义运行逻辑
-  在 settings.json 文件中，添加 `code-runner.executorMap` 设置，然后就可以对不同的语言设置自定义的运行逻辑了。
-
-**indent-rainbow**
-缩进颜色支持
+  **Debug Visualizer**
+  插件提供了实时的可视化调试方式，可以一键解析数据结构，并支持多种主流的编程语言。
 
 **Peacock**
 为 VSCode 窗口配置颜色。
@@ -899,13 +996,11 @@ VSCode 的多目标调试支持同时调试多个应用程序的代码。在 `la
 - 命令面板 -> Peacock：Change to a Favorite Color 选择颜色
 - 设置 -> peacock.surpriseMeOnStartup 是否为新开的 VSCode 窗口随机选择一个颜色
 
-**Git 集成**：
+**Polacode**
+插件可以把选中的代码导出为图片格式，并且完全保留代码在 VSCode 中原本的字体和颜色主题。在命令面板中，输入 Polacode 并执行。
 
-- GitHub Pull requests
-  GitHub 的代码审查插件
-
-- GitLens
-  功能非常丰富的 git 插件
+**Paste JSON as code**
+可以把 JSON 或 TS 转换成其他编程语言，包括 TS、Python、GO、Ruby、Java、Swift、C++、JS 等。
 
 ## 五. 语言深入
 
@@ -997,11 +1092,7 @@ VSCode 对 JS 支持以下几种重构命令：
 
 #### 5.2.8 整理导入语句
 
-通过 Organize Imports 源代码操作，可以对 JS 的 import 语句进行排序，并且移除没有使用的导入语句，使用方式：
-
-- 右键菜单选择 **Source Action** 选项，然后选择 `Organize Imports` 命令
-
-- 快捷键 `Shift + Alt + O`
+通过 Organize Imports 源代码操作，可以对 JS 的 import 语句进行排序，并且移除没有使用的导入语句，快捷键为 `Shift + Alt + O`。
 
 通过以下设置，还可以在保存文件时自动触发导入语句的整理：
 
@@ -1013,13 +1104,11 @@ VSCode 对 JS 支持以下几种重构命令：
 
 #### 5.2.9 文件移动时更新导入语句
 
-在 JS 项目中，如果一个文件被其他文件引用，那么当它被移动或改名时，VSCode 可以自动更新所有相关的导入语句的文件路径。
-
 通过 `"javascript.updateImportsOnFileMove.enabled"` 设置项可以进行进一步配置，该配置项的可选值如下：
 
-- prompt：默认值。在更新前会弹窗询问是否要更新路径
-- always：自动更新路径
-- never：不更新路径
+- `prompt`：默认值。在更新前会弹窗询问是否要更新路径
+- `always`：自动更新路径
+- `never`：不更新路径
 
 #### 5.2.10 引用的 CodeLens
 
@@ -1035,16 +1124,15 @@ JS 代码支持会在类、函数、属性等上方的 CodeLes 上显示代码�
 
 VSCode 自带的类型检查工具可以与其他 JS 检测工具（如：ESlint、JSHint）并存。可以通过以下方式启用：
 
-- 按文件启用
-  启用类型检查最简单的方式就是在 JS 文件的顶部添加 `//@ts-check`
+- **按文件启用**
 
-  > 在 JS 文件的顶部添加 `// @ts-nocheck`，可以针对某一个文件禁用类型检查。此外，在代码的前一行添加 `//@ts-ignore` 可以禁用当前行的类型检查。
+  在 JS 文件的顶部添加 `// @ts-nocheck`，可以针对某一个文件禁用类型检查。此外，在代码的前一行添加 `//@ts-ignore` 可以禁用当前行的类型检查。
 
-- 使用 `jsconfig.json` 或 `tsconfig.json` 启用
-  如果项目中包含 `jsconfig.json` 或 `tsconfig.json` 文件，那么可以在编辑器选项中添加 `"checkJs":true`，如下：
+- **使用 `jsconfig.json` 或 `tsconfig.json` 启用**
+
+  如果项目中包含 `jsconfig.json` 或 `tsconfig.json` 文件，那么可以在编辑器选项中添加 `"checkJs":true`：
 
   ```json
-  // 在 jsconfig.json 文件中添加 "checkJs":true
   {
     "compilerOptions": {
       "checkJs": true
@@ -1052,122 +1140,6 @@ VSCode 自带的类型检查工具可以与其他 JS 检测工具（如：ESlint
     "exclude": ["node_modules", "**/node_modules/*"]
   }
   ```
-
-  ```json
-  // 在 tsconfig.json 文件中添加 "checkJs":true
-  {
-    "compilerOptions": {
-      "allowJs": true,
-      "checkJs": true
-    },
-    "exclude": ["node_modules", "**/node_modules/*"]
-  }
-  ```
-
-#### 5.2.12 调试
-
-通过 VSCode 内置的调试器，即可调试 Node.js 的应用。
-
-##### 5.2.12.1 服务器端调试
-
-###### 5.2.12.1.1 一键调试
-
-在相应的代码行按下 F9 快捷键添加断点，或者单击编辑区域左侧的边槽。添加断点后，左侧的边槽会出现一个红色圆点。然后，切换到调试视图，启动 JS 调试器。可以打开调试控制台，对 JS 变量和表达式直接进行计算。
-
-###### 5.2.12.1.2 创建调试配置
-
-对于一些复杂的项目，需要创建调试配置，以便后续进行定制化操作。
-
-VSCode 的调试配置会被存储在 `.vscode` 文件夹下的 launch.json 文件中，可以通过下面的步骤来创建一个调试配置：
-
-1. 切换到视图，点击添加配置
-
-2. VSCode 会在 `.vscode` 文件夹中创建并打开一个 `launch.json` 文件，该文件中定义了调试所需的配置。
-
-###### 5.2.12.1.3 调试配置属性
-
-对于调试 Node.js 应用，VSCode 支持两种调试模式：`launch`（启动） 和 `attach`（附加）。
-
-在 launch.json 文件中，除了基本的调试属性（如:type、request、name 等），Node.js 调试器还有一些特殊的属性：
-
-可以被定义在 `launch` 和 `attach` 的调试配置中：
-
-| 属性                                 | 作用                                                                                                                     |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| **protocol**                         | 调试协议                                                                                                                 |
-| **port**                             | 调试端口                                                                                                                 |
-| **address**                          | 调试端口的 TCP/IP 地址。                                                                                                 |
-| **sourceMaps**                       | 是否启用源代码映射。默认值为 true                                                                                        |
-| **outFiles**                         | 定义生成的 JS 文件的位置                                                                                                 |
-| **restart**                          | 在调试会话结束后，是否重启 Node.js 调试器。默认值为 false                                                                |
-| **timeout**                          | 定义何时重启一个调试会话。单位为毫秒                                                                                     |
-| **stopOnEntry**                      | 是否在程序入口设置断点                                                                                                   |
-| **localRoot**                        | 定义本地的根目录。在远程调试中使用                                                                                       |
-| **remoteRoot**                       | 定义远程的根目录。在远程调试中使用                                                                                       |
-| **smartStep**                        | 在调试过程中，是否智能地忽略没有定义在源代码映射中的文件                                                                 |
-| **skipFiles**                        | 定义在调试过程中需要忽略的文件                                                                                           |
-| **trace**                            | 是否输出诊断信息                                                                                                         |
-| 只能被定义在 **launch** 的调试配置中 |
-| **program**                          | Node.js 应用程序的绝对路径                                                                                               |
-| **args**                             | 传给 Node.js 应用程序的参数                                                                                              |
-| **cwd**                              | 指定调试器的工作目录。默认值是 `${workspaceFolder}`(在 VSCode 中打开的文件夹的完整路径)                                  |
-| **runtimeExecutable**                | Node.js 运行时的绝对路径。默认值为 node                                                                                  |
-| **runtimeArgs**                      | 传给运行时的参数。                                                                                                       |
-| **runtimeVersion**                   | 定义运行时的版本                                                                                                         |
-| **env**                              | 设置环境变量                                                                                                             |
-| **envFile**                          | 设置.env 文件的路径                                                                                                      |
-| **console**                          | 设置程序输出在哪里。该属性的可选值如下:                                                                                  |
-| -                                    | **internalConsole**：在 VSCode 的调试控制台输出，该值为默认值                                                            |
-| -                                    | **integratedTerminal**：在 VSCode 的集成终端输出                                                                         |
-| -                                    | **externalTerminal**：在系统的终端输出                                                                                   |
-| -                                    | -                                                                                                                        |
-| **outputCapture**                    | 如果设置为 std，那么 Node.js 进程的 stdout（标准输出）和 stderr（标准错误）就会显示在调试控制台中。                      |
-| **autoAttachChildProcesses**         | 是否自动附加被调试进程中的所有子进程。默认值为 false。                                                                   |
-| **userDataDir**                      | 指定用户数据目录，保存比如浏览记录、cookies、插件、书签、网站的数据等                                                    |
-| 只能被定义在 **attach** 的调试配置中 |
-| **processId**                        | 可以定义附加的进程 ID，如果被设置为 `${command:PickProcess}`，那么可以在调试器启动时显示的进程列表中选择需要调试的进程。 |
-
-###### 5.2.12.1.4 附加到 Node.js 程序
-
-如果想把 VSCode 的 Node.js 调试器附加到 Node.js 应用程序，就需要在调试模式下启动 Node.js 应用程序，在 VSCode 的集成终端运行以下命令：
-
-> `node --inspect program.js`
-
-如果需要让 Node.js 应用程序等待调试而不运行，则在 VSCode 的集成终端运行以下命令：
-
-> `node --inspect-brk program.js`
-
-VSCode 提供了 3 种方式可以使调试器**附加**到 Node.js 应用程序：
-
-- 自动附加
-  打开命令面板，输入并执行 `Toggle Auto Attach` 命令。
-  在启动 Node.js 应用程序时，只要添加了 **--inspect、--inspect-brk、--inspect-port、--debug、--debug-brk、--debug-port** 中的任何一个参数，Node.js 调试器就可以自动附加到该应用程序。
-
-- `Attach to Node Process` 命令
-  打开命令面板，然后输入并执行 `Attach to Node Process` 命令。
-  会显示所有的 Node.js 进程列表。选择要调试的进程，Node.js 调试器就会附加到相应的进程。
-
-- 创建"附加"调试配置
-  如果一个 Node.js 进程没有在调试模式下启动，那么通过指定进程**ID(processId)** ，Node.js 调试器依旧可以附加到相应的进程。
-  通过把 processId 属性设置为 `${command:PickProcess}`，可以使调试器在启动时动态地显示 Node.js 进程列表，可以方便地选择需要调试的 Node.js 进程。
-
-  > 例：[launch.json](/.vscode/launch.json) -> "Attach to Process"
-
-###### 5.2.12.1.5 远程调试
-
-VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 文件中添加一个 `address` 属性即可。
-
-> 例：[launch.json](/.vscode/launch.json) -> "Attach to remote"
-
-默认情况下，VSCode 会把远程 Node.js 程序文件中的源代码展示在本地，但这些文件都是只读的。可以对文件中的源代码进行单步调试，但不可以修改它。
-
-如果想在 VSCode 中打开可编辑的源代码，那么就需要**设置远程文件夹与本地文件夹的映射**。在 launch.json 文件中。可以通过添加 `localRoot` 和 `remoteRoot` 属性来进行映射。`localRoot` 用于定义本地文件夹的根目录，`remoteRoot` 则用于定义远程文件夹的根目录。
-
-> 例：[launch.json](/.vscode/launch.json) -> "Attach to remote Edit Source code"
-
-###### 5.2.12.1.6 客户端调试
-
-[调试与运行](#35-调试与运行)
 
 #### 5.2.13 静态代码检查
 
@@ -1187,30 +1159,6 @@ VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 
   - 并行的运行测试
   - 保存文件时自动运行测试
 
-#### 5.2.15 JS 插件推荐
-
-- Path IntelliSense
-  在 JS 文件中，通过 Path IntelliSense 插件可以对文件路径进行自动补全。此外，该插件也支持在 HTML 和 CSS 文件中对文件路径进行自动补全。
-
-- Import Cost
-  在 JS 和 TS 文件中，通过 Import Cost 插件可以内联地显示导入的 npm 包的大小。通过以下格式的代码可计算出 npm 包的大小：
-
-  - `import Func from "utils";`
-  - `import * as Utils from "utils";`
-  - `import {Func} from "utils";`
-  - `import {orig as alias} from "utils";`
-  - `import Func from "utils/Func";`
-  - `const Func = require('utils').Func;`
-
-- CodeMetrics
-  插件可以计算代码的复杂度，对于复杂度高的代码给出详细的信息。开发者可以根据复杂度的提示来优化代码。插件支持 JS、TS、和 Lua 三种语言的代码复杂度计算。
-
-- JavaScript Booster
-  提供了数十种代码操作，可以帮助开发者轻松重构并优化 JS 代码。
-
-- Turbo Console Log
-  Turbo Console Log 插件可以根据 JS 代码的上下文自动生成有意义的 `console.log();` 代码，以便以后进行运行和调试。
-
 ### 5.3 TypeScript
 
 TypeScript 是 JS 的超集，可以编译成 JS。与 JS 类似，不需要安装额外的插件，VSCode 为 TypeScript 提供了开箱即用的支持，包括但不限于：IntelliSense、调试、代码格式化、代码导航、代码重构、以及其他高级功能。
@@ -1225,8 +1173,8 @@ TypeScript 是 JS 的超集，可以编译成 JS。与 JS 类似，不需要安�
 
 3. 一键运行 TypeScript
    在 VSCode 中使用 Code Runner 插件，可以一键运行 TypeScript 代码。但是，需要安装 **ts-node**，ts-node 是一个基于 Node.js 的 TS 执行器。
-   安装 ts-node，需要 Node.js 运行时及 TypeScript 编译器，在命令行输入 `npm install -g ts-node` 命令，安装 ts-node
-   在安装了 Code Runner 插件后，可以使用以下几种方式快捷的运行代码：
+
+   安装 ts-node，需要 Node.js 运行时及 TypeScript 编译器，在命令行输入 `npm install -g ts-node` 命令，安装 ts-node。在安装了 Code Runner 插件后，可以使用以下几种方式快捷的运行代码：
 
    - 输入快捷键 `Ctrl + Alt + N`
    - 通过 `Ctrl + Shift + P` 快捷键打开命令面板，输入并执行 Run Code
@@ -1247,13 +1195,13 @@ TS 提供了丰富的项目设置和编译设置，以便后续进行项目管�
 
 - 在 tsc 命令中添加 `--sourcemap` 参数，如下:
 
-  ```sh
-  tsc hello.ts --sourcemap
-  ```
+```sh
+tsc hello.ts --sourcemap
+```
 
 - 在 `tsconfig.json` 文件中添加 `sourceMap` 属性，并将该属性设置为 `true`，然后在集成终端中输入 `tsc` 并执行。
 
-  > 例：[tsconfig.json](./演示文件/tsconfig.json)
+> 例：[tsconfig.json](./演示文件/tsconfig.json)
 
 通过以上任意一种方式，都会生成一个 `file.js.map` 的源代码映射文件。
 
@@ -1277,8 +1225,8 @@ TS 提供了丰富的项目设置和编译设置，以便后续进行项目管�
 - 调试配置
   TS 文件在调试前，需要编译，所以使用了以下两个属性：
 
-  - preLaunchTask：定义了在调试前要运行的任务（在 tasks.json 文件中设置），在调试 TS 之前，需要先编译 TS 文件
-  - outFiles：定义了 JS 文件的输出路径，优先级小于 tsconfig.json 中的定义。
+  - `preLaunchTask`：定义了在调试前要运行的任务（在 tasks.json 文件中设置），在调试 TS 之前，需要先编译 TS 文件
+  - `outFiles`：定义了 JS 文件的输出路径，优先级小于 tsconfig.json 中的定义。
 
 ### 5.4 代码编辑
 
@@ -1471,17 +1419,6 @@ VSCode 可以自定义额外的 CSS 数据格式。自定义的 CSS 属性、伪
 
 2. 在 settings.json 文件中通过 `"css.customData"` 设置项引用相应的 CSS 数据格式文件。
 
-#### 6.2.9 CSS 插件提示
-
-1. HTML CSS Support
-   这个插件为多种 HTML 相关语言提供了 CSS 的自动补全功能。
-
-2. SCSS IntelliSense
-   这个插件为 SCSS 语言提供了丰富的支持。
-
-3. Easy LESS
-   每次保存 LESS 文件后，这个插件都会自动编译 Less 文件，然后生成 CSS 文件。还可以通过 `Ctrl + Shift + P` 快捷键打开命令面板，然后输入并执行 `Compile LESS to CSS` 命令。
-
 ### 6.3 Emmet
 
 Emmet 是 Web 开发者必不可少的工具，为 HTML 和 CSS 提供了丰富的功能，VSCode 内置了 Emmet。
@@ -1492,7 +1429,7 @@ Emmet 是 Web 开发者必不可少的工具，为 HTML 和 CSS 提供了丰富�
 
 #### 6.3.2 在 HTML 中使用 Emmet
 
-在 HTML 文件中输入以下 [Emmet](/frontend/前端工具/Emmet.md) 缩写：`#page>div.log+ul#navigation>li\*5>a{Item $}`
+在 HTML 文件中输入以下 [Emmet](/frontend/常用工具/Emmet.md) 缩写：`#page>div.log+ul#navigation>li\*5>a{Item $}`
 
 在输入 Emmet 缩写的过程中，Emmet 缩写会出现在建议列表中，并且会有相应的 HTML 预览。按下 `Tab` 键或 `Enter` 键，VSCode 会在 HTML 文件中插入代码。
 
@@ -1549,22 +1486,9 @@ Vue 是一个用于构建 Web 应用用户界面的 JS 库。VSCode 内置了对
 3. 运行 Vue 应用
    在 VSCode 中打开集成终端，并输入 `npm run serve` 命令，可以运行 Vue 应用，本地端口默认为 8080
 
-#### 6.4.2 Vetur 插件
-
-Vetur 插件为 Vue 开发提供了极为丰富的支持，功能包括但不限于：
-
-- 语法高亮
-- 代码片段提示
-- Emmet 缩写
-- 静态代码检查
-- 代码格式化
-- 自动补全
-- 调试
-
-#### 6.4.3 调试 Vue
+#### 6.4.2 调试 Vue
 
 1. 添加断点
-   打开需要调试的 Vue 文件，在相应的代码处添加断点。
 
 2. 配置调试文件：
 
@@ -1577,25 +1501,15 @@ Vetur 插件为 Vue 开发提供了极为丰富的支持，功能包括但不限
          "request": "launch",
          "name": "vuejs: chrome",
          "url": "http://localhost:7878",
-         "webRoot": "${workspaceFolder}/src",
-         "sourceMapPathOverrides": {
-           // 对应浏览器 sources下 webpack:/// 的 .目录 和 src目录
-           "webpack://project_name/src/*": "${webRoot}/*",
-           "webpack://project_name/./src/*.js": "${webRoot}/*.js"
-         }
+         "webRoot": "${workspaceFolder}"
        },
        {
          "name": "vuejs: attach chrome",
          "type": "chrome",
          "request": "attach",
          "port": 9222,
-         "webRoot": "${workspaceFolder}/src",
-         "url": "http://localhost:7878",
-         "sourceMapPathOverrides": {
-           // 对应浏览器 sources下 webpack:/// 的 .目录 和 src目录
-           "webpack://gcls_sys_learn_web/src/*": "${webRoot}/*",
-           "webpack://gcls_sys_learn_web/./src/*.js": "${webRoot}/*.js"
-         }
+         "webRoot": "${workspaceFolder}",
+         "url": "http://localhost:7878"
        }
      ]
    }
@@ -1603,7 +1517,7 @@ Vetur 插件为 Vue 开发提供了极为丰富的支持，功能包括但不限
 
 3. 配置 Webpack
 
-   需要为 Webpack 配置源代码映射的设置项。在 Vue 项目的根目录中创建一个**vue.config.js**文件，然后在文件中填入以下配置：
+   需要为 Webpack 配置源代码映射的设置项。在 Vue 项目的根目录中创建一个 `vue.config.js` 文件，然后在文件中填入以下配置：
 
    ```js
    module.exports = {
@@ -1613,7 +1527,7 @@ Vetur 插件为 Vue 开发提供了极为丰富的支持，功能包括但不限
    };
    ```
 
-4. 使用 `npm run dev` 运行 Vue 应用
+4. 使用 `npm run dev` 运行 Vue
 
 5. 启动调试
 
@@ -1623,11 +1537,7 @@ Vetur 插件为 Vue 开发提供了极为丰富的支持，功能包括但不限
    - 使用 `F5` 快捷键
    - 通过左侧的活动栏切换到调试视图，然后单击绿色的调试按钮
 
-#### 6.4.4 静态代码检查
-
-Vetur 插件总内置了 **Vue ESLint** 插件（eslint-plugin-vue），为 Vue 提供了强大的静态代码检查功能。对于检查出的错误或警告，会在代码下方显示波浪线，把鼠标悬停在代码上，会显示详细的错误提示信息。
-
-#### 6.4.5 Vue 设置 VSCode 识别别名
+#### 6.4.3 Vue 设置 VSCode 识别别名
 
 安装 Path intellisense，打开 `setting.json` 文件添加以下代码：
 

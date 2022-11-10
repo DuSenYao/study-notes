@@ -24,60 +24,36 @@
       "outFiles": ["!**/node_modules/**"]
     },
     {
-      "name": "Launch Node",
-      "type": "node",
-      "request": "launch",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "${file}"
-    },
-    // 通过把 processId 属性设置为 ${command:PickProcess}，可以使调试器在启动时动态地显示 Node.js 进程列表
-    {
-      "name": "Attach to Process",
-      "type": "node",
-      "request": "attach",
-      "processId": "${command:PickProcess}"
-    },
-    {
       "name": "Launch chrome localhost",
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost/mypage.html",
-      "webRoot": "${workspaceFolder}/root"
+      "webRoot": "${workspaceFolder}/root",
+      "presentation": {
+        "hidden": false,
+        "group": "Chrome",
+        "order": 1
+      }
     },
-    // 将 VSCode 附加到 Chrome 浏览器，需要在远程调试模式下启动 Chrome 浏览器，在命令行输入命令来启动 Chrome 浏览器
     {
-      "name": "Attach to url with files served from ./out",
-      "type": "chrome",
-      "request": "attach",
-      "port": 9222,
-      "url": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
-      "webRoot": "${workspaceFolder}/out"
+      "name": "调试 eslint api",
+      "program": "${workspaceFolder}/api-test.js",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "type": "node"
     },
     {
       "name": "Launch Chrome",
       "request": "launch",
       "type": "chrome",
       "url": "http://localhost:8080",
-      "webRoot": "${workspaceFolder}"
-    },
-    // 远程调试，只需要添加一个address属性
-    {
-      "type": "node",
-      "request": "attach",
-      "name": "Attach to remote",
-      "address": "TCP/IP address of process to be debugged",
-      // 9229 是 --inpect 和 --inspect-brk的默认调试端口
-      "port": 9229
-    },
-    // 远程调试，设置本地文件夹的根目录（localRoot），设置远程文件夹的根目录（remoteRoot），设置后，可以在本地打开远程的可编辑源代码
-    {
-      "type": "node",
-      "request": "attach",
-      "name": "Attach to remote Edit Source code",
-      "address": "TCP/IP address of process to  be debugger",
-      "port": 9229,
-      "localRoot": "${workspaceFolder}",
-      "remoteRoot": "C:\\User\\username\\progject\\server"
+      "webRoot": "${workspaceFolder}",
+      "presentation": {
+        "hidden": false,
+        "group": "Chrome",
+        "order": 1
+      }
     }
   ],
   "compounds": [
