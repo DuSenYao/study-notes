@@ -33,7 +33,7 @@
       - [2.4.2 用对象来模拟函数和构造器：函数对象和构造器对象](#242-用对象来模拟函数和构造器函数对象和构造器对象)
       - [2.4.3 特殊行为的对象](#243-特殊行为的对象)
   - [三. JS 的执行](#三-js-的执行)
-    - [3.1 Promise、async/await](#31-promise-asyncawait)
+    - [3.1 Promise 和 async/await](#31-promise-和-asyncawait)
       - [3.1.1 宏观和微观任务](#311-宏观和微观任务)
       - [3.1.2 Promise](#312-promise)
       - [3.1.3 async/await](#313-asyncawait)
@@ -750,7 +750,7 @@ JS 用对象模拟函数的设计代替了一般编程语言中的函数，它�
 
 任何对象只要实现了 `[[call]]`，它就是一个函数对象，可以作为函数去调用。如果它实现了 `[[construct]]`，它就是一个构造器对象，可以作为构造器被调用。
 
-用 `function` 关键字创建的函数必定同时是函数和构造器。不过，它们表现出的效果并不相同。对于宿主和内置对象来说，它们实现[[call]](作为函数被调用) 和 [[construct]](作为构造函数被调用)不总是一致的。例如：内置函数 Date 在作为构造器被调用时产生新的对象，作为函数时，则产生字符串。
+用 `function` 关键字创建的函数必定同时是函数和构造器。不过，它们表现出的效果并不相同。对于宿主和内置对象来说，它们实现 `[[call]]`（作为函数被调用）和 `[[construct]]`（作为构造函数被调用）不总是一致的。例如：内置函数 Date 在作为构造器被调用时产生新的对象，作为函数时，则产生字符串。
 
 ```js
 console.log(typeof new Date()); // object
@@ -814,7 +814,7 @@ o.getValue(); //100
 
 ## 三. JS 的执行
 
-### 3.1 Promise、async/await
+### 3.1 Promise 和 async/await
 
 在 ES5 之后，JS 引入了 Promise，这样，不需要浏览器的安排，JS 引擎本身也可以发起任务了。
 
@@ -855,9 +855,9 @@ sleep(1000).then(() => console.log('finished'));
 
 Promise 有三个状态：
 
-1. pending[待定] 初始状态
-2. fulfilled[实现] 操作成功
-3. rejected[失败] 操作失败
+1. pending(待定) 初始状态
+2. fulfilled(实现) 操作成功
+3. rejected(失败) 操作失败
 
 当 Promise 状态发生改变，就会触发 `then()` 里的响应函数处理后续步骤，Promise 状态一旦改变，不会再变。
 
@@ -1773,9 +1773,11 @@ JS 语句执行的完成状态，可以用一个标准类型来表示：Completi
 
 Completion Record 表示一个语句执行完之后的结果，它有三个字段:
 
-- `[[type]]` : 表示完成的类型，有 `break` `continue` `return` `throw` 和 `normal` 几种类型
-- `[[value]]` : 表示语句的返回值，如果语句没有，则是 empty
-- `[[target]]` : 表示语句的目标，通常是一个 JS 标签
+- `[[type]]`：表示完成的类型，有 `break` `continue` `return` `throw` 和 `normal` 几种类型。
+
+- `[[value]]`：表示语句的返回值，如果语句没有，则是 empty。
+
+- `[[target]]`：表示语句的目标，通常是一个 JS 标签。
 
 JS 正是依靠语句的 Completion Record 类型，方才可以在语句的复杂嵌套结构中，实现各种控制。
 
@@ -2552,15 +2554,15 @@ let a = { b: {} };
 a.b?.c?.d; // undefined
 ```
 
-条件式属性访问也可以使用 `?.[]` 而非 `[]`。在表达式 `a?.[b][c]` 中，如果 a 的值是 nu1l 或 undefined，则整个表达式立即求值为 undefined，子表达式 b 和 c 不会被求值。换句话说，如果 a 没有定义，那么 b 和 c 无论谁有副效应(side effect)，这个副效应都不会发生
+条件式属性访问也可以使用 `?.[]` 而非 `[]`。在表达式 `a?.[b][c]` 中，如果 a 的值是 null 或 undefined，则整个表达式立即求值为 undefined，子表达式 b 和 c 不会被求值。换句话说，如果 a 没有定义，那么 b 和 c 无论谁有副效应（side effect），这个副效应都不会发生。
 
 ```js
-let a; // 忘记初始化这个变量了!
+let a; // 忘记初始化这个变量了
 let index = 0;
 try {
   a[index++]; //抛出 TypeError
 } catch (e) {
-  index; //抛出 TypeError 之前发生了递增
+  index; // 抛出 TypeError 之前发生了递增
 }
 a?.[index++]; // undefined: 因为 a 是 undefined
 index; // 1: 因为 ?.[] 短路所以没有发生递增
@@ -2626,7 +2628,7 @@ function square(x，log) { // 第二个参数是一个可选的函数
 
 > **注意**：`?.()` 只会检查左侧的值是不是 null 或 undefined，不会验证该值是不是函数。因此，这个例子中的 `square()` 函数在接收到两个数值时仍然会抛出异常。
 
-与[条件式属性访问表达式](#42521-条件式属性访问)类似，使用 `?.()` 进行函数调用也是短路操作: 如果 `?.` 左侧的值是 null 或 undefined，则圆括号中的任何参数表达式都不会被求值:
+与[条件式属性访问表达式](#4421-条件式属性访问)类似，使用 `?.()` 进行函数调用也是短路操作: 如果 `?.` 左侧的值是 null 或 undefined，则圆括号中的任何参数表达式都不会被求值:
 
 ```js
 let f = null,

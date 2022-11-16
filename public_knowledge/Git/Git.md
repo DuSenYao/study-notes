@@ -22,16 +22,16 @@
       - [1.2.3 文件操作](#123-文件操作)
         - [1.2.3.1 git add ./文件名/文件夹名](#1231-git-add-文件名文件夹名)
         - [1.2.3.2 git rm](#1232-git-rm)
-        - [1.2.3.3 git mv [file] [newFile]](#1233-git-mv-file-newfile)
+        - [1.2.3.3 git mv](#1233-git-mv)
         - [1.2.3.4 git restore](#1234-git-restore)
       - [1.2.4 远程操作](#124-远程操作)
         - [1.2.4.1 git remote](#1241-git-remote)
-        - [1.2.4.2 git fetch [alias]](#1242-git-fetch-alias)
-        - [1.2.4.3 git pull [<远程主机名> <远程分支名>:<本地分支名>]](#1243-git-pull-远程主机名-远程分支名本地分支名)
+        - [1.2.4.2 git fetch](#1242-git-fetch)
+        - [1.2.4.3 git pull](#1243-git-pull)
         - [1.2.4.4 git push <远程主机名> <本地分支名>:<远程分支名>](#1244-git-push-远程主机名-本地分支名远程分支名)
       - [1.2.5 分支操作](#125-分支操作)
         - [1.2.5.1 git branch](#1251-git-branch)
-        - [1.2.5.2 git checkout [分支名]](#1252-git-checkout-分支名)
+        - [1.2.5.2 git checkout <分支名>](#1252-git-checkout-分支名)
         - [1.2.5.3 git merge](#1253-git-merge)
       - [1.2.6 版本操作](#126-版本操作)
         - [1.2.6.1 git commit](#1261-git-commit)
@@ -270,15 +270,15 @@ git rm hello.txt
   git rm –r *
   ```
 
-##### 1.2.3.3 git mv [file] [newFile]
+##### 1.2.3.3 git mv
 
 用于移动或重命名一个文件、目录或软连接：
 
-- `-f`：重命名
+```sh
+git mv [file] [newfile]
+```
 
-  ```sh
-  git mv -f hello.txt hello.css
-  ```
+- `-f`：强制重命名
 
 ##### 1.2.3.4 git restore
 
@@ -320,27 +320,29 @@ git restore public_knowledge\Git\Git.md
 
 - `add <name> <new url>`: :在本地仓库添加一个远程仓库
 
-##### 1.2.4.2 git fetch [alias]
+##### 1.2.4.2 git fetch
 
 用于从远程获取代码库：
 
 ```sh
-git fetch origin main
+git fetch origin
 ```
 
 取回更新后，会返回一个 `FETCH_HEAD` ，指的是某个 branch 在远程仓库上的最新状态，可以在本地使用 `git log -p FETCH_HEAD` 来查看这个分支的更新信息，可以看到返回的信息包括更新的文件名，更新的作者和时间，以及更新的代码。
 
 通过这些信息来判断是否产生冲突，以确定是否将更新 `merge` 到当前分支。
 
-##### 1.2.4.3 git pull [<远程主机名> <远程分支名>:<本地分支名>]
+##### 1.2.4.3 git pull
 
 从远程获取代码并合并本地的版本，其实就是 `git fetch` 和 `git merge FETCH_HEAD` 的简写
 
-> **例 1**：`git pull origin master` // 如果远程分支是与当前分支合并，则冒号后面的部分可以省略
-> **例 2**：`git pull origin master:main` // 将远程主机 origin 的 master 分支拉取过来，与本地的 main 分支合并
+```sh
+git pull origin master # 如果远程分支是与当前分支合并，则冒号后面的部分可以省略
 
-- `--rebase`：push 失败，需要先把服务器上的代码给 pull 下来，为了避免有 merge 动作，可以使用
-  > 相当于 git fetch + git rebase FETCH_HEAD
+git pull origin master:main # 将远程主机 origin 的 master 分支拉取过来，与本地的 main 分支合并
+```
+
+- `--rebase`：push 失败，需要先把服务器上的代码给 pull 下来，为了避免有 merge 动作，可以使用。相当于 `git fetch + git rebase FETCH_HEAD`。
 
 ##### 1.2.4.4 git push <远程主机名> <本地分支名>:<远程分支名>
 
@@ -388,23 +390,23 @@ git push origin master:master
 - `-D <branchName>`：-D 是 `--delete --force` 的缩写，这样写可以在不检查 merge 状态的情况下删除分支
 - `-v`: 查看分支版本
 
-##### 1.2.5.2 git checkout [分支名]
+##### 1.2.5.2 git checkout <分支名>
 
 切换分支
 
-- `-b`: 创建并直接切换到新分支
+- `-b`：创建并直接切换到新分支
 
   ```sh
   git checkout -b test
   ```
 
-- `-- [file]`: 将工作区文件恢复为和暂存区一样
+- `-- [file]`：将工作区文件恢复为和暂存区一样
 
   ```sh
   git checkout -- index.html
   ```
 
-- `-b name origin/branchName`: 基于远程的分支创建一个本地的分支，并切换到新分支
+- `-b name origin/branchName`：基于远程的分支创建一个本地的分支，并切换到新分支
 
   ```sh
   git checkout -b dev origin/dev
@@ -424,9 +426,9 @@ git merge dev
   git merge origin/master
   ```
 
-- `--allow-unrelated-histories`: 用于合并后两个没有共同祖先的历史记录
+- `--allow-unrelated-histories`：用于合并后两个没有共同祖先的历史记录
 
-- `--continue`: 合并由于冲突停止后，可以使用这个参数继续合并
+- `--continue`：合并由于冲突停止后，可以使用这个参数继续合并
 
 #### 1.2.6 版本操作
 
@@ -649,8 +651,9 @@ git config --global core.editor "code -w"
 
 #### 1.4.1 git push 的强制推送
 
-强制推送 `-f`，即使不是 `fast-forward` [^1]
-[^1]: 当前分支合并到另一分支时，如果没有分歧，就会直接移动文件指针。这个过程叫做`fast-forward`。fast-forward 能够保证不会强制覆盖别人的代码，确保了多人协同开发。尽量不要使用 non fast forward 方法提交代码。
+强制推送 `-f`，即使不是 `fast-forward`[^1]
+
+[^1]: 当前分支合并到另一分支时，如果没有分歧，就会直接移动文件指针。这个过程叫做 `fast-forward`。fast-forward 能够保证不会强制覆盖别人的代码，确保了多人协同开发。尽量不要使用 non fast forward 方法提交代码。
 
 **危害**
 : 会使 commit 消失
@@ -676,10 +679,13 @@ git config --global core.editor "code -w"
    ssh-keygen -t ed25519 -C "1758231591@qq.com"
    ```
 
-   当系统提示 “输入要在其中保存密钥的文件” 时，按 Enter。这接受默认文件位置。
+   当系统提示 “输入要在其中保存密钥的文件” 时，可以按 Enter 接受默认文件位置。
+
+   如果之前创建了 SSH 密钥，ssh-keygen 可能会要求重写另一个密钥，在这种情况下，建议创建一个自定义命名的 SSH 密钥。键入默认文件位置并将 id_ssh_keyname 替换为自定义密钥名称：
 
    ```sh
-   > Enter a file in which to save the key (/c/Users/you/.ssh/id_algorithm):[Press enter]
+   # 输入的文件位置从 C:/User/用户名 开始
+   .ssh/id_cloud
    ```
 
 2. 将 SSH 密钥添加到 ssh-agent

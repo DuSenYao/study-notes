@@ -11,7 +11,7 @@
   - [二. 函数类](#二-函数类)
   - [三. JS 语句简化类](#三-js-语句简化类)
     - [3.1 带有多个条件的 if 语句](#31-带有多个条件的-if-语句)
-    - [3.2 null、undefined 和空值检查](#32-null-undefined-和空值检查)
+    - [3.2 null undefined 和空值检查](#32-null-undefined-和空值检查)
     - [3.3 使用 ?? 检查 null 或 undefined](#33-使用-检查-null-或-undefined)
     - [3.4 给多个变量赋值](#34-给多个变量赋值)
     - [3.5 用于多个条件判断的 && 操作符](#35-用于多个条件判断的-操作符)
@@ -25,6 +25,22 @@
     - [3.13 将 Object 转换为 Map](#313-将-object-转换为-map)
     - [3.14 重复字符串多次](#314-重复字符串多次)
     - [3.15 查找数组的最大值和最小值](#315-查找数组的最大值和最小值)
+  - [四. 命名规范](#四-命名规范)
+    - [4.1 js 中普通变量使用小写开头驼峰命名法，而非不区分大小写，或使用下划线命名](#41-js-中普通变量使用小写开头驼峰命名法而非不区分大小写或使用下划线命名)
+    - [4.2 如果不想让使用者使用的属性能够看到，需要使用下划线开头。例如 `_value`，代表内部的值，外部不应该直接访问](#42-如果不想让使用者使用的属性能够看到需要使用下划线开头例如-_value代表内部的值外部不应该直接访问)
+  - [五. 优化](#五-优化)
+    - [5.1 用 Class 取代需要 prototype 的操作](#51-用-class-取代需要-prototype-的操作)
+    - [5.2 简单的键值对数据结构优先使用 Map](#52-简单的键值对数据结构优先使用-map)
+    - [5.3 当独立参数超过 3 个时使用对象参数并解构](#53-当独立参数超过-3-个时使用对象参数并解构)
+    - [5.4 不要写多余的 await](#54-不要写多余的-await)
+    - [5.5 使用计算属性名替代使用方括号表示法赋值](#55-使用计算属性名替代使用方括号表示法赋值)
+    - [5.6 存放 id 标识列表使用 Set 而非数组](#56-存放-id-标识列表使用-set-而非数组)
+    - [5.7 不要先声明空对象然后一个个追加属性](#57-不要先声明空对象然后一个个追加属性)
+    - [5.8 不要使用无意义的函数包裹](#58-不要使用无意义的函数包裹)
+    - [5.9 不要使用三元运算符进行复杂的计算](#59-不要使用三元运算符进行复杂的计算)
+    - [5.10 如果变量有所关联则使用对象而非多个单独的变量](#510-如果变量有所关联则使用对象而非多个单独的变量)
+    - [5.11 使用类型定义参数对象](#511-使用类型定义参数对象)
+    - [5.12 尽量扁平化代码](#512-尽量扁平化代码)
 
 <!-- /code_chunk_output -->
 
@@ -70,7 +86,7 @@ if (['abc', 'def', 'ghi', 'jkl'].includes(x)) {
 }
 ```
 
-### 3.2 null、undefined 和空值检查
+### 3.2 null undefined 和空值检查
 
 当创建了新变量，有时候想要检查引用的变量是不是为非 null 或 undefined。JS 有一个很好的快捷方式来实现这种检查。
 
@@ -291,3 +307,134 @@ const arr = [1, 2, 3];
 Math.max(...arr); // 3
 Math.min(...arr); // 1
 ```
+
+## 四. 命名规范
+
+### 4.1 js 中普通变量使用小写开头驼峰命名法，而非不区分大小写，或使用下划线命名
+
+### 4.2 如果不想让使用者使用的属性能够看到，需要使用下划线开头。例如 `_value`，代表内部的值，外部不应该直接访问
+
+## 五. 优化
+
+### 5.1 用 Class 取代需要 prototype 的操作
+
+用 Class 取代需要 prototype 的操作。因为 Class 的写法更简洁，更易于理解。
+
+```js
+// bad
+function Queue(contents = []) {
+  this._queue = [...contents];
+}
+Queue.prototype.pop = function () {
+  const value = this._queue[0];
+  this._queue.splice(0, 1);
+  return value;
+};
+
+// good
+class Queue {
+  constructor(contents = []) {
+    this._queue = [...contents];
+  }
+
+  pop() {
+    const value = this._queue[0];
+    this._queue.splice(0, 1);
+    return value;
+  }
+}
+```
+
+### 5.2 简单的键值对数据结构优先使用 Map
+
+如果需要键值映射，不要使用一般的对象，而是用 ES6 的 [Map](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Map)。它不仅可以使用**任意类型的键**，另外 Map 本身也是有序的，有内建的遍历机制。
+
+```js
+const map = new Map().set(2, 'Tom').set(1, 'cat').set('age', 18);
+// [2, 1, "age"]，因为是按照插入顺序排序的
+console.log(Array.from(map.keys()));
+```
+
+### 5.3 当独立参数超过 3 个时使用对象参数并解构
+
+```js
+function hello({ name, age, sex }) {
+  return `name: ${name}, age: ${age}, sex: ${sex}`;
+}
+```
+
+### 5.4 不要写多余的 await
+
+如果 await 是不必要的（在返回语句时，那么就不要用 async 标识函数），这是没有必要的。除非，需要在这个函数内异步操作完成后有其他操作。
+
+### 5.5 使用计算属性名替代使用方括号表示法赋值
+
+ES6 已经有了[计算属性名](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Object_initializer#%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7%E5%90%8D)用以在初始化时计算属性名，所以不需要再先声明对象再使用方括号表示法进行赋值了。
+
+```js
+// es5
+const state = {
+  'user.name': function () {}
+};
+state[Date.now()] = new Date();
+
+// es6
+const state = {
+  'user.name' : function () {},
+  [Date.now()] : new Date();
+}
+```
+
+### 5.6 存放 id 标识列表使用 Set 而非数组
+
+使用 Set 可以从数据结构层面避免掉可能重复的问题：
+
+```js
+const item = {
+  id: 1,
+  role: new Set([1, 2]),
+  name: ''
+};
+```
+
+### 5.7 不要先声明空对象然后一个个追加属性
+
+### 5.8 不要使用无意义的函数包裹
+
+### 5.9 不要使用三元运算符进行复杂的计算
+
+### 5.10 如果变量有所关联则使用对象而非多个单独的变量
+
+### 5.11 使用类型定义参数对象
+
+如果一个函数需要一个对象参数，最好专门定义一个类型，并在注释上说明，便于在使用时 IDE 进行提示，而不需要去查找文档手册：
+
+```js
+/**
+ * 用户类
+ * @param {String} username 用户名
+ * @param {String} password 密码
+ * */
+class User {
+  constructor(userName, password) {
+    this.userName = userName;
+    this.password = password;
+  }
+}
+
+/**
+ * 格式化用户
+ * @param {User} user 格式化的用户对象
+ */
+function formatUser(user) {
+  const { username, password } = user || {};
+  return `user, username: ${username}, password: ${password}`;
+}
+
+const str = formatUser(new User('rx', '123456'));
+console.log(str);
+```
+
+### 5.12 尽量扁平化代码
+
+尽量将 a 调用 b, b 调用 c，然后 b 调用 d，优化为依次调用 a, b, c, d。

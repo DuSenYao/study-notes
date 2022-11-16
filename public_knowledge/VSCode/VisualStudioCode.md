@@ -1,10 +1,10 @@
-# VSCode 编辑器
+# VisualStudioCode
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
-- [VSCode 编辑器](#vscode-编辑器)
+- [VisualStudioCode](#visualstudiocode)
   - [一. 常用知识](#一-常用知识)
     - [1.1 常用快捷键](#11-常用快捷键)
       - [1.1.1 通用](#111-通用)
@@ -87,7 +87,7 @@
       - [6.1.5 代码折叠](#615-代码折叠)
       - [6.1.6 代码格式化](#616-代码格式化)
       - [6.1.7 自定义 HTML 数据格式](#617-自定义-html-数据格式)
-    - [6.2 CSS、SCSS 和 Less](#62-css-scss-和-less)
+    - [6.2 CSS/SCSS/Less](#62-cssscssless)
       - [6.2.1 IntelliSense](#621-intellisense)
       - [6.2.2 颜色预览](#622-颜色预览)
       - [6.2.3 颜色选择器](#623-颜色选择器)
@@ -917,7 +917,7 @@ VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 
   1. 在指定位置按 Shift + F9
   2. 调试之后，每次运行到该内联处的代码都会中断
 
-除了 VSCode 的断点，还有网页的 [DOM 断点](/frontend/浏览器/Chrome_DevTools/Chrome-DevTools.md#519-dom-断点)、[事件监听器断点](/frontend/浏览器/Chrome_DevTools/Chrome-DevTools.md#811-event-listener-断点)、[url 请求断点](/frontend/浏览器/Chrome_DevTools/Chrome-DevTools.md#46-xhrfetch-断点)。
+除了 VSCode 的断点，还有网页的 [DOM 断点](/frontend/浏览器/Chrome_DevTools/Chrome-DevTools.md#519-dom-断点)、[事件监听器断点](/frontend/浏览器/Chrome_DevTools/Chrome-DevTools.md#811-event-listener-断点)、[url 请求断点](/frontend/浏览器/Chrome_DevTools/Chrome-DevTools.md#812-xhr-提取断点)。
 
 ### 3.4 调试面板
 
@@ -1355,7 +1355,7 @@ VSCode 可以自定义额外的 HTML 数据格式。自定义的 HTML 标签、�
 
 > **注意**：仅能设置工作区文件夹。
 
-### 6.2 CSS、SCSS 和 Less
+### 6.2 CSS/SCSS/Less
 
 #### 6.2.1 IntelliSense
 

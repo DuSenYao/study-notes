@@ -379,7 +379,7 @@ axios.get('/user/12345').then(function (response) {
 });
 ```
 
-在使用 `catch` 时，或传递 `rejection callback` 作为 `then` 的第二个参数时，响应可以通过 `error` 对象可被使用，正如在[错误处理](#十-错误处理)这一节所讲。
+在使用 `catch` 时，或传递 `rejection callback` 作为 `then` 的第二个参数时，响应可以通过 `error` 对象可被使用，正如在[错误处理](#九-错误处理)这一节所讲。
 
 ## 七. 配置默认值
 

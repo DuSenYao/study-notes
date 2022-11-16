@@ -75,7 +75,7 @@
         - [2.12.12.3 函数重载解析顺序](#212123-函数重载解析顺序)
         - [2.12.12.4 重载函数的类型](#212124-重载函数的类型)
       - [2.12.13 函数中 this 值的类型](#21213-函数中-this-值的类型)
-        - [2.12.13.1 --noImplicitThis](#212131-noimplicitthis)
+        - [2.12.13.1 noImplicitThis 编译选项](#212131-noimplicitthis-编译选项)
         - [2.12.13.2 函数的 this 参数](#212132-函数的-this-参数)
     - [2.13 接口](#213-接口)
       - [2.13.1 接口声明](#2131-接口声明)
@@ -95,7 +95,7 @@
         - [2.15.1.1 类声明](#21511-类声明)
         - [2.15.1.2 类表达式](#21512-类表达式)
       - [2.15.2 成员变量](#2152-成员变量)
-        - [2.15.2.1 --strictPropertyInitialization](#21521-strictpropertyinitialization)
+        - [2.15.2.1 strictPropertyInitialization 编译选项](#21521-strictpropertyinitialization-编译选项)
         - [2.15.2.2 readonly 属性](#21522-readonly-属性)
       - [2.15.3 成员函数](#2153-成员函数)
       - [2.15.4 成员存取器](#2154-成员存取器)
@@ -221,7 +221,7 @@
         - [3.11.1.1 typeof 类型守卫](#31111-typeof-类型守卫)
         - [3.11.1.2 instanceof 类型守卫](#31112-instanceof-类型守卫)
         - [3.11.1.3 in 类型守卫](#31113-in-类型守卫)
-        - [3.11.1.4 逻辑与、或、非类型守卫](#31114-逻辑与-或-非类型守卫)
+        - [3.11.1.4 逻辑类型守卫](#31114-逻辑类型守卫)
         - [3.11.1.5 等式类型守卫](#31115-等式类型守卫)
         - [3.11.1.6 自定义类型守卫函数](#31116-自定义类型守卫函数)
         - [3.11.1.7 this 类型守卫](#31117-this-类型守卫)
@@ -307,9 +307,9 @@
       - [4.6.6 针对类型的模块导入与导出](#466-针对类型的模块导入与导出)
         - [4.6.6.1 背景介绍](#4661-背景介绍)
         - [4.6.6.2 导入与导出类型](#4662-导入与导出类型)
-        - [4.6.6.3 --importsNotUsedAsValues](#4663-importsnotusedasvalues)
+        - [4.6.6.3 importsNotUsedAsValues 编译选项](#4663-importsnotusedasvalues-编译选项)
       - [4.6.7 动态模块导入](#467-动态模块导入)
-      - [4.6.8 --module](#468-module)
+      - [4.6.8 module 编译选项](#468-module-编译选项)
     - [4.7 外部声明](#47-外部声明)
       - [4.7.1 外部类型声明](#471-外部类型声明)
         - [4.7.1.1 外部变量声明](#4711-外部变量声明)
@@ -335,15 +335,14 @@
       - [4.9.5 模块解析策略之 Node](#495-模块解析策略之-node)
         - [4.9.5.1 解析相对模块导入](#4951-解析相对模块导入)
         - [4.9.5.2 解析非相对模块导入](#4952-解析非相对模块导入)
-      - [4.9.6 --baseUrl](#496-baseurl)
-        - [4.9.6.1 设置 --baseUrl](#4961-设置-baseurl)
-        - [4.9.6.2 解析 --baseUrl](#4962-解析-baseurl)
+      - [4.9.6 baseUrl 编译选项](#496-baseurl-编译选项)
+        - [4.9.6.1 解析 baseUrl](#4961-解析-baseurl)
       - [4.9.7 paths](#497-paths)
         - [4.9.7.1 设置 paths](#4971-设置-paths)
         - [4.9.7.2 使用通配符](#4972-使用通配符)
       - [4.9.8 rootDirs](#498-rootdirs)
       - [4.9.9 导入外部模块声明](#499-导入外部模块声明)
-      - [4.9.10 --traceResolution](#4910-traceresolution)
+      - [4.9.10 traceResolution 编译选项](#4910-traceresolution-编译选项)
     - [4.10 声明合并](#410-声明合并)
       - [4.10.1 接口声明合并](#4101-接口声明合并)
       - [4.10.2 枚举声明合并](#4102-枚举声明合并)
@@ -361,20 +360,20 @@
       - [5.1.2 编译程序](#512-编译程序)
         - [5.1.2.1 编译单个文件](#5121-编译单个文件)
         - [5.1.2.2 编译多个文件](#5122-编译多个文件)
-        - [5.1.2.3 --watch 和 -w](#5123-watch-和-w)
-        - [5.1.2.4 --preserveWatchOutput](#5124-preservewatchoutput)
+        - [5.1.2.3 观察模式](#5123-观察模式)
+        - [5.1.2.4 preserveWatchOutput 编译选项](#5124-preservewatchoutput-编译选项)
     - [5.2 编译选项](#52-编译选项)
       - [5.2.1 编译选项风格](#521-编译选项风格)
       - [5.2.2 使用编译选项](#522-使用编译选项)
       - [5.2.3 严格类型检查](#523-严格类型检查)
-        - [5.2.3.1--strict](#5231-strict)
-        - [5.2.3.2 --noImplicitAny](#5232-noimplicitany)
-        - [5.2.3.3--strictNullChecks](#5233-strictnullchecks)
-        - [5.2.3.4 --strictFunctionTypes](#5234-strictfunctiontypes)
-        - [5.2.3.5 --strictBindCallApply](#5235-strictbindcallapply)
-        - [5.2.3.6 --strictPropertyInitialization](#5236-strictpropertyinitialization)
-        - [5.2.3.7 --noImplicitThis](#5237-noimplicitthis)
-        - [5.2.3.8 --alwaysStrict](#5238-alwaysstrict)
+        - [5.2.3.1 strict](#5231-strict)
+        - [5.2.3.2 noImplicitAny](#5232-noimplicitany)
+        - [5.2.3.3 strictNullChecks](#5233-strictnullchecks)
+        - [5.2.3.4 strictFunctionTypes](#5234-strictfunctiontypes)
+        - [5.2.3.5 strictBindCallApply](#5235-strictbindcallapply)
+        - [5.2.3.6 strictPropertyInitialization](#5236-strictpropertyinitialization)
+        - [5.2.3.7 noImplicitThis](#5237-noimplicitthis)
+        - [5.2.3.8 alwaysStrict](#5238-alwaysstrict)
       - [5.2.4 编译选项列表](#524-编译选项列表)
     - [5.3 tsconfig.json](#53-tsconfigjson)
       - [5.3.1 使用配置文件](#531-使用配置文件)
@@ -382,35 +381,35 @@
         - [5.3.1.2 指定配置文件](#5312-指定配置文件)
       - [5.3.2 编译选项列表](#532-编译选项列表)
       - [5.3.3 编译文件列表](#533-编译文件列表)
-        - [5.3.3.1 --listFiles 编译选项](#5331-listfiles-编译选项)
+        - [5.3.3.1 listFiles 编译选项](#5331-listfiles-编译选项)
         - [5.3.3.2 默认编译文件列表](#5332-默认编译文件列表)
         - [5.3.3.3 files 属性](#5333-files-属性)
         - [5.3.3.4 include 属性](#5334-include-属性)
         - [5.3.3.5 exclude 属性](#5335-exclude-属性)
       - [5.3.4 声明文件列表](#534-声明文件列表)
-        - [5.3.4.1 --typeRoots 编译选项](#5341-typeroots-编译选项)
-        - [5.3.4.2 --types 编译选项](#5342-types-编译选项)
+        - [5.3.4.1 typeRoots 编译选项](#5341-typeroots-编译选项)
+        - [5.3.4.2 types 编译选项](#5342-types-编译选项)
       - [5.3.5 继承配置文件](#535-继承配置文件)
-        - [5.3.5.1 --showConfig 编译选项](#5351-showconfig-编译选项)
+        - [5.3.5.1 showConfig 编译选项](#5351-showconfig-编译选项)
         - [5.3.5.2 使用相对路径](#5352-使用相对路径)
         - [5.3.5.3 使用非相对路径](#5353-使用非相对路径)
     - [5.4 工程引用](#54-工程引用)
       - [5.4.1 使用工程引用](#541-使用工程引用)
-        - [5.4.1.1 references](#5411-references)
-        - [5.4.1.2 --composite](#5412-composite)
-        - [5.4.1.3 --declarationMap](#5413-declarationmap)
+        - [5.4.1.1 references 顶层属性](#5411-references-顶层属性)
+        - [5.4.1.2 composite 编译选项](#5412-composite-编译选项)
+        - [5.4.1.3 declarationMap 编译选项](#5413-declarationmap-编译选项)
       - [5.4.2 工程引用示例](#542-工程引用示例)
         - [5.4.2.1 配置 references](#5421-配置-references)
-        - [5.4.2.2 配置 composite](#5422-配置-composite)
-      - [5.4.3 --build](#543-build)
+        - [5.4.2.2 composite 编译选项](#5422-composite-编译选项)
+      - [5.4.3 build 构建模式](#543-build-构建模式)
       - [5.4.4 solution 模式](#544-solution-模式)
     - [5.5 JS 类型检查](#55-js-类型检查)
       - [5.5.1 编译 JS](#551-编译-js)
       - [5.5.2 JS 类型检查](#552-js-类型检查)
-        - [5.5.2.1 --checkJs](#5521-checkjs)
-        - [5.5.2.2 // @ts-nocheck](#5522-ts-nocheck)
-        - [5.5.2.3 // @ts-check](#5523-ts-check)
-        - [5.5.2.4 // @ts-ignore](#5524-ts-ignore)
+        - [5.5.2.1 checkJs 编译选项](#5521-checkjs-编译选项)
+        - [5.5.2.2 注释指令-不对文件进行类型检查](#5522-注释指令-不对文件进行类型检查)
+        - [5.5.2.3 注释指令-对文件进行类型检查](#5523-注释指令-对文件进行类型检查)
+        - [5.5.2.4 注释指令-忽略对某一行代码进行类型检查](#5524-注释指令-忽略对某一行代码进行类型检查)
       - [5.5.3 JSDoc 与 类型](#553-jsdoc-与-类型)
         - [5.5.3.1 @typedef](#5531-typedef)
         - [5.5.3.2 @type](#5532-type)
@@ -421,8 +420,8 @@
       - [5.6.1 reference path](#561-reference-path)
       - [5.6.2 reference types](#562-reference-types)
       - [5.6.3 reference lib](#563-reference-lib)
-        - [5.6.3.1 --target 编译选项](#5631-target-编译选项)
-        - [5.6.3.2 --lib 编译选项](#5632-lib-编译选项)
+        - [5.6.3.1 target 编译选项](#5631-target-编译选项)
+        - [5.6.3.2 lib 编译选项](#5632-lib-编译选项)
   - [六. 项目实践](#六-项目实践)
     - [6.1 TypeScript 和 Babel](#61-typescript-和-babel)
       - [6.1.1 Babel](#611-babel)
@@ -438,7 +437,7 @@
     - [7.2 抛出异常](#72-抛出异常)
     - [7.3 返回异常](#73-返回异常)
     - [7.4 Option 类型](#74-option-类型)
-  - [八. 异步编程、并发和并行](#八-异步编程-并发和并行)
+  - [八. 异步编程的并发和并行](#八-异步编程的并发和并行)
     - [8.1 处理回调](#81-处理回调)
     - [8.2 异步流](#82-异步流)
     - [8.3 多线程类型安全](#83-多线程类型安全)
@@ -586,9 +585,9 @@ JS 语言中的每种原始类型都有与之对应的 TypeScript 类型。除�
 
   > **注意**：在使用 BigInt 的时候，必须添加 ESNext 的编译辅助库。
 
-- **[symbol 和 unique symbol](#2131-symbol-和-unique-symbol)**
+- **[symbol 和 unique symbol](#231-symbol-和-unique-symbol)**
 
-- **[undefined 和 null](#2132-nullable)**
+- **[undefined 和 null](#232-nullable)**
 
 - **void**
   void 类型表示某个值不存在，该类型用作函数的返回值类型。若一个函数没有返回值，那么该函数的返回值类型为 void 类型。除了将 void 类型作为[函数返回值类型](#2126-返回值类型)外，在其他地方使用 void 类型是无意义的。
@@ -1407,7 +1406,7 @@ TypeScript 提供了以下两种方式来定义数组类型：
   泛型数组类型表示法是另一种表示数组类型的方法。顾名思义，泛型数组类型表示法就是使用[泛型](#31-泛型)来表示数组类型。语法如下所：
 
   ```ts
-  Array<TElement>
+  Array<TElement>;
   ```
 
   该语法中，Array 代表数组类型；`<TElement>` 是类型参数的语法，其中 Element 代表数组元素的类型。
@@ -2008,7 +2007,7 @@ const point: { x: number } = { x: 0, y: 0 }; // y 是多余属性
 
 - **使用 "// @ts-ignore" 注释指令**
 
-  该[注释指令](#5524-ts-ignore)能够禁用针对某一行代码的类型检査。
+  该[注释指令](#5524-注释指令-忽略对某一行代码进行类型检查)能够禁用针对某一行代码的类型检査。
 
 - **为目标对象类型添加索引签名**
 
@@ -2588,7 +2587,7 @@ function f() {
 }
 ```
 
-##### 2.12.13.1 --noImplicitThis
+##### 2.12.13.1 noImplicitThis 编译选项
 
 将 this 值的类型设置为 any 类型对类型检查没有任何帮助。因此 TypeScript 提供了一个 `--noImplicitThis` 编译选项。当启用了该编译选项时，如果 this 值默认获得了 any 类型，那么将产生编译错淏；如果函数体中没有引用 this 值，则没有任何影响。示例如下：
 
@@ -3361,7 +3360,7 @@ class Circle {
 
 此例中，在构造函数里将 radius 成员变量的值初始化为 1。同时，在构造函数中引用成员变量时需要使用 `this` 关键字。
 
-##### 2.15.2.1 --strictPropertyInitialization
+##### 2.15.2.1 strictPropertyInitialization 编译选项
 
 虽然类的成员变量设置初始值是可选的，但是对成员变量进行初始化是一个好的编程实践，它能够有效避免使用未初始化的值而引发的错误。因此，TypeScript 提供了 `--strictPropertyInitialization` 编译选项来帮助严格检査未经初始化的成员变量。当启用了该编译选项时，成员变量必须在声明时进行初始化或者在构造函数中进行初始化，否则将产生编译错误。
 
@@ -5550,7 +5549,7 @@ type KeyofT = ('a' | 'x') | ('b' | 'y');
 T[K];
 ```
 
-在该语法中，T 和 K 都表示类型，并且要求 K 类型必须能够赋值给 "keyof T" 类型。"T[K]" 的结果类型为 T 中 K 属性的类型。例如，有以下对象类型 T：
+在该语法中，T 和 K 都表示类型，并且要求 K 类型必须能够赋值给 "keyof T" 类型。`T[K]` 的结果类型为 T 中 K 属性的类型。例如，有以下对象类型 T：
 
 ```ts
 // 通过索引访问类型能够获取对象类型 T 中属性 x 和 y 的类型
@@ -5567,7 +5566,7 @@ type T1 = T[Ky]; // string
 T[K];
 ```
 
-若 K 是字符串字面量类型、数字字面量类型、枚举字面量类型或 "unique symbol" 类型，并且类型 T 中包含名为 K 的公共属性，那么 “T[K]” 的类型就是该属性的类型。示例如下：
+若 K 是字符串字面量类型、数字字面量类型、枚举字面量类型或 "unique symbol" 类型，并且类型 T 中包含名为 K 的公共属性，那么 `T[K]` 的类型就是该属性的类型。示例如下：
 
 ```ts
 const s: unique symbol = Symbol();
@@ -5593,21 +5592,21 @@ type TypeOfEnumName = T[E.A]; // number
 type TypeOfSymbolName = T[typeof s]; // bigint
 ```
 
-若 K 是联合类型 "K1|K2"，那么 "T[K]" 等于联合类型 "T[K1]|T[K2]"。例如，有以下类型 T 和 K，其中 K 是联合类型：
+若 K 是联合类型 "K1|K2"，那么 `T[K]` 等于联合类型 `T[K1]|T[K2]`。例如，有以下类型 T 和 K，其中 K 是联合类型：
 
 ```ts
 type T = { x: boolean; y: string };
 type K = 'x' | 'y';
 ```
 
-那么，索引访问类型 "T[K]" 为如下类型：
+那么，索引访问类型 `T[K]` 为如下类型：
 
 ```ts
 // string | boolean
 type TK = T['x'] | T['y'];
 ```
 
-若 K 类型能够赋值给 string 类型，且类型 T 中包含字符串索引签名，那么 “T[K]” 为字符串索引签名的类型。但如果类型 T 中包含同名的属性，那么同名属性的类型拥有更高的优先级：
+若 K 类型能够赋值给 string 类型，且类型 T 中包含字符串索引签名，那么 `T[K]` 为字符串索引签名的类型。但如果类型 T 中包含同名的属性，那么同名属性的类型拥有更高的优先级：
 
 ```ts
 interface T {
@@ -5618,7 +5617,7 @@ type Ta = T['a']; // true
 type Tb = T['b']; // boolean
 ```
 
-若 K 类型能够赋值给 number 类型，且类型 T 中包含数值索引签名，若 K 类型能够赋值给 number 类型，且类型 T 中包含数值索引签名，那么 “T[K]” 为数值索引签名的类型。但如果类型 T 中包含同名的属性，那么同名属性的类型拥有更高的优先级：
+若 K 类型能够赋值给 number 类型，且类型 T 中包含数值索引签名，若 K 类型能够赋值给 number 类型，且类型 T 中包含数值索引签名，那么 `T[K]` 为数值索引签名的类型。但如果类型 T 中包含同名的属性，那么同名属性的类型拥有更高的优先级：
 
 ```ts
 interface T {
@@ -6841,9 +6840,9 @@ function f(x: A | B) {
 }
 ```
 
-##### 3.11.1.4 逻辑与、或、非类型守卫
+##### 3.11.1.4 逻辑类型守卫
 
-逻辑与表达式、逻辑或表达式和逻辑非表达式也可以作为类型守卫。逻辑表达式在求值时会判断操作数的真与假。如果一个值转换为布尔值后为 true，那么该值为真值；如果一个值转换为布尔值后为 false，那么该值为假值。
+**逻辑与表达式**、**逻辑或表达式**和**逻辑非表达式**也可以作为类型守卫。逻辑表达式在求值时会判断操作数的真与假。如果一个值转换为布尔值后为 true，那么该值为真值；如果一个值转换为布尔值后为 false，那么该值为假值。
 
 不仅是逻辑表达式会进行真假值比较，JS 中的很多语法结构也都会进行真假值比较。例如，if 条件判断语句。
 
@@ -7739,7 +7738,7 @@ interface S {
 
 ##### 4.1.6.4 字符串索引签名
 
-假设对象类型 S 是对象类型 T 的子类型，如果 T 中存在字符串索引签名（如下例中的接口 T 及其字符串索引签名 "[x:string]:boolean;"），那么 S 中也应该存在字符串索引签名（如下例中的接口 S 及其字符串索引签名 “[x:string]:true;"），并且是 T 中字符串索引签名的子类型。示例如下：
+假设对象类型 S 是对象类型 T 的子类型，如果 T 中存在字符串索引签名（如下例中的接口 T 及其字符串索引签名 `[x:string]:boolean;`），那么 S 中也应该存在字符串索引签名（如下例中的接口 S 及其字符串索引签名 `[x:string]:true;`），并且是 T 中字符串索引签名的子类型。示例如下：
 
 ```ts
 interface T {
@@ -7752,7 +7751,7 @@ interface S {
 
 ##### 4.1.6.5 数值索引签名
 
-假设对象类型 S 是对象类型 T 的子类型，如果 T 中存在数值索引签名（如下例中的接口 T 及其数字索引签名 "[x:number]:boolean;"），那么 S 中应该存在字符串索引签名或数值索引签名（如下例中的接口 S0 及其字符串索引签名 “[x:string]:true;” 或者接口 S1 及其数字索引签名 “[x:number]:true;"），并且是 T 中数值索引签名的子类型。示例如下：
+假设对象类型 S 是对象类型 T 的子类型，如果 T 中存在数值索引签名（如下例中的接口 T 及其数字索引签名 `[x:number]:boolean;`），那么 S 中应该存在字符串索引签名或数值索引签名（如下例中的接口 S0 及其字符串索引签名 `[x:string]:true;` 或者接口 S1 及其数字索引签名 `[x:number]:true;`），并且是 T 中数值索引签名的子类型。示例如下：
 
 ```ts
 interface T {
@@ -9219,7 +9218,7 @@ import { Point } from './utils';
 const p = new Point(); // 编译错误：'Point'不能作为值来使用，因为它是由 export type 语句导出的
 ```
 
-##### 4.6.6.3 --importsNotUsedAsValues
+##### 4.6.6.3 importsNotUsedAsValues 编译选项
 
 针对类型的模块导入与导出的一个重要性质是，在编译生成 JS 代码时，编译器一定会删除 "import type" 和 "export type" 语句，因为能够完全确定它们只与类型相关。
 
@@ -9290,7 +9289,7 @@ setTimeout(() => {
 
 在 "index.ts" 中使用了 setTimeout 函数实现了在延迟 1 秒之后动态地导入 "utils.ts" 模块，然后调用了 "utils.ts" 模块中导出的 add 函数。
 
-#### 4.6.8 --module
+#### 4.6.8 module 编译选项
 
 TypeScript 编译器提供了 `--module` 编译选项来设置编译生成的 JS 代码使用的模块格式。在 TypeScript 程序中，推荐使用标准的 ECMAScript 模块语法来进行编码，然后通过编译器来生成其他模块格式的代码。
 
@@ -9616,7 +9615,7 @@ TypeScript 中的 ".d.ts" 声明文件主要有以下几种来源：
 
 在计算机中安装了 TypeScript 语言后，同时也安装了一些语言内置的声明文件，它们位于 TypeScript 语言安装目录下的 lib 文件夹中。
 
-TypeScript 语言内置的声明文件统一使用 "lib.[description].d.ts" 命名方式，其中，description 部分描述了该声明文件的内容。在这些声明文件中，既定义了标准的 JS API，如 Array API、MathAPI 以及 Date API 等，也定义了特定于某种 JS 运行环境的 API，如 DOM API 和 Web Workers API 等。
+TypeScript 语言内置的声明文件统一使用 `lib.[description].d.ts` 命名方式，其中，description 部分描述了该声明文件的内容。在这些声明文件中，既定义了标准的 JS API，如 Array API、MathAPI 以及 Date API 等，也定义了特定于某种 JS 运行环境的 API，如 DOM API 和 Web Workers API 等。
 
 TypeScript 编译器在编译代码时能够自动加载内置的声明文件。因此，可以在代码中直接使用那些标准 API，而不需要进行特殊的配置。例如，可以在代码里直接使用标准的 DOM 方法，TypeScript 能够从内置的声明文件 "lib.dom.d.ts" 中获取该方法的类型信息并进行类型检查。示例如下：
 
@@ -9829,7 +9828,7 @@ tsc --moduleResolution Classic
 }
 ```
 
-当没有设置模块的解析策略时，默认的模块解析策略与 “--module" 编译选项的值有关。["--module"](#468-module) 编译选项用来设置编译生成的 JS 代码使用的模块格式。
+当没有设置模块的解析策略时，默认的模块解析策略与 “--module" 编译选项的值有关。[--module](#468-module-编译选项) 编译选项用来设置编译生成的 JS 代码使用的模块格式。
 
 若 "--module" 编译选项的值为 CommonJS，则默认的模块解析策略为 Node。示例如下：
 
@@ -10101,11 +10100,9 @@ C:\app
 
 在查找模块文件的过程中，一旦找到匹配的文件，就会停止搜索。
 
-#### 4.9.6 --baseUrl
+#### 4.9.6 baseUrl 编译选项
 
 `--baseUrl` 编译选项用来设置非相对模块导入的基准路径。在解析相对模块导入时，将不受 `--baseUrl` 编译选项值的影响。
-
-##### 4.9.6.1 设置 --baseUrl
 
 该编译选项既可以在命令行上指定，也可以在 "tsconfig.json" 配置文件中进行设置。
 
@@ -10129,7 +10126,7 @@ tsc --baseUrl ./
 
 此例中，将 baseUrl 设置为当前目录 "./"，参照的是 "tsconfig.json" 配置文件所在的目录。
 
-##### 4.9.6.2 解析 --baseUrl
+##### 4.9.6.1 解析 baseUrl
 
 当设置了 --baseUrl 编译选项时，非相对模块导入的解析过程包含以下几个阶段：
 
@@ -10301,7 +10298,7 @@ Mod.add(1, 2);
 
 > **注意**：在 “a.ts” 文件中无法使用相对模块导入来导入外部模块 "mod"。
 
-#### 4.9.10 --traceResolution
+#### 4.9.10 traceResolution 编译选项
 
 在启用了 `--traceResolution` 编译选项后，编译器会打印出模块解析的具体步骤。不论是在学习 TypeScript 语言的过程中还是在调试代码的过程中，都可以通过启用该选项来了解编译器解析模块时的具体行为。随着 TypeScript 版本的更新，模块解析算法也许会有所变化，而 `--traceResolution` 的输出结果能够真实反映当前使用的 TypeScript 版本中的模块解析算法。
 
@@ -10817,9 +10814,9 @@ C:\app
 |--utils.js
 `--utils.ts
 
-##### 5.1.2.3 --watch 和 -w
+##### 5.1.2.3 观察模式
 
-TypeScript 编译器提供了一种特殊的编译模式，即观察模式。在观察模式下，编译器会监视文件的修改并自动重新编译文件。观察模式通过 `--watch`（简写为 “-W”）编译选项来启用。假设当前工程目录结构如下：
+TypeScript 编译器提供了一种特殊的编译模式，即观察模式。在观察模式下，编译器会监视文件的修改并自动重新编译文件。观察模式通过 `--watch`（简写为 `-W`）编译选项来启用。假设当前工程目录结构如下：
 
 C:\app
 `--index.ts
@@ -10841,12 +10838,12 @@ tsc index.ts --watch
 
 ```sh
 [1:00:10 PM] File change detected. Starting incremental compilation...
-[1:00:11 PMj Found 0 errors. Watching for file changes.
+[1:00:11 PM] Found 0 errors. Watching for file changes.
 ```
 
 编译器在重新编译了 "index.ts" 文件之后依然会继续监视文件的修改。
 
-##### 5.1.2.4 --preserveWatchOutput
+##### 5.1.2.4 preserveWatchOutput 编译选项
 
 在观察模式下，编译器每次编译文件之前都会清空命令行窗口中的历史输出信息。如果想保留每一次编译的输出信息，则可以使用 `--preserveWatchOutput` 编译选项。示例如下：
 
@@ -10917,7 +10914,7 @@ TypeScript 编译器提供了两种类型检查模式，即严格类型检查和
 
 在严格类型检查模式下，编译器会进行额外的类型检查，从而能够更好地保证程序的正确性。严格类型检查功能使用一系列编译选项来开启。在开始一个新的工程时，强烈推荐启用所有严格检查编译选项。对于已有的工程，则可以逐步启用这些编译选项。因为只有如此才能够最大限度地利用编译器的静态类型检查功能。
 
-##### 5.2.3.1--strict
+##### 5.2.3.1 strict
 
 `--strict` 编译选项是所有严格类型检查编译选项的 “总开关”。如果启用了 `--strict` 编译选项，那么就相当于同时启用了下列编译选项：
 
@@ -10933,7 +10930,7 @@ TypeScript 编译器提供了两种类型检查模式，即严格类型检查和
 
 "--strict" 编译选项既可以在命令行上使用，也可以在 "tsconfig.json" 配置文件中使用。
 
-##### 5.2.3.2 --noImplicitAny
+##### 5.2.3.2 noImplicitAny
 
 若一个表达式没有明确的类型注解并且编译器又无法推断出一个具体的类型时，那么它将被视为 any 类型。编译器不会对 any 类型进行类型检查，因此可能存在潜在的错误。
 
@@ -10952,7 +10949,7 @@ f(42); // 运行时错误
 
 如果启用了 "--noImplicitAny" 编译选项，那么当表达式的推断类型为 any 类型时将产生编译错误。该编译选项详细情况参考 [any](#271-any)。
 
-##### 5.2.3.3--strictNullChecks
+##### 5.2.3.3 strictNullChecks
 
 若没有启用 `--strictNullChecks` 编译选项，编译器在类型检查时将忽略 undefined 值和 null 值：
 
@@ -10972,7 +10969,7 @@ f(null);
 
 如果启用了 "--strictNullChecks" 编译选项，那么 undefined 值只能赋值给 undefined 类型（顶端类型、void 类型除外），null 值也只能赋值给 null 类型（顶端类型除外），两者都明确地拥有了各自的类型。
 
-##### 5.2.3.4 --strictFunctionTypes
+##### 5.2.3.4 strictFunctionTypes
 
 该编译选项用于配置编译器对函数类型的类型检查规则：
 
@@ -10982,7 +10979,7 @@ f(null);
 
 关于该编译选项的详细介绍参考[函数类型](#415-函数类型)。
 
-##### 5.2.3.5 --strictBindCallApply
+##### 5.2.3.5 strictBindCallApply
 
 "Function.prototype.call"、"Function.prototype.bind"、"Function.prototype.apply" 是 JS 语言中函数对象上的内置方法。这三个方法都能够绑定函数调用时的 this 值：
 
@@ -11035,7 +11032,7 @@ f.apply(window, ['foo']);
 f.bind(window);
 ```
 
-##### 5.2.3.6 --strictPropertyInitialization
+##### 5.2.3.6 strictPropertyInitialization
 
 该编译选项用于配置编译器对[类属性](#2152-成员变量)的初始化检查。
 
@@ -11079,7 +11076,7 @@ class Point {
 }
 ```
 
-##### 5.2.3.7 --noImplicitThis
+##### 5.2.3.7 noImplicitThis
 
 与 `--noImplicitAny` 编译选项类似，在启用了 "--noImplicitThis" 编译选项时，如果程序中的 [this 值](#21213-函数中-this-值的类型)隐式地获得了 any 类型，那么将产生编译错误：
 
@@ -11108,7 +11105,7 @@ class Rectangle {
 }
 ```
 
-##### 5.2.3.8 --alwaysStrict
+##### 5.2.3.8 alwaysStrict
 
 ECMAScript 5 引入了一个称为严格模式的新特性。在全局 JS 代码或函数代码的开始处添加 "use strict" 指令就能够启用 JS 严格模式。在模块和类中则会始终启用 JS 严格模式。JS 严格模式不是本节所讲的 TypeScript 严格类型检查模式。
 
@@ -11132,7 +11129,7 @@ function outer() {
 
 #### 5.2.4 编译选项列表
 
-随着 TypeScript 版本的更新，提供的编译选项列表也会有所变化。例如，一些编译选项会被废弃，也会有一些新加入的编译选项。推荐到 TypeScript 官方网站上的 ["Compiler Options"][https://www.typescriptlang.org/docs/handbook/compiler-options.html] 页面中了解最新的编译选项列表。
+随着 TypeScript 版本的更新，提供的编译选项列表也会有所变化。例如，一些编译选项会被废弃，也会有一些新加入的编译选项。推荐到 TypeScript 官方网站上的 ["Compiler Options"](https://www.typescriptlang.org/docs/handbook/compiler-options.html) 页面中了解最新的编译选项列表。
 
 ### 5.3 tsconfig.json
 
@@ -11287,7 +11284,7 @@ tsc 命令的运行结果是在 "C:\app" 目录下新生成了一个 "tsconfig.j
 
 "tsconfig.json" 配置文件的另一个主要用途是配置待编译的文件列表。
 
-##### 5.3.3.1 --listFiles 编译选项
+##### 5.3.3.1 listFiles 编译选项
 
 TypeScript 提供了一个 `--listFiles` 编译选项，如果启用了该编译选项，那么在编译工程时，编译器将打印出参与本次编译的文件列表。该编译选项既可以在命令行上使用，也可以在 "tsconfig.json" 配置文件中使用。假设当前工程目录结构如下：
 
@@ -11482,7 +11479,7 @@ C:\app\foo\b.ts
 
 在 TypeScript 工程中 "node_modules/@types" 目录是一个特殊的目录，TypeScript 将其视为第三方声明文件的根目录，因为在安装 DefinitelyTyped 提供的声明文件时，它会被安装到 "node_modules/@types" 目录下。在默认情况下，编译器会将安装在 "node_modules/@types" 目录下的所有声明文件添加到编译文件列表。该默认行为可以使用 `--typeRoots` 和 `--types` 编译选项设置。
 
-##### 5.3.4.1 --typeRoots 编译选项
+##### 5.3.4.1 typeRoots 编译选项
 
 `--typeRoots` 编译选项用来设置声明文件的根目录。当配置了 --typeRoots 编译选项时，只有该选项指定的目录下的声明文件会被添加到编译文件列表，而 "node_modules/@types" 目录下的声明文件将不再被默认添加到编译文件列表。
 
@@ -11499,7 +11496,7 @@ C:\app\foo\b.ts
 
 > **注意**：typeRoots 属性中的路径是相对于当前 tsconfig.json 配置文件的路径来进行解析的。
 
-##### 5.3.4.2 --types 编译选项
+##### 5.3.4.2 types 编译选项
 
 `--types` 编译选项也能够用来指定使用的声明文件。"--typeRoots" 编译选项配置的是含有声明文件的目录，而 --types 编译选项则配置的是**具体的声明文件**。
 
@@ -11520,7 +11517,7 @@ C:\app\foo\b.ts
 
 在 tsconfig.json 配置文件中，使用顶层的 `extends` 属性来设置要继承的 tsconfig.json 配置文件。在 `extends` 属性中指定的路径既可以是相对路径，也可以是绝对路径，但路径解析规则有所不同。
 
-##### 5.3.5.1 --showConfig 编译选项
+##### 5.3.5.1 showConfig 编译选项
 
 在介绍配置文件的继承之前，先介绍一下 `--showConfig` 编译选项。在使用该编译选项后，编译器将显示出编译工程时使用的所有配置信息。当在调试工程配置的时候，该编译选项是非常有帮助的。
 
@@ -11666,7 +11663,7 @@ tsc--showConfig -p tsconfig.spec.json
 - 使用 `references` 属性配置当前工程所引用的其他工程
 - 被引用的工程必须启用 `composite` 编译选项
 
-##### 5.4.1.1 references
+##### 5.4.1.1 references 顶层属性
 
 tsconfig.json 配置文件有一个顶层属性 `references`。它的值是对象数组，用于设置引用的工程：
 
@@ -11678,7 +11675,7 @@ tsconfig.json 配置文件有一个顶层属性 `references`。它的值是对�
 
 其中，`path` 的值既可以是指向含有 tsconfig.json 配置文件的目录，也可以直接指向某一个配置文件，此时配置文件名可以不为 tsconfig.json。此例中的工程引用了两个工程。
 
-##### 5.4.1.2 --composite
+##### 5.4.1.2 composite 编译选项
 
 `--composite` 编译选项的值是一个布尔值。通过启用该选项，TypeScript 编译器能够快速地定位依赖工程的输出文件位置。如果一个工程被其他工程所引用，那么必须将该工程的 --composite 编译选项设置为 true。
 
@@ -11688,9 +11685,9 @@ tsconfig.json 配置文件有一个顶层属性 `references`。它的值是对�
 - 如果设置了 `include` 或 `files` 属性，那么所有的源文件必须被包含在内，否则将产生编译错误。
 - 必须启用 `--declaration` 编译选项
 
-##### 5.4.1.3 --declarationMap
+##### 5.4.1.3 declarationMap 编译选项
 
-`--declarationMap` 是推荐启用的编译选项。如果启用了该选项，那么在生成 ".d.ts" 声明文件时会同时生成对应的 "Source Map" 文件。这样在代码编辑器中使用 “跳转到定义” 的功能时，编辑器会自动跳转到代码实现的位置，而不是跳转到声明文件中类型声明的位置：
+`--declarationMap` 是推荐启用的编译选项。如果启用了该选项，那么在生成 ".d.ts" 声明文件时会同时生成对应的 Source Map 文件。这样在代码编辑器中使用 “跳转到定义” 的功能时，编辑器会自动跳转到代码实现的位置，而不是跳转到声明文件中类型声明的位置：
 
 ```json
 {
@@ -11748,7 +11745,7 @@ if (add(1, 2) === 3) {
 
 此例中，通过 references 属性设置了对 "C:\app\src" 工程的引用。
 
-##### 5.4.2.2 配置 composite
+##### 5.4.2.2 composite 编译选项
 
 在该项目中，"C:\app\src" 工程被 "C:\app\test" 工程所依赖。因此，必须在 "C:\app\src" 工程的 tsconfig.json 配置文件中将 "--composite" 编译选项设置为 true。
 
@@ -11765,7 +11762,7 @@ if (add(1, 2) === 3) {
 
 至此，所有必须的工程引用配置已经设置完毕。
 
-#### 5.4.3 --build
+#### 5.4.3 build 构建模式
 
 TypeScript 提供了一种新的构建模式来配合工程引用的使用，它就是 "--build" 模式（简写为 "-b"）。在该模式下，编译器能够进行增量构建。
 
@@ -11915,7 +11912,7 @@ tsc src/index.js --allowJs --outDir dist
 
 在默认情况下，TypeScript 编译器不会对 JS 文件进行类型检查。就算启用了 `--allowJs` 编译选项，编译器依然不会对 JS 代码进行类型检查。
 
-##### 5.5.2.1 --checkJs
+##### 5.5.2.1 checkJs 编译选项
 
 TypeScript 2.3 提供了一个 `--checkJs` 编译选项。当启用了该编译选项时，编译器能够对 ".js" 和 ".jsx" 文件进行类型检查。`--checkJs` 编译选项必须与 `--allowJs` 编译选项一起使用。
 
@@ -11948,7 +11945,7 @@ tsc src/index.js --allowJs --checkJs --outDir dist
 
 编译器能够检查出 "getElementById" 方法的参数类型错误。
 
-##### 5.5.2.2 // @ts-nocheck
+##### 5.5.2.2 注释指令-不对文件进行类型检查
 
 `// @ts-nocheck` 是一个注释指令，如果为 JS 文件添加该注释，那么相当于告诉编译器不对该 JS 文件进行类型检查。此外，该指令也可以在 TypeScript 文件中使用。假设当前工程目录结构如下：
 
@@ -11964,7 +11961,7 @@ const element = document.getElementById(123); // 参数类型错误，应该为 
 
 在 "C:\app" 目录下，运行 tsc 命令来编译 "index.js" 文件，并启用 --checkJs 编译选项和 --allowJs 编译选项。虽然 "index.js" 存在类型错误，但是编译器不会报错。因为使用 "// @ts-nocheck" 注释指令禁用了对"index.js" 文件的类型检查。
 
-##### 5.5.2.3 // @ts-check
+##### 5.5.2.3 注释指令-对文件进行类型检查
 
 如果一个 JS 文件中添加了 `// @ts-check` 注释指令，那么编译器将对该 JS 文件进行类型检查，不论是否启用了 `--checkJs` 编译选项。假设当前工程目录结构如下：
 
@@ -11986,9 +11983,9 @@ tsc src/index.js --allowJs --outDir dist
 
 此例中，虽然没有启用 --checkJs 编译选项，但是编译器仍然会对 index.js 文件进行类型检查并显示错误提示。
 
-##### 5.5.2.4 // @ts-ignore
+##### 5.5.2.4 注释指令-忽略对某一行代码进行类型检查
 
-`//@ts-ignore` 注释指令的作用是忽略对某一行代码进行类型检查。当在代码中使用 `// @ts-ignore` 注释指令时，编译器不会对与该指令相邻的后面一行代码进行类型检查。此外，该指令也可以在 TypeScript 文件中使用。假设当前工程目录结构如下：
+`// @ts-ignore` 注释指令的作用是忽略对某一行代码进行类型检查。当在代码中使用 `// @ts-ignore` 注释指令时，编译器不会对与该指令相邻的后面一行代码进行类型检查。此外，该指令也可以在 TypeScript 文件中使用。假设当前工程目录结构如下：
 
 C:\app
 |--src
@@ -12210,7 +12207,7 @@ declare var settings: JQuery.AjaxSettings;
 
 该三斜线指令用于定义对语言内置的某个声明文件的依赖。在计算机中安装 TypeScript 语言时，也会同时安装一些内置的声明文件。这些声明文件位于 TypeScript 安装目录下的 lib 文件夹中，它们描述了 JS 语言的标准 API。
 
-在 `/// <reference lib="" />` 三斜线指令中，`lib` 属性的值是内置声明文件的名称。内置声明文件统一使用 "lib.[description].d.ts" 命名方式，而 lib 属性的值就是文件名中的 description 这部分。
+在 `/// <reference lib="" />` 三斜线指令中，`lib` 属性的值是内置声明文件的名称。内置声明文件统一使用 `lib.[description].d.ts` 命名方式，而 lib 属性的值就是文件名中的 description 这部分。
 
 例如，对于内置的 "lib.es2015.symbol.wellknown.d.ts" 声明文件，应使用如下方式进行引用：
 
@@ -12218,7 +12215,7 @@ declare var settings: JQuery.AjaxSettings;
 /// <reference lib="es2015.symbol.wellknown" />
 ```
 
-##### 5.6.3.1 --target 编译选项
+##### 5.6.3.1 target 编译选项
 
 `--target` 编译选项能够设置程序的目标运行环境，可选择的值为：
 
@@ -12236,7 +12233,7 @@ declare var settings: JQuery.AjaxSettings;
 
 另外，--target 编译选项还决定了对哪些语法进行降级处理。例如，在 ES5 环境中不支持箭头函数语法，因此当将 --target 设置为 “ES5” 时，编译后代码中的箭头函数将被替换为 “ES5” 环境中支持的函数表达式。
 
-##### 5.6.3.2 --lib 编译选项
+##### 5.6.3.2 lib 编译选项
 
 --lib 编译选项与 `/// <reference lib="" />` 三斜线指令有着相同的作用，都是用来引用语言内置的某个声明文件。
 
@@ -12718,8 +12715,8 @@ class None implements Option<never> {}
 
 这几个类型等效于下述通过数组实现的 Option：
 
-- `Option<T>` 是 [T] | []
-- `Some<T>` 是 [T]
+- `Option<T>` 是 `[T] | []`
+- `Some<T>` 是 `[T]`
 - None 是 []
 
 就目前的实现，只定义两个操作：
@@ -12794,7 +12791,7 @@ let result = Option(6); // Some<number>
 
 然而，Option 也不是没有缺点。Option 通过一个 None 值表示失败，没有关于失败的详细信息，也不知道失败的原因。另外，与不使用 Option 的代码无法互操作（要自己动手包装这些 API，让它们返回 Option）。
 
-## 八. 异步编程、并发和并行
+## 八. 异步编程的并发和并行
 
 网络请求、数据库和文件系统交互、用户操作的响应，以及在单独的线程中执行 CPU 密集型运算，都要用到异步 API，比如说回调、promise 和流。这些异步任务才能真正突显 JS 的优势，才是与其他主流多线程语言（如 Java 和 C++）与众不同的特色。V8 和 SpiderMonkey 等流行的 JS 引擎使用一个线程完成传统上需要多个线程执行的任务，这些引擎十分聪明，在一个线程中多路复用任务，而其他任务则处于空闲状态。这种事件循环（event loop）是 JS 引擎的标准线程模型。
 
