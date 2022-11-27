@@ -180,11 +180,11 @@
 
 7. **新一代工程化工具 vite**
 
-   Vite 不在 Vue 3 的代码包内，和 Vue 也不是强绑定，Vite 的竞品是 Webpack，而且按照现在的趋势看，使用率超过 Webpack 也是早晚的事。
+   Vite 不在 Vue 3 的代码包内，和 Vue 也不是强绑定，Vite 的竞品是 Webpack。Vite 主要提升的是开发的体验。
 
-   Vite 主要提升的是开发的体验，Webpack 等工程化工具的原理，就是根据 import 依赖逻辑，形成一个依赖图，然后调用对应的处理工具，把整个项目打包后，放在内存里再启动调试。由于要预打包，所以复杂项目的开发，启动调试环境需要 3 分钟都很常见，Vite 就是为了解决这个时间资源的消耗问题出现的。
+   Webpack 等工程化工具的原理，就是根据 import 依赖逻辑，形成一个依赖图，然后调用对应的处理工具，把整个项目打包后，放在内存里再启动调试。由于要预打包，所以复杂项目的开发，启动调试环境需要 3 分钟都很常见，Vite 就是为了解决这个时间资源的消耗问题出现的。
 
-   现代浏览器已经默认支持了 ES6 的 import 语法，Vite 就是基于这个原理来实 d 现的。具体来说，在调试环境下，不需要全部预打包，只是把首页依赖的文件，依次通过网络请求去获取，整个开发体验得到巨大提升，做到了复杂项目的秒级调试和热更新。
+   现代浏览器已经默认支持了 ES6 的 import 语法，Vite 就是基于这个原理来实现的。具体来说，在调试环境下，不需要全部预打包，只是把首页依赖的文件，依次通过网络请求去获取，整个开发体验得到巨大提升，做到了复杂项目的秒级调试和热更新。
 
    下图展示了 Webpack 的工作原理，Webpack 要把所有路由的依赖打包后，才能开始调试：
 
@@ -264,13 +264,13 @@ Vuex 4.0 也支持 Vue 3，不过变化不大。有趣的是 Vue 官方成员还
 2. 然后给 vue 设置别名 @vue/compat，也就是以 compat 作为入口，代码如下：
 
    ```js
-    // vue.config.js
-    module.exports = {
-      chainWebpack: config => {
-        config.resolve.alias.set('vue', '@vue/compat')
-        ......
-      }
-    }
+   // vue.config.js
+   module.exports = {
+     chainWebpack: config => {
+       config.resolve.alias.set('vue', '@vue/compat');
+       // ......
+     }
+   };
    ```
 
    这时就会在控制台看到很多警告，以及很多优化的建议。参照建议，挨个去做优化就可以了。在 @vue/compat 提供了很多建议后，还是要慢慢做修改。
@@ -317,7 +317,7 @@ Vue3 推荐使用 [Vite](https://vitejs.bootcss.com/guide/) 创建项目，因�
 
 3. 在这之后，在项目文件夹内执行 npm install 命令，进行依赖的安装，然后执行 npm run dev 命令来启动项目。
 
-   **所有工程化体系都是基于 Node.js 生态；使用 VS Code+Volar 编辑器 + 语法提示工具作为上层开发工具；使用 Vite 作为工程化工具；使用 Chrome 进行调试**，这些都是 Vue 3 工程化体系的必备工具。
+   **所有工程化体系都是基于 Node.js 生态；使用 VSCode + Volar + 语法提示工具作为上层开发工具；使用 Vite 作为工程化工具；使用 Chrome 进行调试**。
 
 4. 使用下面这段代码安装 Vuex 和 vue-router。
 

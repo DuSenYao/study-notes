@@ -668,6 +668,8 @@ launch.json 有 3 个属性：
     }
     ```
 
+    可以打开 `http://localhoat:9222/json` 来查看是否开启远程调试端口。
+
 - `webRoot`：此设置指定 Web 服务器根工作区的绝对路径。用于将 `/app.js` 等路径解析为磁盘上的文件。pathMapping 的速记方式为 "/"。
 
 #### 3.2.2 可以被定义在 launch 和 attach 的配置属性
@@ -735,7 +737,7 @@ launch.json 有 3 个属性：
 
   而在 VSCode 里，这个路径是有对应的文件的，所以就会打开对应文件的编辑器，这样就可以边调试边修改代码。但有的时候，sourcemap 到的文件路径在本地里找不到，这时候代码就只读了，因为没有地方保存。这种情况就需要通过 `sourceMapPathOverrides` 对 sourcemap 到的路径再做一次映射：
 
-  ![sourcemap映射](./image/sourcemap%E6%98%A0%E5%B0%84.webp)
+  ![sourcemap映射](./image/sourcemap%20%E6%98%A0%E5%B0%84.webp)
 
   默认有这么三个配置：
 
@@ -1006,13 +1008,13 @@ VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 
 
 ### 5.1 JavaScript
 
-**ECMAScript** 是一种在 **ECMA-262** 标准中定义的脚本语言规范。而 JS 是一种编程语言，它实现了 ECMAScript 所定义的规范。
+ECMAScript 是一种在 **ECMA-262** 标准中定义的脚本语言规范。而 JS 是一种编程语言，它实现了 ECMAScript 所定义的规范。
 
 一般来说，JS 包含以下几部分：
 
-- ECMAScript：描述了该语言的语法和基本对象
-- 文档对象模型（DOM）：描述处理网页内容的方法和接口
-- 浏览器对象模型（BOM）：描述与浏览器进行交互的方法和接口
+- **ECMAScript**：描述了该语言的语法和基本对象
+- **文档对象模型（DOM）**：DOM 是 HTML 和 XML 文档的编程接口。它提供了对文档的结构化的表述，并定义了一种方式可以使从程序中对该结构进行访问，从而改变文档的结构，样式和内容。DOM 将文档解析为一个由节点和对象（包含属性和方法的对象）组成的结构集合。
+- **浏览器对象模型（BOM）**：描述与浏览器进行交互的方法和接口，提供了独立于内容而与浏览器窗口进行交互的对象，其核心对象是 window。BOM 由一系列相关的对象构成，并且每个对象都提供了很多方法与属性。
 
 Node.js 和 JS 的区别和联系：
 
@@ -1041,6 +1043,17 @@ JS 库和框架的 IntelliSense 由 TS 的类型声明文件（.d.ts 文件）�
  *
  * @param {*} a
  * @param {*} b
+ */
+```
+
+JSDoc 注释是使用 Markdown 进行格式化的，如果想使用粗体、斜体或项目列表，可以这样做：
+
+```js
+/**
+ * 这个 _接口_ 有 **三个** 属性
+ * 1. x
+ * 2. y
+ * 3. z
  */
 ```
 
@@ -1564,3 +1577,22 @@ Vue 是一个用于构建 Web 应用用户界面的 JS 库。VSCode 内置了对
 **注意**：`jsconfig.json` 中配置的别名要与 `vue.config.js` 中的别名对应。
 
 ## 七. 远程开发
+
+2019 年 5 月 3 日，在 PyCon2019 大会上，微软发布了 Visual Studio Code Remote Development，开启了远程开发的新时代。
+
+![Visual Studio Code Remote Development 的整体架构](./image/Visual%20Studio%20Code%20Remote%20Development%20的整体架构.jpg)
+
+### 7.1 远程开发插件
+
+VSCode 提供了 Remote Development 开发插件包，包含了以下 3 种类型的远程开发插件：
+
+- `Remote-SSH`：通过 SSH 打开远程机器或虚拟机上的文件夹，以连接到任何位置的源代码。
+- `Remote-Containers`：基于容器技术，把 Docker 作为开发环境。
+- `Remote-WSL`：在 Windows 上打开 WSL 的文件夹，可以获得犹如 Linux 般的开发体验。
+
+#### 7.1.1 SSH
+
+通过 Remote - SSH 可以获得以下体验：
+
+- 在不同的远程开发环境之间快速切换，安全的进行更新。
+- 调试在其他位置运行的应用程序。

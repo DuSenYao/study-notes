@@ -35,6 +35,7 @@
     // "allowUmdGlobalAccess": true,                     /* 允许从模块访问 UMD 变量全局。 */
     // "resolveJsonModule": true,                        /* 启用导入 .json 文件 */
     // "noResolve": true,                                /* 禁止 “import”、“require” 或 “<引用>” 扩展 TypeScript 应添加到项目的文件数。 */
+    // "moduleDetection": "auto",                        /* 指定TypeScript如何将文件确定为模块。 */
 
     /* JavaScript 支持 */
     // "allowJs": true,                                  /* 允许 JavaScript 文件成为程序的一部分。使用 “checkJS” 选项从这些文件中获取错误。 */
@@ -88,7 +89,7 @@
     // "exactOptionalPropertyTypes": true,               /* 将可选属性类型解释为已写，而不是添加 "undefined"。 */
     // "noImplicitReturns": true,                        /* 为未在函数中显式返回的代码路径启用错误报告。 */
     // "noFallthroughCasesInSwitch": true,               /* 为 switch 语句中的故障案例启用错误报告。 */
-    // "noUncheckedIndexedAccess": true,                 /* 在索引签名结果中包含“未定义” */
+    // "noUncheckedIndexedAccess": true,                 /* 在索引签名结果中包含 “未定义” */
     // "noImplicitOverride": true,                       /* 确保使用替代修饰符标记派生类中的替代成员。 */
     // "noPropertyAccessFromIndexSignature": true,       /* 对使用索引类型声明的键强制使用索引访问器 */
     // "allowUnusedLabels": true,                        /* 对未使用的标签禁用错误报告。 */

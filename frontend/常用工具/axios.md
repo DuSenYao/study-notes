@@ -112,11 +112,10 @@ function getUserPermissions() {
   return axios.get('/user/12345/permissions');
 }
 
-axios.all([getUserAccount(), getUserPermissions()]).then(
-  axios.spread(function (acct, perms) {
-    // 两个请求现在都执行完成
-  })
-);
+Promise.all([getUserAccount(), getUserPermissions()]).then(function (results) {
+  const acct = results[0];
+  const perm = results[1];
+});
 ```
 
 ## 二. axios API
@@ -148,7 +147,7 @@ axios({
 });
 ```
 
-**axios(url[, config])**:
+`axios(url[, config])`：
 
 ```js
 // 发送 GET 请求（默认的方法）

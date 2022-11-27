@@ -18,28 +18,6 @@
       - [1.3.1 link 标签](#131-link-标签)
         - [1.3.1.1 超链接类 link 标签](#1311-超链接类-link-标签)
         - [1.3.1.2 外部资源类 link 标签](#1312-外部资源类-link-标签)
-      - [1.3.2 a 标签](#132-a-标签)
-      - [1.3.3 area 标签](#133-area-标签)
-    - [1.4 替换型元素](#14-替换型元素)
-      - [1.4.1 script](#141-script)
-      - [1.4.2 img](#142-img)
-      - [1.4.3 picture](#143-picture)
-      - [1.4.4 video](#144-video)
-      - [1.4.5 audio](#145-audio)
-      - [1.4.6 iframe](#146-iframe)
-  - [二. 基本语法](#二-基本语法)
-    - [2.1 标签语法](#21-标签语法)
-    - [2.2 文本语法](#22-文本语法)
-    - [2.3 注释语法](#23-注释语法)
-    - [2.4 4.DTD 语法（文档类型定义）](#24-4dtd-语法文档类型定义)
-    - [2.5 ProcessingInstruction 语法（处理指令）](#25-processinginstruction-语法处理指令)
-    - [2.6 文本实体](#26-文本实体)
-  - [三. ARIA](#三-aria)
-    - [3.1 综述](#31-综述)
-    - [3.2 ARIA 角色](#32-aria-角色)
-      - [3.2.1 Widget 角色](#321-widget-角色)
-      - [3.2.2 structure 角色](#322-structure-角色)
-      - [3.2.3 Window 角色](#323-window-角色)
 
 <!-- /code_chunk_output -->
 
@@ -525,7 +503,7 @@ picture 元素可以根据屏幕的条件为其中的 img 元素 提供不同的
 
 picture 的元素设计跟 audio 和 video 保持了一致。它跟 img 搭配 sizes 和 srcset 不同，它使用 `source` 元素来指定图片源，并且支持多个。
 
-source 元素的 media 属性是 media query，跟 CSS 的 [@media](../CSS/CSS.md#11-at-rule) 规则一致。
+source 元素的 media 属性是 media query，跟 CSS 的 [@media](../CSS/CSS.md#211-at-rule) 规则一致。
 
 ```html
 <picture>

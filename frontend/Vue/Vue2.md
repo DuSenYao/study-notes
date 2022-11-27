@@ -3690,7 +3690,7 @@ Vue 实现了一套内容分发的 API，这套 API 的设计灵感源自 Web Co
 </div>
 ```
 
-> 注意 : `v-slot` 只能添加在 `<template>` 上 (只有一种[例外情况](#246-独占默认插槽的缩写语法))，这一点和已经废弃的 `slot` attribute 不同。
+> 注意 : `v-slot` 只能添加在 `<template>` 上 (只有一种[例外情况](#2451-独占默认插槽的缩写语法))，这一点和已经废弃的 `slot` attribute 不同。
 
 #### 2.4.5 作用域插槽
 
@@ -5396,7 +5396,7 @@ directives: {
 
 - `update` ：所在组件的 VNode 更新时调用，**但是可能发生在其子 VNode 更新之前**。指令的值可能发生了改变，也可能没有。但是可以通过比较更新前后的值来忽略不必要的模板更新 (详细的钩子函数参数见下)。
 
-  > 在[渲染函数](#43-渲染函数-jsx)中有更多 VNodes 的细节。
+  > 在[渲染函数](#43-渲染函数--jsx)中有更多 VNodes 的细节。
 
 - `componentUpdated` ：指令所在组件的 VNode 及其子 VNode 全部更新后调用。
 
@@ -7250,38 +7250,24 @@ methods: {
 
 3. 从 VS Code 启动应用
 
-   在 Debug 视图中点击齿轮图标来配置一个 `launch.json` 的文件，选择 **Chrome/Firefox：Launch** 环境。然后将生成的 `launch.json` 的内容替换成为相应的配置：
+   在 Debug 视图中点击齿轮图标来配置一个 `launch.json` 的文件，选择 **Chrome：Launch** 环境。然后将生成的 `launch.json` 的内容替换成为相应的配置：
 
    ```json
    {
      "version": "0.2.0",
      "configurations": [
-        // webpack 4 用
        {
          "type": "chrome",
          "request": "launch",
          "name": "vuejs: chrome",
          "url": "http://localhost:7878",
-         "webRoot": "${workspaceFolder}/src",
-         "sourceMapPathOverrides": {
-           // 对应浏览器 sources下 webpack:/// 的 .目录 和 src目录
-           "webpack:///src/*": "${webRoot}/*",
-           "webpack:///./src/*.js": "${webRoot}/*.js"
-         }
-       },
-       {
-         "type": "firefox",
-         "request": "launch",
-         "name": "vuejs: firefox",
-         "url": "http://localhost:8080",
-         "webRoot": "${workspaceFolder}/src",
-         "pathMappings": [{ "url": "webpack:///src/", "path": "${webRoot}/" }]
+         "webRoot": "${workspaceFolder}"
        }
      ]
    }
    ```
 
-4. 设置断点，并启动 Vue 应用，来到 Debug 视图，选择 “vuejs：chrome/firefox” 配置，然后按 F5 或点击绿色的 play 按钮。
+4. 设置断点，并启动 Vue 应用，来到 Debug 视图，选择 “vuejs：chrome” 配置，然后按 F5 或点击绿色的 play 按钮。
 
 #### 8.1.1 替代方案
 

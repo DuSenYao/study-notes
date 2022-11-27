@@ -234,7 +234,7 @@ npm install --save-dev <PACKAGENAME>
 
 最典型的场景就是插件，比如 A 模块是 B 模块的插件。用户安装的 B 模块是 1.0 版本，但是 A 插件只能和 2.0 版本的 B 模块一起使用。这时，用户要是将 1.0 版本的 B 的实例传给 A，就会出现问题。因此，需要一种机制，在模板安装的时候提醒用户，如果 A 和 B 一起安装，那么 B 必须是 2.0 模块。
 
-peerDependencies 字段就是用来供插件指定其所需要的主工具的版本。
+peerDependencies 字段就是用来供插件指定其所需要的主工具的版本：
 
 ```json
 "name": "chai-as-promised",
@@ -244,8 +244,6 @@ peerDependencies 字段就是用来供插件指定其所需要的主工具的版
 ```
 
 上面代码指定在安装 chai-as-promised 模块时，主程序 chai 必须一起安装，而且 chai 的版本必须是 1.x。如果项目指定的依赖是 chai 的 2.0 版本，就会报错。
-
-> **注意**：从 npm 3.0 版开始，peerDependencies 不再会默认安装了。
 
 ### 3.4 optionalDependencies
 

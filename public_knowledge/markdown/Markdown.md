@@ -29,7 +29,7 @@
     - [流程图](#流程图)
   - [三. markdown-preview-enhanced 插件扩展语法](#三-markdown-preview-enhanced-插件扩展语法)
     - [表格合并](#表格合并)
-    - [Emoji & Font-Awesome](#emoji-font-awesome)
+    - [Emoji And Font-Awesome](#emoji-and-font-awesome)
     - [上标](#上标)
     - [下标](#下标)
     - [注脚](#注脚)
@@ -110,7 +110,7 @@ Markdown
 
 ### 插入图片
 
-![GitHub logo](/public_knowledge/VSCode/image/sourcemap%E6%98%A0%E5%B0%84.webp)
+![GitHub logo](/public_knowledge/VSCode/image/sourcemap%20%E6%98%A0%E5%B0%84.webp)
 
 ### 链接
 
@@ -313,7 +313,7 @@ rowspan "^"
 | 1   | 2   |
 | ^   | 4   |
 
-### Emoji & Font-Awesome
+### Emoji And Font-Awesome
 
 > 只适用于 markdown-it parser 而不适用于 pandoc parser。缺省下是启用的。可以在插件设置里禁用此功能。
 
@@ -330,9 +330,9 @@ H~2~O
 
 ### 注脚
 
-Content[^1],fsfsd
+Content[^1]
 
-[^1]: 不建议扩展原型还有其他原因，例如代码可移植性、保持依赖图清晰明了，以及只加载真正使用的函数，提升性能。然而，安全性已经不在其列。
+[^1]: hello。
 
 ### 标记
 

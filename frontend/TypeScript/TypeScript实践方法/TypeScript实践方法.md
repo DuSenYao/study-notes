@@ -21,7 +21,7 @@
       - [2.8.1 如何选择使用 type 或 interface](#281-如何选择使用-type-或-interface)
     - [2.9 使用类型操作和泛型来避免重复的工作](#29-使用类型操作和泛型来避免重复的工作)
     - [2.10 为动态数据使用索引签名](#210-为动态数据使用索引签名)
-    - [2.11 优先选择 Array、Tuple 和 ArrayLike，而不是数字索引签名](#211-优先选择-array-tuple-和-arraylike而不是数字索引签名)
+    - [2.11 优先选择 Array/Tuple/ArrayLike 而不是数字索引签名](#211-优先选择-arraytuplearraylike-而不是数字索引签名)
     - [2.12 使用 readonly 避免值变（Mutation）相关的错误](#212-使用-readonly-避免值变mutation相关的错误)
     - [2.13 使用映射类型来保持值的同步](#213-使用映射类型来保持值的同步)
   - [三. 类型推断](#三-类型推断)
@@ -51,6 +51,24 @@
     - [5.3 在类型良好的函数中隐藏不安全的类型断言](#53-在类型良好的函数中隐藏不安全的类型断言)
     - [5.4 理解 any 演变](#54-理解-any-演变)
     - [5.5 对未知类型的值使用 unknown 而不是 any](#55-对未知类型的值使用-unknown-而不是-any)
+    - [5.6 选择类型安全的方法而不是猴子补丁](#56-选择类型安全的方法而不是猴子补丁)
+    - [5.7 追踪类型覆盖率以防止类型安全中的回归问题](#57-追踪类型覆盖率以防止类型安全中的回归问题)
+  - [六. 类型声明和 @types](#六-类型声明和-types)
+    - [6.1 把 TypeScript 和 @types 放在 devDependencies 中](#61-把-typescript-和-types-放在-devdependencies-中)
+    - [6.2 了解类型声明中涉及的三个版本](#62-了解类型声明中涉及的三个版本)
+    - [6.3 导出所有出现在公有 API 中的类型](#63-导出所有出现在公有-api-中的类型)
+    - [6.4 提供回调中 this 的类型](#64-提供回调中-this-的类型)
+    - [6.5 优先选择条件类型，而不是重载声明](#65-优先选择条件类型而不是重载声明)
+    - [6.6 反映类型以切断依赖](#66-反映类型以切断依赖)
+    - [6.7 警惕测试类型时的陷阱](#67-警惕测试类型时的陷阱)
+  - [七. 编写和运行代码](#七-编写和运行代码)
+    - [7.1 使用 ECMAScript 特性，而非 TypeScript 特性](#71-使用-ecmascript-特性而非-typescript-特性)
+      - [7.1.1 枚举](#711-枚举)
+      - [7.1.2 参数属性](#712-参数属性)
+      - [7.1.3 命名空间和三斜线导入](#713-命名空间和三斜线导入)
+      - [7.1.4 装饰器](#714-装饰器)
+    - [7.2 了解如何迭代对象](#72-了解如何迭代对象)
+    - [7.3 了解 DOM 的层次结构](#73-了解-dom-的层次结构)
 
 <!-- /code_chunk_output -->
 
@@ -161,11 +179,11 @@
 
    这样也能行的原因是 class Rectangle 同时引入了一个类型和一个值，而 interface 只引入了一个类型。
 
-   其中，type Shape = Square | Rectangle 中的 Rectangle 指的是类型，而 shape instanceof Rectangle 中的 Rectangle 指的是值。尽管这种区别相当微妙，但对它的理解非常重要。请参见条款 8。<!--TODO-->
+   其中，type Shape = Square | Rectangle 中的 Rectangle 指的是类型，而 shape instanceof Rectangle 中的 Rectangle 指的是值。尽管[这种区别相当微妙](#23-知道如何分辨符号是类型空间还是值空间)，但对它的理解非常重要。
 
 3. **类型操作不能影响运行时的值**
 
-   假设你有一个可能是字符串或数字的值，想把它正常化，使其总是一个数字。以下是一个错误的例子，尽管类型检查器接受了：
+   假设有一个可能是字符串或数字的值，想把它正常化，使其总是一个数字。以下是一个错误的例子，尽管类型检查器接受了：
 
    ```ts
    function asNumber(val: number | string): number {
@@ -189,7 +207,7 @@
    }
    ```
 
-   > as number 是一个类型断言，更多关于何时适合使用这些断言的内容，请参见条款 9 <!--TODO-->
+   as number 是一个[类型断言](#24-优先选择类型声明而不是类型断言)。
 
 4. **运行时类型可能与声明类型不一样**
 
@@ -257,7 +275,7 @@
    const twelve = add('1', '2'); // 类型是 string
    ```
 
-   add 的前两个声明只提供类型信息。当 TypeScript 生成 JS 时，它们会被移除，只留下实现（如果要使用这种风格的重载，请先看看条款 50。这里有一些微妙的地方需要注意）<!--TODO-->
+   add 的前两个声明只提供类型信息。当 TypeScript 生成 JS 时，它们会被移除，只留下实现（如果要使用这种风格的重载，[有一些微妙的地方需要注意](#65-优先选择条件类型而不是重载声明)）。
 
 6. **TypeScript 类型对运行时的性能没有影响**
 
@@ -366,8 +384,7 @@ const vec3D = { x: 3, y: 4, z: 1, address: '123 Broadway' };
 calculateLengthL1(vec3D); // 返回 NaN
 ```
 
-由于 v 可能具有任何属性，而可确信的只有 axis 的类型是 string 而已。就像刚才亲眼所见的那样，TypeScript 没理由相信 `v[axis]` 的类型一定是一个 number，事实也的确如此。遍历对象可能很难做到类型正确。会在条
-款 54 <!--TODO--> 继续这个话题：
+由于 v 可能具有任何属性，而可确信的只有 axis 的类型是 string 而已。就像刚才亲眼所见的那样，TypeScript 没理由相信 `v[axis]` 的类型一定是一个 number，事实也的确如此。[遍历对象可能很难做到类型正确](#72-了解如何迭代对象)。
 
 ```ts
 function calculateLengthL1(v: Vector3D) {
@@ -438,7 +455,7 @@ test('getAuthors', () => {
 
 TypeScript 将验证测试 DB 是否满足该接口。在不需要 mock 的前提下，测试也无须了解生产数据库的任何信息！通过引入抽象（DB），从一个特定实现（PostgresDB）的细节中解放了逻辑（和测试）。
 
-结构类型的另一个优点是，它可以干净地切断库之间的依赖关系。更多内容会在条款 51 中讨论。<!--TODO-->
+结构类型的另一个优点是，它可以干净地[切断库之间的依赖关系](#66-反映类型以切断依赖)。
 
 **总结**：
 
@@ -448,7 +465,7 @@ TypeScript 将验证测试 DB 是否满足该接口。在不需要 mock 的前�
 
 ### 1.3 限制使用 any 类型
 
-TypeScript 的类型系统是渐进和可选的：渐进是因为可以一项一项地将类型添加到你的代码中，而可选是因为可以随时禁用类型检查器。这些功能的关键是 any 类型。
+TypeScript 的类型系统是渐进和可选的：渐进是因为可以一项一项地将类型添加到代码中，而可选是因为可以随时禁用类型检查器。这些功能的关键是 any 类型。
 
 ```ts
 let age: number;
@@ -456,83 +473,88 @@ age = '12'; // 不能将类型 “12” 分配给类型 “number”
 age = '12' as any; // OK
 ```
 
-**any 类型没有类型安全**
-在前面的例子中，类型说明中说 age 是一个 number，但 any 可以让它分配给一个 string，而类型检查器相信它是一个 number，于是就乱套了。
+- **any 类型没有类型安全**
 
-**any 类型会打破契约**
-当编写一个函数时，是在指定一个契约：如果调用者给一个特定类型的输入，将产生一个特定类型的输出。但有了 any 类型，就可以打破这些契约。
+  在前面的例子中，类型说明中说 age 是一个 number，但 any 可以让它分配给一个 string，而类型检查器相信它是一个 number，于是就乱套了。
 
-```ts
-function calculateAge(birthDate: Date): number {
-  // ...
-}
-let birthDate: any = '1990-01-19';
-calculateAge(birthDate); // OK
-```
+- **any 类型会打破契约**
 
-出生日期参数应该是一个 Date，而不是一个 string。而 any 类型已经打破了 calculateAge 的契约。这会特别麻烦，因为 JS 经常在类型之间进行隐式转换。有时一个 string 也会在该是 number 的地方正常运行，但只有在其他（一些很严格的）情况下才会出问题。
+  当编写一个函数时，是在指定一个契约：如果调用者给一个特定类型的输入，将产生一个特定类型的输出。但有了 any 类型，就可以打破这些契约。
 
-**any 类型没有语言服务**
-当一个符号有一个类型时，TypeScript 的语言服务（Language Service）能够提供自动补全和上下文文档。但对于带有 any 类型的符号，只能靠自己了。
+  ```ts
+  function calculateAge(birthDate: Date): number {
+    // ...
+  }
+  let birthDate: any = '1990-01-19';
+  calculateAge(birthDate); // OK
+  ```
 
-重命名是另一个这样的服务。如果有一个人（Person）的类型，并有函数来格式化一个人的名字：
+  出生日期参数应该是一个 Date，而不是一个 string。而 any 类型已经打破了 calculateAge 的契约。这会特别麻烦，因为 JS 经常在类型之间进行隐式转换。有时一个 string 也会在该是 number 的地方正常运行，但只有在其他（一些很严格的）情况下才会出问题。
 
-```ts
-interface Person {
-  first: string;
-  last: string;
-}
-const formatName = (p: Person) => `${p.first} ${p.last}`;
-const formatNameAny = (p: any) => `${p.first} ${p.last}`;
-```
+- **any 类型没有语言服务**
 
-然后可以在 vscode 中选择 first，选择 “重命名符号”，并将其改为 firstName。TypeScript 语言服务确保工程中所有使用该符号的地方也被重命名。改变了 formatName 函数，但不会改变使用了 any 的函数（即 formatNameAny）。
+  当一个符号有一个类型时，TypeScript 的语言服务（Language Service）能够提供自动补全和上下文文档。但对于带有 any 类型的符号，只能靠自己了。
 
-TypeScript 的座右铭是 “规模化的 JS”。“规模化” 的一个关键部分是语言服务，它是 TypeScript 体验的核心部分（参见条款 6）<!--TODO-->。丧失它意味着生产力的损失。
+  重命名是另一个这样的服务。如果有一个人（Person）的类型，并有函数来格式化一个人的名字：
 
-**any 类型会掩盖重构代码时的错误**
-假设正在构建一个 Web 应用程序，其中用户可以选择某些选项（Item）。一个组件可能有一个 onSelectItem 回调函数。为一个选项（Item）写一个类型似乎很麻烦，所以只用 any 作为一个代替：
+  ```ts
+  interface Person {
+    first: string;
+    last: string;
+  }
+  const formatName = (p: Person) => `${p.first} ${p.last}`;
+  const formatNameAny = (p: any) => `${p.first} ${p.last}`;
+  ```
 
-```ts
-interface ComponentProps {
-  onSelectItem: (item: any) => void;
-}
-```
+  然后可以在 vscode 中选择 first，选择 “重命名符号”，并将其改为 firstName。TypeScript 语言服务确保工程中所有使用该符号的地方也被重命名。改变了 formatName 函数，但不会改变使用了 any 的函数（即 formatNameAny）。
 
-下面是管理该组件的代码：
+  TypeScript 的座右铭是 “规模化的 JS”。“规模化” 的一个关键部分是语言服务，它是 [TypeScript 体验的核心部分](#21-使用编辑器来询问和探索类型系统)。丧失它意味着生产力的损失。
 
-```ts
-function renderselector(props: ComponentProps) {
-  /* ... */
-}
-let selectedId: number = 0;
-function handleSelectItem(item: any) {
-  selectedId = item.id;
-}
-renderselector({ onSelectItem: handleselectItem });
-```
+- **any 类型会掩盖重构代码时的错误**
+  假设正在构建一个 Web 应用程序，其中用户可以选择某些选项（Item）。一个组件可能有一个 onSelectItem 回调函数。为一个选项（Item）写一个类型似乎很麻烦，所以只用 any 作为一个代替：
 
-后来重新设计了选择器，使它很难将整个 item 对象传递给 onSelectItem。这没什么大不了的，因为只需要 ID。只是改变了 ComponentProps 的函数签名。
+  ```ts
+  interface ComponentProps {
+    onSelectItem: (item: any) => void;
+  }
+  ```
 
-```ts
-interface ComponentProps {
-  onSelectItem: (id: number) => void;
-}
-```
+  下面是管理该组件的代码：
 
-更新了组件，一切都通过了类型检查器的检查。成功！但果真如此吗？handleSelectItem 接受了一个 any 参数，所以它对一个选项（Item）和一个 ID 一样都没问题。尽管通过了类型检查器，它还是会产生一个运行时异常。但假如使用的是一个更具体的类型，它将被类型检查器捕获。
+  ```ts
+  function renderselector(props: ComponentProps) {
+    /* ... */
+  }
+  let selectedId: number = 0;
+  function handleSelectItem(item: any) {
+    selectedId = item.id;
+  }
+  renderselector({ onSelectItem: handleselectItem });
+  ```
 
-**any 类型遮蔽了你的类型设计**
-像应用程序状态这样的复杂对象的类型定义可能会变得很长。与其为页面状态的几十个属性写出类型，可能会想只使用一个 any 类型就可以了。
+  后来重新设计了选择器，使它很难将整个 item 对象传递给 onSelectItem。这没什么大不了的，因为只需要 ID。只是改变了 ComponentProps 的函数签名。
 
-正如本条款中列出的所有原因那样，这样做有很多问题。但还有问题是因为它隐藏了状态设计。正如第 4 章 <!--TODO--> 中解释的那样，好的类型设计对于写出干净、正确和可理解的代码是必不可少的。对于一个 any 类型，类型设计是隐性的。这使得很难知道这个设计是否为一个好的设计，甚至根本不知道这个设计是什么。如果要求同事审查一个代码变更，他们就得重新构建看是否和如何改变了应用状态。因此最好把它写出来给大家看。
+  ```ts
+  interface ComponentProps {
+    onSelectItem: (id: number) => void;
+  }
+  ```
 
-**any 类型破坏了对类型系统的信心**
-每当犯了一个错误，而类型检查器又抓住了它，这就增强了对类型系统的信心。但是当在运行时看到一个类型错误时，这种信心就会受到打击。如果在一个较大的团队中引入 TypeScript，这可能会让同事怀疑是否值得为 TypeScript 付出努力。any 类型通常是这些未捕获的错误的来源。
+  更新了组件，一切都通过了类型检查器的检查。成功！但果真如此吗？handleSelectItem 接受了一个 any 参数，所以它对一个选项（Item）和一个 ID 一样都没问题。尽管通过了类型检查器，它还是会产生一个运行时异常。但假如使用的是一个更具体的类型，它将被类型检查器捕获。
 
-TypeScript 的目的是让工作变得更简单，但是有很多 any 类型的 TypeScript 可能比无类型的 JS 更难处理，因为必须修复各种类型错误，同时还得在脑海中记住真正的类型。如果代码中的类型与事实相符，就可以摆脱在脑海中保存类型信息的负担。TypeScript 将为你记录它。
+- **any 类型遮蔽了类型设计**
 
-对于必须使用 any 的情况，分别有更好的和更坏的方法来做到这一点。更多关于如何限制类型检查器的 any 害处，请参看第 5 章。<!--TODO-->
+  像应用程序状态这样的复杂对象的类型定义可能会变得很长。与其为页面状态的几十个属性写出类型，可能会想只使用一个 any 类型就可以了。
+
+  正如本条款中列出的所有原因那样，这样做有很多问题。但还有问题是因为它隐藏了类型设计。好的[类型设计](#四-类型设计)对于写出干净、正确和可理解的代码是必不可少的。对于一个 any 类型，类型设计是隐性的。这使得很难知道这个设计是否为一个好的设计，甚至根本不知道这个设计是什么。如果要求同事审查一个代码变更，他们就得重新构建看是否和如何改变了应用状态。因此最好把它写出来给大家看。
+
+- **any 类型破坏了对类型系统的信心**
+
+  每当犯了一个错误，而类型检查器又抓住了它，这就增强了对类型系统的信心。但是当在运行时看到一个类型错误时，这种信心就会受到打击。如果在一个较大的团队中引入 TypeScript，这可能会让同事怀疑是否值得为 TypeScript 付出努力。any 类型通常是这些未捕获的错误的来源。
+
+  TypeScript 的目的是让工作变得更简单，但是有很多 any 类型的 TypeScript 可能比无类型的 JS 更难处理，因为必须修复各种类型错误，同时还得在脑海中记住真正的类型。如果代码中的类型与事实相符，就可以摆脱在脑海中保存类型信息的负担。TypeScript 将记录它。
+
+  对于必须使用 any 的情况，[分别有更好的和更坏的方法来做到这一点](#五-和-any-一起工作)。
 
 ## 二. TypeScript 的类型系统
 
@@ -540,8 +562,8 @@ TypeScript 的目的是让工作变得更简单，但是有很多 any 类型的 
 
 当安装 TypeScript 时，会得到两个可执行文件：
 
-- tsc，TypeScript 编译器
-- tsserver，TypeScript 独立服务器
+- **tsc**：TypeScript 编译器
+- **tsserver**：TypeScript 独立服务器
 
 更有可能直接运行 TypeScript 编译器，但 tsserver 同样重要，因为它提供语言服务。这些服务包括自动补全、检查、导航和重构。通常通过编辑器使用这些服务。如果系统没有被配置以提供这些服务，那么就失去了使用它们的机会。像自动补全这样的服务是让 TypeScript 使用起来如此快乐的原因之一。但是除了方便之外，编辑器是建立和测试类型系统知识最好的地方。这将帮助建立一个直觉，即当 TypeScript 能够[推断类型](#31-避免代码被可推断类型弄得混乱不堪)时，这也是编写紧凑的、习惯性的代码的关键。
 
@@ -549,7 +571,7 @@ TypeScript 的目的是让工作变得更简单，但是有很多 any 类型的 
 
 > **注意**：如果函数返回类型的推断值与期望值不一致，应该添加一个[类型声明](#24-优先选择类型声明而不是类型断言)，并追踪差异。
 
-建立 TypeScript 在任何情况下对变量类型的理解，对于构建围绕扩展（参见条款 21 ）<!--TODO--> 和收缩（参见条款 22）的直觉至关重要。理解一个变量的类型在条件分支中的变化是建立对类型系统信心的有效方法。
+建立 TypeScript 在任何情况下对变量类型的理解，对于构建围绕[扩展](#33-理解类型扩展)和[收缩](#34-理解类型收缩)的直觉至关重要。理解一个变量的类型在条件分支中的变化是建立对类型系统信心的有效方法。
 
 ```ts
 function logMessage(message: string | null) {
@@ -587,11 +609,11 @@ function getElement(elOrId: string | HTMLElement | null): HTMLElement {
 }
 ```
 
-if 语句第一分支的意图是只过滤对象，即 HTMLElement。但奇怪的是，在 JS 中 typeof null 为 “object”，所以在该分支中 elOrId 仍然可能是 null。可以把 null 检查放在第一位来解决这个问题。第二个错误是因为 document.getElementById 可能返回 null，所以你也需要处理这种情况，比如可以通过抛出异常来解决。
+if 语句第一分支的意图是只过滤对象，即 HTMLElement。但奇怪的是，在 JS 中 typeof null 为 “object”，所以在该分支中 elOrId 仍然可能是 null。可以把 null 检查放在第一位来解决这个问题。第二个错误是因为 document.getElementById 可能返回 null，所以也需要处理这种情况，比如可以通过抛出异常来解决。
 
 语言服务也可以帮助浏览库和类型声明。假设在代码中看到了对 fetch 函数的调用，并想了解更多关于它的信息，编辑器中应该提供 “Go to Definition” 选项。
 
-选择这个选项将会带你转到 lib.dom.d.ts，其中有 TypeScript 引入的 DOM 的类型声明：
+选择这个选项将会转到 lib.dom.d.ts，其中有 TypeScript 引入的 DOM 的类型声明：
 
 ```ts
 declare function fetch(input: RequestInfo, init?: RequestInit): Promise<Response>;
@@ -612,7 +634,7 @@ declare var Request: {
 };
 ```
 
-在这里，可以看到 Request 的类型和值是被分开建模的（参见条款 8）<!--TODO-->。已经看到了 RequestInfo。点击 RequestInit，可以看到所有可以用来构造 Request 的方法。
+在这里，可以看到 Request 的[类型和值是被分开建模的](#23-知道如何分辨符号是类型空间还是值空间)。已经看到了 RequestInfo。点击 RequestInit，可以看到所有可以用来构造 Request 的方法。
 
 ```ts
 interface RequestInit {
@@ -624,7 +646,13 @@ interface RequestInit {
 }
 ```
 
-在理解了这里想要表达的内容后，可以使用上面的方法来应对更多的类型。类型声明一开始读起来可能很有挑战性，但它是一个可以理解 TypeScript 可以做什么、使用的库是如何建模的及如何调试错误的好方法。关于类型声明的更多内容，请参见第 6 章。<!--TODO-->
+在理解了这里想要表达的内容后，可以使用上面的方法来应对更多的类型。[类型声明](#六-类型声明和-types)一开始读起来可能很有挑战性，但它是一个可以理解 TypeScript 可以做什么、使用的库是如何建模的及如何调试错误的好方法。
+
+**总结**：
+
+- 通过使用能够运行 TypeScript 语言服务的编辑器来利用这些服务
+- 使用编辑器来建立对类型系统如何工作及 TypeScript 如何推断类型的理解
+- 使用 “Go to Definition” 跳转到类型声明的文件中并理解它们是如何建模的
 
 ### 2.2 将类型视为价值的集合
 
@@ -686,7 +714,7 @@ interface Identified {
 
 把这个接口（interface）视为对其类型域中的值的描述。该值是否有一个属性 id，其值可赋给 string（的一个成员）？如果满足条件，那么，它就是一个可识别的。
 
-这就是它的全部内容。正如条款 4 中所解释的，TypeScript 的结构类型规则意味着该值也可以有其他属性，这些属性甚至可以是可调用的！这个事实有时会被多余的属性检查所掩盖（参见条款 11）。<!--TODO-->
+这就是它的全部内容。TypeScript 的[结构类型](#12-习惯结构类型structural-typing)规则意味着该值也可以有其他属性，这些属性甚至可以是可调用的！这个事实[有时会被多余的属性检查所掩盖](#26-认识额外属性检查的局限性)。
 
 将类型视为值的集合，可以帮助推断对它们的操作。例如：
 
@@ -778,7 +806,7 @@ interface Vector3D {
 }
 ```
 
-虽然这两种解释对于对象类型来说都是可行的，但是当开始考虑字面类型和联合类型时，这种集合解释就会变得更加直观。Extends 也可以作为一个约束出现在一个泛型类型中，而且在这个上下文中它也意味着 “子集”（参见条款 14）。<!--TODO-->
+虽然这两种解释对于对象类型来说都是可行的，但是当开始考虑字面类型和联合类型时，这种集合解释就会变得更加直观。`extends` 也可以作为一个约束出现在一个[泛型类型](#29-使用类型操作和泛型来避免重复的工作)中，而且在这个上下文中它也意味着 “子集”。
 
 ```ts
 function getkey<K extends string>(val: any, key: K) {
@@ -859,6 +887,14 @@ type NonZeroNums = Exclude<number, 0>; // 类型仍然是 number
 | T1 \| T2        | T1 ∪ T2（并集）   |
 | T1 & T2         | T1 ∩ T2（交集）   |
 | Unknown         | 全集              |
+
+**总结**：
+
+- 将类型视为值的集合（类型的域）。这些集合可以是有限的（如 boolean），也可以是无限的（如 number）
+- TypeScript 类型形成了交集，而不是一个严格的层次结构。两个类型可以重叠，而不会成为另一个类型的子类型。
+- 一个对象仍然可以属于另一个类型，即使它有在类型声明中没有提到的额外属性。
+- 类型操作适用于一个集合的域。A 和 B 的交集就是 A 的域和 B 的域的交集。对于对象类型来说，这意味着 A & B 中的值同时具有 A 和 B 的属性。
+- 将 “extends” “assignable to（可分配到）” 和 “subtype of（的子类型）” 视为 “subtype of（的子集）” 的同义词。
 
 ### 2.3 知道如何分辨符号是类型空间还是值空间
 
@@ -950,7 +986,7 @@ const c = new fn(); // 类型是 Cylinder
 type C = InstanceType<typeof Cylinder>; // 类型是 Cylinder
 ```
 
-[] 属性访问器在类型空间中也有一个外观相同的等价物。但要注意的是，虽然 obj['field'] 和 obj.field 在值空间中是等价的，但在类型空间中却不是。必须使用前者来获取另一个类型属性的类型：
+[] 属性访问器在类型空间中也有一个外观相同的等价物。但要注意的是，虽然 `obj['field']` 和 obj.field 在值空间中是等价的，但在类型空间中却不是。必须使用前者来获取另一个类型属性的类型：
 
 ```ts
 const first: Person['first'] = p['first']; // 或者 p.first
@@ -958,7 +994,7 @@ const first: Person['first'] = p['first']; // 或者 p.first
 //           --------------- 类型
 ```
 
-这里 Person['first'] 是一个类型，因为它出现在类型上下文中（在 : 之后）。可以在索引中放入任何类型，包括联合类型或基元类型：
+这里 `Person['first']` 是一个[类型](#29-使用类型操作和泛型来避免重复的工作)，因为它出现在类型上下文中（在 : 之后）。可以在索引中放入任何类型，包括联合类型或基元类型：
 
 ```ts
 type PersonEl = Person['first' | 'last']; // 类型是 string
@@ -966,19 +1002,17 @@ type Tuple = [string, number, Date];
 type TupleE1 = Tuple[number]; // 类型是 string | number | Date
 ```
 
-有关此方面的详细介绍请参见条款 14。<!--TODO-->
-
 还有许多其他的结构在两个空间中具有不同的意义：
 
-- 值空间中的 this 是 JS 的 this 关键字（参见条款 49）<!--TODO-->。作为一个类型，this 是 this 的 TypeScript 类型，也就是 “多态 this”。它对于用子类实现方法链很有帮助。
+- 值空间中的 this 是 JS 的 [this 关键字](#64-提供回调中-this-的类型)。作为一个类型，this 是 this 的 TypeScript 类型，也就是 “多态 this”。它对于用子类实现方法链很有帮助。
 
 - 在值空间中，& 和 | 是位上的 AND 和 OR。在类型空间中，它们是交集和联合运算符。
 
-- const 引入了一个新的变量，但 as const 改变了一个文字或文字表达式的推断类型（参见条款 21）<!--TODO-->。
+- const 引入了一个新的变量，但 [as const](#33-理解类型扩展) 改变了一个文字或文字表达式的推断类型。
 
 - extends 可以定义一个子类（class A extends B），或一个子类型（interfaceA extends B），或一个通用类型的约束（`Generic<T extends number>`）。
 
-- in 可以是循环的一部分（`for(key in object)`），也可以是映射类型（参见条款 14）。<!--TODO-->
+- in 可以是循环的一部分（`for(key in object)`），也可以是[映射类型](#29-使用类型操作和泛型来避免重复的工作)。
 
 如果 TypeScript 似乎根本不理解某些代码，可能就是因为类型空间和值空间的混乱。例如，改变了前面的 email 函数，将其参数放在一个单一的对象参数中：
 
@@ -1019,7 +1053,7 @@ function email({ person, subject, body }: { person: Person; subject: string; bod
 }
 ```
 
-这明显比较啰嗦，但在实践中，可以为参数设置一个命名的类型，或者从上下文中推断出参数（参见条款 26）。<!-- TODO -->
+这明显比较啰嗦，但在实践中，可以为参数设置一个命名的类型，或者从[上下文中推断出参数](#38-了解类型推断中如何使用上下文)。
 
 ### 2.4 优先选择类型声明而不是类型断言
 
@@ -1055,7 +1089,7 @@ const bob = {
 } as Person; //没有错误
 ```
 
-这是正常工作的额外属性检查（参见条款 11）<!--TODO-->，但如果使用类型断言，它就无法起作用。因为它们提供了额外的安全检查，应该使用类型声明，除非有特定的理由使用类型断言。
+这是正常工作的[额外属性检查](#26-认识额外属性检查的局限性)，但如果使用类型断言，它就无法起作用。因为它们提供了额外的安全检查，应该使用类型声明，除非有特定的理由使用类型断言。
 
 > 也可能会看到类似 `const bob = <Person>{}` 的语句。这是类型断言的原始语法，相当于 `{} as Person`。现在不太常见了，因为 `<Person>` 被解释为 .tsx 文件（TypeScript+React）中的起始标签。
 
@@ -1111,7 +1145,7 @@ document.querySelector('#myButton').addEventListener('click', e => {
 });
 ```
 
-因为 TypeScript 无法访问页面的 DOM，它无法知道 #myButton 是一个按钮元素，它也不知道事件中的 currentTarget 应该是同一个按钮。由于有 TypeScript 没有的信息，因此类型断言在这里是有意义的。关于 DOM 类型的更多信息，请参见条款 55。<!--TODO-->
+因为 TypeScript 无法访问页面的 [DOM](#73-了解-dom-的层次结构)，它无法知道 #myButton 是一个按钮元素，它也不知道事件中的 currentTarget 应该是同一个按钮。由于有 TypeScript 没有的信息，因此类型断言在这里是有意义的。
 
 也可能会遇到非空断言，它是如此常见，以至于它有一种专门的语法。
 
@@ -1134,7 +1168,7 @@ const body = document.body;
 const el = body as Person; // 将类型 "HTMLElement" 转换为类型 "person" 可能是个错误，因为这两个类型都没有充分地重叠。如果是有意为之，请先将表达式转换为 “unknown”。
 ```
 
-这个错误提示了一个逃避问题的方法，即使用 unknown 类型（参见条款 42）。<!--TODO-->每个类型都是 unknown 的子类型，所以涉及 unknown 的断言总是正确的。这可以在任意类型之间进行转换，但至少是显式地在做一些令人生疑的事情。
+这个错误提示了一个逃避问题的方法，即使用 [unknown 类型](#55-对未知类型的值使用-unknown-而不是-any)。每个类型都是 unknown 的子类型，所以涉及 unknown 的断言总是正确的。这可以在任意类型之间进行转换，但至少是显式地在做一些令人生疑的事情。
 
 ```ts
 const el = document.body as unknown as Person; // OK
@@ -1152,7 +1186,7 @@ const el = document.body as unknown as Person; // OK
 
 但事情并不像表面上那样简单。其实这里面有一些奇怪和微妙的地方。虽然字符串基本数据类型没有方法，但 JS 还定义了一个 String 对象类型，它有方法。JS 可以在这些类型之间自由转换。当访问一个字符串基元上的 charAt 这样的方法时，JS 会把它包装在一个 String 对象中，以调用这个方法，然后把这个对象扔掉。
 
-如果给 String.prototype 做猴子补丁（monkey-patch）(参见条款 43)<!--TODO-->，可以观察到这一点：
+如果给 String.prototype 做[猴子补丁（monkey-patch）](#56-选择类型安全的方法而不是猴子补丁)，可以观察到这一点：
 
 ```js
 // 不要这么做！
@@ -1210,7 +1244,7 @@ getstringLen('hello'); // OK
 getStringLen(new String('hello')); // OK
 ```
 
-但当你试图将一个 String 对象传递给一个期望为 string 的方法时，就有问题了。
+但当试图将一个 String 对象传递给一个期望为 string 的方法时，就有问题了。
 
 ```ts
 function isGreeting(phrase: String) {
@@ -1231,7 +1265,7 @@ const n: Number = 12;
 const b: Boolean = true;
 ```
 
-当然，运行时的值仍然是基本数据类型，而不是对象，但 TypeScript 允许这些声明，因为基本数据类型可以分配给对象包装器。这些标注既是误导性的，也是多余的（参见条款 19）<!--TODO-->。最好坚持使用基本数据类型。
+当然，运行时的值仍然是基本数据类型，而不是对象，但 TypeScript 允许这些声明，因为基本数据类型可以分配给对象包装器。[这些标注既是误导性的，也是多余的](#31-避免代码被可推断类型弄得混乱不堪)。最好坚持使用基本数据类型。
 
 最后要说明的是，调用 BigInt 和 Symbol 时可以不使用 new，因为它们创建的是基本数据类型：
 
@@ -1325,7 +1359,7 @@ const o = { darkmode: true, title: 'Ski Free' } as Options; // OK
 
 这是个很好的理由，让我们[更倾向于使用类型声明而不是类型断言](#24-优先选择类型声明而不是类型断言)。
 
-如果不想要这种检查，可以使用索引签名告诉 TypeScript 期待额外的属性：
+如果不想要这种检查，可以使用[索引签名](#210-为动态数据使用索引签名)告诉 TypeScript 期待额外的属性：
 
 ```ts
 interface Options {
@@ -1334,8 +1368,6 @@ interface Options {
 }
 const o: Options = { darkmode: true }; // OK
 ```
-
-条款 15 讨论了这个在什么时候是、什么时候不是一个合适的数据建模的方式。<!--TODO-->
 
 一个相关的检查发生在只有可选属性的 “弱” 类型上。
 
@@ -1351,7 +1383,7 @@ const o: LineChartOptions = opts; // 类型 “{logScale: boolean;}” 与类型
 
 从结构的角度来看，LineChartOptions 类型应该包括几乎所有的对象。对于这样的弱类型，TypeScript 增加了另一个检查，以确保值类型和声明类型至少有一个共同的属性。就像额外属性检查一样，它对捕捉错别字（typo）很有效，而且它不是严格的结构性检查。但与额外属性检查不同的是，它发生在所有涉及弱类型的可分配性检查中。提取出一个中间变量并不能绕过这个检查。
 
-额外属性检查对于发现属性名中的错别字和其他错误是一种有效的方法，否则结构类型系统就会允许这些错误。它对于像 Options 这样包含可选字段的类型特别有用。但它的范围也非常有限：它只适用于对象字面量。在这里，提取出一个常量使一个错误消失了，但它也可以在其他上下文中引入一个错误。请参见条款 26 以了解这方面的例子。<!--TODO-->
+额外属性检查对于发现属性名中的错别字和其他错误是一种有效的方法，否则结构类型系统就会允许这些错误。它对于像 Options 这样包含可选字段的类型特别有用。但它的范围也非常有限：它只适用于对象字面量。在这里，提取出一个常量使一个错误消失了，但它也可以在其他[上下文](#38-了解类型推断中如何使用上下文)中引入一个错误。
 
 ### 2.7 尽可能将类型应用于整个函数表达式
 
@@ -1409,7 +1441,7 @@ const div: BinaryFn = (a, b) => a / b;
 
 这比以前少了一些类型标注，而且它们与函数实现分开了。这使得逻辑更加清晰，而且还能够检查是否所有函数表达式的返回类型都是 number。
 
-库经常为常见的函数签名提供类型。例如，ReactJS 提供了一个 MouseEventHandler 的类型，可以将其应用于整个函数，而不是将 MouseEvent 指定为函数参数的类型。如果是库的作者，可以考虑为常见的回调提供类型声明。
+库经常为常见的函数签名提供类型。例如，ReactJS 提供了一个 MouseEventHandler 的类型，可以将其应用于整个函数，而不是将 MouseEvent 指定为函数参数的类型。如果是库的作者，可以考虑为常见的[回调](#37-使用-async-函数代替异步代码的回调)提供类型声明。
 
 另外，可能想要将类型应用到函数表达式以匹配其他函数的签名。例如，在 Web 浏览器中，fetch 函数会对某些资源发出 HTTP 请求：
 
@@ -1431,8 +1463,6 @@ async function getQuote() {
 //  "date": 1894
 //}
 ```
-
-(参见条款 25 以了解更多关于 Promise 和 async/await 的信息。）<!--TODO-->
 
 这里有一个 bug：如果对 /quote 的请求失败，响应体很可能包含 “404 NotFound” 这样的解释。这不是 JSON，所以 response.json() 会返回一个被拒绝的 Promise，并附带一条关于无效 JSON 的消息。这掩盖了真正的错误，即 404。
 
@@ -1651,7 +1681,7 @@ const checkedFetch: typeof fetch = async (input, init) => {
    const t: Tuple = [10, 20]; // OK
    ```
 
-   但这很笨拙，而且放弃了所有的元组方法，如 concat，所以最好还是使用 type。更多关于数字索引的问题，请参见条款 16。<!--TODO-->
+   但这很笨拙，而且放弃了所有的元组方法，如 concat，所以最好还是使用 type。
 
 2. interface 有一些 type 没有的能力。其中之一就是 interface 可以被扩增。
 
@@ -1676,7 +1706,7 @@ const checkedFetch: typeof fetch = async (input, init) => {
 
    TypeScript 使用合并来获得不同版本的 JS 标准库的不同类型。例如，Array 接口在 lib.es5.d.ts 中定义。默认情况下，它就是可以得到的全部。但是，如果在 tsconfig.json 的 lib 条目中添加了 ES2015，那么 TypeScript 同样会包含 lib.es2015.d.ts，它里面有另一个 Array 接口，其中有额外的方法，比如在 ES2015 中添加的 find。它们通过合并被添加到另一个（lib.es5.d.ts 中的）Array 接口。最终的效果是，得到了一个完整的具有正正好好的方法的 Array 类型。
 
-   在常规代码及声明中都支持合并，应该意识到这种可能性。如果必须要让所有人都无法对你的类型进行扩增，那么就使用 type。
+   在常规代码及声明中都支持合并，应该意识到这种可能性。如果必须要让所有人都无法对这个类型进行扩增，那么就使用 type。
 
 #### 2.8.1 如何选择使用 type 或 interface
 
@@ -1907,7 +1937,7 @@ interface PersonWithBirthDate {
   type Optionskeys = keyof Options; // 类型是 "width" | "height" | "color" | "label"
   ```
 
-  映射类型（[k in keyof Options]）将遍历这些属性，并在 Options 中查找相应的值类型。`?` 使得每个属性都是可选的。这种模式也是极为常见的，并作为 Partial 被载入标准库中：
+  映射类型（`[k in keyof Options]`）将遍历这些属性，并在 Options 中查找相应的值类型。`?` 使得每个属性都是可选的。这种模式也是极为常见的，并作为 Partial 被载入标准库中：
 
   ```ts
   class UIWidget {
@@ -1943,7 +1973,7 @@ interface PersonWithBirthDate {
   type Options = typeof INIT_OPTIONS;
   ```
 
-  这有意地唤起了 JS 的运行时 [typeof 操作符](#23-知道如何分辨符号是类型空间还是值空间)，但它是在 TypeScript 类型的层次上操作的，且更加精确。然而，从值导出类型时要格外小心。通常最好是先定义类型，然后声明值是可以分配给它们的。这会使类型更加明确，并且可以较少受到扩增的影响（参见条款 21）。<!-- TODO -->
+  这有意地唤起了 JS 的运行时 [typeof 操作符](#23-知道如何分辨符号是类型空间还是值空间)，但它是在 TypeScript 类型的层次上操作的，且更加精确。然而，从值导出类型时要格外小心。通常最好是先定义类型，然后声明值是可以分配给它们的。这会使类型更加明确，并且可以较少受到[扩增](#33-理解类型扩展)的影响。
 
 - 同样，可能想为一个函数或方法的推断返回值创建一个命名类型：
 
@@ -1962,7 +1992,7 @@ interface PersonWithBirthDate {
   // 返回类型推断为 { userId: string, name: string, age:number, ... }
   ```
 
-  要直接做到这一点是需要条件类型（参见条款 50）<!-- TODO -->的。标准库为这样的常见模式定义了泛型。在这种情况下，ReturnType 泛型正好可以满足要求。
+  要直接做到这一点是需要[条件类型](#65-优先选择条件类型而不是重载声明)的。标准库为这样的常见模式定义了泛型。在这种情况下，ReturnType 泛型正好可以满足要求。
 
   ```ts
   type UserInfo = ReturnType<typeof getUserInfo>;
@@ -2005,7 +2035,7 @@ interface PersonWithBirthDate {
   const couple2 = dancingDuo([{ first: 'Bono' }, { first: 'Prince' }]); // 类型“{first:string;}”中缺少属性“last”，但在类型“Name”为必选
   ```
 
-  关于这个特别有用的不同，请参见条款 26 中的 inferringPick。可以使用 extends 来完成前面的 Pick 的定义。如果通过类型检查器运行原始版本，会得到一个错误：<!-- TODO -->
+  关于这个特别有用的不同，参考[了解类型推断中如何使用上下文](#38-了解类型推断中如何使用上下文)的 inferringPick。可以使用 extends 来完成前面的 Pick 的定义。如果通过类型检查器运行原始版本，会得到一个错误：
 
   ```ts
   type Pick<T, K> = {
@@ -2055,13 +2085,13 @@ const rocket: Rocket = {
 
 `[property: string]:string` 就是索引签名。它指定了三件事情：
 
-_键的名字_
+键的名字
 : 这纯粹是为了文档，类型检查器不以任何方式使用它。
 
-_键的类型_
-: 这其实应该是某种 string、number 或 symbol 的组合。但一般来说，只需要使用 string（参见条款 16）。<!-- TODO -->
+键的类型
+: 这其实应该是某种 string、number 或 symbol 的组合。但一般来说，只需要使用 string。
 
-_值的类型_
+值的类型
 : 这可以是任何类型。
 
 虽然它确实需要进行类型检查，但它有一些缺点：
@@ -2184,7 +2214,7 @@ interface Row2 {
   // }
   ```
 
-### 2.11 优先选择 Array、Tuple 和 ArrayLike，而不是数字索引签名
+### 2.11 优先选择 Array/Tuple/ArrayLike 而不是数字索引签名
 
 JS 是一种著名的怪异语言。它有一些臭名昭著的怪癖涉及隐式强制类型转换：
 
@@ -2372,7 +2402,7 @@ function arraySum(arr: readonly number[]) {
 
 现在 printTriangles 所做的就符合预期了。
 
-如果函数不会使其参数值变，那么应该声明其参数为 readonly。这样做相对来说缺点不大：用户将能够用更广泛的类型集（参见条款 29 ）<!-- TODO --> 来调用它们，无意中的值变将被捕获。
+如果函数不会使其参数值变，那么应该声明其参数为 readonly。这样做相对来说缺点不大：用户将能够用[更广泛的类型集](#42-宽进严出)来调用它们，无意中的值变将被捕获。
 
 一个缺点是，可能需要（在该函数中）调用那些没有标记其参数为 readonly 的函数。如果这些函数没有使它们的参数值变，并且在控制范围内，那么要把它们改成 readonly! Readonly 往往会传染：一旦用 readonly 标记了一个函数，也需要标记它调用的所有函数。这是件好事，因为它可以使契约更清晰、类型更安全。但是，如果在调用另一个库中的函数，可能无法改变它的类型声明，不得不求助于类型断言。
 
@@ -2622,7 +2652,7 @@ function shouldUpdate(oldProps: ScatterProps, newProps: ScatterProps) {
 }
 ```
 
-[k in keyof ScatterProps] 告诉类型检查器，REQUIRES_UPDATES 应该具有与 ScatterProps 相同的所有属性。如果将来给 ScatterProps 增加一个新的属性：
+`[k in keyof ScatterProps]` 告诉类型检查器，REQUIRES_UPDATES 应该具有与 ScatterProps 相同的所有属性。如果将来给 ScatterProps 增加一个新的属性：
 
 ```ts
 interface ScatterProps {
@@ -2654,7 +2684,7 @@ let x = 12;
 
 如果在编辑器中把鼠标移到 x，会看到它的类型已经被推断为 number。显式类型标注是多余的，写它只会增加干扰。如果不确定某个类型，可以在编辑器中进行检查。
 
-TypeScript 也会推断出更复杂对象的类型。与其写成这样：
+TypeScript 也会推断出更复杂[对象的类型](#33-理解类型扩展)。与其写成这样：
 
 ```ts
 const person: {
@@ -2696,7 +2726,7 @@ const person = {
 };
 ```
 
-这两种类型是完全一样的。把类型写在值之外，只是在这里增加干扰（关于对象字面的类型推断，条款 21 有更详细的解释）<!-- TODO -->。对于对象来说这是真的规则，对于数组来说也是。TypeScript 可以毫无困难地根据函数的输入和操作找出这个函数的返回类型：
+这两种类型是完全一样的。把类型写在值之外，只是在这里增加干扰。对于对象来说这是真的规则，对于数组来说也是。TypeScript 可以毫无困难地根据函数的输入和操作找出这个函数的返回类型：
 
 ```ts
 function square(nums: number[]) {
@@ -2744,7 +2774,7 @@ function logProduct(product: Product) {
 }
 ```
 
-如果不在 logProduct 函数体中使用任何的类型标注，代码就会原封不动地通过类型检查器。更好的 logProduct 实现是使用解构赋值（参见条款 58）：<!-- TODO -->
+如果不在 logProduct 函数体中使用任何的类型标注，代码就会原封不动地通过类型检查器。更好的 logProduct 实现是使用解构赋值：
 
 ```ts
 function logProduct(product: Product) {
@@ -2787,7 +2817,7 @@ app.get('/health', (request, response) => {
 });
 ```
 
-在类型推断中如何使用上下文的问题，条款 26 会有更深入的探讨<!-- TODO -->。有些情况下，可能仍想指定一个类型，即使它可以被推断出来。其中一种情况是当定义一个对象字面量时：
+[在类型推断中如何使用上下文](#38-了解类型推断中如何使用上下文)。有些情况下，可能仍想指定一个类型，即使它可以被推断出来。其中一种情况是当定义一个对象字面量时：
 
 ```ts
 const elmo: Product = {
@@ -2848,7 +2878,7 @@ function getQuote(ticker: string) {
 }
 ```
 
-在这个实现中存在一个失误，应该返回 Promise.resolve(cache[ticker])，使得 getQuote 总是返回一个 Promise。这个失误很可能会产生一个错误。但是，该错误出现在调用 getQuote 的地方，而不是在 getQuote 本身：
+在这个实现中存在一个失误，应该返回 `Promise.resolve(cache[ticker])`，使得 getQuote 总是返回一个 Promise。这个失误很可能会产生一个错误。但是，该错误出现在调用 getQuote 的地方，而不是在 getQuote 本身：
 
 ```ts
 getQuote('MSFT').then(considerBuying);
@@ -2868,9 +2898,9 @@ function getQuote(ticker: string): Promise<number> {
 }
 ```
 
-当标注返回类型时，它可以防止应出现在实现中的错误，出现在使用者的代码中（请参见条款 25 中对异步函数的讨论，异步函数是避免这种使用 Promises 的错误的有效方法）。<!-- TODO -->
+当标注返回类型时，它可以防止应出现在实现中的错误，出现在使用者的代码中（[异步函数是避免这种使用 Promises 的错误的有效方法](#37-使用-async-函数代替异步代码的回调)）。
 
-写出返回类型也可能帮助更清楚地思考函数：应该在实现它之前知道它的输入和输出类型是什么。虽然实现可能会变，但函数的契约（即它的类型签名）一般不应该变。这在思想上类似于测试驱动开发（TDD）。在测试驱动开发过程中，你在实现一个函数之前就写好了运用它的测试。先写出完整的类型签名有助于得到想要的函数，而不是那个根据实现不得已而为之的函数。
+写出返回类型也可能帮助更清楚地思考函数：应该在实现它之前知道它的输入和输出类型是什么。虽然实现可能会变，但函数的契约（即它的类型签名）一般不应该变。这在思想上类似于测试驱动开发（TDD）。在测试驱动开发过程中，在实现一个函数之前就写好了运用它的测试。先写出完整的类型签名有助于得到想要的函数，而不是那个根据实现不得已而为之的函数。
 
 标注返回值的最后一个原因是，想使用一个具名类型。例如，可以选择不为这个函数写一个返回类型：
 
@@ -2912,7 +2942,7 @@ fetchProductBySerialNumber(id); // 类型 “string” 的参数不能赋给类�
 
 根据值 “12-34-56"，TypeScript 推断出 id 的类型为 string。不能将 number 分配给 string，因此才会出现错误。
 
-这使对 TypeScript 中的变量有了一个关键的认识：虽然一个变量的值可以改变，但它的类型一般不会改变。类型可以改变的一种常见方式是类型收缩（参见条款 22），<!-- TODO --> 但这涉及类型变小，而不是扩展到包括新的值。这个规则有一些重要的例外（参见条款 41），<!-- TODO --> 但它们是例外而不是规则。
+这使对 TypeScript 中的变量有了一个关键的认识：虽然一个变量的值可以改变，但它的类型一般不会改变。类型可以改变的一种常见方式是[类型收缩](#34-理解类型收缩)，但这涉及类型变小，而不是扩展到包括新的值。这个规则有一些[重要的例外](#54-理解-any-演变)，但它们是例外而不是规则。
 
 为了使 id 的类型不发生变化，它必须足够广泛，以包含 string 和 number。这正是联合类型 string | number 的定义：
 
@@ -2963,7 +2993,7 @@ function getComponent(vector: Vector3, axis: 'x' | 'y' | 'z') {
 }
 ```
 
-但当你尝试使用它时，TypeScript 会标示一个错误：
+但当尝试使用它时，TypeScript 会标示一个错误：
 
 ```ts
 let x = 'x';
@@ -2981,14 +3011,14 @@ const mixed = ['x', 1];
 
 mixed 的类型应该是什么？这里有几种可能性：
 
-- ('x' | 1)[]
-- ['x', 1]
-- [string, number]
-- readonly [string, number]
-- (string|number)[]
-- readonly(string|number)[]
-- [any, any]
-- any[]
+- `('x' | 1)[]`
+- `['x', 1]`
+- `[string, number]`
+- `readonly [string, number]`
+- `(string|number)[]`
+- `readonly(string|number)[]`
+- `[any, any]`
+- `any[]`
 
 没有更多的上下文，TypeScript 没有办法知道哪一个是 “正确的”，它不得不猜测意图。（在上例中，它猜测的是 (string|number)[]）尽管它很聪明，但 TypeScript 不会每次都得到正确的结果，而后果就是像刚刚看到的那样的无意错误。
 
@@ -3032,7 +3062,7 @@ v.y = 4;
 v.name = 'Pythagoras';
 ```
 
-v 的类型可以被推断到任意的具体程度。最为具体的是 { readonly x: 1 }; 更一般化的是 { x: number }; 再一般化的就是 `{ [key: string]: number }` 或 object 了。对于对象来说，TypeScript 的类型扩展算法会把对象中的每个元素当作是用 let 赋值了一样，所以 v 的类型结果是 { x: number }。这可以给 v.x 重新赋值为不同的数字，但不能赋值为 string 并且这会阻止添加其他属性（这也是一次构建对象的一个很好的理由，正如条款 23 中所解释的那样）。<!-- TODO -->所以最后三条语句都是错误的。
+v 的类型可以被推断到任意的具体程度。最为具体的是 { readonly x: 1 }; 更一般化的是 { x: number }; 再一般化的就是 `{ [key: string]: number }` 或 object 了。对于对象来说，TypeScript 的类型扩展算法会把对象中的每个元素当作是用 let 赋值了一样，所以 v 的类型结果是 { x: number }。这可以给 v.x 重新赋值为不同的数字，但不能赋值为 string 并且这会阻止添加其他属性（这也是[一次构建对象](#35-一次性构建对象)的一个很好的理由）。所以最后三条语句都是错误的。
 
 同样地，TypeScript 试图在具体性和灵活性之间取得平衡。它需要推断出一个足够具体的类型来捕捉错误，但又不至于具体到产生误报。它通过把初始化像 1 这样的值的属性推断为 number 类型来做到这一点。
 
@@ -3046,7 +3076,7 @@ v 的类型可以被推断到任意的具体程度。最为具体的是 { readon
    }; // 类型是 { x: 1 | 3 | 5; }
    ```
 
-2. 为类型检查器提供额外的上下文（例如，通过传递值作为函数的参数）。更多关于上下文在类型推断中的作用，请参见条款 26。<!-- TODO -->
+2. 为类型检查器提供额外的[上下文](#38-了解类型推断中如何使用上下文)（例如，通过传递值作为函数的参数）。
 
 3. 用 const 断言。这不能与在值空间中引入符号 let 和 const 的方法相混淆，这是一个纯粹类型层面上的构造。看看以下这些变量的不同推断类型：
 
@@ -3089,7 +3119,7 @@ if (el) {
 }
 ```
 
-如果 el 是 null，那么第一个分支的代码就不会执行。所以 TypeScript 能够在这个代码块中从类型联合中排除 null，从而产生一个更容易处理的收缩类型。类型检查器通常很擅长在条件中收缩类型，尽管它偶尔会被别名所阻挠（参见条款 24）。<!-- TODO -->
+如果 el 是 null，那么第一个分支的代码就不会执行。所以 TypeScript 能够在这个代码块中从类型联合中排除 null，从而产生一个更容易处理的收缩类型。类型检查器通常很擅长在条件中收缩类型，尽管它偶尔会被[别名](#36-在使用别名时要保持一致)所阻挠。
 
 也可以通过抛出或从分支中返回来收缩一个变量的类型范围。例如：
 
@@ -3250,7 +3280,7 @@ const president:
 president.middle; // 类型 "{ first: string; last: string; }” 上不存在属性 “middle”
 ```
 
-如果是在有条件地添加多个属性，联合类型确实能更准确地表示可能的值集（参见条款 32）<!-- TODO --> 。但是，使用一个可选字段会更容易操作，可以使用辅助类型来得到它：
+如果是在有条件地添加多个属性，[联合类型确实能更准确地表示可能的值集](#45-优选接口的联合而不是联合的接口)。但是，使用一个可选字段会更容易操作，可以使用辅助类型来得到它：
 
 ```ts
 function addOptional<T extends object, U extends object>(a: T, b: U | null): T & Partial<U> {
@@ -3261,7 +3291,7 @@ const president = addOptional(firstLast, hasMiddle ? { middle: 'S' } : null);
 president.middle; // OK，类型是 string | undefined
 ```
 
-有时想通过转换另一个对象或数组来构建对象或数组。在这种情况下，“一次性构建对象” 的等价方法是使用内置的函数式构造，或者使用像 Lodash 这样的实用工具库，而不是使用循环。更多内容请参见条款 27。<!-- TODO -->
+有时想通过转换另一个对象或数组来构建对象或数组。在这种情况下，[“一次性构建对象”](#35-一次性构建对象) 的等价方法是使用内置的函数式构造，或者使用像 Lodash 这样的实用工具库，而不是使用循环。
 
 ### 3.6 在使用别名时要保持一致
 
@@ -3305,7 +3335,7 @@ function isPointInPolygon(polygon: Polygon, pt: Coordinate) {
     if (pt.x < polygon.bbox.x[0] || pt.x > polygon.bbox.x[1] || pt.y < polygon.bbox.y[1] || pt.y > polygon.bbox.y[1]) {
       return false;
     }
-    //...更复杂的检查
+    // ... 更复杂的检查
   }
 }
 ```
@@ -3355,7 +3385,7 @@ function isPointInPolygon(polygon: Polygon, pt: Coordinate) {
 }
 ```
 
-现在类型检查器很开心，但对人类读者来说还有一个问题。对同一个东西用了两个名字；box 和 bbox。这是一个没有区别的区别（参见条款 36）。<!-- TODO -->
+现在类型检查器很开心，但对人类读者来说还有一个问题。对同一个东西用了两个名字；box 和 bbox。这是一个没有区别的区别。
 
 对象的解构可以通过更紧凑的语法来获得统一的命名。甚至可以将其用于数组和嵌套结构。
 
@@ -3374,7 +3404,7 @@ function isPointInPolygon(polygon: Polygon, pt: Coordinate) {
 
 其他几点：
 
-- 如果 x 和 y 属性是可选的，而不是整个 bbox 属性，这段代码就需要更多的属性检查。受益于条款 31 中的建议，该建议讨论了将空值推到类型周边的重要性。<!-- TODO -->
+- 如果 x 和 y 属性是可选的，而不是整个 bbox 属性，这段代码就需要[更多的属性检查](#44-将空值推到类型边界上)。
 
 - 可选属性适用于 bbox，但不适用于 holes。如果 holes 是可选的，那么它就有可能是缺失的，或者是一个空数组（[]）。这将是一个没有区别的区别。空数组是表示 “无洞（no holes）” 的好办法。
 
@@ -3601,7 +3631,7 @@ let language = 'JavaScript';
 setLanguage(language); // OK
 ```
 
-现在把条款 33 中的建议放在心上，用一个更精确的字符串字面量联合类型代替字符串类型：<!-- TODO -->
+现在用一个[更精确的字符串字面量联合类型代替字符串类型](#46-选择更精确的字符串类型的替代类型)：
 
 ```ts
 type Language = 'JavaScript' | 'TypeScript' | 'python';
@@ -3616,9 +3646,9 @@ setLanguage(language);
 
 对于内联形式，TypeScript 从函数声明中知道参数应该是 Language 类型。字符串 'JavaScript' 是可以分配到这个类型的，所以它是正确的。但是当抽取一个变量时，TypeScript 必须在赋值时推断出它的类型。在这种情况下，它推断出的是 string 类型，不能分配给 Language 类型，因此出现了错误。
 
-有些语言能够根据变量的最终使用来推断变量的类型，但这也会让人感到困惑。TypeScript 的创造者 Anders Hejlsberg 将其称为 “鬼魅般的超距作用”。大体上，TypeScript 在第一次引入一个变量时就确定了它的类型。关于这个规则的一个明显的例外，请参见条款 41。<!-- TODO -->解决这个问题有两个好办法：
+有些语言能够根据变量的最终使用来推断变量的类型，但这也会让人感到困惑。TypeScript 的创造者 Anders Hejlsberg 将其称为 “鬼魅般的超距作用”。大体上，TypeScript 在第一次引入一个变量时就确定了它的类型。关于这个规则的一个[明显的例外](#54-理解-any-演变)。解决这个问题有两个好办法：
 
-1. 用类型声明来限制 language 的可能值：
+1. **用类型声明来限制 language 的可能值**
 
    ```ts
    let language: Language = 'JavaScript';
@@ -3627,7 +3657,7 @@ setLanguage(language);
 
    这样做的另一个好处是，如果语言中出现了错别字，可以标记出一个错误。
 
-2. 让变量成为常量：
+2. **让变量成为常量**
 
    ```ts
    const language = 'JavaScript';
@@ -3651,7 +3681,7 @@ const loc = [10, 20];
 panTo(loc); // 类型 "number[]" 的参数不能赋给类型 “[number, number]” 的参数
 ```
 
-如前所述，已经将一个值与它的上下文分离。在第一个例子中，[10, 20] 可分配给元组类型 [number, number]。在第二个例子中，TypeScript 将 loc 的类型推断为 number[]。因为许多数组有错误的元素数，所以它不能分配给元组类型。
+如前所述，已经将一个值与它的上下文分离。在第一个例子中，`[10, 20]` 可分配给元组类型 `[number, number]`。在第二个例子中，TypeScript 将 loc 的类型推断为 number[]。因为许多数组有错误的元素数，所以它不能分配给元组类型。
 
 现在已经声明了 const，这没有提供帮助。但仍然可以提供一个类型声明，让 TypeScript 知道确切含义：
 
@@ -3667,7 +3697,7 @@ const loc = [10, 20] as const;
 panTo(loc); // 类型 “readonly[10, 20]” 是 “readonly” 的，不能分配给可变类型 “[number, number]”
 ```
 
-如果在编辑器中悬停在 loc 上，会看到它的类型现在被推断为 readonly[10, 20]，而不是 number[]。不幸的是这太精确了！panTo 的类型签名没有承诺它不会修改它的 where 参数的内容。由于 loc 参数有一个 readonly 类型，这是不可能的。最好的解决办法是在 panTo 函数中添加一个 readonly 标注：
+如果在编辑器中悬停在 loc 上，会看到它的类型现在被推断为 `readonly[10, 20]`，而不是 number[]。不幸的是这太精确了！panTo 的类型签名没有承诺它不会修改它的 where 参数的内容。由于 loc 参数有一个 readonly 类型，这是不可能的。最好的解决办法是在 panTo 函数中添加一个 readonly 标注：
 
 ```ts
 function panTo(where: readonly [number, number]) {
@@ -3808,13 +3838,13 @@ const rowsB = rawRows.slice(1).map(rowstr =>
 );
 ```
 
-对于每种情况，解决办法都是为 {} 提供一个类型的标注，要么是 {[ column: string]: string}，要么是 `Record<string, string>`。反过来说，对于使用 Lodash 的版本，不需要修改就能通过类型检查器：
+对于每种情况，解决办法都是为 {} 提供一个类型的标注，要么是 `{[ column: string]: string}`，要么是 `Record<string, string>`。反过来说，对于使用 Lodash 的版本，不需要修改就能通过类型检查器：
 
 ```ts
 const rows = rawRows.slice(1).map(rowStr => _.zipObject(headers, rowStr.split(','))); // 类型是 _.Dictionary<string>[]
 ```
 
-Dictionary 是 Lodash 中的一个类型别名，`Dictionary<string>` 跟 {[key: string]: string} 或 Record<string, string> 是一样的。这里重要的是，rows 的类型是完全正确的，并不需要类型标注。
+Dictionary 是 Lodash 中的一个类型别名，`Dictionary<string>` 跟 `{[key: string]: string}` 或 `Record<string, string>` 是一样的。这里重要的是，rows 的类型是完全正确的，并不需要类型标注。
 
 随着数据处理越来越复杂，这些优势会越来越明显。例如，假设有一个所有 NBA 球队的名单：
 
@@ -4056,7 +4086,7 @@ interface CameraOptions {
 type LngLat = { lng: number; lat: number } | { lon: number; lat: number } | [number, number];
 ```
 
-CameraOptions 里面的字段都是可选字段，因为可能只想设置 center（中心）或 zoom（缩放），而不改变 bearing（方位）或 pitch（间距）。LngLat 类型也使得 setCamera 在接受的输入方面很自由、宽松：可以传入一个 {lng,lat} 对象、一个 {lon, lat} 对象；或者，如果很确信正确的顺序的话，[lng, lat] 对也可以。这些选择余地使得函数容易被调用。viewportForBounds 函数则采用了另一种 “自由” 类型：
+CameraOptions 里面的字段都是可选字段，因为可能只想设置 center（中心）或 zoom（缩放），而不改变 bearing（方位）或 pitch（间距）。LngLat 类型也使得 setCamera 在接受的输入方面很自由、宽松：可以传入一个 {lng,lat} 对象、一个 {lon, lat} 对象；或者，如果很确信正确的顺序的话，`[lng, lat]` 对也可以。这些选择余地使得函数容易被调用。viewportForBounds 函数则采用了另一种 “自由” 类型：
 
 ```ts
 type LngLatBounds = { northeast: LngLat; southwest: LngLat } | [LngLat, LngLat] | [number, number, number, number];
@@ -4064,7 +4094,7 @@ type LngLatBounds = { northeast: LngLat; southwest: LngLat } | [LngLat, LngLat] 
 
 可以通过指定具名角、纬度（lat）/长度（lng）对；或者，在确信正确的顺序的情况下，也可以用一个四元组来指定边界。由于 LngLat 已经兼容了三种形式，所以 LngLatBounds 至少有 19 种可能的形式。
 
-现在写一个函数，以调整可视范围来兼容一个 GeoJSON Feature，并将新的可视范围存储在 URL 中（关于 calculateBoundingBox 的定义见条款 31）。<!-- TODO -->
+现在写一个函数，以调整可视范围来兼容一个 GeoJSON Feature，并将新的可视范围存储在 URL 中：
 
 ```ts
 function focusOnFeature(f: Feature) {
@@ -4086,7 +4116,7 @@ function focusOnFeature(f: Feature) {
 
 因为其返回类型中含有很多可选属性和联合类型，使得 viewportForBounds 用起来很困难。它宽泛的参数类型的确很方便，但宽泛返回类型却不亦然。更好用的 API 应该是输出严格的。
 
-为了实现这种方法，一种方式是区分坐标的规范格式。按照 JS [区分 “Array” 和 “Array-like”](#211-优先选择-array-tuple-和-arraylike而不是数字索引签名) 的惯例，可以在 LngLat 和 LngLatLike 之间进行区分；也可以区分完整定义的 Camera 类型和 setCamera 接受的输入的部分类型：
+为了实现这种方法，一种方式是区分坐标的规范格式。按照 JS [区分 “Array” 和 “Array-like”](#211-优先选择-arraytuplearraylike-而不是数字索引签名) 的惯例，可以在 LngLat 和 LngLatLike 之间进行区分；也可以区分完整定义的 Camera 类型和 setCamera 接受的输入的部分类型：
 
 ```ts
 interface LngLat {
@@ -4176,7 +4206,7 @@ function getForegroundColor(page?: string): Color {
 }
 ```
 
-如果想描述一个特定的参数，可以使用 @param JSDoc 标注。更多内容请参见条款 48。<!-- TODO -->
+如果想描述一个特定的参数，可以使用 @param JSDoc 标注。
 
 关于没有值变的注释也是值得怀疑的。不要只说不修改参数：
 
@@ -4197,7 +4227,7 @@ function sort(nums: readonly number[]) {
 
 对于注释来说是正确的，对于变量名来说也是如此。要避免将类型放入其中：与其命名一个变量 ageNum，不如将其命名为 age，并确保它真的是一个 number。
 
-对于有单位的数字而言，这是一个例外。如果不清楚单位是什么，可能想把它们包含在一个变量或属性名中。例如，timeMs 相比 time 命名更清晰，而 temperatureC 相比 temperature 命名更清晰。条款 37 描述的 “烙印（brands）” 提供了一个更加类型安全的方法来建模单位。<!-- TODO -->
+对于有单位的数字而言，这是一个例外。如果不清楚单位是什么，可能想把它们包含在一个变量或属性名中。例如，timeMs 相比 time 命名更清晰，而 temperatureC 相比 temperature 命名更清晰。[“烙印（brands）”](#410-考虑加-烙印-来实现名义类型) 提供了一个更加类型安全的方法来建模单位。
 
 ### 4.4 将空值推到类型边界上
 
@@ -4226,8 +4256,8 @@ function extent(nums: number[]) {
 
 代码通过了类型检查（没有 strictNullChecks），并推断返回类型为 number[]，这看起来是不错的。但它有一个错误和一个设计缺陷：
 
-- 如果最小值或最大值为零，它可能会被覆盖。例如，extent([0, 1, 2]) 将返回 [1, 2] 而不是 [0, 2]。
-- 如果 nums 数组为空，函数将返回[undefined, undefined]。这种带有几个 undefined 的对象会让使用者难以操作。通过阅读源代码知道，min 和 max 要么都是 undefined，要么都不是，但这些信息并没有在类型系统中表示出来。
+- 如果最小值或最大值为零，它可能会被覆盖。例如，`extent([0, 1, 2])` 将返回 `[1, 2]` 而不是 `[0, 2]`。
+- 如果 nums 数组为空，函数将返回 `[undefined, undefined]`。这种带有几个 undefined 的对象会让使用者难以操作。通过阅读源代码知道，min 和 max 要么都是 undefined，要么都不是，但这些信息并没有在类型系统中表示出来。
 
 开启 strictNullchecks 后，这两个问题更加明显：
 
@@ -4273,7 +4303,7 @@ function extent(nums: number[]) {
 }
 ```
 
-现在的返回类型是 [number, number] | null，这对用户来说就更容易操作了。最小值和最大值可以通过非空断言来获取：
+现在的返回类型是 `[number, number] | null`，这对用户来说就更容易操作了。最小值和最大值可以通过非空断言来获取：
 
 ```ts
 const [min, max] = extent([0, 1, 2])!;
@@ -4312,7 +4342,7 @@ class UserPosts {
   }
 
   getUserName() {
-    // ...?
+    // ...
   }
 }
 ```
@@ -4540,7 +4570,7 @@ recordRelease(kindOfBlue.releaseDate, kindOfBlue.title); // OK，但应该报错
 
 在调用 recordRelease 时，参数被颠倒了，但两个参数都是字符串，所以类型检查器不会报错。由于 string 类型的普遍性，这样的代码有时被称为 “字符串类型化（stringly typed）"。
 
-对于 releaseDate 字段来说，最好只用一个 Date 对象来避免格式相关的问题。最后，对于字段 recordingType，可以定义一个只有两个值的联合类型[也可以使用一个 enum（枚举），但一般建议避免使用枚举，请参见条款 53]：<!-- TODO -->
+对于 releaseDate 字段来说，最好只用一个 Date 对象来避免格式相关的问题。最后，对于字段 recordingType，可以定义一个只有两个值的联合类型（也可以使用一个 enum，但[一般建议避免使用枚举](#711-枚举)）：
 
 ```ts
 type RecordingType = 'studio' | 'live';
@@ -4575,7 +4605,7 @@ const kindOfBlue: Album = {
 
    这个函数的调用者怎么知道被期待的 recordingType 是什么？它只是一个 string，而解释它为 "studio" 或 "live" 的注释隐藏在 Album 的定义中，用户可能不会想到去看。
 
-2. 显式定义一个类型允许给它附上文档（参见条款 48）：<!-- TODO -->
+2. 显式定义一个类型允许给它附上文档：
 
    ```ts
    /* 这段录音是在什么样的环境下录制的？ */
@@ -4600,7 +4630,7 @@ function pluck(record: any[], key: string): any[] {
 }
 ```
 
-这个可以通过类型检查，但不是很好。首先，any 类型是有问题的，特别是在返回值上（参见条款 38）<!-- TODO -->。改进类型签名的第一步是引入一个泛型类型参数：
+这个可以通过类型检查，但不是很好。首先，[any 类型是有问题的](#51-为-any-类型使用最窄的范围)，特别是在返回值上。改进类型签名的第一步是引入一个泛型类型参数：
 
 ```ts
 function pluck<T>(record: T[], key: string): any[] {
@@ -4716,7 +4746,7 @@ type Expression1 = any;
 type Expression2 = number | string | any[];
 ```
 
-除此之外，应该引入一个测试集，测试有效的表达式和无效的表达式。当让类型更加精确时，这将有助于回归测试（参见条款 52）：<!-- TODO -->
+除此之外，应该引入一个测试集，[测试有效的表达式和无效的表达式](#67-警惕测试类型时的陷阱)。当让类型更加精确时，这将有助于回归测试：
 
 ```ts
 const tests: Expression2[] = [
@@ -4981,13 +5011,13 @@ export interface getLicenseVariables {
 
 - 查询参数（getLicenseVariables）和响应（getLicense）的接口都会被生成。
 - 可空信息从 schema 转移到响应接口。repository、description、LicenseInfo 和 spdxId 字段都是可空的，而许可证 name 和查询变量则不是可空的。
-- 文档以 JSDoc 的形式传输，以便它显示在编辑器中（参见条款 48）。这些注释来自 GraphQL schema 本身。<!-- TODO -->
+- 文档以 JSDoc 的形式传输，以便它显示在编辑器中。这些注释来自 GraphQL schema 本身。
 
 这种类型信息有助于确保正确地使用 API。如果查询变了，类型就会改变；如果 schema 变了，那么类型同样也会改变。类型和现实不会有任何不一致的风险，因为它们都来自一个单一的信息源：GraphQL schema。
 
 如果没有可用的规范或权威 schema 应该怎么办？那就必须从数据中生成类型。像 quicktype 这样的工具可以帮助解决这个问题。但要注意，类型可能与现实不符：可能会有遗漏的边缘情况。
 
-TypeScript 浏览器 DOM API 的类型声明是由官方接口生成的（参见条款 55）。这确保了它们正确地模拟了一个复杂的系统，并帮助 TypeScript 捕捉代码中的错误和理解偏差。<!-- TODO -->
+[TypeScript 浏览器 DOM API 的类型声明是由官方接口生成的](#73-了解-dom-的层次结构)。这确保了它们正确地模拟了一个复杂的系统，并帮助 TypeScript 捕捉代码中的错误和理解偏差。
 
 ### 4.9 使用问题域语言命名类型
 
@@ -5085,7 +5115,7 @@ const snowLeopard: Animal = {
 当在命名类型、属性和变量时有一些其他的规则要记住：
 
 - **使命名的区分有意义**。如果要使用两个不同的术语，应确保正在进行有意义的区分。如果没有，应该使用相同的术语。
-- **避免使用“数据（data）”“信息（info）”“事物（thing）”“项目（item）”“对象（object）”等含糊不清、毫无意义的名称**，或者一直很流行的“实体（entity）”。除非 Entity 在某个领域中有特定的含义。但如果使用它是因为不想去想一个更有意义的名字，那你最终会遇到麻烦。
+- **避免使用“数据（data）”“信息（info）”“事物（thing）”“项目（item）”“对象（object）”等含糊不清、毫无意义的名称**，或者一直很流行的“实体（entity）”。除非 Entity 在某个领域中有特定的含义。但如果使用它是因为不想去想一个更有意义的名字，那最终会遇到麻烦。
 - **根据事物的性质来命名，而不是根据它们包含的内容或计算方式来命名**。Directory 比 INodeList 更有意义。它允许把目录（Directory）作为一个概念来考虑，而不是从它的实现角度来考虑。好的名字可以提高代码的抽象程度，降低设计上无意中造成冲突的风险。
 
 ### 4.10 考虑加 “烙印” 来实现名义类型
@@ -5217,7 +5247,7 @@ const V = oneKm / oneMin; // 类型是 number
 
 类型系统在传统上是二元对立的：一种语言要么有一个完全静态的类型系统，要么有一个完全动态的类型系统。TypeScript 模糊了这一界限，因为它的类型系统是可选的和渐进的。可以将类型只添加到程序的其中一部分，而不用管另外的部分。
 
-这对于将现有的 JS 代码库逐步迁移到 TypeScript 是必不可少的（参见第 8 章）<!-- TODO -->。其中的关键是 any 类型，它可以有效地禁用部分代码的类型检查。它既强大却又容易被滥用。学会明智地使用 any 是编写高效的 TypeScript 的关键。
+这对于将现有的 JS 代码库逐步迁移到 TypeScript 是必不可少的。其中的关键是 any 类型，它可以有效地禁用部分代码的类型检查。它既强大却又容易被滥用。学会明智地使用 any 是编写高效的 TypeScript 的关键。
 
 ### 5.1 为 Any 类型使用最窄的范围
 
@@ -5336,7 +5366,7 @@ function getLength(array: any[]) {
 - 函数的返回类型会被推断为 number 而不是 any。
 - 对 getLength 的调用将被检查以确保参数是一个数组。
 
-如果希望参数是一个数组的数组，但并不关心具体类型，可以使用 any[][]。如果期望是某种对象，但不知道值是什么，可以使用 {[key: string]: any}：
+如果希望参数是一个数组的数组，但并不关心具体类型，可以使用 any[][]。如果期望是某种对象，但不知道值是什么，可以使用 `{[key: string]: any}`：
 
 ```ts
 function hasTwelveletterkey(o: { [key: string]: any }) {
@@ -5363,7 +5393,7 @@ function hasTwelveletterkey(o: object) {
 }
 ```
 
-如果这种类型符合需求，可能也会对 unknown 类型感兴趣。参见条款 42。<!-- TODO -->
+如果这种类型符合需求，可能也会对 [unknown 类型](#55-对未知类型的值使用-unknown-而不是-any)感兴趣。
 
 如果只是想要一个函数类型，也要避免使用 any。有以下几个选项，而如何选择则取决于想要多具体：
 
@@ -5434,7 +5464,7 @@ function cacheLast<T extends Function>(fn: T): T {
 declare function shallowObjectEqual<T extends object>(a: T, b: T): boolean;
 ```
 
-但其实现就需要多用点心，因为不能保证 a 和 b 有相同的键（参见条款 54）：<!-- TODO -->
+但其实现就需要多用点心，因为不能保证 a 和 b 有相同的键：
 
 ```ts
 function shallowObjectEqual<T extends object>(a: T, b: T): boolean {
@@ -5448,7 +5478,7 @@ function shallowObjectEqual<T extends object>(a: T, b: T): boolean {
 }
 ```
 
-尽管刚刚检查了 k in b 为真，但 TypeScript 还是对 b[k] 的访问报错，所以别无选择，只能进行类型转换：
+尽管刚刚检查了 k in b 为真，但 TypeScript 还是对 `b[k]` 的访问报错，所以别无选择，只能进行类型转换：
 
 ```ts
 function shallowObjectEqual<T extends object>(a: T, b: T): boolean {
@@ -5595,7 +5625,7 @@ function makesquares(start: number, limit: number) {
 
 ### 5.5 对未知类型的值使用 unknown 而不是 any
 
-假设想写一个 YAML 解析器（YAML 可以表示与 JSON 所表示的相同的东西，但能够接受 JSON 语法的超集）。parseYAML 方法的返回类型应该是什么？让返回值是 any 会很有吸引力（像 JSON.parse）。
+假设想写一个 YAML 解析器（YAML 可以表示与 JSON 所表示的相同的东西，但能够接受 JSON 语法的超集）。parseYAML 方法的返回类型是 any 会很有吸引力（像 JSON.parse）：
 
 ```ts
 function parseYAML(yaml: string): any {
@@ -5613,9 +5643,1279 @@ interface Book {
   author: string;
 }
 const book: Book = parseYAML(`
-name: Wuthering Heights
-author: Emily Bronte
+  name: Wuthering Heights
+  author: Emily Bronte
 `);
 ```
 
 但是如果没有类型声明，book 变量就会悄悄地得到一个 any 类型，而且在任何使用它的地方都会阻碍类型检查。
+
+```ts
+const book = parseYAML(`
+  name: Jane Eyre
+  author: Charlotte Bronte
+`);
+alert(book.title)；// 没有错误，在运行时发出 “undefined” 警报
+book('read'); // 没有错误，在运行时抛出 “TypeError：book is not a function”
+```
+
+一个更安全的选择是令 parseYAML 返回一个 unknown 类型：
+
+```ts
+function safeParseYAML(yaml：string)：unknown {
+return parseYAML(yaml);
+}
+const book = safeParseYAML(`
+  name: The Tenant of wildfell Hall
+  author: Anne Bronte
+`);
+alert(book.title); // 对象类型为 'unknown'
+book("read"); // 对象类型为 'unknown'
+```
+
+从 any 可分配性的角度来思考可以帮助理解 unknown 类型。any 的力量和危险来自以下两个属性：
+
+- 任何类型都可以分配给 any 类型
+- any 类型可分配给任何其他类型（never 类型除外）
+
+在 [“将类型视为值的集合”](#22-将类型视为价值的集合) 的情况下，any 显然不适合类型系统，因为一个集合不能同时是所有其他集合的子集和超集。这是 any 的力量来源，但也是其问题的原因。由于类型检查器是基于集合的，所以使用 any 实际上就会使它失效。
+
+unknown 类型是一个很适合类型系统的 any 的替代品。它具有第一个属性（任何类型都可以被分配到 unknown），但不具备第二个属性（unknown 仅可分配给 unknown，当然也可以分配给 any）。never 类型则正好相反：它有第二个属
+性（可以分配给任何其他类型），但没有第一个属性（没有任何东西可以分配给 never）。
+
+试图用 unknown 类型访问一个值上的属性是错误的，试图调用它或用它做算术运算也是错误的。用 unknown 做不了多少事情，这正是重点。关于 unknown 类型的错误会鼓励添加一个合适的类型：
+
+```ts
+const book = safeParseYAML(`
+  name: villa
+  author: Charlotte Bronte`) as Book;
+alert(book.title); // 类型 “Book” 上不存在属性 “title”
+book('read'); // 此表达式不被调用
+```
+
+这些错误是比较合理的。由于 unknown 不能分配给其他类型，所以才需要类型断言。但这也是合适的：开发者确实比 TypeScript 更了解结果对象的类型。
+
+当知道会有一个值，但不知道它的类型时，使用 unknown 类型就是合适的。parseYAML 的结果就是一个例子，但还有其他例子。例如，在 GeoJSON 规范中，Feature 的 properties 属性是一个可序列化的任意 JSON。所以，unknown 是有意义的：
+
+```ts
+interface Feature {
+  id?: string | number;
+  geometry: Geometry;
+  properties: unknown;
+}
+```
+
+类型断言并不是从 unknown 对象中恢复类型的唯一方法。instanceof 检查也同样可以：
+
+```ts
+function processValue(val: unknown) {
+  if (val instanceof Date) {
+    val; // 类型是 Date
+  }
+}
+```
+
+也可以使用自定义的类型保护：
+
+```ts
+function isBook(val: unknown): val is Book {
+  return typeof val === 'object' && val !== null && 'name' in val && 'author' in val;
+}
+function processValue(val: unknown) {
+  if (isBook(val)) {
+    val; // 类型是 Book
+  }
+}
+```
+
+TypeScript 需要相当多的证明来收缩一个 unknown 类型的范围：为了避免在 in 检查中出错，首先要证明 val 是一个对象类型，并且它是非 null 的（因为 typeof null === 'object'）。
+
+有时会看到用一个范型参数来代替 unknown。可以这样声明 safeParseYAML 函数：
+
+```ts
+function safeParseYAML<T>(yaml: string): T {
+  return parseYAML(yaml);
+}
+```
+
+然而，在 TypeScript 中，这通常被认为是不好的风格。尽管它看起来与类型断言不同，但功能上是一样的。最好是直接返回 unknown 并强迫使用者使用一个断言或收缩到他们想要的类型。
+
+unknown 也可以用来代替 any “双重断言”；
+
+```ts
+declare const foo: Foo;
+let barAny = foo as any as Bar;
+let barUnk = foo as unknown as Bar;
+```
+
+这些代码在功能上是等价的，但如果想做代码重构，把两个断言分开，那么 unknown 在形式上的风险就会小一些。在这种情况下，any 可以逃逸和传播。如果 unknown 类型逃逸，可能只会产生一个错误。
+
+最后一点，可能会看到使用 object 或 {} 的类似于本条款中描述 unknown 方式的代码。它们也是宽泛的类型，但比 unknown 略窄。
+
+- {} 类型由除 null 和 undefined 以外的所有值组成。
+- object 类型由所有非基本数据类型组成。这不包括 true、12 或 "foo"，但包括对象和数组。
+
+在 unknown 类型被引入之前，{} 的使用是比较普遍的。现在是比较罕见的用法：**只有在真的知道 null 和 undefined 是不可能的情况下，才会使用 {} 代替 unknown**。
+
+**总结**：
+
+- unknown 类型是 any 类型安全的替代方法。当知道有一个值但不知道它的类型是什么时，请使用 unknown。
+- 使用 unknown 以强制用户使用类型断言或进行类型检查。
+- 了解 {}、object 和 unknown 之间的区别。
+
+### 5.6 选择类型安全的方法而不是猴子补丁
+
+JS 最著名的特点之一是它的对象和类是 “开放” 的，即可以为它们添加任意的属性。这会被用来在网页上创建全局变量。通过给 window 或 document 分配属性：
+
+```js
+window.monkey = 'Tamarin';
+document.monkey = 'Howler';
+```
+
+或将数据附加到 DOM 元素上：
+
+```ts
+const el = document.getElementById('colobus');
+el.home = 'tree';
+```
+
+甚至可以将属性附加到内置的原型上。这些通常都不是好的设计。当把数据附加到 window 或一个 DOM 节点上时，基本上是把它变成了一个全局变量。这很容易在程序的各个部分之间不经意地引入依赖关系，并意味着在调用函数时必须考虑副作用。
+
+加上 TypeScript 就会引入另一个问题：虽然类型检查器知道 Document 和 HTMLElement 的内置属性，但它肯定不知道添加的属性：
+
+```ts
+document.monkey = 'Tamarin'; // 类型 “Document” 上不存在属性 “monkey”
+```
+
+修正这个错误的最直接的方法是使用 any 断言：
+
+```ts
+(document as any).monkey = 'Tamarin'; // OK
+```
+
+这能满足类型检查器的要求，但是毫无意外地，它有一些缺点。与任何使用 any 的情况一样，会失去类型安全和语言服务；
+
+```ts
+(document as any).monkey = 'Tamarin'; // 也 0K，拼写错误
+(document as any).monkey = /Tamarin/; // 也 0K，错误的类型
+```
+
+最好的解决方案是将数据从 document 或 DOM 中移出。但如果不能这样做（可能是使用的库需要这些数据，或者正在迁移一个 JS 应用程序），那么有几个次好的选择：
+
+- **使用扩增**（augmentation），这是 [interface](#28-了解类型type和接口interface的异同) 的特殊能力之一：
+
+  ```ts
+  interface Document {
+    /* 猴子补丁的种类 */
+    monkey: string;
+  }
+  document.monkey = 'Tamarin'; // OK
+  ```
+
+  这比使用 any 有以下几个方面的进步：
+
+  - 可以获得类型安全。类型检查器会标记错误的拼写或错误类型的赋值。
+  - 可以将文档附加到属性上
+  - 可以在属性上获得自动补全功能
+  - 获得一个有哪些猴子补丁的精确记录
+
+  在模块上下文（即使用 import/export）中的 TypeScript 文件，需要添加一个 declare global 来使其工作：
+
+  ```ts
+  export {};
+  declare global {
+    interface Document {
+      /* 猴子补丁的种类 */
+      monkey: string;
+    }
+  }
+  document.monkey = 'Tamarin'; // 0K
+  ```
+
+  使用扩增的主要问题与作用域有关：
+
+  - **扩增是全局性的**。对于代码的其他部分或库来说，无法将其隐藏起来。
+  - 如果该属性的分配发生在应用程序运行过程中，无法只在这发生之后才引入扩增。当给 HTML 元素打补丁时，这一点就特别有问题，因为页面上的一些元素有这个属性，而一些元素没有。出于这个原因，可能希望将属性声明为 `string | undefined`。这样做更准确，但会使类型不那么方便使用。
+
+- **使用更精确的类型断言**
+
+  ```ts
+  interface MonkeyDocument extends Document {
+    /* 猴子补丁的种类 */
+    monkey: string;
+  }
+  (document as MonkeyDocument).monkey = 'Macaque';
+  ```
+
+  对于 TypeScript 来说，这个类型断言是 OK 的，因为 Document 和 MonkeyDocument 是[共享属性](#23-知道如何分辨符号是类型空间还是值空间)的，而且可以在赋值中获得类型安全。作用域问题也更容易管理：Document 类型没有全局修改，只是引入了一个新的类型（只在导人它的范围内）。每当引用猴子补丁属性时，必须写一个断言（或者引人一个新的变量）。
+
+**总结**：
+
+- 优先选择结构化代码，而不是将数据存储在全局或 DOM 上。
+- 如果必须在内置类型上存储数据，请使用一种类型安全的方法（扩增或断言自定义接口）。
+- 理解扩增的作用域问题。
+
+### 5.7 追踪类型覆盖率以防止类型安全中的回归问题
+
+一旦为隐式的 any 类型的值添加了类型注释并启用了 noImplicitAny，是否就不会受到与任何类型相关的问题的影响？答案是“不”！any 类型仍然可以通过以下两种主要方式进入程序中：
+
+- **显式 any 类型**
+
+  使 any 类型既得到[收缩](#51-为-any-类型使用最窄的范围)又[很具体](#52-比起普通的-any选择更精确的-any-变体)，它们仍然是 any 类型。特别是类型如 any[] 和 `{[key: string]: any}`，一旦对它们进行索引，它们就会变成普通的 any 类型，由此产生的 any 类型就会在代码中流动。
+
+- **从第三方的类型声明中**
+
+  来自 @types 声明文件的 any 类型进入代码的过程是极其隐蔽的：即使已经启用了 noImplicitAny，而且从来没有打过 any，但仍然有 any 类型在代码中流动。
+
+由于 any 类型会对类型安全和开发者体验造成负面影响，因此跟踪代码库中 any 类型的数量是个好主意。有很多方法可以做到这一点，比如 npm 上的 type-coverage 包：
+
+```sh
+$ npx type-coverage
+9985 / 10117 98.69%
+```
+
+这意味着，在这个项目中的 10117 个符号中，有 9985 个（98.69%）的类型不是 any 或 any 的别名。如果一个变化无意中引入了一个 any 类型，并且它流经代码，就会看到这个百分比有所下降。
+
+从某种程度上来说，这个百分比是对有多遵循本章其他条款建议的情况所进行的一种评分。使用狭义范围的 any 会减少带 any 类型的符号的数量，使用像 any[] 这样更具体的形式也会减少 any 类型符号的数量。以数字方式跟踪这一点有助于确保事情只会随着时间的推移而变得更好。
+
+即使是收集一次类型的覆盖信息，也能提供一些信息。使用 --detail 标记运行 type-coverage 将输出代码中每个 any 类型出现的位置：
+
+```sh
+$ npx type-coverage --detail
+path/to/code.ts:1:10 getColumnInfo
+path/to/module.ts:7:1 pt2
+```
+
+这些都是值得研究的，因为它们很可能会发现原来没有考虑到的 any 的来源。
+
+## 六. 类型声明和 @types
+
+在任何语言中依赖管理都可能是混乱的，在 TypeScript 中也不例外。
+
+- 本章将帮助构建一个心智模型，来理解 TypeScript 中的依赖是如何工作的，并告诉如何解决一些可能出现的问题。
+- 帮助制作自己的类型声明文件
+
+### 6.1 把 TypeScript 和 @types 放在 devDependencies 中
+
+Node 包管理器，即 npm，在 JS 世界中无处不在。它既提供了一个 JS 库的存储库，也提供了一种指定所依赖的版本的方法（package.json）。
+
+npm 区分了几种类型的依赖，每种依赖分别在 package.json 中的不同地方：
+
+- **dependencies**
+
+  这些是运行 JS 所需的包。如果在运行时要引人 lodash，那么它应该放在 dependencies 中。当在 npm 上发布代码，而另一个用户安装它时，他也会安装这些依赖。这些依赖被称为传递性依赖。
+
+- **devDependencies**
+
+  这些包是用来开发和测试代码的，但在运行时并不需要。与 dependencies 不同的是，这些包不会在打包时被打包。
+
+- **peerDependencies**
+
+  有些情况下，项目和所依赖的模块，都会同时依赖另一个模块，但是所依赖的版本不一样。典型的例子是插件。
+
+其中，dependencies 和 devDependencies 是目前最常见的依赖。当使用 TypeScript 时，要注意添加的是哪种类型的依赖。因为 TypeScript 是一个开发工具，而且 TypeScript 类型不存在于运行时，与 TypeScript 相关的包一般属于 devDependencies。
+
+- 第一个要考虑的依赖是 TypeScript 本身。可以在系统范围内安装 TypeScript，但这通常是一个坏主意，原因有二：
+
+  - 不能保证同事之间总是安装相同的版本
+  - 给项目安装增加了一个步骤
+
+  反之，要让 TypeScript 成为一个 devDependency。这样当运行 npm install 时将总能得到正确的版本。更新 TypeScript 版本和更新任何其他包是一样的。IDE 和构建工具会很轻松地发现以这种方式安装的 TypeScript 版本。在命令行中，可以使用 npx 来运行 npm 安装的 tsc 版本。
+
+- 下一个需要考虑的依赖类型是类型依赖或 @types。
+
+  如果一个库本身没有附带 TypeScript 类型声明，那么仍然可能在 [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped) 上找到类型定义。DefinitelyTyped 是一个社区维护的 JavaScript 库类型定义集合，它的类型定义发布在 npm registry 的 @types 范围内：@types/jquery 有 jQuery 的类型定义，@types/lodash 有 Lodash 的类型等。这些 @types 包只包含类型，而不包含实现。
+
+### 6.2 了解类型声明中涉及的三个版本
+
+依赖管理很难让软件开发者产生快乐的感觉。通常只想使用一个库，而不会过多考虑与它一起安装的依赖是否与自己的库兼容。
+
+糟糕的是，TypeScript 并没有让这一切变得更好。事实上，会使得依赖管理变得更加复杂。这是因为现在要担心的版本不仅仅是一个，而是三个：
+
+- 软件包的版本
+- 其类型声明的版本（@types）
+- TypeScript 的版本
+
+如果这些版本中的任何一个版本彼此不同步，可能会碰上与依赖管理没有明显关系的错误。
+
+下面介绍 TypeScript 中的依赖关系如何工作。将一个包作为直接依赖安装，而将它的类型作为开发依赖安装：
+
+```sh
+$ npm install react
++ react@16.8.6
+
+$ npm install --save-dev @types/react
++ @types/react@16.8.19
+```
+
+**主版本号和次版本号（16.8）是匹配的，但修订号（.6 和.19）是不匹配的。这是正确的**。@types 的 16.8 版本的意思是这些类型声明描述了 react 的 16.8 版本的 API。假设 react 模块遵循良好的语义性版本的整洁性，那么修订号（16.8.1, 16.8.2, ...）是不会改变它的公共 API 的，也不需要更新类型声明。但类型声明本身可能会有错误或遗漏。@types 模块的补丁版本对应的就是这类修复和增加的内容。在这种情况下，_类型声明的更新可能比库本身的更新多得多_（19 个补丁版本对比 6 个补丁版本）。
+
+这可能存在以下几个方面的问题：
+
+- **可能在更新了一个库之后，忘记了更新它的类型声明**
+
+  在这种情况下，每当尝试使用库的新功能时，都会得到类型错误。如果对库有重要改动的话，哪怕代码通过了类型检查，也可能会遇到运行时错误。解决办法通常是更新类型声明，使版本恢复同步。如果类型声明没有被更新，那么有几个选择：可以在自己的项目中使用扩增（augmentation）来添加想使用的新函数和方法；或者可以将更新后的类型声明贡献给社区。
+
+- **类型声明可能会领先于库**
+
+  这可能会发生在一直在使用一个没有类型的库，并试图在以后安装它们。这种情况与第一个问题类似，只是情况相反。其解决方法是升级库或者降级类型声明，直到它们匹配。
+
+- **类型声明可能需要比在项目中使用的 TypeScript 更新的版本**
+
+  TypeScript 类型系统的大部分开发都是为了更精确地对流行的 JS 库如 Lodash、React 和 Ramda 进行类型化。这些库的类型声明希望使用最新、最好的功能来获得更好的类型安全，而这是有道理的。
+
+  如果发生这种情况，会觉得像 @types 声明本身所发生类型错误一样。其解决办法是：
+
+  - 升级 TypeScript 版本
+  - 使用旧版本的类型声明
+  - 如果真的无法更新 TypeScript，那么就用 declare module 把类型覆盖掉。
+
+  一个库可以通过 typesVersions 为不同版本的 TypeScript 提供不同的类型声明，但这种情况很少见。为了给一个特定版本的 TypeScript 安装 @types，可以使用：
+
+  ```ts
+  npm install --save-dev @types/lodash@ts3.1
+  ```
+
+  让库和其类型之间的版本匹配是能做的最好的努力了，但最终的类型匹配结果却不一定总是正确的。但越是流行的库，它的类型声明就越有可能做到这一点。
+
+- **可能会出现重复的 @types 依赖关系**
+
+  例如，依赖 @types/foo 和 @types/bar。如果依赖 @types/bar 是一个不能兼容 @types/foo 的版本，那么 npm 会尝试通过安装两个版本来解决这个问题，其中一个版本安装在一个嵌套的文件夹中。
+
+  ```sh
+  node_modules/
+    @types/
+      foo/
+        index.d.ts@1.2.3
+      bar/
+        index.d.ts
+        node_modules
+          @types/
+            index.d.ts@2.3.4
+  ```
+
+  虽然这对于在运行时使用的 node modules 来说有时是可以的，但对于类型声明来说几乎可以肯定是不行的，因为它们存在在一个扁平的全局命名空间中。
+
+  会看到这是关于重复声明或不能合并的声明的错误。可以通过运行 `npm ls @types/foo` 来追踪为什么会有一个重复的类型声明的错误。解决方案通常是更新依赖关系 @types/bar 或 @types/foo，从而令它们兼容。像这样的传递性 @types 依赖关系通常是麻烦的根源，[可以使用反映类型以切断依赖](#66-反映类型以切断依赖)。
+
+  一些包，特别是那些用 TypeScript 编写的包，会选择打包自己的类型声明。这通常可以从它们的 package.json 中含有指向 .d.ts 文件的 "types" 字段看出来：
+
+  ```json
+  {
+    "name": "left-pad",
+    "version": "1.3.0",
+    "description": "String left pad",
+    "main": "index.js",
+    "types": "index.d.ts"
+    // ...
+  }
+  ```
+
+  将类型打包确实解决了版本不匹配的问题，特别是这样的问题：库本身是用 TypeScript 编写的，而类型声明是由 tsc 生成的。但是打包也有自己的一些问题：
+
+  - 如果在打包进的类型中出现了无法通过扩增来解决的问题该怎么办？或者类型在发布的时候工作得很好，但是后来 TypeScript 发布的新版本又标示了一个错误呢？使用 @types 时可以依赖库的实现，而不是它的类型声明。但是，对于打包的类型，就失去了这个选项。一个坏的类型声明可能会卡在旧版本的 TypeScript 的问题上。对比一下 DefinitelyTyped：当 TypeScript 被开发出来时，微软会对 DefinitelyTyped 上的所有类型声明进行测试，而问题很快就被修复了。
+
+  - 如果类型依赖于另一个库的类型声明该怎么办？通常这个被依赖的类型声明库会是一个 devDependency。但是如果发布模块，而另一个用户安装了它，没有这个 devDependencies，这就导致了类型错误。另外，可能也不想让它成为一个直接的依赖关系，因此 JS 用户就会无缘无故地安装 @types 模块。但是如果在 DefinitelyTyped 上发布类型，这就不会有问题：在那里声明类型依赖，只有 TypeScript 用户才会得到它。
+
+  - 如果需要修复该库的某个旧版本的类型声明问题，该怎么办？能不能回退到那个版本然后发布一个补丁更新？DefinitelyTyped 有同时维护同一个库的不同版本的类型声明机制，这可能很难在自己的项目中做到。
+
+  - 如何承诺接受类型声明的补丁的？开始时提到的 react 和 @types/react 的版本。类型声明的补丁更新量是库本身的三倍。DefinitelyTyped 是由社区维护的，能够处理这样大小的更新量。特别是，如果库的维护者在五天内没有查看过一个补丁，那么全局维护者就会查看。
+
+在 TypeScript 中管理依赖关系是一个挑战，但它确实是有回报的：精心编写的类型声明可以帮助学习如何正确地使用库，并可以大大提高生产力。当遇到依赖管理问题时，请记住上面提到的需要关心的三个版本。
+
+如果要发布包，请权衡使用打包类型声明与在 DefinitelyTyped 上发布类型声明的利弊。官方的建议是，**只有当库是用 TypeScript 编写的时候，才打包类型声明**。这在实践中效果不错，因为 tsc 可以自动生成类型声明（使用 declaration 编译选项）。对于 JS 库来说，手工添加的类型声明更有可能包含错误，而且它们需要更频繁的更新。如果在 DefinitelyTyped 上发布类型声明，社区会帮助支持和维护它们。
+
+### 6.3 导出所有出现在公有 API 中的类型
+
+只要使用 TypeScript 足够长的时间，终会发现自己想使用第三方模块的 type 或 interface，却发现其没有被导出。幸运的是，TypeScript 的类型之间的映射工具足够丰富：作为一个库用户，几乎总能找到一种方法来引用想要的类型；作为一个库作者，这意味着应该在一开始就导出类型。如果一个类型出现在函数声明中，它就被有效地导出了，所以最好把事情明确化。
+
+假设想创建一些秘密的、未导出的类型：
+
+```ts
+interface SecretName {
+  first: string;
+  last: string;
+}
+interface SecretSanta {
+  name: SecretName;
+  gift: string;
+}
+export function getGift(name: SecretName, gift: string): SecretSanta {}
+```
+
+模块的用户不能直接导入 SecretName 或 SecretSanta，而只能导入 getGift。但这并不是障碍：因为只要这些类型出现在导出的函数签名中，就可以提取它们。一种方法是使用 Parameters 和 ReturnType 泛型类型：
+
+```ts
+type MySanta = ReturnType<typeof getGift>; // SecretSanta
+type MyName = Parameters<typeof getGift>[0]; // SecretName
+```
+
+### 6.4 提供回调中 this 的类型
+
+众所周知，JS 的 this 关键字是整个语言中最令人困惑的部分之一。let 或 const 声明的变量是具有词法作用域的，但是 this 是动态作用域：它的值不取决于它怎么定义，而取决于它怎么调用。
+
+this 最常用于类中，它通常指向对象的当前实例：
+
+```ts
+class C {
+  values = [1, 2, 3];
+  logsquares() {
+    for (const val of this.values) {
+      console.log(val * val);
+    }
+  }
+}
+const c = new C();
+c.logsquares();
+// 1
+// 4
+// 9
+```
+
+现在看看如果把 logSquares 放在一个变量中并调用它会发生什么：
+
+```ts
+const c = new C();
+const method = c.logSquares;
+method(); // 这个版本会在运行时抛出一个错误：Uncaught TypeError: Cannot read property 'values' of undefined
+```
+
+问题在于，c.logsquares() 实际上做了两件事：调用 C.prototype.logsquares，并且将该函数中 this 的值绑定到 c 上。通过引出一个对 logsquares 的引用，把这两件事分开了，this 被设置为 undefined。
+
+JS 允许完全控制 this 的绑定。可以使用 call 来显式地设置 this 并解决这个问题：
+
+```ts
+const c = new C();
+const method = c.logSquares;
+method.call(c); // 输出日志还是平方数
+```
+
+没有理由让 this 必须绑定到 C 的实例上，它可以被绑定到任何东西上。所以，库可以将 this 的值作为其 API 的一部分，甚至 DOM 也利用了这一点。例如，在一个事件处理程序中：
+
+```ts
+document.querySelector('input').addEventListener('change', function (e) {
+  console.log(this); // 记录事件触发时的输入元素
+});
+```
+
+this 绑定经常出现在这样的回调中。例如，如果想在一个类中定义一个 onClick 处理程序，可以尝试这样做：
+
+```ts
+class ResetButton {
+  render() {
+    return makeButton({ text: 'Reset', onClick: this.onClick });
+  }
+  onClick() {
+    alert(`Reset ${this}`);
+  }
+}
+```
+
+当 Button 调用 onClick 时，它会弹出 “Reset undefined”。同样地，罪魁祸首是 this 绑定。一个常见的解决方案是在构造函数中创建方法的绑定版本：
+
+```ts
+class ResetButton {
+  constructor() {
+    this.onClick = this.onClick.bind(this);
+  }
+  render() {
+    return makeButton({ text: 'Reset', onClick: this.onClick });
+  }
+  onClick() {
+    alert(`Reset ${this}`);
+  }
+}
+```
+
+`onClick(){...}` 在 ResetButton.prototype 上定义了一个属性，这个属性被所有的 ResetButton 实例共享。当在构造函数中绑定 this.onClick=... 时，它会在 ResetButton 的实例上创建一个名为 onClick 的属性，并将 this 绑定到该实例上。在查找序列中，onClick 实例属性排在 onClick 原型属性之前，所以 this.onClick 指的是 render() 方法中已绑定 this 的函数。绑定有一个快捷方法，有时可以很方便：
+
+```ts
+class ResetButton {
+  render() {
+    return makeButton({ text: 'Reset', onClick: this.onClick });
+  }
+  onClick = () => {
+    alert(`Reset ${this}`); // "this" 永远指向 ResetButton 实例
+  };
+}
+```
+
+这里用一个箭头函数代替了 onClick。这样每次构造 ResetButton 时，就会定义一个新的函数，并将 this 设置为相应的值。看一下生成的 JS 可以帮助理解：
+
+```js
+class ResetButton {
+  construthis() {
+    var _this = this;
+    this.onClick = function () {
+      alert('Reset' + _this);
+    };
+  }
+  render() {
+    return akeButton({ text: 'Reset', onClick: this.onClick });
+  }
+}
+```
+
+因为 this 绑定是 JS 的一部分，TypeScript 需要对它进行建模。这意味着，如果正在编写（或为之建立类型）一个在回调中设置 this 值的库，那么也应该对其进行建模。可以添加一个 this 参数到回调中：
+
+```ts
+function addKeyListener(el: HTMLElement, fn: (this: HTMLElement, e: KeyboardEvent) => void) {
+  el.addEventListener('keydown', e => {
+    fn.call(el, e);
+  });
+}
+```
+
+this 参数是特殊的：它不仅仅是另一个位置参数。如果尝试用两个参数来调用它，就会明白这一点：
+
+```ts
+function addKeyListener(el: HTMLElement, fn: (this: HTMLElement, e: KeyboardEvent) => void) {
+  el.addEventListener('keydown', e => {
+    fn(el, e); // 期待输入1个参数，但得到2个
+  });
+}
+```
+
+更好的是，TypeScript 会强制要求用正确的 this 上下文来调用函数：
+
+```ts
+function addkeyListener(el: HTMLElement, fn: (this: HTMLElement, e: KeyboardEvent) => void) {
+  el.addEventListener('keydown', e => {
+    fn(e); // 类型为 “void” 的 “this” 上下文不可分配给类型为 “HTMLElement” 的方法 “this”
+  });
+}
+```
+
+作为这个函数的使用者，可以在回调中引用 this，并获得完全的类型安全：
+
+```ts
+declare let el: HTMLElement;
+addKeyListener(el, function (e) {
+  this.innerHTML; // OK，"this" 的类型是 HTMLElement
+});
+```
+
+如果在这里使用一个箭头函数，this 就会被覆盖。TypeScript 会捕获这个问题：
+
+```ts
+class Foo {
+  registerHandler(el: HTMLElement) {
+    addKeyListener(el, e => {
+      this.innerHTML;
+      //   ~~~~~~~~~ 类型 “Foo” 上不存在属性 “innerHTML”
+    });
+  }
+}
+```
+
+如果在回调中设置了 this 的值，那么它就是 API 的一部分，就应该在类型声明中包含它。
+
+### 6.5 优先选择条件类型，而不是重载声明
+
+```js
+function double(x) {
+  return x + x;
+}
+```
+
+函数 double 可以传入 string 或 number，所以可以使用联合类型：
+
+```ts
+function double(x: number | string): number | string;
+function double(x: any) {
+  return x + x;
+}
+```
+
+这些例子都使用了 TypeScript 的函数重载概念。虽然这个声明是正确的，但有点不精确：
+
+```ts
+const num = double(12); // string | number
+const str = double('x'); // string | number
+```
+
+当传递 number 给 double 时，结果应该返回一个 number 类型。而当传入 string 时，它应该返回一个 string 类型。这个声明失去了这种细微的差别，所以会产生难以处理的类型。
+
+可以尝试使用一个泛型来捕捉这种关系：
+
+```ts
+function double<T extends number | string>(x: T): T;
+function double(x: any) {
+  return x + x;
+}
+const num = double(12); // 类型是 12
+const str = double('x'); // 类型是 "x"
+```
+
+现在的类型有点过于精确了。当传入一个 string 类型时，double 函数声明将产生一个 string 类型，这是正确的。但是当传递一个字符串字面量类型时，返回的类型就是同一个字符串字面量类型。这是错误的：`double('x')` 的结果是 'xx'，而不是'x'。
+
+还有一个选择是提供多个类型声明。虽然 TypeScript 只允许写一个函数的实现，但它允许写任何数量的类型声明。可以利用这一点来改进 double 函数的类型：
+
+```ts
+function double(x: number): number;
+function double(x: string): string;
+function double(x: any) {
+  return x + x;
+}
+const num = double(12); //类型是 number
+const str = double('x'); //类型是 string
+```
+
+这里还是有一个微妙的错误。这个类型声明对要么是 string 类型要么是 number 类型的值才起作用，但对可能是两者之一的值不起作用：
+
+```ts
+function f(x: number | string) {
+  return double(x); // 类型 “string | number” 的参数不能赋给类型 “string” 的参数
+}
+```
+
+这个对 double 函数的调用是安全的，其应该返回 string | number。当重载类型声明时，TypeScript 在找到匹配的类型前会逐个处理它们。所看到的错误是最后一个重载（string 的版本）失败的结果，因为 string | number 不能被分配给 string 类型。
+
+虽然可以通过添加第三个 string | number 重载来修复这个问题，但最好的解决方案是使用条件类型。条件类型类似类型空间中的 if 语句（条件）。它们非常适合处理需要覆盖几种可能性的情况，例如：
+
+```ts
+function double<T extends number | string>(x: T): T extends string ? string : number;
+function double(x: any) {
+  return x + x;
+}
+```
+
+这与第一次尝试使用泛型对 double 类型化类似，但其有一个更复杂的返回类型。理解条件类型就像读 JS 中的三元运算符，有了这个声明，所有的例子就都能用了。
+
+number | string 的例子可以工作是因为条件类型优先于联合类型。当 T 是 number | string 时，TypeScript 如此解析条件类型：
+
+```ts
+(number | string) extends string ? string : number
+-> (number extends string ? string : number) | (string extends string ? string : number )
+-> number | string
+```
+
+虽然使用重载的类型声明写起来更容易，但使用条件类型的版本更正确，因为它覆盖了每个情况的组合。对于重载来说，情况往往是这样的：重载是独立处理的，而条件类型可以被类型检查器当作一个单一的表达式进行分析，并将它们分配到各个联合上。如果发现自己写了一个重载类型声明，应考虑使用条件类型来表达是否会更好。
+
+### 6.6 反映类型以切断依赖
+
+假设写了一个用于解析 CSV 文件的库，它的 API 很简单：传入 CSV 文件的内容，然后得到一个将列名映射到值的对象列表。为了方便 NodeJS 用户，允许内容既可以是一个 string 又可以是 NodeJS 的 Buffer：
+
+```ts
+function parseCSV(contents: string | Buffer): { [column: string]: string }[] {
+  if (typeof contents === 'object') {
+    // 这是一个 Buffer
+    return parseCSV(contents.toString('utf8'));
+  }
+  // ...
+}
+```
+
+Buffer 的类型定义来自 NodeJS 类型声明，所以必须安装 NodeJS 类型声明。
+
+当发布 CSV 解析库时，会把类型声明也包含了进去。由于类型声明依赖于 NodeJS 类型，于是把这些类型声明作为 [devDependency](#61-把-typescript-和-types-放在-devdependencies-中) 了。如果这样做了，很可能会遭到两类用户的抱怨：
+
+- JS 开发者想知道这些依赖的 @types 模块是什么。
+- TypeScript 的 Web 开发者，他们不知道为什么他们要依赖 NodeJS。
+
+这些抱怨都是合理的。Buffer 的行为并不是必不可少的，且只与已经使用 NodeJS 的用户有关；而 @types/node 中的声明只与同样使用 TypeScript 的 NodeJS 用户有关。
+
+TypeScript 的结构类型可以帮助摆脱困境。与其使用 @types/node 中的 Buffer 声明，不如写一个只包含自己所需方法和属性的声明。在本例中，这只不过是一个接受编码的 toString 方法：
+
+```ts
+interface CsvBuffer {
+  toString(encoding: string): string;
+}
+function parseCSV(contents: string | CsvBuffer): { [column: string]: string }[] {
+  // ...
+}
+```
+
+这个接口比完整的接口要短得多，但它确实满足了对 Buffer 的（简单的）需要。在 NodeJS 项目中，用一个真正的 Buffer 调用 parseCSV 还是可以的，因为类型是兼容的：
+
+```ts
+parseCSV(new Buffer('column1,column2\nval1,val2', 'utf-8')); // OK
+```
+
+如果库只依赖于另一个库的类型，而不是它的实现，可以考虑只把需要的声明反映到自己的代码中。这将在为 TypeScript 用户带来类似体验的同时，也为其他所有人带来更好的体验。
+
+如果依赖一个库的实现，可能仍然能够应用同样的技巧来避免依赖它的类型。但随着依赖变得越来越多、越来越重要，这种技巧就越来越困难。
+
+如果要从一个库中复制出很大一部分类型声明，可能还是想通过明确的 @types 依赖来正式确定这种关系。这种技术也有助于切断单元测试和生产系统之间的依赖。
+
+### 6.7 警惕测试类型时的陷阱
+
+不应该在不写测试的情况下发布类型声明。但如何测试类型呢？编写类型声明的时候，测试其实是一个至关重要但又出乎意料艰巨的任务。使用 TypeScript 提供的工具在类型系统中对类型进行断言是很有诱惑力的，但这种方法有几个陷阱。说到底，使用 [tsd](https://github.com/SamVerschueren/tsd) 或类似的工具从类型系统外部进行类型检查才是更安全和更直接的方法。
+
+假设已经为一个实用工具库提供的 map 函数写了一个类型声明（流行的 Lodash 和 Underscore 库都提供了这样一个函数）：
+
+```ts
+declare function map<U, V>(array: U[], fn: (u: U) => V): V[];
+```
+
+如何确定这个类型声明会得到预期的类型（想必已经存在一些针对现有实现的独立测试）?一个常见的手法是写一个调用函数的测试文件：
+
+```ts
+map(['2017', '2018', '2019'], V => Number(v));
+```
+
+这样会做一些生硬的错误检查：如果 map 的声明只列出了一个参数，它就会发现错误。但是否感觉这里少了什么？
+
+与这种测试运行时行为的风格类似的可能是：
+
+```ts
+test('square a number', () => {
+  square(1);
+  square(2);
+});
+```
+
+当然，它测试 square 函数时不会抛出错误。但它缺少对返回值的检查，所以这里没有真正的行为测试。一个不正确的 square 的实现仍然可以通过这个测试。
+
+这种方法在测试类型声明文件中很常见，因为它很简单，可以复制现有的库的单元测试。虽然它确实提供了一些价值，但实际检查一些类型会好得多。
+
+一种方法是将结果分配给一个具有特定类型的变量：
+
+```ts
+const lengths: number[] = map(['john', 'paul'], name => name.length);
+```
+
+这正是[鼓励删除](#31-避免代码被可推断类型弄得混乱不堪)的那种多余的类型声明。但在这里，它的作用颇为重要：相信 map 声明的类型至少还是合理的。而事实上，正是因为使用了这种方法进行测试，所以可以在 DefinitelyTyped 中找到许多类型声明。
+
+但是，正如将看到的那样，使用赋值进行测试有一些基本问题。
+
+第一个是不得不创建一个不太会被用到的具名变量。这不仅增加了不必要的代码，也更意味着不得不禁用静态代码分析（lint）的某些部分。一个常见的变通方法是定义一个 helper：
+
+```ts
+function assertType<T>(x: T) {}
+assertType<number[]>(map(['john', 'paul'], name => name.length));
+```
+
+第二个问题是，检查的是两个类型的可分配性，而非它们是否相等。通常它会如所料般正常工作，例如：
+
+```ts
+const n = 12;
+assertType<number>(n); // OK
+```
+
+如果检查变量 n，会发现它的类型实际上是 12，一个数字字面量类型。这是 number 的一个子类型，因此正如所期望的那样，可分配性检查通过了。到目前为止还不错。但是，当开始检查对象的类型时，事情变得更迷了：
+
+```ts
+const beatles = ['john', 'paul', 'george', 'ringo'];
+assertType<{ name: string }[]>(
+  map(beatles, name => ({
+    name,
+    inYellowSubmarine: name === 'ringo'
+  }))
+); // OK
+```
+
+map 调用会返回一个 { name: string, inYellowSubmarine: boolean } 对象的数组，而这是可以分配给 { name: string }[]。
+
+当考虑返回函数的高阶函数时，会惊讶于到底什么算可分配的：
+
+```ts
+const add = (a: number, b: number) => a + b;
+assertType<(a: number, b: number) => number>(add); // OK
+
+const double = (x: number) => 2 * x;
+assertType<(a: number, b: number) => number>(double); // OK!?
+```
+
+第二个断言的成功的原因是：在 TypeScript 中，带有更少输入参数的函数是可以分配给函数类型的：
+
+```ts
+const g: (x: string) => any = () => 12; // OK
+```
+
+这反映了这样一个事实，即当调用一个 JS 函数时，如果它的参数比声明的参数多，是完全可以的。TypeScript 选择对这种行为进行建模，而不是禁用，这主要是因为这种行为在回调中很普遍。比如 Lodash 的 map 函数中的回调，最多可以带三个参数：
+
+```ts
+map(array, (name, index, array) => {});
+```
+
+虽然三个参数都可用，但正如目前所看到的一样，非常常见的情况是只使用其中一个参数，有时也会只用两个。事实上，使用三个参数的方法是相当罕见的。如果不允许这个赋值，TypeScript 会在大量的 JS 代码中报错。可以拆开函数类型，使用通用的 Parameters 和 ReturnType 类型测试它的各个部分：
+
+```ts
+const double = (x: number) => 2 * x;
+let p: Parameters<typeof double>= null!;
+assertType<[number,number]>(p); // 类型 “[number]” 的参数不能赋给类型 “[number, number]” 的参数
+let r: ReturnType(typeof double> = null!;
+assertType<number>(r); // OK
+```
+
+但如果这还不够复杂，那么还有一个问题：map 为它的[回调设置 this 的值](#64-提供回调中-this-的类型)。TypeScript 可以模拟这种行为，所以类型声明也应该这样做，而且应该测试它。
+
+到目前为止，对 map 的测试有点黑盒测试的风格：已经通过 map 函数运行了一个数组和函数，并测试了结果的类型，但还没有测试中间步骤的细节。可以通过填写回调函数，并直接验证其参数和 this 的类型来实现：
+
+```ts
+const beatles = ['john', 'paul', 'george', 'ringo'];
+assertType<number[]>(
+  // 类型 “(name: any, i: any, array: any) => any” 的参数不能赋给类型 “(u: string) => any” 的参数
+  map(beatles, function (name, i, array) {
+    assertType<string>(name);
+    assertType<number>(i);
+    assertType<string[]>(array);
+    assertType<string[]>(this); // 'this' 隐式有类型 "any"
+    return name.length;
+  })
+);
+```
+
+这使对 map 的声明出现了一些问题。请注意使用非箭头函数，这样就可以测试 this 的类型。下面是一个通过了检查的声明：
+
+```ts
+declare function map<U, V>(array: U[], fn: (this: U[], u: U, i: number, array: U[]) => V): V[];
+```
+
+然而，还有最后一个问题，同时这也是一个重要的问题。下面这个是模块中一个完整的类型声明文件，它甚至可以通过对 map 的最严格的测试，但它还不如不用：
+
+```ts
+declare module 'overbar';
+```
+
+这里将一个 any 类型分配给整个模块。测试会全部通过，但不会有任何类型安全。更糟糕的是，对这个模块中函数的每一次调用都会悄悄地产生一个 any 类型，其会在整个代码中传染性地破坏类型安全。即使使用 noImplicitAny，仍然可以通过类型声明得到 any 类型。
+
+除了一些高级的技巧，从类型系统中检测 any 类型是相当困难的。这就是为什么测试类型声明的首选方法是使用一个在类型检查器之外操作的工具。
+
+对于 DefinitelyTyped 版本库中的类型声明，这个工具是 [tsd](https://github.com/SamVerschueren/tsd)。
+
+## 七. 编写和运行代码
+
+### 7.1 使用 ECMAScript 特性，而非 TypeScript 特性
+
+随着时间的推移，TypeScript 和 JS 之间的关系已经发生了变化。当微软在 2010 年第一次开始研究 TypeScript 的时候，大家对 JS 的普遍态度是：它是一种有问题的语言，需要被修正。对于框架和源到源编译器来说，为 JS 添加缺失的特性，如类、装饰器和模块系统等，是很常见的。
+
+TypeScript 也不例外，它早期的版本也包括了类、枚举和模块的自制版本。随着时间的推移，TC39——管理 JS 的标准机构，在核心 JS 语言中添加了许多同样的特性。而这些添加的特性与 TypeScript 中存在的特性不兼容。这让 TypeScript 团队陷人了一个尴尬的困境：是采用标准中的新特性，还是破坏现有的代码?
+
+TypeScript 在很大程度上选择了后者，并最终阐述了它目前的管理原则：TC39 定义了运行时，而 TypeScript 只在类型空间上进行创新。
+
+在做出这个决定之前，它还保留了一些特性。认识和理解这些特性很重要，因为它们不符合语言其他部分的模式。一般来说，建议避免使用它们，以使 TypeScript 和 JS 之间的关系尽可能保持清晰。
+
+#### 7.1.1 枚举
+
+许多语言都使用枚举（enumerations 或 enums）来模拟可以取一小组值的类型。TypeScript 也将其添加到 JS 中了。
+
+```ts
+enum Flavor {
+  VANILLA = 0,
+  CHOCOLATE = 1,
+  STRAWBERRY = 2
+}
+let flavor = Flavor.CHOCOLATE; // 类型是 Flavor
+Flavor; // 自动补全显示：VANILLA, CHOCOLATE, STRAWBERRY
+Flavor[0]; // 值是 "VANILLA"
+```
+
+赞成用枚举的理由是，比起直接用数字，枚举提供了更多的安全性和透明度。但是，TypeScript 中的枚举还是有一些小瑕疵。实际上 TypeScript 中有几个关于枚举的变体，它们的行为都有微妙的不同：
+
+- **数字值的枚举**（像 Flavor）。任何数字都可以分配到这个枚举，所以它不是很安全（当初这样设计是为了可以实现标志位结构）。
+
+- **字符串值的枚举**。这个确实提供了类型安全，也在运行时提供了更透明的值。但它不是结构类型化的，不像 TypeScript 中的任何其他类型。
+
+- `const enum`。与普通的枚举不同，const enum 在运行时完全消失。如果前面的例子中改成 const enum Flavor，编译器会把 Flavor.CHOCOLATE 改写成 0。这不但打破了对编译器应有行为的期望，而且仍然有 string 和 number 值枚举之间的分歧行为。
+
+- 设置了 preserveConstEnums 标志的 const enum。这将为 const enum 输出运行时代码，就和为普通的 enum 所做的一样。
+
+字符串值的枚举是名义类型化（nominally typed）的，这是个特别出人意料的部分，因为 TypeScript 中的其他类型的可分配性都用了[结构类型（structuraltyping）](#12-习惯结构类型structural-typing)来判断。
+
+```ts
+enum Flavor {
+  VANILLA = 'vanilla',
+  CHOCOLATE = 'chocolate',
+  STRAWBERRY = 'strawberry'
+}
+let flavor = Flavor.CHOCOLATE; // 类型是 Flavor
+flavor = 'strawberry'; // 不能将类型 "strawberry" 分配给类型 “Flavor”
+```
+
+当要发布一个库的时候，这就会有影响。假设需要一个 Flavor 函数：
+
+```ts
+function scoop(flavor: Flavor) {}
+```
+
+因为运行时的 Flavor 其实只是一个字符串，所以 JS 用户可以用一个字符串来调用它：
+
+```ts
+scoop('vanilla'); // 在 JS 中 OK
+```
+
+但 TypeScript 用户将需要导人 enum 来调用它：
+
+```ts
+scoop('vanilla'); // "vanilla" 不能分配给类型为 Flavor 的参数
+import { Flavor } from 'ice-cream';
+scoop(Flavor.VANILLA); // OK
+```
+
+JS 和 TypeScript 用户的这些体验的不一致性是应避免使用字符串值枚举的原因之一。
+
+TypeScript 提供了一个在其他语言中不太常见的枚举的替代方案——**[字面量类型的联合](#46-选择更精确的字符串类型的替代类型)**：
+
+```ts
+type Flavor = 'vanilla' | 'chocolate' | 'strawberry';
+let favor: Flavor = 'chocolate'; // OK
+favor = 'mint chip'; // 不能将类型 “"mint chip"” 分配给类型 “Flavor”
+```
+
+它提供了和枚举一样强大的安全性，并且具有更直接地编译成 JS 的优势。它还在编辑器中提供了同样强大的自动补全特性。
+
+#### 7.1.2 参数属性
+
+当初始化一个类时，通常会将属性分配给一个构造函数参数：
+
+```ts
+class Person {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+```
+
+TypeScript 为此提供了一个更紧凑的语法：
+
+```ts
+class Person {
+  constructor(public name: string) {}
+}
+```
+
+这被称为 “**参数属性**（parameterproperty）”，它与第一个例子中的代码等价。但参数属性有几个需要注意的问题：
+
+- 它们是少数几个在编译成 JS 时会生成代码的结构之一（enum 是另外一个）。一般来说，编译只涉及擦除类型（而非增添代码）。
+
+- 因为参数只在生成的代码中使用，所以源代码看似有未使用的参数。
+
+- 参数和非参数属性的混用会隐藏类的设计
+
+  ```ts
+  class Person {
+    first: string;
+    last: string;
+    constructor(public name: string) {
+      [this.first, this.last] = name.split('');
+    }
+  }
+  ```
+
+  这个类有三个属性 (first, last, name)，但这很难从代码中读明白，因为只有两个属性列在构造函数之前。如果构造函数也接受其他参数，情况会变得更糟。
+
+  如果类只由参数属性组成，而没有方法，可以考虑把它做成 interface，并使用对象字面量。对由于[结构类型](#12-习惯结构类型structural-typing)，两者是可以相互赋值的：
+
+  ```ts
+  class Person {
+    constructor(public name: string) {}
+  }
+  const p: Person = { name: 'Jed Bartlet' }; // OK
+  ```
+
+  尽量避免通过混用参数和非参数属性来隐藏类的设计。
+
+#### 7.1.3 命名空间和三斜线导入
+
+在 ECMAScript 2015 之前，JS 并没有一个官方的模块系统，而是在不同的环境中以不同的方式加上了这个缺失的特性。Node.js 使用了 require 和 module.exports，而 AMD 使用了一个带有回调的 define 函数。
+
+TypeScript 也用自己的模块系统填补了这个空白，它通过 `module` 关键字和 “三斜线” 导入来完成。在 ECMAScript2015 增加了官方模块系统后，TypeScript 增加了 `namespace` 作为 module 的同义词，以避免混淆。
+
+```ts
+namespace foo {
+  function bar() {}
+}
+
+/// <reference path="other.ts"/>
+foo.bar();
+```
+
+在类型声明之外，三斜线导入和 `module` 关键字只是一个历史遗迹。而在自己的代码中应该使用 ECMAScript2015 风格的模块（import 和 export）。
+
+#### 7.1.4 装饰器
+
+装饰器可以用来标注或修改类、方法和属性。例如，可以定义一个 logged 注解，来对类上的某个方法的所有调用打日志：
+
+```ts
+class Greeter {
+  greeting: string;
+  constructor(message: string) {
+    this.greeting = message;
+  }
+  @logged
+  greet() {
+    return 'Hello, ' + this.greeting;
+  }
+}
+
+function logged(target: any, name: string, descriptor: PropertyDescriptor) {
+  const fn = target[name];
+  descriptor.value = function () {
+    console.log(`Calling ${name}`);
+    return fn.apply(this, arguments);
+  };
+}
+console.log(new Greeter('Dave').greet());
+//日志
+// Calling greet
+// Hello, Dave
+```
+
+这个特性最初是为了支持 Angular 框架而添加的，需要在 tsconfig.json 中设置 experimentalDecorators 属性。它的实现还没有被 TC39 标准化，所以现在使用装饰器写的任何代码都有可能在未来被破坏或成为非标准代码。除非正在使用 Angular 或其他需要注解的框架，并且在它们被标准化之前，不要使用 TypeScript 的装饰器。
+
+### 7.2 了解如何迭代对象
+
+下面这段代码运行得好好的，但 TypeScript 在其中标记了一个错误。为什么呢？
+
+```ts
+const obj = {
+  one: 'uno',
+  two: 'dos',
+  three: 'tres'
+};
+for (const k in obj) {
+  const v = obj[k]; // 元素隐式具有 "any" 类型，因为类型为 "string" 的表达式不能用于索引类型 "{ one: string; two: string; three: string; }"
+}
+```
+
+k 的类型是 string，但试图将其索引到一个只有 'one'、'two'和 'three' 这三个特定键的对象。字符串的值当然不止这三个，所以这么做肯定会失败。
+
+通过给 k 接上一个更精细的类型声明，就可以解决这个问题：
+
+```ts
+let k: [keyof typeof obj]; // 类型是 "one" | "two" | "three"
+for (k in obj) {
+  const v = obj[k]; // OK
+}
+```
+
+因此，真正的问题是：为什么第一个例子中 k 的类型被推断为 string，而不是 "one" | "two" | "three"?
+
+为了理解，来看一个稍微不同的涉及一个接口和一个函数的例子：
+
+```ts
+interface ABC {
+  a: string;
+  b: string;
+  c: number;
+}
+function foo(abc: ABC) {
+  // const k: string
+  for (const k in abc) {
+    // 对象 "ABC" 类型的索引签名隐式地含有 "any" 类型
+    const v = abc[k];
+  }
+}
+```
+
+和之前的错误一样，可以用同样的声明来 “修复” 它（`let k: [keyof typeof ABC]`）。但在这种情况下，TypeScript 的报错是正确的。原因如下：
+
+```ts
+const x = { a: 'a', b: 'b', c: 2, d: new Date() };
+foo(x); // OK
+```
+
+函数 foo 可以用任何可分配给 ABC 的值来调用，而不仅仅是一个具有 “a”、“b” 和 “c” 属性的值。这个值完全有可能也会有其他属性。为了允许这种情况的发生，TypeScript 给 k 提供了它唯一能确信的类型，即 string.
+
+在这里，使用 keyof 声明还有一个缺点：
+
+```ts
+function foo(abc: ABC) {
+  let k: keyof ABC;
+  for (k in abc) {
+    // let k: "a" | "b" | "c"
+    const v = abc[k]; // 类型是 string | number
+  }
+}
+```
+
+如果 "a" | "b" | "c" 对于类型 k 来说过于精细，那么 string | number 对于 v 来说肯定也过于精细。在前面的例子中，其中一个值是 Date，但其实它也可以是任何东西。这里的类型给人一种错误的确定性的感觉，而这可能导致运行时混乱。
+
+那么如何在没有类型错误的情况下同时迭代对象的键和值呢？Object.entry 可以做到这一点：
+
+```ts
+function foo(abc: ABC) {
+  for (const [k, v] of Object.entries(abc)) {
+    k; //类型是 string
+    v; //类型是 any
+  }
+}
+```
+
+虽然这些类型可能很难处理，但至少它们是诚实的。还应该小心原型链污染的可能性。即使是在定义了对象字面量的情况下，for-in 也会产生额外的键：
+
+```ts
+Object.prototype.z = 3; // 不要这样做！
+const obj = { x: 1, y: 2 };
+for (const k in obj) {
+  console.log(k);
+}
+// x
+// y
+// z
+```
+
+永远不应该把可枚举的属性添加到 Object.prototype 中，但即使是对象字面量，这也是 for-in 产生 string 键的另外一个原因。
+
+如果想遍历一个对象中的键和值，可以使用：
+
+- **keyof 声明**（let k: keyof T）：适用于常量，或其他知道对象不会有额外的键而想要精确类型的情况。
+- **Object.entries**：有更普遍的适用性，尽管键和值的类型更难处理。
+
+### 7.3 了解 DOM 的层次结构
+
+当在 Web 浏览器中运行 JS 时，DOM 的层次结构总是存在的。当使用 document.getElementById 获取一个元素或使用 documentcreateElement 创建一个元素时，该元素总是某一特定种类的元素。
+
+有了 TypeScript，DOM 元素的层次结构变得更加明显。了解从 Element 和 EventTarget 中得到的 Node 有助于调试类型错误以及决定类型断言的合适时机。因为很多 API 都是基于 DOM 的。
+
+假设要追踪用户拖拽过某个区域时的鼠标：
+
+```ts
+function handleDrag(eDown: Event) {
+  const targetEl = eDown.currentTarget;
+  targetEl.classList.add('dragging');
+  const dragStart = [eDown.clientX, eDown.clientY];
+  const handleUp = (eUp: Event) => {
+    targetEl.classList.remove('dragging');
+    targetEl.removeEventListener('mouseup', handleUp);
+    const dragEnd = [eUp.clientX, eUp.clientY];
+    console.log(
+      'dx, dy =',
+      [0, 1].map(i => dragEnd[i] - dragStart[i])
+    );
+  };
+  targetEl.addEventlistener('mouseup', handleUp);
+}
+const div = document.getElementById('surface');
+div.addEventListener('mousedown', handleDrag);
+```
+
+TypeScript 的类型检查器在这段代码中至少标记了 11 个错误：
+
+```ts
+function handleDrag(eDown: Event) {
+  const targetEl = eDown.currentTarget;
+  targetEl.classList.add('dragging');
+  // ~~~~~ 对象可能为 “null”
+  //       ~~~~~~~~~ 类型 “EventTarget” 上不存在属性 “classList”。
+  const dragStart = [eDown.clientX, eDown.clientY];
+  //                       ~~~~~~~ 类型“Event”上不存在属性“clientX”。
+  //                                      ~~~~~~~ 类型“Event”上不存在属性“clientY”。
+  const handleUp = (eUp: Event) => {
+    targetEl.classList.remove('dragging');
+    // ~~~~~ 对象可能为 "null"。
+    //       ~~~~~~~~~ 类型 “EventTarget” 上不存在属性 “classList”。
+    targetEl.removeEventListener('mouseup', handleUp);
+    // ~~~~~ 对象可能为 "null"。
+    const dragEnd = [eUp.clientX, eUp.clientY];
+    //                   ~~~~~~~ 类型“Event”上不存在属性“clientX”。
+    //                                ~~~~~~~ 类型“Event”上不存在属性“clientY”。
+    console.log(
+      'dx, dy =',
+      [0, 1].map(i => dragEnd[i] - dragStart[i])
+    );
+  };
+  targetEl.addEventListener('mouseup', handleUp);
+  // ~~~~~ 对象可能为 “null”
+}
+const div = document.getElementById('surface');
+div.addEventListener('mousedown', handleDrag);
+// div 对象可能为 "null"。
+```
+
+出了什么问题？这个 EventTarget 是什么？为什么所有的东西都可能是 null?
+
+挖掘 DOM 的层次结构有助于理解 EventTarget 的错误。下面是一些 HTML：
+
+```html
+<p id="quote">and <i>yet</i> it moves</p>
+```
+
+如果打开浏览器的控制台，并拿到一个对 p 元素的引用，会看到它是一个 HTMLParagraphElement：
+
+```js
+const p = document.getElementsByTagName('p')[0];
+p instanceof HTMLParagraphElement; // true
+```
+
+HTMLParagraphElement 是 HTMLElement 的一个子类型，HTMLElement 是 Element 的一个子类型，Element 是 Node 的一个子类型，Node 是 EventTarget 的一个子类型。
+
+EventTarget 是最泛化的 DOM 类型。使用它所能做的事情就是添加事件监听器、删除它们和分派事件。要是记住这一点，classList 的错误就有那么点道理了。
+
+```ts
+function handleDrag(eDown: Event) {
+  const targetEl = eDown.currentTarget;
+  targetEl.classList.add('dragging');
+  // ~~~~~ 对象可能为 “null”
+  //       ~~~~~~~~~ 类型 “EventTarget” 上不存在属性 “classList”。
+  // ...
+}
+```
+
+顾名思义，一个 Event 的 currentTarget 属性就是一个 EventTarget。它甚至可以是 null。TypeScript 没有理由相信它有一个 classList 属性。虽然一个 EventTarget 在实际中可能是一个 HTMLElement，但从类型系统的角度来看，没有理由它不能是 window 或 XMLHTTPRequest。
+
+再往层次结构的上面走，就到了 Node。文本片段和注释都是 Node 而不是 Element 的一些例子。
+
+那 Element 和 HTMLElement 之间又有什么区别呢？有一些非 HTML 的 Element，包括 SVG 标签的整个层次结构，它们都是 SVGElement，是另一种类型的 Element。html 或 svg 标签的类型是 HTMLHtmlElement 和 SVGSvgElement。
+
+有时，这些专门的类会有自己的属性。例如，一个 HTMLImageElement 有一个 src 属性，而一个 HTMLInputElement 有一个 value 属性。如果想从一个值中读取这些属性中的任意一个，这个值的类型必须足够具体才能有这个属性。
+
+TypeScript 的 DOM 类型声明中大量地使用了字面量类型，以尽量获得最具体的类型。例如：
+
+```ts
+document.getElementsByTagName('p')[0]; // HTMLParagraphElement
+document.createElement('button'); // HTMLButtonElement
+document.querySelector('div'); // HTMLDivElement
+```
+
+但这并不总是可能的，特别是在使用 document.getElementById 时：
+
+```ts
+document.getElementById('my-div'); // HTMLElement
+```
+
+虽然[类型断言通常是不受欢迎的](#24-优先选择类型声明而不是类型断言)。但在这种情况下，使用者比 TypeScript 知道的要多，所以这里类型断言是合适的。只要知道 #my-div 是一个 div，就没有什么问题：
+
+```ts
+document.getElementById('my-div') as HTMLDivElement;
+```
+
+如果启用了 strictNullChecks，就需要考虑 document.getElementById 返回 null 的情况。根据这是否会真的发生，可以添加一个 if 语句或一个非空断言（!）：
+
+```ts
+const div = document.getElementById('my-div')!;
+```
+
+这些类型并不是 TypeScript 所特有的。相反，它们是从 DOM 的正式规范中生成的。
+
+讲了这么多 DOM 的层次结构，那 clientX 和 clientY 的错误呢？
+
+```ts
+function handleDrag(eDown: Event) {
+  // ...
+  const dragStart = [eDown.clientX, eDown.clientY];
+  //                       ~~~~~~~ 类型“Event”上不存在属性“clientX”。
+  //                                      ~~~~~~~ 类型“Event”上不存在属性“clientY”。
+}
+```
+
+除了 Node 和 Element 的层次结构外，还有 Event 的层次结构。目前在 Mozilla 文档中列出了不少于 52 种的 Event。普通的 Event 属于最一般的事件类型。
+
+handleDrag 中的问题是，事件被声明为 Event，而 clientX 和 clientY 只存在于更具体的 MouseEvent 类型上。
+
+TypeScript 对 DOM 的声明广泛使用了[上下文](#38-了解类型推断中如何使用上下文)。内嵌 mousedown 处理程序给 TypeScript 提供了更多的信息来工作，并消除了大部分的错误。所以也可以声明参数类型是 MouseEvent 而不是 Event。这里是一个同时使用两种技术来修复错误的版本：
+
+```ts
+function addDragHandler(el: HTMLElement) {
+  el.addEventListener('mousedown', eDown => {
+    const dragStart = [eDown.clientX, eDown.clientY];
+    const handleUp = (eUp: MouseEvent) => {
+      el.classList.remove('dragging');
+      el.removeEventListener('mouseup', handleUp);
+      const dragEnd = [eUp.clientX, eUp.clientY];
+      console.log(
+        'dx, dy =',
+        [0, 1].map(i => dragEnd[i] - dragStart[i])
+      );
+    };
+    el.addEventListener('mouseup', handleUp);
+  });
+}
+const div = document.getElementById('surface');
+if (div) addDragHandler(div);
+```
+
+最后的 if 语句处理了不存在 #surface 元素的可能性。如果知道这个元素是存在的，也可以用一个非空断言（!）来代替。addDragHandler 需要一个不为 null 的 HTMLElement,所以这是一个[将 null 值推到边界](#44-将空值推到类型边界上)的例子。

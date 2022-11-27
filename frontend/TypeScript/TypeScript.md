@@ -25,6 +25,10 @@
       - [2.4.6 联合枚举类型](#246-联合枚举类型)
       - [2.4.7 const 枚举类型](#247-const-枚举类型)
     - [2.5 字面量类型](#25-字面量类型)
+      - [2.5.1 boolean 字面量类型](#251-boolean-字面量类型)
+      - [2.5.2 字符串字面量类型和模板字面量](#252-字符串字面量类型和模板字面量)
+      - [2.5.3 数字字面量类型](#253-数字字面量类型)
+      - [2.5.4 枚举成员字面量类型](#254-枚举成员字面量类型)
     - [2.6 单元类型](#26-单元类型)
     - [2.7 顶端类型](#27-顶端类型)
       - [2.7.1 any](#271-any)
@@ -45,6 +49,8 @@
       - [2.10.5 元组的长度](#2105-元组的长度)
       - [2.10.6 使用元组来规范参数类型](#2106-使用元组来规范参数类型)
       - [2.10.7 改善元组的类型推导](#2107-改善元组的类型推导)
+      - [2.10.8 可变参元组类型](#2108-可变参元组类型)
+      - [2.10.9 标签元组](#2109-标签元组)
     - [2.11 对象类型](#211-对象类型)
       - [2.11.1 Object](#2111-object)
       - [2.11.2 object](#2112-object)
@@ -69,20 +75,25 @@
       - [2.12.9 构造函数类型字面量](#2129-构造函数类型字面量)
       - [2.12.10 构造签名](#21210-构造签名)
       - [2.12.11 调用签名与构造签名](#21211-调用签名与构造签名)
-      - [2.12.12 重载函数](#21212-重载函数)
-        - [2.12.12.1 函数重载](#212121-函数重载)
-        - [2.12.12.2 函数实现](#212122-函数实现)
-        - [2.12.12.3 函数重载解析顺序](#212123-函数重载解析顺序)
-        - [2.12.12.4 重载函数的类型](#212124-重载函数的类型)
-      - [2.12.13 函数中 this 值的类型](#21213-函数中-this-值的类型)
-        - [2.12.13.1 noImplicitThis 编译选项](#212131-noimplicitthis-编译选项)
-        - [2.12.13.2 函数的 this 参数](#212132-函数的-this-参数)
+      - [2.12.12 abstract 构造签名](#21212-abstract-构造签名)
+      - [2.12.13 重载函数](#21213-重载函数)
+        - [2.12.13.1 函数重载](#212131-函数重载)
+        - [2.12.13.2 函数实现](#212132-函数实现)
+        - [2.12.13.3 函数重载解析顺序](#212133-函数重载解析顺序)
+        - [2.12.13.4 重载函数的类型](#212134-重载函数的类型)
+      - [2.12.14 函数中 this 值的类型](#21214-函数中-this-值的类型)
+        - [2.12.14.1 noImplicitThis 编译选项](#212141-noimplicitthis-编译选项)
+        - [2.12.14.2 函数的 this 参数](#212142-函数的-this-参数)
     - [2.13 接口](#213-接口)
       - [2.13.1 接口声明](#2131-接口声明)
       - [2.13.2 方法签名](#2132-方法签名)
       - [2.13.3 索引签名](#2133-索引签名)
         - [2.13.3.1 字符串索引签名](#21331-字符串索引签名)
         - [2.13.3.2 数值索引签名](#21332-数值索引签名)
+        - [2.13.3.3 static 索引签名](#21333-static-索引签名)
+        - [2.13.3.4 symbol 索引签名](#21334-symbol-索引签名)
+        - [2.13.3.5 字符串模板索引签名](#21335-字符串模板索引签名)
+        - [2.13.3.6 联合类型索引签名](#21336-联合类型索引签名)
       - [2.13.4 可选属性与方法](#2134-可选属性与方法)
       - [2.13.5 只读属性与方法](#2135-只读属性与方法)
       - [2.13.6 接口的继承](#2136-接口的继承)
@@ -103,10 +114,10 @@
       - [2.15.6 成员可访问性](#2156-成员可访问性)
         - [2.15.6.1 public](#21561-public)
         - [2.15.6.2 protected](#21562-protected)
-        - [2.15.6.3 private](#21563-private)
+        - [2.15.6.3 私有成员](#21563-私有成员)
         - [2.15.6.4 私有字段](#21564-私有字段)
       - [2.15.7 构造函数](#2157-构造函数)
-      - [2.15.8 参数成员](#2158-参数成员)
+      - [2.15.8 参数属性](#2158-参数属性)
       - [2.15.9 继承](#2159-继承)
         - [2.15.9.1 重写基类成员](#21591-重写基类成员)
         - [2.15.9.2 派生类实例化](#21592-派生类实例化)
@@ -116,6 +127,7 @@
       - [2.15.11 静态成员](#21511-静态成员)
         - [2.15.11.1 静态成员可访问性](#215111-静态成员可访问性)
         - [2.15.11.2 继承静态成员](#215112-继承静态成员)
+        - [2.15.11.3 静态语句块](#215113-静态语句块)
       - [2.15.12 抽象类和抽象成员](#21512-抽象类和抽象成员)
         - [2.15.12.1 抽象类](#215121-抽象类)
         - [2.15.12.2 抽象成员](#215122-抽象成员)
@@ -123,10 +135,11 @@
       - [2.15.14 类类型](#21514-类类型)
       - [2.15.15 混入](#21515-混入)
       - [2.15.16 模拟 final 类](#21516-模拟-final-类)
-    - [2.17 设计模式](#217-设计模式)
-      - [2.17.1 工厂模式](#2171-工厂模式)
-      - [2.17.2 建造者模式](#2172-建造者模式)
-      - [2.17.3 伴生对象模式](#2173-伴生对象模式)
+      - [2.15.17 override 覆写](#21517-override-覆写)
+    - [2.16 设计模式](#216-设计模式)
+      - [2.16.1 工厂模式](#2161-工厂模式)
+      - [2.16.2 建造者模式](#2162-建造者模式)
+      - [2.16.3 伴生对象模式](#2163-伴生对象模式)
   - [三. 类型进阶](#三-类型进阶)
     - [3.1 泛型](#31-泛型)
       - [3.1.1 泛型简介](#311-泛型简介)
@@ -184,6 +197,7 @@
         - [3.6.4.2 改进的修饰符拷贝](#3642-改进的修饰符拷贝)
         - [3.6.4.3 添加和移除修饰符](#3643-添加和移除修饰符)
         - [3.6.4.4 同态映射对象类型深入](#3644-同态映射对象类型深入)
+      - [3.6.5 在映射类型中更改映射的键](#365-在映射类型中更改映射的键)
     - [3.7 条件类型](#37-条件类型)
       - [3.7.1 条件类型的定义](#371-条件类型的定义)
       - [3.7.2 分布式条件类型](#372-分布式条件类型)
@@ -192,6 +206,7 @@
         - [3.7.2.3 过滤联合类型](#3723-过滤联合类型)
         - [3.7.2.4 避免分布式行为](#3724-避免分布式行为)
       - [3.7.3 infer 关键字](#373-infer-关键字)
+        - [3.7.3.1 infer 类型参数上的 extends 约束](#3731-infer-类型参数上的-extends-约束)
     - [3.8 内置工具类型](#38-内置工具类型)
       - [3.8.1 `Partial<T>`](#381-partialt)
       - [3.8.2 `Required<T>`](#382-requiredt)
@@ -209,6 +224,8 @@
       - [3.8.14 `ThisParameterType<T>`](#3814-thisparametertypet)
       - [3.8.15 `OmitThisParameter<T>`](#3815-omitthisparametert)
       - [3.8.16 `ThisType<T>`](#3816-thistypet)
+      - [3.8.17 `ConstructorParameters<T>`](#3817-constructorparameterst)
+      - [3.8.18 `Awaited<T>`](#3818-awaitedt)
     - [3.9 类型查询](#39-类型查询)
     - [3.10 类型断言](#310-类型断言)
       - [3.10.1 `<T>` 类型断言](#3101-t-类型断言)
@@ -300,6 +317,8 @@
         - [4.6.4.2 导入整个模块](#4642-导入整个模块)
         - [4.6.4.3 导入默认模块导出](#4643-导入默认模块导出)
         - [4.6.4.4 空导入](#4644-空导入)
+        - [4.6.4.5 导入名称的 type 修饰符](#4645-导入名称的-type-修饰符)
+        - [4.6.4.6 导入断言](#4646-导入断言)
       - [4.6.5 重命名模块导入和导出](#465-重命名模块导入和导出)
         - [4.6.5.1 重命名模块导出](#4651-重命名模块导出)
         - [4.6.5.2 重命名聚合模块](#4652-重命名聚合模块)
@@ -407,15 +426,19 @@
       - [5.5.1 编译 JS](#551-编译-js)
       - [5.5.2 JS 类型检查](#552-js-类型检查)
         - [5.5.2.1 checkJs 编译选项](#5521-checkjs-编译选项)
-        - [5.5.2.2 注释指令-不对文件进行类型检查](#5522-注释指令-不对文件进行类型检查)
-        - [5.5.2.3 注释指令-对文件进行类型检查](#5523-注释指令-对文件进行类型检查)
-        - [5.5.2.4 注释指令-忽略对某一行代码进行类型检查](#5524-注释指令-忽略对某一行代码进行类型检查)
-      - [5.5.3 JSDoc 与 类型](#553-jsdoc-与-类型)
+        - [5.5.2.2 @ts-nocheck](#5522-ts-nocheck)
+        - [5.5.2.3 @ts-check](#5523-ts-check)
+        - [5.5.2.4 @ts-ignore](#5524-ts-ignore)
+        - [5.5.2.5 @ts-expect-error](#5525-ts-expect-error)
+      - [5.5.3 JSDoc 及其类型](#553-jsdoc-及其类型)
         - [5.5.3.1 @typedef](#5531-typedef)
         - [5.5.3.2 @type](#5532-type)
         - [5.5.3.3 @param](#5533-param)
         - [5.5.3.4 @return 和 @returns](#5534-return-和-returns)
         - [5.5.3.5 @extends 和修饰符](#5535-extends-和修饰符)
+        - [5.5.3.6 @deprecated](#5536-deprecated)
+        - [5.5.3.7 @see](#5537-see)
+        - [5.5.3.8 @link](#5538-link)
     - [5.6 三斜线指令](#56-三斜线指令)
       - [5.6.1 reference path](#561-reference-path)
       - [5.6.2 reference types](#562-reference-types)
@@ -445,6 +468,8 @@
       - [8.3.2 在 NodeJS 中：使用子进程](#832-在-nodejs-中使用子进程)
 
 <!-- /code_chunk_output -->
+
+增补到 4.8。<!-- TODO 等待增补 4.9 -->
 
 ## 一. 介绍
 
@@ -701,6 +726,8 @@ enum Season {
 - 数值型枚举
 - 字符串枚举
 - 异构型枚举
+
+但是一般[不建议使用](/frontend/TypeScript/TypeScript实践方法/TypeScript实践方法.md#711-枚举)。
 
 #### 2.4.1 数值型枚举
 
@@ -1124,60 +1151,76 @@ const directions = [0 /*Up*/, 1 /*Down*/, 2 /*Left*/, 3 /*Right*/];
 
 TypeScript 支持将字面量作为类型使用，称之为字面量类型。每一个字面量类型都只有一个可能的值，即字面量本身。
 
-- **boolean 字面量类型**
+#### 2.5.1 boolean 字面量类型
 
-  boolean 字面量类型只有两种：true、false。原始类型 boolean 等同于由 true 字面量类型和 false 字面量类型构成的联合类型，即：
+boolean 字面量类型只有两种：true、false。原始类型 boolean 等同于由 true 字面量类型和 false 字面量类型构成的联合类型，即：
 
-  ```ts
-  type BooleanAlias = true | false;
-  ```
+```ts
+type BooleanAlias = true | false;
+```
 
-  true 字面量类型只能接受 true 值；同理，false 字面量类型只能接受 false 值：
+true 字面量类型只能接受 true 值；同理，false 字面量类型只能接受 false 值：
 
-  ```ts
-  const a: true = true;
-  const b: false = false;
-  ```
+```ts
+const a: true = true;
+const b: false = false;
+```
 
-  boolean 字面量类型是 boolean 类型的子类型，因此可以将 boolean 字面量类型赋值给 boolean 类型。
+boolean 字面量类型是 boolean 类型的子类型，因此可以将 boolean 字面量类型赋值给 boolean 类型。
 
-- **string 字面量类型**
+#### 2.5.2 字符串字面量类型和模板字面量
 
-  字符串字面量和模板字面量都能够创建字符串。字符串字面量和不带参数的模板字面量可以作为 string 字面量类型使用：
+**字符串字面量**：
 
-  ```ts
-  const a: 'hello' = 'hello';
-  const b: `world` = `world`;
-  ```
+```ts
+const a: 'hello' = 'hello';
+```
 
-  string 字面量类型是 string 类型的子类型，因此可以将 string 字面量类型赋值给 string 类型。
+字符串字面量类型是 string 类型的子类型，因此可以将字符串字面量类型赋值给 string 类型。
 
-- **数字字面量类型**
+**模板字面量**
+TypeScript 4.1 支持了模版字面量类型。它的语法与 JS 中的模版字面量的语法是一致的，但是是用在表示类型的位置上。当将其与具体类型结合使用时，它会将字符串拼接并产生一个新的字符串字面量类型。
 
-  数字字面量类型包含以下两类：
+```ts
+type World = 'world';
+type Greeting = `hello ${World}`; // "hello world"
+```
 
-  - number 字面量类型
-  - bigint 字面量类型
+如果在替换的位置上使用了联合类型，它将生成由各个联合类型成员所表示的字符串字面量类型的联合：
 
-  所有的二进制、八进制、十进制和十六进制数字字面量都可以作为数字字面量类型：
+```ts
+type Color = 'red' | 'blue';
+type Quantity = 'one' | 'two';
 
-  ```ts
-  const a0: 0b1 = 1;
-  const b0: 0o1 = 1;
-  const c0: 1 = 1;
-  const d0: 0x1 = 1;
+type SeussFish = `${Quantity | Color} fish`; // "one fish" | "two fish" | "red fish" | "blue fish"
+```
 
-  const a1: 0b1n = 1n;
-  const b1: 0o1n = 1n;
-  const c1: 1n = 1n;
-  const d1: 0x1n = 1n;
-  ```
+#### 2.5.3 数字字面量类型
 
-  number 字面量类型和 bigint 字面量类型分别是 number 类型和 bigint 类型的子类型，因此可以进行赋值操作。
+数字字面量类型包含以下两类：
 
-- **枚举成员字面量类型**
+- number 字面量类型
+- bigint 字面量类型
 
-  在[枚举类型](#24-枚举类型)中介绍了联合枚举成员类型。也可以将其称作枚举成员字面量类型，因为联合枚举成员类型使用枚举成员字面量形式表示。
+所有的二进制、八进制、十进制和十六进制数字字面量都可以作为数字字面量类型：
+
+```ts
+const a0: 0b1 = 1;
+const b0: 0o1 = 1;
+const c0: 1 = 1;
+const d0: 0x1 = 1;
+
+const a1: 0b1n = 1n;
+const b1: 0o1n = 1n;
+const c1: 1n = 1n;
+const d1: 0x1n = 1n;
+```
+
+number 字面量类型和 bigint 字面量类型分别是 number 类型和 bigint 类型的子类型，因此可以进行赋值操作。
+
+#### 2.5.4 枚举成员字面量类型
+
+在[枚举类型](#24-枚举类型)中介绍了联合枚举成员类型。也可以将其称作枚举成员字面量类型，因为联合枚举成员类型使用枚举成员字面量形式表示。
 
 ### 2.6 单元类型
 
@@ -1555,7 +1598,7 @@ const score: [string, number] = ['math', 100];
 
 #### 2.10.4 元组类型中的剩余元素
 
-在定义元组类型时，可以将最后一个元素定义为剩余元素。定义元组剩余元素类型的语法如下所示：
+在定义元组类型时，允许出现一个剩余元素，并且剩余元素之后不能有可选元素。定义元组剩余元素类型的语法如下所示：
 
 ```ts
 [...T[]]
@@ -1567,6 +1610,7 @@ const score: [string, number] = ['math', 100];
 
 ```ts
 const tuple: [number, ...string[]] = [0, 'a', 'b'];
+const tuple2: [number, ...string[], number];
 ```
 
 如果元组类型的定义中含有剩余元素，那么该元组的元素数量是开放的，它可以包含零个或多个指定类型的剩余元素。
@@ -1638,6 +1682,91 @@ function tuple<
 ```
 
 如果代码中大量使用元组类型，而又不想使用类型断言，可以利用这个技术。
+
+#### 2.10.8 可变参元组类型
+
+TypeScr 4.0 对展开元组类型的语法支持了泛型。
+
+```ts
+function tail<T extends any[]>(arr: readonly [any, ...T]) {
+  const [_ignored, ...rest] = arr;
+  return rest;
+}
+
+const myTuple = [1, 2, 3, 4] as const;
+const myArray = ['hello', 'world'];
+
+const r1 = tail(myTuple); // [2, 3, 4]
+const r2 = tail([...myTuple, ...myArray] as const); // [2, 3, 4, ...string[]]
+```
+
+在 TypeScript 4.0 及以上的版本元组的展开元素可以出现在任意位置上：
+
+```ts
+type Strings = [string, string];
+type Numbers = [number, number];
+
+type StrStrNumNumBool = [...Strings, ...Numbers, boolean]; // [string, string, number, number, boolean]
+```
+
+如果展开一个长度未知的类型，那么后面的所有元素都将被纳入到剩余元素类型：
+
+```ts
+type Strings = [string, string];
+type Numbers = number[];
+
+type Unbounded = [...Strings, ...Numbers, boolean]; // [string, string, ...(number | boolean)[]]
+```
+
+结合使用这两种行为，能够为 concat 函数编写一个良好的类型签名：
+
+```ts
+type Arr = readonly any[];
+
+function concat<T extends Arr, U extends Arr>(arr1: T, arr2: U): [...T, ...U] {
+  return [...arr1, ...arr2];
+}
+```
+
+#### 2.10.9 标签元组
+
+```ts
+function foo(...args: [string, number]): void {
+  // ...
+}
+// 与下面的函数基本没有区别：
+
+// function foo(arg0: string, arg1: number): void {
+//   // ...
+// }
+
+foo('hello', 42, true); // Expected 2 arguments, but got 3.
+foo('hello'); // Expected 2 arguments, but got 1.
+```
+
+如果从代码可读性的角度来看，在第一个例子中，参数的第一个元素和第二个元素都没有参数名。虽然这不影响类型检查，但是元组中元素位置上缺乏标签令它们难以使用 - 很难表达出代码的意图。
+
+所以 TypeScript 4.0 的元组提供了标签。
+
+```ts
+type Range = [start: number, end: number];
+```
+
+为了加强参数列表和元组类型之间的联系，剩余元素和可选元素的语法采用了参数列表的语法。
+
+```ts
+type Foo = [first: number, second?: string, ...rest: any[]];
+```
+
+在使用标签元组时有一些规则要遵守：
+
+- 如果一个元组元素使用了标签，那么所有元组元素必须都使用标签。
+
+  ```ts
+  type Bar = [first: string, number]; // Tuple members must all have names or all not have names.(5084)
+  ```
+
+- 元组标签名不影响解构变量名，它们不必相同。元组标签仅用于文档和工具目的。
 
 ### 2.11 对象类型
 
@@ -2007,7 +2136,7 @@ const point: { x: number } = { x: 0, y: 0 }; // y 是多余属性
 
 - **使用 "// @ts-ignore" 注释指令**
 
-  该[注释指令](#5524-注释指令-忽略对某一行代码进行类型检查)能够禁用针对某一行代码的类型检査。
+  该[注释指令](#5524-ts-ignore)能够禁用针对某一行代码的类型检査。
 
 - **为目标对象类型添加索引签名**
 
@@ -2157,6 +2286,14 @@ f0(0, 1);
 function f1({ x, y }: { x: number; y: number }) {}
 f1({ x: 0, y: 1 });
 ```
+
+解构出来的变量可以使用下划线 `_` 将变量明确地标记为未使用的：
+
+```ts
+let [_first, second] = getValues();
+```
+
+在 TypeScript4.2 之前，如果 `_first` 未被使用，那么在启用了 noUnusedLocals 时 TypeScript 会产生一个错误。现在，TypeScript 会识别出使用了下划线的 `_first` 变量是有意的未使用的变量。
 
 #### 2.12.6 返回值类型
 
@@ -2383,7 +2520,116 @@ const b: Number = new F(1);
 
 此例中，函数 F 的类型既是函数类型又是构造函数类型。因此，允许直接调用 F 函数，或者以构造函数的方式调用 F 函数。
 
-#### 2.12.12 重载函数
+#### 2.12.12 abstract 构造签名
+
+```ts
+abstract class Shape {
+  abstract getArea(): number;
+}
+
+// 不能创建抽象类的实例
+new Shape();
+
+class Square extends Shape {
+  #sideLength: number;
+
+  constructor(sideLength: number) {
+    super();
+    this.#sideLength = sideLength;
+  }
+
+  getArea() {
+    return this.#sideLength ** 2;
+  }
+}
+
+// 没问题
+new Square(42);
+```
+
+为了能够确保一贯的对 new 一个 abstract 类进行限制，不允许将 abstract 类赋值给接收构造签名的值。
+
+```ts
+abstract class Shape {
+  abstract getArea(): number;
+}
+
+interface HasArea {
+  getArea(): number;
+}
+
+// 不能将抽象构造函数类型赋值给非抽象构造函数类型。
+let Ctor: new () => HasArea = Shape;
+```
+
+如果有代码调用了 new Ctor，那么上述的行为是正确的，但若想要编写 Ctor 的子类，就会出现过度限制的情况。
+
+```ts
+abstract class Shape {
+  abstract getArea(): number;
+}
+
+interface HasArea {
+  getArea(): number;
+}
+
+function makeSubclassWithArea(Ctor: new () => HasArea) {
+  return class extends Ctor {
+    getArea() {
+      return 42;
+    }
+  };
+}
+
+// 不能将抽象构造函数类型赋值给非抽象构造函数类型。
+let MyShape = makeSubclassWithArea(Shape);
+```
+
+TypeScript 4.2 允许在构造签名上指定 abstract 修饰符：
+
+```ts
+abstract class Shape {
+  abstract getArea(): number;
+}
+// ---cut---
+interface HasArea {
+  getArea(): number;
+}
+
+let Ctor: abstract new () => HasArea = Shape; // Works!
+```
+
+在构造签名上添加 abstract 修饰符表示可以传入一个 abstract 构造函数。它不会阻止传入其它具体的类/构造函数 - 它只是想表达不会直接调用这个构造函数，因此可以安全地传入任意一种类类型。
+
+这个特性允许编写支持抽象类的混入工厂函数。例如，在下例中，可以同时使用混入函数 withStyles 和 abstract 类 SuperClass：
+
+```ts
+abstract class SuperClass {
+  abstract someMethod(): void;
+  badda() {}
+}
+
+type AbstractConstructor<T> = abstract new (...args: any[]) => T;
+
+function withStyles<T extends AbstractConstructor<object>>(Ctor: T) {
+  abstract class StyledClass extends Ctor {
+    getStyles() {
+      // ...
+    }
+  }
+  return StyledClass;
+}
+
+class SubClass extends withStyles(SuperClass) {
+  someMethod() {
+    this.someMethod();
+  }
+}
+```
+
+> **注意**：withStyles 展示了一个特殊的规则，若一个类（StyledClass）继承了被抽象构造函数所约束的泛型值，那么这个类也需要被声明为 abstract。由于无法知道传入的类是否拥有更多的抽象成员，因此也无法知道子类是否实现了所有的抽象成员。
+
+#### 2.12.13 重载函数
 
 重载函数是指一个函数同时拥有多个同类的函数签名。例如，一个函数拥有两个及以上的调用签名，或者一个构造函数拥有两个及以上的构造签名。当使用不同数量和类型的参数调用重载函数时，可以执行不同的函数实现代码。
 
@@ -2411,7 +2657,7 @@ const b: number[] = add([1], [2]);
 - 一条或多条函数重载语句
 - 一条函数实现语句
 
-##### 2.12.12.1 函数重载
+##### 2.12.13.1 函数重载
 
 不带有函数体的函数声明语句叫作函数重载。例如，下例中的 add 函数声明没有函数体，因此它属于函数重载：
 
@@ -2433,7 +2679,7 @@ function add(x: number | any[], y: number | any[]): any {
 
 > **注意**：在各个函数重载语句之间以及函数重载语句与函数实现语句之间不允许出现任何其他语句，否则将产生编译错误。
 
-##### 2.12.12.2 函数实现
+##### 2.12.13.2 函数实现
 
 函数实现包含了实际的函数体代码，该代码不仅在编译时存在在编译生成的 JS 代码中同样存在。每一个重载函数只允许有一个函数实现，并且它必须位于所有函数重载语句之后，否则将产生编译错误。示例如下：
 
@@ -2488,7 +2734,7 @@ function add(x: number | any[], y: number | any[]): any {
 
 TypeScript 不支持为不同的函数重载分别定义不同的函数实现。
 
-##### 2.12.12.3 函数重载解析顺序
+##### 2.12.13.3 函数重载解析顺序
 
 当程序中调用了一个重载函数时，编译器将首先构建出一个候选函数重载列表。一个函数重载需要满足如下条件才能成为本次函数调用的候选函数重载：
 
@@ -2544,7 +2790,7 @@ const b = bar('hello', 2);
 
 上例中，foo 函数是重载函数，而 bar 函数则为普通函数声明。两个函数在功能上以及可接受的参数类型和函数返回值类型都是相同的。但是，bar 函数的声明代码更少也更加清晰。
 
-##### 2.12.12.4 重载函数的类型
+##### 2.12.13.4 重载函数的类型
 
 重载函数的类型可以通过包含多个调用签名的对象类型来表示。例如，有以下重载函数定义：
 
@@ -2572,7 +2818,7 @@ function f(X: any): any {}
 
 本节中，主要介绍了重载函数的定义和解析规则，以及如何描述重载函数的类型。实际上[构造函数](#2157-构造函数)也支持重载并且与重载函数是类似的。
 
-#### 2.12.13 函数中 this 值的类型
+#### 2.12.14 函数中 this 值的类型
 
 this 是 JS 中的关键字，它可以表示调用函数的对象或者实例对象等。本节将介绍函数声明和函数表达式中 this 值的类型。
 
@@ -2587,7 +2833,7 @@ function f() {
 }
 ```
 
-##### 2.12.13.1 noImplicitThis 编译选项
+##### 2.12.14.1 noImplicitThis 编译选项
 
 将 this 值的类型设置为 any 类型对类型检查没有任何帮助。因此 TypeScript 提供了一个 `--noImplicitThis` 编译选项。当启用了该编译选项时，如果 this 值默认获得了 any 类型，那么将产生编译错淏；如果函数体中没有引用 this 值，则没有任何影响。示例如下：
 
@@ -2603,7 +2849,7 @@ function f0() {
 
 函数中 this 值的类型可以通过一个特殊的 this 参数来定义。下面将介绍这个特殊的 this 参数。
 
-##### 2.12.13.2 函数的 this 参数
+##### 2.12.14.2 函数的 this 参数
 
 TypeScript 支持在函数形式参数列表中定义一个特殊的 this 参数来描述该函数中 this 值的类型。示例如下：
 
@@ -2731,20 +2977,26 @@ interface A {
 
 #### 2.13.3 索引签名
 
-JS 支持使用索引去访问对象的属性，即通过方括号 `[]` 语法去访问对象属性：
+JS 支持使用索引去访问对象的属性，即通过方括号 `[]` 或 `.` 语法去访问对象属性：
 
 ```ts
 const colors = ['red', 'green', 'blue'];
 // 访问数组中的第一个元素
 const red = colors[0];
 // 访问数组对象的 length 属性
-const len = colors['length'];
+const len = colors.length;
 ```
 
-接口中的索引签名能够描述使用索引访问的对象属性的类型。索引签名只有以下两种：
+> 可以使用 `noPropertyAccessFromIndexSignature` 编译选项强制只能使用 `[]` 语法。
+
+接口中的索引签名能够描述使用索引访问的对象属性的类型。索引签名有以下几种：
 
 - 字符串索引签名
 - 数值索引签名
+- static 索引签名
+- symbol 索引签名
+- 字符串模板索引签名
+- 联合类型索引签名
 
 ##### 2.13.3.1 字符串索引签名
 
@@ -2831,6 +3083,99 @@ interface A {
 interface A {
   [prop: string]: 0 | 1;
   [prop: number]: number; // 编译错误
+}
+```
+
+##### 2.13.3.3 static 索引签名
+
+索引签名在 TypeScript4.3 以后也可以声明为 static：
+
+```ts
+class Foo {
+  static hello = 'hello';
+  static world = 1234;
+
+  static [propName: string]: string | number | undefined;
+}
+
+Foo['whatever'] = 42; // 没问题
+
+let x = Foo['something']; // 类型为 'string | number | undefined'
+```
+
+##### 2.13.3.4 symbol 索引签名
+
+ypeScript 4.4 允许 symbol 索引签名以及模版字符串。例如，TypeScript 允许声明一个接受任意 symbol 值作为键的对象类型：
+
+```ts
+interface Colors {
+  [sym: symbol]: number;
+}
+
+const red = Symbol('red');
+const blue = Symbol('blue');
+
+let colors: Colors = {};
+
+// 没问题
+colors[red] = 255;
+let redVal = colors[red];
+//  ^ number
+
+colors[blue] = 'da ba dee'; // 错误：'string' 不能赋值给 'number'
+```
+
+##### 2.13.3.5 字符串模板索引签名
+
+可以定义带有模版字符串的索引签名。一个场景是用来免除对以 `data-` 开头的属性名执行的 TypeScript 额外属性检查。当传递一个对象字面量给目标类型时，TypeScript 会检查是否存在相比于目标类型的额外属性。
+
+```ts
+interface Options {
+  width?: number;
+  height?: number;
+}
+
+let a: Options = {
+  width: 100,
+  height: 100,
+  'data-blah': true
+};
+
+interface OptionsWithDataProps extends Options {
+  // 允许以 'data-' 开头的属性
+  [optName: `data-${string}`]: unknown;
+}
+
+let b: OptionsWithDataProps = {
+  width: 100,
+  height: 100,
+  'data-blah': true,
+
+  // 使用未知属性会报错，不包括以 'data-' 开始的属性
+  'unknown-property': true
+};
+```
+
+##### 2.13.3.6 联合类型索引签名
+
+索引签名支持联合类型，只要它们是无限域原始类型的联合 - 尤其是：
+
+- string
+- number
+- symbol
+- 模版字符串
+
+带有以上类型的联合的索引签名会展开为不同的索引签名。
+
+```ts
+interface Data {
+  [optName: string | symbol]: any;
+}
+
+// 等同于
+interface Data {
+  [optName: string]: any;
+  [optName: symbol]: any;
 }
 ```
 
@@ -3451,23 +3796,23 @@ class Circle {
 
 #### 2.15.4 成员存取器
 
-成员存取器由 `get` 和 `set` 方法构成，并且会在类中声明一个属性成员存取器的定义方式与对象字面量中属性存取器的定义方式是完全相同的。如果一个类属性同时定义了 get 方法和 set 方法，那么 get 方法的返回值类型必须与 set 方法的参数类型一致，否则将产生错误：
+成员存取器由 `get` 和 `set` 方法构成，并且会在类中声明一个属性成员存取器的定义方式与对象字面量中属性存取器的定义方式是完全相同的：
 
 ```ts
 class C {
-  // 正确
-  private _foo: number = 0;
+  private _foo = 0;
   get foo(): number {
     return this._foo;
   }
   set foo(value: number) {}
 
-  // 错误! get 和 set 存取器必须具有相同的类型
-  private _bar: string = '';
+  private _bar = 0;
   get bar(): string {
-    return this._bar;
+    return `bar: ${this._bar}`;
   }
-  set bar(value: number) {}
+  set bar(value: string) {
+    this._bar = Number(value) * 2;
+  }
 }
 ```
 
@@ -3574,9 +3919,9 @@ const base = new Base();
 base.x; // 不允许访问
 ```
 
-##### 2.15.6.3 private
+##### 2.15.6.3 私有成员
 
-类的私有成员只允许在当前类的内部被访问，在当前类的外部以及派生类的内部都不允许访问。类的私有成员使用 `private` 修饰符标识：
+类的私有成员只允许在当前类的内部被访问，在当前类的外部以及派生类的内部都不允许访问。类的私有成员使用可以使用 `private` 修饰符标识声明：
 
 ```ts
 class Base {
@@ -3598,21 +3943,50 @@ base.x; // 不允许访问
 
 ##### 2.15.6.4 私有字段
 
-ECMAScript 标准在 2020 年 1 月引入了一个新特性，那就是允许在类中定义私有字段。这意味着 JS 语言将原生地支持类的私有成员。TypeScript 也从 3.8 版本开始支持该特性。在 ECMAScript 标准中，类的私有字段使用一种新的语法来定义，即在字段标识符前添一个 `#` 符号。不论是在定义私有字段时还是在访问私有字段时都需要在私有字段名前添加一个 `#` 符号：
+ECMAScript 标准在 2020 年 1 月引入了一个新特性，那就是允许在类中定义私有字段。这意味着 JS 语言将原生地支持类的私有字段。TypeScript 也从 3.8 版本开始支持该特性。在 ECMAScript 标准中，类的私有字段使用一种新的语法来定义，即在成员前添一个 `#` 符号。不论是在定义还是在访问时都需要在私有字段名前添加一个 `#` 符号：
 
 ```ts
-class Circle {
-  #radius: number;
+class Foo {
+  #x = '';
 
-  constructor() {
-    this.#radius = 0;
+  #someMethod() {}
+
+  get #someValue() {}
+
+  static #someMethod() {}
+
+  publicMethod() {
+    // 可以在类内部访问私有命名成员。
+    this.#someMethod();
+    return this.#someValue;
   }
 }
-const circle = new Circle();
-circle.#radius; // 不允许访问
+
+new Foo().#someMethod(); // 错误！属性 '#someMethod' 无法在类 'Foo' 外访问，因为它是私有的。
+new Foo().#someValue; // 错误！属性 '#someValue' 无法在类 'Foo' 外访问，因为它是私有的。
 ```
 
-在写作本书时，该特性还处于早期实现版本，所以这里只作简单介绍。关于在未来 TypeScript 是否会弃用 private 修饰符，仅支持标准的私有字段语法这一话题还在讨论当中，感兴趣的读者可以继续关注。
+TypeScript 4.5 支持了检查对象上是否存在某私有字段：
+
+```ts
+class Person {
+  #name: string;
+  constructor(name: string) {
+    this.#name = name;
+  }
+
+  equals(other: unknown) {
+    return (
+      other &&
+      typeof other === 'object' &&
+      #name in other && // <- this is new!
+      this.#name === other.#name
+    );
+  }
+}
+```
+
+`#name in other` 隐含了 other 必须是使用 Person 构造的，因为只有在这种情况下才可能存在该字段。这是该提议中关键的功能之一，同时也是为什么这项提议叫作 “ergonomic brand checks” 的原因 - 因为私有字段通常作为一种 “商标” 来区分不同类的实例。 因此，TypeScript 能够在每次检查中细化 other 类型，直到细化为 Person 类型。
 
 #### 2.15.7 构造函数
 
@@ -3621,9 +3995,11 @@ circle.#radius; // 不允许访问
 ```ts
 class Circle {
   radius: number;
+  diameter; // 推断为 number
 
   constructor(r: number) {
     this.radius = r;
+    this.diameter = r * 2;
   }
 }
 const c = new Circle(1);
@@ -3663,7 +4039,7 @@ class Singleton {
 new Singleton(); // 编译错误
 ```
 
-与[函数重载](#212121-函数重载)类似，构造函数也支持重载。将没有函数体的构造函数声明称为构造函数重载，同时将定义了函数体的构造函数声明称为构造函数实现。构造函数重载可以存在零个或多个，而构造函数实现只能存在一个：
+与[函数重载](#212131-函数重载)类似，构造函数也支持重载。将没有函数体的构造函数声明称为构造函数重载，同时将定义了函数体的构造函数声明称为构造函数实现。构造函数重载可以存在零个或多个，而构造函数实现只能存在一个：
 
 ```ts
 class A {
@@ -3675,9 +4051,9 @@ const a = new A(0, 0);
 const b = new A('foo');
 ```
 
-#### 2.15.8 参数成员
+#### 2.15.8 参数属性
 
-TypeScript 提供了一种简洁语法能够把构造函数的形式参数声明为类的成员变量，它叫作参数成员。在构造函数参数列表中，为形式参数添加任何一个可访问性修饰符或者 readonly 修饰符，该形式参数就成了参数成员，进而会被声明为类的成员变量：
+TypeScript 提供了一种简洁语法能够把构造函数的形式参数声明为类的成员变量，它叫作参数属性。在构造函数参数列表中，为形式参数添加任何一个可访问性修饰符或者 readonly 修饰符，该形式参数就成了参数属性，进而会被声明为类的成员变量：
 
 ```ts
 class A {
@@ -3687,13 +4063,15 @@ const a = new A(0);
 a.x; // 0
 ```
 
-readonly 修饰符也可以和任意一个可访问性修饰符结合使用来定义只读的参数成员。
+readonly 修饰符也可以和任意一个可访问性修饰符结合使用来定义只读的参数属性。
 
 ```ts
 class A {
   constructor(public readonly x: number) {}
 }
 ```
+
+一般[不建议使用，如果使用尽量避免通过混用参数和非参数属性来隐藏类的设计。](/frontend/TypeScript/TypeScript实践方法/TypeScript实践方法.md#712-参数属性)。
 
 #### 2.15.9 继承
 
@@ -3901,11 +4279,11 @@ circle.version;
 
 ##### 2.15.11.1 静态成员可访问性
 
-类的静态成员也可以定义不同的可访问性，如 public、 private 和 protected。
+类的静态成员也可以定义不同的可访问性：
 
-- 类的 `public` 静态成员对访问没有限制，可以在当前类的内部、外部以及派生类的内部访问。
-- 类的 `protected` 静态成员允许在当前类的内部和派生类的内部访问，但是不允许在当前类的外部访问。
-- 类的 `private` 静态成员只允许在当前类的内部访问。
+- `public`：静态成员对访问没有限制，可以在当前类的内部、外部以及派生类的内部访问。
+- `protected`：静态成员允许在当前类的内部和派生类的内部访问，但是不允许在当前类的外部访问。
+- `private`：静态成员只允许在当前类的内部访问。
 
 ##### 2.15.11.2 继承静态成员
 
@@ -3926,9 +4304,52 @@ class Derived extends Base {
 }
 ```
 
+##### 2.15.11.3 静态语句块
+
+TypeScript 4.4 支持了类中的 static 语句块，它能够帮助编写复杂的静态成员初始化代码：
+
+```ts
+declare function someCondition(): boolean;
+
+class Foo {
+  static count = 0;
+  // 静态语句块：
+  static {
+    if (someCondition()) {
+      Foo.count++;
+    }
+  }
+}
+```
+
+在静态语句块中允许编写一系列语句，它们可以访问类中的私有字段。也就是说在初始化代码中能够编写语句，不会暴露变量，并且可以完全访问类的内部信息。
+
+```ts
+declare function loadLastInstances(): any[];
+
+class Foo {
+  static #count = 0;
+
+  get count() {
+    return Foo.#count;
+  }
+
+  static {
+    try {
+      const lastInstances = loadLastInstances();
+      Foo.#count += lastInstances.length;
+    } catch {}
+  }
+}
+```
+
+若不使用 static 语句块也能够编写上述代码，只不过需要使用一些折中的 hack 手段。
+
+一个类可以有多个 static 语句块，它们的运行顺序与编写顺序一致。
+
 #### 2.15.12 抽象类和抽象成员
 
-前面介绍的类和类的成员都属于具体类和具体类成员。TypeScript 支持定义抽象类和抽象类成员。抽象类和抽象类成员都使用 `abstract` 关键字来定义。
+前面介绍的类和类的成员都属于具体类和具体类成员。TypeScript 支持定义抽象类和抽象类成员。抽象类和抽象类成员都使用 `abstract` 关键字来定义。抽象类类只是用于继承，并且有些成员需要在子类中实现，以便能够真正地创建出实例。
 
 > **使用**：如果多个类公用同一个实现，使用抽象类。如果需要一种轻量的方式表示这 “这类是 T 型”，使用[接口](#213-接口)。
 
@@ -3971,6 +4392,8 @@ abstract class Base {
   b: string;
 }
 ```
+
+> **注意**：抽象类成员不能被标记为 async。
 
 ##### 2.15.12.2 抽象成员
 
@@ -4221,9 +4644,35 @@ class BadQueue extends MessageQueue {} // Error
 MessageQueue.create([]); // MessageQueue
 ```
 
-### 2.17 设计模式
+#### 2.15.17 override 覆写
 
-#### 2.17.1 工厂模式
+当一个方法被标记为 `override`，TypeScript 会确保在基类中存在同名的方法。
+
+```ts
+class Base {
+  someHelperMethod() {}
+}
+
+class Derived extends Base {
+  // 不是真正想覆写基类中的方法，只是想编写一个本地的帮助方法
+  someHelperMethod() {}
+}
+
+class SomeComponent {
+  setVisible(value: boolean) {}
+}
+class SpecializedComponent extends SomeComponent {
+  override show() {}
+  //       ~~~~
+  //       错误
+}
+```
+
+因此，TypeScript 4.3 中还增加了一个 `--noImplicitOverride` 选项。当启用了该选项，如果覆写了父类中的方法但没有添加 override 关键字，则会产生错误。
+
+### 2.16 设计模式
+
+#### 2.16.1 工厂模式
 
 工厂模式（factory pattern）是创建某种类型的对象的一种方式，这种方式把创建哪种具体对象留给创建该对象的工厂决定。下面构建一个造鞋工厂。首先定义 Shoe 类型，以及几种鞋：
 
@@ -4272,7 +4721,7 @@ Shoe.create('boot');
 
 > **注意**：可以更明确一些，在 Shoe.create 的类型签名中指明，传入 'boot' 得到一个 Boot 实例，传入 'sneaker' 得到一个 Sneaker 实例等，但是这样做破坏了工厂模式所做的抽象（即使用方不知道将得到什么具体的类，知道的只是该类满足特定的接口）。
 
-#### 2.17.2 建造者模式
+#### 2.16.2 建造者模式
 
 建造者模式（builder pattern）把对象的建造方式与具体的实现方式区分开。
 
@@ -4309,7 +4758,7 @@ class RequestBuilder {
 }
 ```
 
-#### 2.17.3 伴生对象模式
+#### 2.16.3 伴生对象模式
 
 伴生对象模式源自 [Scala](https://docs.scala-lang.org/tour/singleton-objects.html#companion-objects)，目的是把同名的对象和类配对在一起。TypeScript 中也有类似的模式，而且作用类似，即把同名类型和对象配对在一起。
 
@@ -6019,6 +6468,58 @@ type HMOT<T, X> = { [P in keyof T]: X };
   type R1 = HMOT<T1>; // = [string];
   ```
 
+#### 3.6.5 在映射类型中更改映射的键
+
+在 TypeScript 4.1 以前映射类型只能使用提供给它的键来创建新的对象类型；然而，很多时候想要创建新的键，或者过滤掉某些键。因此 TypeScript 4.1 新增了一个 as 语句。
+
+```ts
+type MappedTypeWithNewKeys<T> = {
+  [K in keyof T as NewKeyType]: T[K];
+  //            ^^^^^^^^^^^^^
+  //            这里是新的语法！
+};
+```
+
+通过 as 语句，可以利用例如模版字面量类型，并基于原属性名来轻松地创建新属性名：
+
+```ts
+type Getters<T> = {
+  [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K];
+};
+
+interface Person {
+  name: string;
+  age: number;
+  location: string;
+}
+
+type LazyPerson = Getters<Person>;
+// type LazyPerson = {
+//     getName: () => string;
+//     getAge: () => number;
+//     getLocation: () => string;
+// }
+```
+
+此外，还可以巧用 never 类型来过滤掉某些键。也就是说，在某些情况下不必使用 Omit 工具类型：
+
+```ts
+// 删除 'kind' 属性
+type RemoveKindField<T> = {
+  [K in keyof T as Exclude<K, 'kind'>]: T[K];
+};
+
+interface Circle {
+  kind: 'circle';
+  radius: number;
+}
+
+type KindlessCircle = RemoveKindField<Circle>;
+// type KindlessCircle = {
+//     radius: number;
+// }
+```
+
 ### 3.7 条件类型
 
 条件类型与条件表达式类似，它表示一种非固定的类型。条件类型能够根据条件判断从可选类型中选择其一作为结果类型。
@@ -6219,6 +6720,39 @@ type CT<T> = T extends { a: infer M; b: infer N } ? [M, N] : never;
 type T = CT<{ a: string; b: number }>; // [string, number]
 ```
 
+##### 3.7.3.1 infer 类型参数上的 extends 约束
+
+它允许匹配并依据类型结构进行推断，然后作出某种决定。例如，编写一个有条件类型，它返回元组类型的第一个元素如果它类似 string 类型的话。
+
+```ts
+type FirstIfString<T> = T extends [infer S, ...unknown[]] ? (S extends string ? S : never) : never;
+
+type A = FirstIfString<[string, number, number]>; // string
+
+type B = FirstIfString<['hello', number, number]>; // "hello"
+
+type C = FirstIfString<['hello' | 'world', boolean]>; // "hello" | "world"
+
+type D = FirstIfString<[boolean, number, string]>; // never
+```
+
+FirstIfString 匹配至少有一个元素的元组类型，将元组第一个元素的类型提取到 S。 然后检查 S 与 string 是否兼容，如果是就返回它。可以注意到必须使用两个有条件类型来实现它。也可以这样定义 FirstIfString：
+
+```ts
+type FirstIfString<T> = T extends [string, ...unknown[]]
+  ? // 从 T 中抓取第一种类型
+    T[0]
+  : never;
+```
+
+它可以工作但要更多的 “手动” 操作且不够形象。如果处理的是比元组类型复杂得多的类型就会变得棘手，因此 infer 类型参数上的 extends 约束可以让事情变得简单：
+
+```ts
+type FirstIfString<T> = T extends [infer S extends string, ...unknown[]] ? S : never;
+```
+
+通过这种方式，在 TypeScript 去匹配 S 时，它也会保证 S 是 string 类型。如果 S 不是 string 就是进入到 false 分支。
+
 ### 3.8 内置工具类型
 
 在前面的章节中，已经陆续介绍了一些 TypeScript 内置的实用工具类型。这些工具类型的定义位于 TypeScript 语言安装目录下的 "lib/lib.es5.d.ts" 文件中。推荐去阅读这部分源代码，以便能够更好地理解工具类型，同时也能学习到一些类型定义的技巧。
@@ -6241,6 +6775,7 @@ type T = CT<{ a: string; b: number }>; // [string, number]
 - `ThisParameterType<T>`
 - `OmitThisParameter<T>`
 - `ThisType<T>`
+- `ConstructorParameters<T>`
 
 #### 3.8.1 `Partial<T>`
 
@@ -6467,6 +7002,49 @@ obj = {
 ```
 
 此例中，使用交叉类型为对象字面量 obj 指定了 `ThisType<T>` 类型，因此 obj 中 getX 方法的 this 类型为 `{x: number;}` 类型。
+
+#### 3.8.17 `ConstructorParameters<T>`
+
+获取构造函数的参数类型：
+
+```ts
+class User {
+  address: string;
+  age: number;
+
+  constructor(address: string, age: number) {
+    this.address = address;
+    this.age = age;
+  }
+}
+type ConstructorParametersOfUser = ConstructorParameters<typeof User>; // type ConstructorParametersOfUser = [string, number]
+
+// TypeScript 4.3 之后可以用于抽象类
+abstract class C {
+  constructor(a: string, b: number) {
+    // ...
+  }
+}
+
+type CParams = ConstructorParameters<typeof C>; // 类型为 '[a: string, b: number]'
+```
+
+#### 3.8.18 `Awaited<T>`
+
+获取 promise 的返回值类型：
+
+```ts
+// A = string
+type A = Awaited<Promise<string>>;
+
+// B = number
+type B = Awaited<Promise<Promise<number>>>;
+
+// C = boolean | number
+type C = Awaited<boolean | Promise<number>>;
+```
+
+Awaited 有助于描述现有 API，比如 JS 内置的 Promise.all，Promise.race 等等。
 
 ### 3.9 类型查询
 
@@ -7291,7 +7869,7 @@ type ID = CompanyID | OrderID | UserID;
 
 显然，使用 string 和 { readonly brand: unique symbol} 的交集显得有点乱，但是只能这么做，如果想创建这个类型的值，别无他法，只能使用断言。这就是带烙印的类型的一个重要性质：不太可能意外使用错误的类型。选择的 “烙印” 是 unique symbol，因为这是 TypeScript 中两个真正意义上是名义类型的类型之一（另一个是 enum)。之所以取这个烙印与 string 的交集，是为了通过断言指明给定的字符串属于这个带烙印的类型。
 
-现在，要找到一种方式创建 CompanyID、OrderID 和 UserID 类型的值。为此，将使用[伴生对象模式](#2173-伴生对象模式)。将为每个带烙印的类型声明一个构造函数，使用类型断言构建各合成类型的值：
+现在，要找到一种方式创建 CompanyID、OrderID 和 UserID 类型的值。为此，将使用[伴生对象模式](#2163-伴生对象模式)。将为每个带烙印的类型声明一个构造函数，使用类型断言构建各合成类型的值：
 
 ```ts
 function CompanyID(id: string) {
@@ -7500,7 +8078,7 @@ TypeScript 中的原始类型有 number、bigint、boolean、string、symbol、 
 
 #### 4.1.5 函数类型
 
-函数类型由参数类型和返回值类型构成。在比较两个函数类型间的子类型关系时要**同时考虑参数类型和返回值类型**。在了解函数类型间的子类型关系之前，需要先了解一个重要的概念，即变型。
+函数类型由参数类型和返回值类型构成。在比较两个函数类型间的子类型关系时要**同时考虑参数类型和返回值类型**。在了解函数类型间的子类型关系之前，需要先了解一个重要的概念，即**变型**。
 
 ##### 4.1.5.1 变型
 
@@ -7510,7 +8088,7 @@ TypeScript 中的原始类型有 number、bigint、boolean、string、symbol、 
 
 - **协变**
 
-  如果由 A 是 B 的子类型能够得出 Complex(A) 是 Complex(B) 的子类型，那么将这种变型称作协变。协变关系维持了复杂类型与其组成类型间的子类型关系。子类型关系如下所示（符号“→”表示能够推导出）：
+  如果由 A 是 B 的子类型能够得出 Complex(A) 是 Complex(B) 的子类型，那么将这种变型称作协变。协变关系维持了复杂类型与其组成类型间的子类型关系。子类型关系如下所示（符号 “→” 表示能够推导出）：
 
   ```ts
   A <: B → Complex(A) <: Complex(B)
@@ -7532,7 +8110,81 @@ TypeScript 中的原始类型有 number、bigint、boolean、string、symbol、 
   A <: B 或 B <: A → Complex(A) <: Complex(B)
   ```
 
-最后，若类型间不存在上述变型关系，那么称之为不变。
+最后，若类型间不存在上述变型关系，那么称之为**不变**。
+
+**变形注释**
+在 TypeScript 4.7 以后，可以明确地声明类型参数上的变型关系。
+
+```ts
+interface Animal {
+  animalStuff: any;
+}
+interface Dog extends Animal {
+  dogStuff: any;
+}
+
+type Getter<T> = () => T;
+type Setter<T> = (value: T) => void;
+```
+
+假设有两个不同的 Getter 实例。要想知道这两个 Getter 实例是否可以相互替换完全依赖于类型 T。例如要知道 `Getter<Dog> → Getter<Animal>` 是否允许，则需要检查 Dog → Animal 是否允许。因为对 T 与 `Getter<T>` 的判断是相同 “方向” 的，称 Getter 是协变的。相反的，判断 `Setter<Dog> → Setter<Animal>` 是否允许，需要检查 Animal → Dog 是否允许。当需要像这样翻转方向来比较 T 时，称 Setter 对于 T 是逆变的。
+
+因此，现在如果想在 Getter 上明确地声明对于 T 的协变关系则可以使用 `out` 修饰符：
+
+```ts
+type Getter<out T> = () => T;
+```
+
+相似的，如果想要明确地声明 Setter 对于 T 是逆变关系则可以指定 in 修饰符：
+
+```ts
+type Setter<in T> = (value: T) => void;
+```
+
+使用 out 和 in 的原因是**类型参数的变型关系依赖于它们被用在输出的位置还是输入的位置**。若不思考变型关系，也可以只关注 T 是被用在输出还是输入位置上。
+
+当然也有同时使用 out 和 in 的时候：
+
+```ts
+interface State<in out T> {
+  get: () => T;
+  set: (value: T) => void;
+}
+```
+
+**使用变形注释的原因**：
+
+- **可以让读者能够明确地知道类型参数是如何被使用的**。对于十分复杂的类型来讲，可能很难确定一个类型参数是用于输入或者输出再或者两者兼有。如果忘了说明类型参数是如何被使用的，TypeScript 也会提示。
+
+- **有关精度和速度**。TypeScript 已经在尝试推断类型参数的变型并做为一项优化。这样做可以快速对大型的结构化类型进行类型检查。提前计算变型省去了深入结构内部进行兼容性检查的步骤，仅比较类型参数相比于一次又一次地比较完整的类型结构会快得多。但经常也会出现这个计算十分耗时，并且在计算时产生了环，从而无法得到准确的变型关系。
+
+  ```ts
+  type Foo<T> = {
+    x: T;
+    f: Bar<T>;
+  };
+
+  type Bar<U> = (x: Baz<U[]>) => void;
+
+  type Baz<V> = {
+    value: Foo<V[]>;
+  };
+
+  declare let foo1: Foo<unknown>;
+  declare let foo2: Foo<string>;
+
+  foo1 = foo2; // Should be an error but isn't ❌
+  foo2 = foo1; // Error - correct ✅
+  ```
+
+  提供明确的类型注解能够加快对环状类型的解析速度，有利于提高准确度。例如，将上例的 T 设置为逆变可以帮助阻止有问题的赋值运算：
+
+  ```ts
+  type Foo<in out T> = {
+      x: T;
+      f: Bar<T>;
+  }
+  ```
 
 ##### 4.1.5.2 函数参数数量
 
@@ -7540,12 +8192,12 @@ TypeScript 中的原始类型有 number、bigint、boolean、string、symbol、 
 
 - **子类型的必选参数**
 
-  若函数类型 S 是函数类型 T 的子类型，则 S 中的每一个必选参数必须能够在 T 中找到对应的参数，即 **S 中必选参数的个数不能多于 T 中的参数个数**。示例如下：
+若函数类型 S 是函数类型 T 的子类型，则 S 中的每一个必选参数必须能够在 T 中找到对应的参数，即 **S 中必选参数的个数不能多于 T 中的参数个数**。示例如下：
 
-  ```ts
-  type S = (a: number) => void;
-  type T = (x: number, y: number) => void;
-  ```
+```ts
+type S = (a: number) => void;
+type T = (x: number, y: number) => void;
+```
 
 - **超类型中的可选参数和剩余参数**
 
@@ -8565,6 +9217,8 @@ var App;
 
 ##### 4.5.4.3 三斜线指令
 
+[不建议使用三斜线导入！](/frontend/TypeScript/TypeScript实践方法/TypeScript实践方法.md#713-命名空间和三斜线导入)
+
 三斜线指令是 TypeScript 早期版本中就支持的一个特性，可以通过它来**定义文件间的依赖**。形式如下所示：
 
 ```ts
@@ -8975,6 +9629,61 @@ console.log(globalThis.mode);
 ```
 
 此例中，使用空导入语句导入了 "utils.ts" 模块，这会执行 "utils.ts" 文件中的代码并设置全局作用域中 mode 属性的值。因此，在 "index.ts" 模块中能够读取并打印全局作用域中 mode 属性的值。
+
+##### 4.6.4.5 导入名称的 type 修饰符
+
+`preserveValueImports` 和 `isolatedModules` 编译选项结合使用时有额外的要求，这是为了让构建工具能够明确知道是否可以省略导入语句。
+
+当同时使用了这些选项时，需要有一种方式来表示导入语句是否可以被合法地丢弃。TypeScript 已经有类似的功能，即 [`import type`](#4662-导入与导出类型)。
+
+这是有效的，但还可以提供更好的方式来避免使用两条导入语句从相同的模块中导入。因此，TypeScript 4.5 允许在每个命名导入前使用 type 修饰符，可以按需混合使用它们。
+
+```ts
+import { someFunc, type BaseType } from './some-module.js';
+
+export class Thing implements BaseType {
+  someMethod() {
+    someFunc();
+  }
+}
+```
+
+上例中，在 preserveValueImports 模式下，能够确定 BaseType 可以被删除，同时 someFunc 应该被保留，于是就会生成如下代码：
+
+```js
+import { someFunc } from './some-module.js';
+
+export class Thing {
+  someMethod() {
+    someFunc();
+  }
+}
+```
+
+##### 4.6.4.6 导入断言
+
+TypeScript 4.5 支持了 ECMAScript Proposal 中的 _导入断言_。该语法会被运行时所使用来检查导入是否为期望的格式：
+
+```ts
+import obj from './something.json' assert { type: 'json' };
+```
+
+TypeScript 不会检查这些断言，因为它们依赖于宿主环境。TypeScript 会保留原样，稍后让浏览器或者运行时来处理它们（也可能会出错）。
+
+```ts
+// TypeScript 允许，但浏览器可能不允许
+import obj from './something.json' assert { type: 'fluffy bunny' };
+```
+
+动态的 import() 调用可以通过第二个参数来使用导入断言：
+
+```ts
+const obj = await import('./something.json', {
+  assert: { type: 'json' }
+});
+```
+
+第二个参数的类型为 ImportCallOptions，并且目前它只接受一个 `assert` 属性。
 
 #### 4.6.5 重命名模块导入和导出
 
@@ -10172,6 +10881,8 @@ paths 编译选项用来设置模块名和模块路径的映射，用于设置�
 
 `paths` 编译选项只能在 "tsconfig.json" 配置文件中设置，不支持在命令行上使用。由于 paths 是基于 "--baseUrl" 进行解析的，所以必须同时设置 "--baseUrl" 和 paths 编译选项。
 
+> 在 TypeScript4.1 及以后 `paths` 不必与 `baseUrl` 一起使用。
+
 假设有如下目录结构的工程：
 
 C:\app
@@ -11078,7 +11789,7 @@ class Point {
 
 ##### 5.2.3.7 noImplicitThis
 
-与 `--noImplicitAny` 编译选项类似，在启用了 "--noImplicitThis" 编译选项时，如果程序中的 [this 值](#21213-函数中-this-值的类型)隐式地获得了 any 类型，那么将产生编译错误：
+与 `--noImplicitAny` 编译选项类似，在启用了 "--noImplicitThis" 编译选项时，如果程序中的 [this 值](#21214-函数中-this-值的类型)隐式地获得了 any 类型，那么将产生编译错误：
 
 ```ts
 /**
@@ -11867,12 +12578,11 @@ C:\app
 ```json
 {
   "files": [],
-  "include": [],
   "references": [{ "path": "src" }, { "path": "test" }]
 }
 ```
 
-在该配置文件中同时将 "C:\app\src" 工程和 "C:\app\test" 工程设置为引用工程。此外，必须将 `files` 和 `include` 属性设置为空数组，否则编译器将会重复编译 "C:\app\src" 工程和 "C:\app\test" 工程。
+在该配置文件中同时将 "C:\app\src" 工程和 "C:\app\test" 工程设置为引用工程。此外，必须将 `files` 属性设置为空数组，否则编译器将会重复编译 "C:\app\src" 工程和 "C:\app\test" 工程。
 
 在 "C:\app" 目录下使用 "--build" 模式来编译该工程：
 
@@ -11914,7 +12624,7 @@ tsc src/index.js --allowJs --outDir dist
 
 ##### 5.5.2.1 checkJs 编译选项
 
-TypeScript 2.3 提供了一个 `--checkJs` 编译选项。当启用了该编译选项时，编译器能够对 ".js" 和 ".jsx" 文件进行类型检查。`--checkJs` 编译选项必须与 `--allowJs` 编译选项一起使用。
+TypeScript 2.3 提供了一个 `--checkJs` 编译选项。当启用了该编译选项时，编译器能够对 ".js" 和 ".jsx" 文件进行类型检查。`checkJs` 默认启用 `allowJs` 编译选项。
 
 假设当前工程目录结构如下：
 
@@ -11945,7 +12655,7 @@ tsc src/index.js --allowJs --checkJs --outDir dist
 
 编译器能够检查出 "getElementById" 方法的参数类型错误。
 
-##### 5.5.2.2 注释指令-不对文件进行类型检查
+##### 5.5.2.2 @ts-nocheck
 
 `// @ts-nocheck` 是一个注释指令，如果为 JS 文件添加该注释，那么相当于告诉编译器不对该 JS 文件进行类型检查。此外，该指令也可以在 TypeScript 文件中使用。假设当前工程目录结构如下：
 
@@ -11955,13 +12665,13 @@ C:\app
 
 ```js
 // index.js
-//@ts-nocheck
+// @ts-nocheck
 const element = document.getElementById(123); // 参数类型错误，应该为 string 类型
 ```
 
 在 "C:\app" 目录下，运行 tsc 命令来编译 "index.js" 文件，并启用 --checkJs 编译选项和 --allowJs 编译选项。虽然 "index.js" 存在类型错误，但是编译器不会报错。因为使用 "// @ts-nocheck" 注释指令禁用了对"index.js" 文件的类型检查。
 
-##### 5.5.2.3 注释指令-对文件进行类型检查
+##### 5.5.2.3 @ts-check
 
 如果一个 JS 文件中添加了 `// @ts-check` 注释指令，那么编译器将对该 JS 文件进行类型检查，不论是否启用了 `--checkJs` 编译选项。假设当前工程目录结构如下：
 
@@ -11983,7 +12693,7 @@ tsc src/index.js --allowJs --outDir dist
 
 此例中，虽然没有启用 --checkJs 编译选项，但是编译器仍然会对 index.js 文件进行类型检查并显示错误提示。
 
-##### 5.5.2.4 注释指令-忽略对某一行代码进行类型检查
+##### 5.5.2.4 @ts-ignore
 
 `// @ts-ignore` 注释指令的作用是忽略对某一行代码进行类型检查。当在代码中使用 `// @ts-ignore` 注释指令时，编译器不会对与该指令相邻的后面一行代码进行类型检查。此外，该指令也可以在 TypeScript 文件中使用。假设当前工程目录结构如下：
 
@@ -11998,7 +12708,23 @@ const element1 = document.getElementById(123); // 参数类型错误，应该为
 const element2 = document.getElementById(456); // 参数类型错误，应该为string类型
 ```
 
-#### 5.5.3 JSDoc 与 类型
+##### 5.5.2.5 @ts-expect-error
+
+TypeScript 3.9 添加的显式忽略编译器错误。但如果该行代码没有错误，TypeScript 会提示没有必要使用 `@ts-expect-error`。
+
+如果满足以下条件，选择 ts-expect-error：
+
+- 在编写单元测试，并且想让类型系统提示错误
+- 知道此处有问题，并且很快会回来改正它，只是暂时地忽略该错误
+- 想要在代码回归正常后及时地删除忽略类型检查注释
+
+如果满足以下条件，选择 ts-ignore：
+
+- 项目规模较大，产生了一些错误但是找不到相应代码的负责人
+- 正处于 TypeScript 版本升级的过程中，某些错误只在特定版本的 TypeScript 中存在，但是在其它版本中并不存在
+- 没有足够的时间考虑究竟应该使用 `// @ts-ignore` 还是 `// @ts-expect-error`
+
+#### 5.5.3 JSDoc 及其类型
 
 JSDoc 是一款知名的为 JS 代码添加文档注释的工具。JSDoc 利用了 JS 语言中的多行注释语法并结合使用特殊的 "JSDoc 标签" 来为代码添加丰富的描述信息。
 
@@ -12078,7 +12804,7 @@ let e;
 
 `@param` 标签用于定义函数参数类型：
 
-```js
+```ts
 /**
  * @param {string} x - A string param.
  */
@@ -12087,7 +12813,7 @@ function foo(x) {}
 
 若函数参数是可选参数，则需要将参数名置于一对中括号 `[]` 中：
 
-```js
+```ts
 /**
  * @param {string} [x] - An optional param.
  */
@@ -12096,7 +12822,7 @@ function foo(x) {}
 
 在定义可选参数时，还可以为它指定一个默认值：
 
-```js
+```ts
 /**
  * @param {string}[x="bar"] - An optional param
  */
@@ -12107,7 +12833,7 @@ function foo(x) {}
 
 `@return` 和 `@returns` 标签的作用相同，两者都用于定义函数返回值类型。用法如下所示：
 
-```js
+```ts
 /**
  * @return { boolean }
  */
@@ -12126,7 +12852,7 @@ function bar() {
 
 `@extends` 标签用于定义继承的基类。`@public`、`@protected`、`@private` 标签分别用于定义类的公有成员、受保护成员和私有成员。`@readonly` 标签用于定义只读成员：
 
-```js
+```ts
 class Base {
   /**
    * @public
@@ -12148,6 +12874,40 @@ class Derived extends Base {
    */
   z = 0;
 }
+```
+
+##### 5.5.3.6 @deprecated
+
+标识方法、属性、函数、类已废弃，该信息会显示在自动补全列表中以及建议诊断信息，编辑器可以特殊处理它。在类似于 VSCode 的编辑器中，废弃的值会显示为删除线。
+
+##### 5.5.3.7 @see
+
+它允许使用像 “跳转到定义” 这样的功能。例如，在下例中的 JSDoc 里可以使用跳转到定义到 first 或 C：
+
+```ts
+// @filename: first.ts
+export class C {}
+
+// @filename: main.ts
+import * as first from './first';
+
+/**
+ * @see first.C
+ */
+function related() {}
+```
+
+##### 5.5.3.8 @link
+
+将鼠标悬停在 `@link` 标签声明的值上会得到一个快速提示，或者使用 “跳转到定义” 或 “查找全部引用” 命令。
+
+```ts
+/**
+ * {@link plantCarrot}
+ */
+function harvestCarrot(carrot: Carrot) {}
+
+function plantCarrot(seed: Seed) {}
 ```
 
 ### 5.6 三斜线指令
@@ -12496,6 +13256,7 @@ try {
   let date = parse(ask());
   console.info('Date is', date.toISOString());
 } catch (e) {
+  e; // 在 TypeScript 4.0 以前为 any，4.0 及以后为 unknown
   console.error(e.message);
 }
 ```

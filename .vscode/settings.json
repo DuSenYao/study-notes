@@ -17,7 +17,7 @@
   ],
   "html.customData": [".vscode/html.html-data.json"],
   "css.customData": [".vscode/css.css-data.json"],
-  "todo-tree.tree.scanMode": "workspace only",
+  "todo-tree.tree.scanMode": "workspace",
   "workbench.colorCustomizations": {
     "titleBar.activeBackground": "#215732",
     "titleBar.activeForeground": "#e7e7e7",
