@@ -21,7 +21,6 @@
     "pflannery.vscode-versionlens",
     "alefragnani.bookmarks",
     "gruntfuggly.todo-tree",
-    "mgmcdermott.vscode-language-babel",
-    "Vue.volar"
+    "vue.volar"
   ]
 }

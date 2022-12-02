@@ -197,7 +197,7 @@ var symbol = Symbol('my symbol');
 
 可以使用 `Symbol.iterator` 来自定义 `for...of` 在对象上的行为。当需要对一个对象进行迭代时（比如开始用于一个 for...of 循环中），它的 `Symbol.iterator` 方法都会在不传参情况下被调用，返回的迭代器用于获取要迭代的值。
 
-[Symbol.iterator 为对象定义默认迭代器](./HTML演示文件/Symbol.iterator为对象定义默认迭代器.html)
+[Symbol.iterator 为对象定义默认迭代器](./examples/Symbol.iterator%E4%B8%BA%E5%AF%B9%E8%B1%A1%E5%AE%9A%E4%B9%89%E9%BB%98%E8%AE%A4%E8%BF%AD%E4%BB%A3%E5%99%A8.html)
 
 #### 1.1.6 Object
 
@@ -891,7 +891,7 @@ r.then(() => console.log('c'));
 console.log('b'); // a b c
 ```
 
-[Promise 和 async/await 的使用](./HTML演示文件/Promise和async、await的使用.html)
+[Promise 和 async/await 的使用](./examples/Promise%E5%92%8Casync%E3%80%81await%E7%9A%84%E4%BD%BF%E7%94%A8.html)
 
 **分析异步执行的顺序**：
 
@@ -941,7 +941,7 @@ async function foo2() {
 
 ### 3.2 闭包
 
-实际上 JS 中跟闭包对应的概念就是“函数”。
+实际上 JS 中跟闭包对应的概念就是 “函数”。
 
 ![函数执行过程](./image/函数执行过程.png)
 
@@ -1151,8 +1151,8 @@ JS 用一个栈来管理执行上下文，这个栈中的每一项又包含一�
 而 this 是一个更为复杂的机制，JS 标准定义了 `[[thisMode]]` 私有属性，`[[thisMode]]` 私有属性有三个取值
 
 - lexical：表示从上下文中找 this，这对应了箭头函数
-- global： 表示当 this 为 undefined 时，取全局对象，这对应了普通函数
-- strict： 当严格模式时使用，this 严格按照调用时传入的值，可能为 null 或 undefined
+- global：表示当 this 为 undefined 时，取全局对象，这对应了普通函数
+- strict：当严格模式时使用，this 严格按照调用时传入的值，可能为 null 或 undefined
 
 > 方法的行为跟普通函数有差异，就是因为 class 设计成了默认按 `strict` 模式执行
 
@@ -1433,7 +1433,7 @@ f`Hello ${a}!`; // [["Hello", "!"], world]
 
 - 源代码结束处，不能形成完整的脚本或模块结构，那么就自动插入分号
 
-[语法](./HTML演示文件/语法.html)
+[语法](./examples/%E8%AF%AD%E6%B3%95.html)
 
 #### 4.2.2 no LineTerminator here 规则
 
@@ -1452,7 +1452,7 @@ JS 语法中定义了以下 no LIneTerminator here 规则：
 - 箭头函数的箭头前，都不能插入换行
 - yield 之后，不能插入换行
 
-[语法](./HTML演示文件/语法.html)
+[语法](./examples/%E8%AF%AD%E6%B3%95.html)
 
 > no LineTerminator here 规则的存在，多数情况下是为了保证自动插入分号行为是符合预期的，但是在 JS 设计的最初，遗漏了一些重要的情况，所以有一些不符合预期的情况出现，需要格外注意
 
@@ -1667,22 +1667,22 @@ JS 的指令序言与常规语句有两个重要的区别：
 
 > 严格代码在严格模式下执行。严格模式是 JS 的一个受限制的子集，这个子集修复了重要的语言缺陷，提供了更强的错误检査，也增强了安全性。
 
-**严格模式与非严格模式的区别**如下（前三个特别重要）:
+**严格模式与非严格模式的区别**：
 
-- 严格模式下不允许使用 with 语句。
+- **严格模式下不允许使用 with 语句**。
 
-- 在严格模式下，所有变量都必须声明。如果把值赋给一个标识符，而这个标识符是没有声明的变量、函数、函数参数、 catch 子句参数或全局对象的属性，都会导致抛出一个 Reference Error。
+- **在严格模式下，所有变量都必须声明**。如果把值赋给一个标识符，而这个标识符是没有声明的变量、函数、函数参数、catch 子句参数或全局对象的属性，都会导致抛出一个 Reference Error。
 
-- 在严格模式下，函数如果作为函数（而非方法）被调用，其 `this` 值为 undefined（在非严格模式，作为函数调用的函数始终以全局对象作为 `this` 的值）。
-  另外，在严临模式下，如果函数通过 [`ca11()` 或 `apply()`](./JavaScript权威指南/JavaScript权威指南.md#874-call-和-apply-方法)调用，则 `this` 值就是作为第一个参数传给 `cal1()` 或 `apply()` 的值（在非严格模式下，null 和 undefined 值会被替换为全局对象，而非对象值会被转换为对象）。
+- **在严格模式下，函数如果作为函数（而非方法）被调用，其 `this` 值为 undefined**（在非严格模式，作为函数调用的函数始终以全局对象作为 `this` 的值）。
+
+  另外，在严临模式下，如果函数通过 [`call()` 或 `apply()`](./JavaScript权威指南/JavaScript权威指南.md#874-call-和-apply-方法)调用，则 `this` 值就是作为第一个参数传给 `call()` 或 `apply()` 的值（在非严格模式下，null 和 undefined 值会被替换为全局对象，而非对象值会被转换为对象）。
 
 - 在严格模式下，给不可写的属性赋值或尝试在不可扩展的对象上创建新属性会抛出 TypeError（在非严格模式下，这些尝试会静默失败）。
 
 - 在严格模式下，传给 `eval()` 的代码不能像在非严格模式下那样在调用者的作用域中声明变量或定义函数。
   这种情况下定义的变量和函数会存在于一个为 `eval()` 创建的新作用域中。这个作用域在 `eval()` 返回时就会被销毁。
 
-- 在严格模式下，函数中的 [Arguments 对象](./JavaScript权威指南/JavaScript权威指南.md#833-arguments-对象)保存着一份传给函数的值的静态副本。
-  在非严格模式下，这个 Arguments 对象具有 “魔法” 行为，即这个数组中的元素与函数的命名参数引用相同的值。
+- 在严格模式下，函数中的 [Arguments 对象](./JavaScript权威指南/JavaScript权威指南.md#833-arguments-对象)保存着一份传给函数的值的静态副本。在非严格模式下，这个 Arguments 对象具有 “魔法” 行为，即这个数组中的元素与函数的命名参数引用相同的值。
 
 - 在严格模式下，如果 `delete` 操作符后面跟一个未限定的标识符，比如变量、函数或函数参数，则会导致抛出 SyntaxError（在非严格模式下，这样的 delete 表达式什么也不做，且返回 false）。
 
@@ -1696,14 +1696,13 @@ JS 的指令序言与常规语句有两个重要的区别：
 
 - 在严格模式下，标识符 `eval` 和 `arguments` 被当作关键字，不允许修改它们的值。不能给这些标识符赋值，不能把它们声明为变量，不能把它们用作函数名或者函数参数名，也不能把它们作为 catch 块的标识符使用。
 
-- 在严格模式下，检查调用栈的能力是受限制的。`arguments.caller` 和 `argument.callee` 在严格模式函数中都会抛出 TypeError。
-  严格模式函数也有 `caller` 和 `arguments` 属性，但读取它们会抛出 TypeError（某些实现在非严格函数中定义了些非标准属性）。
+- 在严格模式下，检查调用栈的能力是受限制的。`arguments.caller` 和 `argument.callee` 在严格模式函数中都会抛出 TypeError。严格模式函数也有 `caller` 和 `arguments` 属性，但读取它们会抛出 TypeError（某些实现在非严格函数中定义了些非标准属性）。
 
 ### 4.3 语句
 
 #### 4.3.1 语句介绍
 
-语句是任何编程语言的基础结构，与 JS 对象一样 JS 语句 有"看起来很像其他语言，但其实一点都不一样"的特点。
+语句是任何编程语言的基础结构，与 JS 对象一样 JS 语句 有 "看起来很像其他语言，但其实一点都不一样" 的特点。
 
 JS 语句存在嵌套关系，所以执行过程主要在树形结构上进行，**树形结构的每一个节点执行后产生 [Completion Record 类型](#4314-completion-类型)**，根据语句结构和 Completion Record，JS 实现了各种分支和跳出逻辑。
 

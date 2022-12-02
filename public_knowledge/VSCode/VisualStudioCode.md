@@ -54,6 +54,8 @@
     - [3.4 调试面板](#34-调试面板)
   - [四. 插件](#四-插件)
     - [4.1 有趣的插件](#41-有趣的插件)
+    - [4.2 插件开发](#42-插件开发)
+      - [4.2.1 开发环境](#421-开发环境)
   - [五. 语言深入](#五-语言深入)
     - [5.1 JavaScript](#51-javascript)
     - [5.2 代码编辑](#52-代码编辑)
@@ -108,6 +110,8 @@
       - [6.4.2 调试 Vue](#642-调试-vue)
       - [6.4.3 Vue 设置 VSCode 识别别名](#643-vue-设置-vscode-识别别名)
   - [七. 远程开发](#七-远程开发)
+    - [7.1 远程开发插件](#71-远程开发插件)
+      - [7.1.1 SSH](#711-ssh)
 
 <!-- /code_chunk_output -->
 
@@ -1003,6 +1007,53 @@ VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 
 
 **Paste JSON as code**
 可以把 JSON 或 TS 转换成其他编程语言，包括 TS、Python、GO、Ruby、Java、Swift、C++、JS 等。
+
+### 4.2 插件开发
+
+![VSCode插件能力](./image/VSCode%E6%8F%92%E4%BB%B6%E8%83%BD%E5%8A%9B.jpg)
+
+#### 4.2.1 开发环境及项目结构
+
+需要在本地环境有 Node.js、git，然后借助脚手架 Yeoman 和 VSCode Extension Generator 还快速生成项目框架：
+
+```sh
+# 安装 Yeoman 和 VSCode Extension Generator
+npm i -g yo generator-code
+# 根据提示选择配置，快速生成项目框架
+yo code
+```
+
+生成的项目目录结构如下：
+
+![VSCode插件项目目录结构](./image/VSCode%E6%8F%92%E4%BB%B6%E9%A1%B9%E7%9B%AE%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84.png)
+
+#### 4.2.2 插件核心实现
+
+vscode 插件的核心实现主要在：
+
+- **package.json**：插件的声明文件，包含 2 个重要配置项。
+
+  - **activationEvents**
+
+    **主要用于指定插件的触发事件**。基于性能的考虑，vscode 插件都是 lazy load 的，只有激活的时候才启用插件。例子中用到的是 onCommand，在 Hello World 命令被调用时，插件才会被激活。目前支持 25 种激活事件：
+
+    - **onLanguage**：${language} ：当打开特定语言时插件被激活
+    - **onCommand**：${command}：调用某个 VSCode 命令时插件被激活
+    - **onDebug**：Debug 时插件被激活
+    - **workspaceContains**：${toplevelfilename}：当打开包含某个命名规则的文件夹时插件被激活
+    - **onFileSystem**：${scheme}：以某个协议（ftp/sftp/ssh 等）打开文件或文件夹时插件被激活
+    - **onView**：${viewId}：指定 id 的视图展开时插件被激活
+    - **onUri**：插件的系统级 URI 打开时插件被激活
+    - **onWebviewPanel**：webview 触发时插件被激活
+    - `*`：VSCode 启动时插件被激活。
+
+  - **contributes**
+
+    **主要是描述插件的拓展点，定义插件要扩展 vscode 哪部分功能**。常用扩展项有代码片段（snippets）、命令（commands）、菜单（menus）、快捷键（keybindings）、主题（themes）。通常完成命令的开发后，会将其与菜单/快捷键进行关联，以便调用。
+
+- **extension.js**
+
+  **插件的执行入口文件**，通常包括激活（activate）和禁用（deactivate）2 个方法。vscode 会在激活插件的时候会执行 active 钩子，在卸载插件的时候会执行 deactivate 钩子。
 
 ## 五. 语言深入
 

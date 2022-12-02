@@ -2,7 +2,10 @@
 <html lang="zn-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>正则表达式——元字符</title>
   </head>
   <style>
@@ -34,9 +37,16 @@
   </style>
   <body>
     <div>
-      <input type="text" id="regex" />
+      <input
+        type="text"
+        id="regex"
+      />
       <button onclick="implement()">执行</button>
-      <input type="text" placeholder="只能输入两位小数和8位整数" oninput="checkCodeFixedTwo(this)" />
+      <input
+        type="text"
+        placeholder="只能输入两位小数和8位整数"
+        oninput="checkCodeFixedTwo(this)"
+      />
       <div class="press">
         <button onclick="searchSticky()">使用粘性搜索(sticky)</button>
         <button onclick="wordBoundary()">单词边界</button>
@@ -44,7 +54,11 @@
       </div>
     </div>
     <div>
-      <textarea id="text" cols="30" rows="10"></textarea>
+      <textarea
+        id="text"
+        cols="30"
+        rows="10"
+      ></textarea>
     </div>
   </body>
   <script>
@@ -89,7 +103,8 @@
 
     // 单词边界
     function wordBoundary() {
-      // 单词的组成一般可以用元字符 \w+ 来表示，\w 包括了大小写字母、下划线和数字（即 [A-Za-z0-9_]）。那单词的边界，也就是出现了 \w 表示的范围以外的字符，比如引号、空格、标点、换行等这些符号，因此，可以在正则中使用 \b 来表示单词的边界。 \b 中的 b 可以理解为是边界（Boundary）这个单词的首字母。
+      // 单词的组成一般可以用元字符 \w+ 来表示，\w 包括了大小写字母、下划线和数字（即 [A-Za-z0-9_]）。
+      // 那单词的边界，也就是出现了 \w 表示的范围以外的字符，比如引号、空格、标点、换行等这些符号，因此，可以在正则中使用 \b 来表示单词的边界。 \b 中的 b 可以理解为是边界（Boundary）这个单词的首字母。
       let str = 'tom asked me if I would go fishing with him tomorrow.';
       let s = str.replace(/\btom\b/g, 'Jom');
       console.log(s);
