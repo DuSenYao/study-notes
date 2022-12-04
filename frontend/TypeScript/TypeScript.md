@@ -110,6 +110,7 @@
         - [2.15.2.2 readonly 属性](#21522-readonly-属性)
       - [2.15.3 成员函数](#2153-成员函数)
       - [2.15.4 成员存取器](#2154-成员存取器)
+        - [2.15.4.1 自动存取器](#21541-自动存取器)
       - [2.15.5 索引成员](#2155-索引成员)
       - [2.15.6 成员可访问性](#2156-成员可访问性)
         - [2.15.6.1 public](#21561-public)
@@ -232,7 +233,7 @@
       - [3.10.2 as T 类型断言](#3102-as-t-类型断言)
       - [3.10.3 类型断言的约束](#3103-类型断言的约束)
       - [3.10.4 const 类型断言](#3104-const-类型断言)
-      - [3.10.5 !类型断言](#3105-类型断言)
+      - [3.10.5 非空断言](#3105-非空断言)
     - [3.11 类型细化](#311-类型细化)
       - [3.11.1 类型守卫](#3111-类型守卫)
         - [3.11.1.1 typeof 类型守卫](#31111-typeof-类型守卫)
@@ -255,6 +256,7 @@
         - [3.11.5.4 断言函数的应用](#31154-断言函数的应用)
     - [3.12 模拟名义类型](#312-模拟名义类型)
     - [3.13 安全的扩展原型](#313-安全的扩展原型)
+    - [3.14 satisfies 运算符](#314-satisfies-运算符)
   - [四. 类型深入](#四-类型深入)
     - [4.1 子类型兼容性](#41-子类型兼容性)
       - [4.1.1 类型系统可靠性](#411-类型系统可靠性)
@@ -469,7 +471,7 @@
 
 <!-- /code_chunk_output -->
 
-增补到 4.8。<!-- TODO 等待增补 4.9 -->
+增补到 4.9。
 
 ## 一. 介绍
 
@@ -567,7 +569,15 @@ TypeScript 中的类型注解是可选的，编译器在大部分情况下都能
 
 ### 2.2 类型检查
 
-类型检查是验证程序中类型约束是否正确的过程。类型检查既可以在程序编译时进行，即静态类型检査；也可以在程序运行时进行，即动态类型检查。TypeScript 支持静态类型检查，Javascrip 支持动态类型检查。
+类型检查是验证程序中类型约束是否正确的过程。类型检查有两种：
+
+- 在程序运行时进行，即**动态类型检查**。如：JS。
+
+  动态类型检查在源码中不保留类型信息，对某个变量赋什么值、做什么操作都是允许的，写代码很灵活。但这也埋下了类型不安全的隐患，比如对 string 做了乘除，对 Date 对象调用了 exec 方法，这些都是运行时才能检查出来的错误。
+
+- 在程序编译时进行，即**静态类型检査**。如：TypeScript。
+
+  静态类型检查是在源码中保留类型信息，声明变量要指定类型，对变量做的操作要和类型匹配，会有专门的编译器在编译期间做检查。静态类型给写代码增加了一些难度，因为除了要考虑代码要表达的逻辑之外，还要考虑类型逻辑：变量是什么类型的、是不是匹配、要不要做类型转换等。不过，静态类型也消除了类型不安全的隐患，因为在编译期间就做了类型检查。
 
 为了满足不同用户的需求，TypeScript 提供了两种静态类型检查模式：
 
@@ -2159,7 +2169,20 @@ const point: { x: number } = { x: 0, y: 0 }; // y 是多余属性
 
 ### 2.12 函数类型
 
-将介绍如何为函数添加类型，包括参数类型、返回值类型、this 类型以及函数重载等。
+```ts
+// 普通函数类型签名
+function func(foo: number, bar: true): string;
+const foo: (name: string) => number = function (name) {
+  return name.length;
+};
+
+// 对于异步函数、Generator 函数、异步 Generator 函数的类型签名，其参数签名基本一致，而返回值类型则稍微有些区别。
+async function asyncFunc(): Promise<void> {}
+
+function* genFunc(): Generator<never, void, unknown> {}
+
+async function* asyncGenFunc(): AsyncGenerator<never, void, unknown> {}
+```
 
 #### 2.12.1 常规参数类型
 
@@ -3843,6 +3866,41 @@ circle.radius = 10;
 circle.radius; // 10
 ```
 
+> **注意**：set 方法不允许进行返回值的类型批注。
+
+##### 2.15.4.1 自动存取器
+
+TypeScript 4.9 支持了 ECMAScript 即将引入的 “自动存取器” 功能。自动存取器的声明如同定义一个类的属性，只不过是需要使用 `accessor` 关键字。
+
+```ts
+class Person {
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+```
+
+在底层实现中，自动存取器会被展开为 get 和 set 存取器，以及一个无法访问的私有成员。
+
+```ts
+class Person {
+  #__name: string;
+
+  get name() {
+    return this.#__name;
+  }
+  set name(value: string) {
+    this.#__name = name;
+  }
+
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+```
+
 #### 2.15.5 索引成员
 
 类的索引成员会在类的类型中引入索引签名。索引签名包含两种：
@@ -4050,6 +4108,21 @@ class A {
 const a = new A(0, 0);
 const b = new A('foo');
 ```
+
+**私有构造函数**
+通常不会对类的构造函数进行访问性修饰，但有些场景下私有构造函数确实有奇妙的用法，比如把类作为 utils 方法时，此时 Utils 类内部全部都是静态成员，也并不希望真的有人去实例化这个类。此时就可以使用私有构造函数来阻止它被错误地实例化：
+
+```ts
+class Utils {
+  public static identifier = 'tom';
+
+  private constructor() {}
+
+  public static makeUHappy() {}
+}
+```
+
+或者在一个类希望把实例化逻辑通过方法来实现，而不是通过 new 的形式时，也可以使用私有构造函数来达成目的。
 
 #### 2.15.8 参数属性
 
@@ -4664,7 +4737,7 @@ class SomeComponent {
 class SpecializedComponent extends SomeComponent {
   override show() {}
   //       ~~~~
-  //       错误
+  //       此成员不能有 "override" 修饰符，因为它未在基类 "SomeComponent" 中声明。
 }
 ```
 
@@ -4815,9 +4888,7 @@ let otherAmountDue = Currency.from(330, 'EUR');
 
 #### 3.1.1 泛型简介
 
-通过一个 identity 函数来介绍泛型的基本应用。identity 函数也叫作恒等函数，它的返回值永远等于传入的参数。
-
-首先，定义一个非泛型版本的 identity 函数。将 identity 函数的参数类型和返回值类型都定义为 number 类型：
+通过一个 identity 函数来介绍泛型的基本应用。identity 函数也叫作恒等函数，它的返回值永远等于传入的参数。首先，定义一个非泛型版本的 identity 函数。将 identity 函数的参数类型和返回值类型都定义为 number 类型：
 
 ```ts
 function identity(arg: number): number {
@@ -4826,7 +4897,7 @@ function identity(arg: number): number {
 identity(0);
 ```
 
-此例中，identity 函数的使用场景非常有限，它只能接受 number 类型的参数。如果想让 identity 函数能够接受任意类型的参数，那么就需要使用顶端类型。例如，下例中将 identic!函数的参数类型和返回值类型都声明为 unknown 类型，这样它就可以同时处理 number 类型、string 类型以及对象类型等的值：
+此例中，identity 函数的使用场景非常有限，它只能接受 number 类型的参数。如果想让 identity 函数能够接受任意类型的参数，那么就需要使用顶端类型。例如，下例中将 identity 函数的参数类型和返回值类型都声明为 unknown 类型，这样它就可以同时处理 number 类型、string 类型以及对象类型等的值：
 
 ```ts
 function identity(arg: unknown): unknown {
@@ -5201,11 +5272,7 @@ interface Array<T> {
 
 #### 3.1.7 泛型类型别名
 
-若类型别名的定义中带有类型参数，那么它是泛型类型别名。
-
-##### 3.1.7.1 泛型类型别名定义
-
-在泛型类型别名定义中，形式类型参数列表紧随类型别名的名字之后。泛型类型别名定义的语法如下所示：
+若类型别名的定义中带有类型参数，那么它是**泛型类型别名**。在泛型类型别名定义中，形式类型参数列表紧随类型别名的名字之后。语法如下所示：
 
 ```ts
 type Nullable<T> = T | undefined | null;
@@ -5213,9 +5280,7 @@ type Nullable<T> = T | undefined | null;
 
 此例中，定义了一个名为 Nullable 的泛型类型别名，它有一个形式类型参数 T。该泛型类型别名表示可以为空的 T 类型，即 `Nullable<T>` 类型的值也可以为 undefined 或 null。
 
-##### 3.1.7.2 泛型类型别名示例
-
-在引用泛型类型别名表示的类型时，必须指定实际类型参数。接下来，再列举一些泛型类型别名定义与使用的例子。
+在引用泛型类型别名表示的类型时，必须指定实际类型参数。接下来，再列举一些泛型类型别名定义与使用的例子：
 
 ```ts
 // 使用泛型类型别名定义简单容器类型
@@ -5227,6 +5292,7 @@ const b: Container<string> = { value: 'b' };
 ```ts
 // 使用泛型类型别名定义树形结构
 type Tree<T> = {
+  value: T;
   left: Tree<T> | null;
   right: Tree<T> | null;
 };
@@ -6182,7 +6248,7 @@ type M = { [P in keyof T]: T[P] };
 
 ```ts
 type T = { a: string; b: number };
-//{a?: string; b?: number;}
+//{ a?: string; b?: number; }
 type OptionalT = { [P in keyof T]?: T[P] };
 ```
 
@@ -7302,7 +7368,7 @@ const total = add(...nums); // 正确
 
 使用 const 断言后，推断的 nums 类型为包含两个元素的元组类型，因此编译器有足够的信息能够判断出 add 函数调用是正确的。
 
-#### 3.10.5 !类型断言
+#### 3.10.5 非空断言
 
 非空类型断言运算符 `!` 是 TypeScript 特有的类型运算符，它是非空类型断言的一部分。非空类型断言能够从某个类型中剔除 undefined 类型和 null 类型，语法如下：
 
@@ -7457,7 +7523,7 @@ x is T
 
 在该语法中，x 为类型守卫函数中的某个形式参数名；T 表示任意的类型。从本质上讲，类型谓词相当于 boolean 类型。
 
-类型谓词表示一种类型判定，即判定 x 的类型是否为 T。当在 if 语句中或者逻辑表达式中使用类型守卫函数时，编译器能够将 x 的类型细化为 T 类型。例如，下例中定义了两个类型守卫函数 isTypeA 和 isTypeB，两者分别能够判定函数参数 x 的类型是否为类型 A 和 B：
+类型谓词表示一种类型判定，即根据函数返回的 boolean 值判定 x 的类型是否为 T。当在 if 语句中或者逻辑表达式中使用类型守卫函数时，编译器能够将 x 的类型细化为 T 类型。例如，下例中定义了两个类型守卫函数 isTypeA 和 isTypeB，两者分别能够判定函数参数 x 的类型是否为类型 A 和 B：
 
 ```ts
 type A = { a: string };
@@ -7972,18 +8038,82 @@ import './zip';
 // ]
 ```
 
+### 3.14 satisfies 运算符
+
+TypeScript 开发者有时会感到进退两难：既想要确保表达式能够匹配某种类型，也想要表达式获得最确切的类型用作类型推断。
+
+```ts
+// 每个属性可能是 string 或 RGB 元组。
+const palette = {
+  red: [255, 0, 0],
+  green: '#00ff00',
+  bleu: [0, 0, 255]
+  //  ^^^^ 拼写错误
+};
+
+// 我们想要在 'red' 上调用数组的方法
+const redComponent = palette.red.at(0);
+
+// 或者在 'green' 上调用字符串的方法
+const greenNormalized = palette.green.toUpperCase();
+```
+
+注意，这里写成了 bleu，但想写的是 blue。通过给 palette 添加类型注释就能够捕获 bleu 拼写错误，但同时也失去了属性各自的信息。
+
+```ts
+type Colors = 'red' | 'green' | 'blue';
+type RGB = [red: number, green: number, blue: number];
+
+const palette: Record<Colors, string | RGB> = {
+  red: [255, 0, 0],
+  green: '#00ff00',
+  bleu: [0, 0, 255]
+  //  ~~~~ 能够检测到拼写错误
+};
+
+// 意想不到的错误 - 'palette.red' 可能为 string
+const redComponent = palette.red.at(0);
+```
+
+**satisfies 运算符可以验证表达式是否匹配某种类型，同时不改变表达式自身的类型**。例如，可以使用 satisfies 来检验 palette 的所有属性与 string | number[] 是否兼容：
+
+```ts
+type Colors = 'red' | 'green' | 'blue';
+type RGB = [red: number, green: number, blue: number];
+
+const palette = {
+  red: [255, 0, 0],
+  green: '#00ff00',
+  bleu: [0, 0, 255]
+  // ~~~~ 捕获拼写错误
+} satisfies Record<Colors, string | RGB>;
+
+// 依然可以访问这些方法
+const redComponent = palette.red.at(0);
+const greenNormalized = palette.green.toUpperCase();
+```
+
+satisfies 可以用来捕获许多错误。例如，检查一个对象是否包含了某个类型要求的所有的键，并且没有多余的：
+
+```ts
+type Colors = 'red' | 'green' | 'blue';
+
+// 确保仅包含 'Colors' 中定义的键
+const favoriteColors = {
+  red: 'yes',
+  green: false,
+  blue: 'kinda',
+  platypus: false
+  // ~~~~~~~~ 错误 - "platypus" 不在 'Colors' 中
+} satisfies Record<Colors, unknown>;
+
+// 'red', 'green', and 'blue' 的类型信息保留下来
+const g: boolean = favoriteColors.green;
+```
+
 ## 四. 类型深入
 
-本章主要内容：
-
-- TypeScript 中的两种兼容性，即子类型兼容性和赋值兼容性
-- TypeScript 中的类型推断功能以及类型放宽行为
-- 能够帮助组织代码的命名空间与模块
-- TypeScript 声明文件的书写与应用
-- TypeScript 模块解析流程
-- TypeScript 特有的声明合并功能
-
-本章将深入 TypeScript 类型系统的内部来探索类型的工作方式与原理。本章中的部分内容是在语言背后默默地发挥作用的，如兼容性、类型推断、类型放宽和声明合并等。这部分内容不包含新的语法，也不会直接影响编写的程序，
+这节将深入 TypeScript 类型系统的内部来探索类型的工作方式与原理。其中的部分内容是在语言背后默默地发挥作用的，如兼容性、类型推断、类型放宽和声明合并等。_这部分内容不包含新的语法，也不会直接影响编写的程序_，
 
 ### 4.1 子类型兼容性
 
@@ -8181,9 +8311,9 @@ interface State<in out T> {
 
   ```ts
   type Foo<in out T> = {
-      x: T;
-      f: Bar<T>;
-  }
+    x: T;
+    f: Bar<T>;
+  };
   ```
 
 ##### 4.1.5.2 函数参数数量

@@ -27,5 +27,6 @@
     "sash.hoverBorder": "#2f7c47",
     "commandCenter.border": "#e7e7e799"
   },
-  "peacock.color": "#215732"
+  "peacock.color": "#215732",
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }
