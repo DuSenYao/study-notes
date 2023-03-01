@@ -4,20 +4,20 @@
 
 <!-- code_chunk_output -->
 
-- [HTML 超文本标记语言](#html-超文本标记语言)
-  - [一. 标签](#一-标签)
-    - [1.1 语义类标签](#11-语义类标签)
-      - [1.1.1 使用场景](#111-使用场景)
-      - [1.1.2 语义标签种类](#112-语义标签种类)
-    - [1.2 元信息类标签](#12-元信息类标签)
-      - [1.2.1 head 标签](#121-head-标签)
-      - [1.2.2 title 标签](#122-title-标签)
-      - [1.2.3 base 标签](#123-base-标签)
-      - [1.2.4 meta 标签](#124-meta-标签)
-    - [1.3 链接](#13-链接)
-      - [1.3.1 link 标签](#131-link-标签)
-        - [1.3.1.1 超链接类 link 标签](#1311-超链接类-link-标签)
-        - [1.3.1.2 外部资源类 link 标签](#1312-外部资源类-link-标签)
+- [HTML 超文本标记语言](#-html-超文本标记语言)
+  - [一. 标签](#-一-标签)
+    - [1.1 语义类标签](#-11-语义类标签)
+      - [1.1.1 使用场景](#-111-使用场景)
+      - [1.1.2 语义标签种类](#-112-语义标签种类)
+    - [1.2 元信息类标签](#-12-元信息类标签)
+      - [1.2.1 head 标签](#-121-head-标签)
+      - [1.2.2 title 标签](#-122-title-标签)
+      - [1.2.3 base 标签](#-123-base-标签)
+      - [1.2.4 meta 标签](#-124-meta-标签)
+    - [1.3 链接](#-13-链接)
+      - [1.3.1 link 标签](#-131-link-标签)
+        - [1.3.1.1 超链接类 link 标签](#-1311-超链接类-link-标签)
+        - [1.3.1.2 外部资源类 link 标签](#-1312-外部资源类-link-标签)
 
 <!-- /code_chunk_output -->
 
@@ -157,7 +157,10 @@ meta 标签是一组键值对，它是一种通用的元信息表示标签。
 在 head 中可以出现任意多个 meta 标签。一般的 meta 标签由 `name` 和 `content` 两个属性来定义。name 表示元信息的名称，content 表示元信息的值。
 
 ```html
-<meta name="application-name" content="value" />
+<meta
+  name="application-name"
+  content="value"
+/>
 ```
 
 这里的 name 是一种比较自由的约定，HTTP 标准规定了一些 name 作为公用的，也鼓励使用自己创造的 name。
@@ -179,7 +182,10 @@ meta 标签是一组键值对，它是一种通用的元信息表示标签。
 
 ```html
 <!-- 相当于添加了 content-type 这个http头，并且指定了 http 编码方式。 -->
-<meta http-equiv="content-type" content="text/html; charset=UTF-8;" />
+<meta
+  http-equiv="content-type"
+  content="text/html; charset=UTF-8;"
+/>
 ```
 
 除了 content-type，还有以下几种命令：
@@ -187,7 +193,10 @@ meta 标签是一组键值对，它是一种通用的元信息表示标签。
 - default-style: 指定默认样式表
 
   ```html
-  <meta http-equiv="default-style" content="the document's preferred stylesheet" />
+  <meta
+    http-equiv="default-style"
+    content="the document's preferred stylesheet"
+  />
   ```
 
   > 注意：上面 content 属性的值必须匹配同一文档中的一个 link 元素上的 title 属性的值，或者必须匹配同一文档中的一个 style 元素上的 title 属性的值。
@@ -196,13 +205,19 @@ meta 标签是一组键值对，它是一种通用的元信息表示标签。
 
   ```html
   <!-- 3秒后重定向到百度 -->
-  <meta http-equiv="refresh" content="3;href=https://www.baidu.com" />
+  <meta
+    http-equiv="refresh"
+    content="3;href=https://www.baidu.com"
+  />
   ```
 
 - set-cookie: 模拟 http 头 set-cookie，设置 cookie
 
   ```html
-  <meta http-equiv="set-Cookie" content="cookieValue=xxx;expires=Wednesday, 20-Jun-2007 22:33:00 GMT； path=/" />
+  <meta
+    http-equiv="set-Cookie"
+    content="cookieValue=xxx;expires=Wednesday, 20-Jun-2007 22:33:00 GMT； path=/"
+  />
   ```
 
   > 注意：过期时间必须使用 GMT 的时间格式
@@ -211,14 +226,20 @@ meta 标签是一组键值对，它是一种通用的元信息表示标签。
 
   ```html
   <!-- ie浏览器将执行当前支持的最高版本，大小写不敏感 -->
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    http-equiv="X-UA-Compatible"
+    content="IE=edge"
+  />
   ```
 
   还有特殊写法：
 
   ```html
   <!-- 安装了 Google Chrome Frame （谷歌浏览器內嵌框架）则使用谷歌浏览器内核模式，否则使用最新的IE模式 -->
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta
+    http-equiv="X-UA-Compatible"
+    content="IE=edge,chrome=1"
+  />
   ```
 
 - content-security-policy: 模拟 http 头 content-security-policy，声明内容安全策略。
@@ -226,7 +247,10 @@ meta 标签是一组键值对，它是一种通用的元信息表示标签。
 
   ```html
   <!-- 禁用不安全的内联，仅允许通过https加载资源 -->
-  <meta http-equiv="Content-Security-Policy" content="default-src https:" />
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src https:"
+  />
   ```
 
 **name 为 viewport 的 meta**
@@ -235,7 +259,10 @@ name 为 `viewport` 的 `meta`，它没有在 HTML 标准中定义，却是移�
 
 ```html
 <!-- 页面宽度为500，初始缩放比例为1 -->
-<meta name="viewport" content="width:500, initial-scale=1" />
+<meta
+  name="viewport"
+  content="width:500, initial-scale=1"
+/>
 ```
 
 它能表示的全部属性如下：
@@ -250,7 +277,10 @@ name 为 `viewport` 的 `meta`，它没有在 HTML 标准中定义，却是移�
 一个标准的 viewport meta，如下：
 
 ```html
-<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scale=no" />
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scale=no"
+/>
 ```
 
 **其他预定义的 meta**:
@@ -259,26 +289,38 @@ name 为 `viewport` 的 `meta`，它没有在 HTML 标准中定义，却是移�
 - author: 页面作者
 
   ```html
-  <meta name="author" content="DSY" />
+  <meta
+    name="author"
+    content="DSY"
+  />
   ```
 
 - description: 页面描述，这个属性可以被用于搜索引擎
 - generator: 生成页面所使用的工具，主要用于可视化编辑器。如果是手写 HTML 的网页，不需要加这个 meta
 
   ```html
-  <meta name="generator" content="VSCode1.50.1" />
+  <meta
+    name="generator"
+    content="VSCode1.50.1"
+  />
   ```
 
 - keywords: 规定一个逗号分隔的关键词列表，对于 SEO 非常重要
 
   ```html
-  <meta name="keywords" content="HTML, meta tag, tag reference" />
+  <meta
+    name="keywords"
+    content="HTML, meta tag, tag reference"
+  />
   ```
 
 - referrer: 主要用于控制网页发送给服务器的 referrer 信息，可以告诉服务器端用户是从哪个页面来到当前网页的
 
   ```html
-  <meta name="referrer" content="no-referrer" />
+  <meta
+    name="referrer"
+    content="no-referrer"
+  />
   ```
 
   referrer 的 content 常用属性值：
@@ -292,7 +334,10 @@ name 为 `viewport` 的 `meta`，它没有在 HTML 标准中定义，却是移�
 - theme-color: 页面风格颜色，实际并不会影响页面，但是浏览器可能据此调整页面之外的 UI（如窗口边框或者 tab 的颜色）
 
   ```html
-  <meta name="theme-color" content="#2932e1" />
+  <meta
+    name="theme-color"
+    content="#2932e1"
+  />
   ```
 
 ### 1.3 链接
@@ -320,7 +365,10 @@ link 标签的链接类型主要通过 `rel` 属性来区分，有以下几种�
 - canonical 型 link: 这个标签提示页面它的主 URL，在网站中常常有多个 URL 指向同一页面的情况，搜索引擎访问这类页面时会去掉重复的页面，这个 link 会提示搜索引擎保留哪一个 URL。
 
   ```html
-  <link rel="canonical" href="..." />
+  <link
+    rel="canonical"
+    href="..."
+  />
   ```
 
 - alternate 型 link: 这个标签提示页面它的变形形式，这个所谓的变形可能是当前页面的不同格式、不同语言或不同设备设计的版本，这种 link 通常也是提供给搜索引擎使用。
@@ -329,8 +377,14 @@ link 标签的链接类型主要通过 `rel` 属性来区分，有以下几种�
 - prev 型 link 和 next 型 link: 在互联网应用中，很多网页都属于一个序列，比如分页浏览的场景，或者图片展示的场景，每个网页是序列中的一个项。这种时候，就适合使用 prev 和 next 型的 link 标签，来告诉搜索引擎或者浏览器它的前一项和后一项，这有助于页面的批量展示。因为 next 型 link 告诉浏览器"这是很可能访问的下一个页面"，HTML 标准还建议对 next 型 link 做预处理。
 
   ```html
-  <link rel="prev" href="http://www.example.com/page-2.html" />
-  <link rel="next" href="http://www.example.com/page-4.html" />
+  <link
+    rel="prev"
+    href="http://www.example.com/page-2.html"
+  />
+  <link
+    rel="next"
+    href="http://www.example.com/page-4.html"
+  />
   ```
 
 - 其他超链接类的 link
@@ -383,7 +437,10 @@ link 标签的链接类型主要通过 `rel` 属性来区分，有以下几种�
   表示本网页被引用时，应该使用的 pingback 地址，这个机制是一份独立的标准，遵守 pingback 协议的网页在引用本页面时，会向 pingback url 发送一个消息。常用于博客等。
 
   ```html
-  <link rel="pingback" href="www.f.com/xmlrpc.php" />
+  <link
+    rel="pingback"
+    href="www.f.com/xmlrpc.php"
+  />
   ```
 
 #### 1.3.2 a 标签
@@ -507,7 +564,10 @@ source 元素的 media 属性是 media query，跟 CSS 的 [@media](../CSS/CSS.m
 
 ```html
 <picture>
-  <source srcset="image-wide.png" media="(min-width: 600px)" />
+  <source
+    srcset="image-wide.png"
+    media="(min-width: 600px)"
+  />
   <img src="image-narrow.png" />
 </picture>
 ```
@@ -518,8 +578,14 @@ source 元素的 media 属性是 media query，跟 CSS 的 [@media](../CSS/CSS.m
 
 ```html
 <video controls>
-  <source src="myVideo.mp4" type="video/mp4" />
-  <source src="myVideo.webm" type="video/webm" />
+  <source
+    src="myVideo.mp4"
+    type="video/mp4"
+  />
+  <source
+    src="myVideo.webm"
+    type="video/webm"
+  />
   <p>Your browser doesn't support HTML5 video. Here is a <a href="myVideo.mp4">link to the video</a> instead.</p>
 </video>
 ```
@@ -542,10 +608,22 @@ video 中还支持一种标签：`track`，track 是一种播放时序相关的�
 用于嵌入音频内容。跟 picture 和 video 两种标签一样，audio 也可以使用 source 元素来指定源内容。
 
 ```html
-<audio controls src="myVideo.mp3">
-  <source src="foo.mp3" type="audio/mpeg" />
-  <source src="foo.ogg" type="audio/ogg; codecs=vorbis" />
-  <source src="foo.opus" type="audio/ogg; codecs=opus" />
+<audio
+  controls
+  src="myVideo.mp3"
+>
+  <source
+    src="foo.mp3"
+    type="audio/mpeg"
+  />
+  <source
+    src="foo.ogg"
+    type="audio/ogg; codecs=vorbis"
+  />
+  <source
+    src="foo.opus"
+    type="audio/ogg; codecs=opus"
+  />
   <p>
     Your browser doesn't support HTML5 audio. Here is a
     <a href="myAudio.mp4">link to the <code>audio</code></a> instead.
@@ -662,7 +740,12 @@ ARIA，是以交互形式来标注各种元素的一类属性，所以，在 ARI
   给span添加了 role="checkbox"，这样，表示这个span被用于checkbox
   意味着，可能已经用JS代码绑定了这个span的click事件，并且以 checkbox 的交互方式来处理用户操作。
  -->
-<span role="checkbox" aria-checked="false" tabindex="0" aria-labelledby="chk1-label"></span>
+<span
+  role="checkbox"
+  aria-checked="false"
+  tabindex="0"
+  aria-labelledby="chk1-label"
+></span>
 <label id="chk1-label">Remember my preferences</label>
 ```
 

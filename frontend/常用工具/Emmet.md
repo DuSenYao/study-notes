@@ -4,30 +4,30 @@
 
 <!-- code_chunk_output -->
 
-- [Emmet](#emmet)
-  - [一. 缩写](#一-缩写)
-    - [1.1 语法](#11-语法)
-      - [1.1.1 嵌套操作符（Nesting operators）](#111-嵌套操作符nesting-operators)
-      - [1.1.2 属性操作符（Attribute operators）](#112-属性操作符attribute-operators)
-      - [1.1.3 格式化缩写注意事项](#113-格式化缩写注意事项)
-    - [1.2 元素类型](#12-元素类型)
-      - [1.2.1 代码片断](#121-代码片断)
-      - [1.2.2 缩写](#122-缩写)
-      - [1.2.3 别名](#123-别名)
-    - [1.3 隐式标签名](#13-隐式标签名)
-      - [1.3.1 工作原理](#131-工作原理)
-    - [1.4 “Lorem Ipsum” 生成器](#14-lorem-ipsum-生成器)
-  - [二. CSS 缩写](#二-css-缩写)
-    - [2.1 工作原理](#21-工作原理)
-      - [2.1.1 添加单位](#211-添加单位)
-      - [2.1.2 颜色值](#212-颜色值)
-      - [2.1.3 无单位属性](#213-无单位属性)
-      - [2.1.4 !important](#214-important)
-    - [2.2 厂商前缀](#22-厂商前缀)
-      - [2.2.1 工作原理](#221-工作原理)
-      - [2.2.2 默认添加厂商前缀](#222-默认添加厂商前缀)
-      - [2.2.3 显式添加厂商前缀](#223-显式添加厂商前缀)
-    - [2.4 渐变](#24-渐变)
+- [Emmet](#-emmet-)
+  - [一. 缩写](#-一-缩写-)
+    - [1.1 语法](#-11-语法-)
+      - [1.1.1 嵌套操作符（Nesting operators）](#-111-嵌套操作符nesting-operators-)
+      - [1.1.2 属性操作符（Attribute operators）](#-112-属性操作符attribute-operators-)
+      - [1.1.3 格式化缩写注意事项](#-113-格式化缩写注意事项-)
+    - [1.2 元素类型](#-12-元素类型-)
+      - [1.2.1 代码片断](#-121-代码片断-)
+      - [1.2.2 缩写](#-122-缩写-)
+      - [1.2.3 别名](#-123-别名-)
+    - [1.3 隐式标签名](#-13-隐式标签名-)
+      - [1.3.1 工作原理](#-131-工作原理-)
+    - [1.4 “Lorem Ipsum” 生成器](#-14-lorem-ipsum-生成器-)
+  - [二. CSS 缩写](#-二-css-缩写-)
+    - [2.1 工作原理](#-21-工作原理-)
+      - [2.1.1 添加单位](#-211-添加单位-)
+      - [2.1.2 颜色值](#-212-颜色值-)
+      - [2.1.3 无单位属性](#-213-无单位属性-)
+      - [2.1.4 !important](#-214-important-)
+    - [2.2 厂商前缀](#-22-厂商前缀-)
+      - [2.2.1 工作原理](#-221-工作原理-)
+      - [2.2.2 默认添加厂商前缀](#-222-默认添加厂商前缀-)
+      - [2.2.3 显式添加厂商前缀](#-223-显式添加厂商前缀-)
+    - [2.4 渐变](#-24-渐变-)
 
 <!-- /code_chunk_output -->
 
@@ -191,7 +191,10 @@ div#header+div.page+div#footer.class1.class2.class3
 ```html
 <div id="header"></div>
 <div class="page"></div>
-<div id="footer" class="class1 class2 class3"></div>
+<div
+  id="footer"
+  class="class1 class2 class3"
+></div>
 ```
 
 **自定义属性**
@@ -202,7 +205,10 @@ td[title="Hello world!" colspan=3]
 ```
 
 ```html
-<td title="Hello world!" colspan="3"></td>
+<td
+  title="Hello world!"
+  colspan="3"
+></td>
 ```
 
 - 方括号内属性数量不限。
@@ -386,7 +392,10 @@ Emmet 解析缩写的定义并获取下面数据：
 它们的顺序依照定义，元素不包含关闭标签。展开结果：
 
 ```html
-<link rel="stylesheet" href="" />
+<link
+  rel="stylesheet"
+  href=""
+/>
 ```
 
 **可以覆盖默认值或添加一个新属性**：
@@ -396,7 +405,11 @@ link[rel=prefetch title="Hello world"]
 ```
 
 ```html
-<link rel="prefetch" href="" title="Hello world" />
+<link
+  rel="prefetch"
+  href=""
+  title="Hello world"
+/>
 ```
 
 **也可以添加子元素，这将强制 Emmet 输出关闭标签**：

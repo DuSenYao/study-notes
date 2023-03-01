@@ -4,7 +4,8 @@
 
 <!-- code_chunk_output -->
 
-- [JS 设计模式](#js-设计模式)
+- [JS 设计模式](#-js-设计模式-)
+  - [一. 基础](#-一-基础-)
 
 <!-- /code_chunk_output -->
 

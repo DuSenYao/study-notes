@@ -4,115 +4,115 @@
 
 <!-- code_chunk_output -->
 
-- [CSS 选择器](#css-选择器)
-  - [一. 概述](#一-概述)
-    - [1.1 为什么 CSS 选择器很强](#11-为什么-css-选择器很强)
-    - [1.2 CSS 选择器世界的一些基本概念](#12-css-选择器世界的一些基本概念)
-      - [1.2.1 选择器/选择符/伪类/伪元素](#121-选择器选择符伪类伪元素)
-      - [1.2.2 CSS 选择器的作用域](#122-css-选择器的作用域)
-      - [1.2.3 CSS 选择器的命名空间](#123-css-选择器的命名空间)
-    - [1.3 无效 CSS 选择器特性与实际应用](#13-无效-css-选择器特性与实际应用)
-  - [二. CSS 选择器的优先级](#二-css-选择器的优先级)
-    - [2.1 CSS 优先级规则概览](#21-css-优先级规则概览)
-    - [2.2 深入 CSS 选择器优先级](#22-深入-css-选择器优先级)
-      - [2.2.1 CSS 选择器优先级的计算规则](#221-css-选择器优先级的计算规则)
-  - [三. CSS 选择器的命名](#三-css-选择器的命名)
-    - [3.1 CSS 选择器是否区分大小写](#31-css-选择器是否区分大小写)
-    - [3.2 CSS 选择器命名的合法性](#32-css-选择器命名的合法性)
-    - [3.3 CSS 选择器的命名](#33-css-选择器的命名)
-      - [3.3.1 长命名还是短命名](#331-长命名还是短命名)
-      - [3.3.2 单命名还是组合命名](#332-单命名还是组合命名)
-      - [3.3.3 面向属性的命名和面向语义的命名](#333-面向属性的命名和面向语义的命名)
-  - [四. CSS 选择符](#四-css-选择符)
-    - [4.1 后代选择符](#41-后代选择符)
-    - [4.2 子选择符（>）](#42-子选择符)
-    - [4.3 相邻兄弟选择符（+）](#43-相邻兄弟选择符)
-    - [4.4 通用兄弟选择符](#44-通用兄弟选择符)
-    - [4.5 列选择符（||）](#45-列选择符)
-  - [五. 元素选择器](#五-元素选择器)
-    - [5.1 元素选择器的级联语法](#51-元素选择器的级联语法)
-    - [5.2 标签选择器优化](#52-标签选择器优化)
-      - [5.2.1 标签选择器混合其他选择器的优化](#521-标签选择器混合其他选择器的优化)
-      - [5.2.2 标签选择器与自定义元素](#522-标签选择器与自定义元素)
-    - [5.3 特殊的标签选择器：通配选择器](#53-特殊的标签选择器通配选择器)
-  - [六. 属性选择器](#六-属性选择器)
-    - [6.1 ID 选择器和类选择器](#61-id-选择器和类选择器)
-    - [6.2 属性值直接匹配选择器](#62-属性值直接匹配选择器)
-      - [6.2.2 AMCSS 开发模式简介](#622-amcss-开发模式简介)
-    - [6.3 属性值正则匹配选择器](#63-属性值正则匹配选择器)
-      - [6.3.1 CSS 属性选择器搜索过滤技术](#631-css-属性选择器搜索过滤技术)
-    - [6.4 忽略属性值大小写的正则匹配运算符](#64-忽略属性值大小写的正则匹配运算符)
-  - [七. 用户行为伪类](#七-用户行为伪类)
-    - [7.1 手型经过伪类 :hover](#71-手型经过伪类-hover)
-      - [7.1.2 非子元素的 :hover 显示](#712-非子元素的-hover-显示)
-    - [7.2 激活状态伪类 :active](#72-激活状态伪类-active)
-      - [7.2.1 :active 伪类概述](#721-active-伪类概述)
-      - [7.2.2 按钮的通用 :active 样式技巧](#722-按钮的通用-active-样式技巧)
-      - [7.2.3 :active 伪类与 CSS 数据上报](#723-active-伪类与-css-数据上报)
-    - [7.3 焦点伪类 :focus](#73-焦点伪类-focus)
-      - [7.3.1 :focus 伪类匹配机制](#731-focus-伪类匹配机制)
-      - [7.3.2 :focus 伪类与 outline](#732-focus-伪类与-outline)
-      - [7.3.3 CSS :focus 伪类与键盘无障碍访问](#733-css-focus-伪类与键盘无障碍访问)
-    - [7.4 整体焦点伪类 :focus-within](#74-整体焦点伪类-focus-within)
-      - [7.4.1 :focus-within 和：focus 伪类的区别](#741-focus-within-和focus-伪类的区别)
-      - [7.4.2 :focus-within 实现无障碍访问的下拉列表](#742-focus-within-实现无障碍访问的下拉列表)
-    - [7.5 键盘焦点伪类 :focus-visible](#75-键盘焦点伪类-focus-visible)
-  - [八. URL 定位伪类](#八-url-定位伪类)
-    - [8.1 链接历史伪类 :link 和 :visited](#81-链接历史伪类-link-和-visited)
-      - [8.1.1 深入理解 :link](#811-深入理解-link)
-      - [8.1.2 怪癖最多的 CSS 伪类 :visited](#812-怪癖最多的-css-伪类-visited)
-    - [8.2 超链接伪类 :any-link](#82-超链接伪类-any-link)
-    - [8.3 目标伪类 :target](#83-目标伪类-target)
-      - [8.3.1 :target 与锚点](#831-target-与锚点)
-      - [8.3.2 :target 交互布局技术简介](#832-target-交互布局技术简介)
-    - [8.4 目标容器伪类 :target-within](#84-目标容器伪类-target-within)
-  - [九. 输入伪类](#九-输入伪类)
-    - [9.1 输入控件状态](#91-输入控件状态)
-      - [9.1.1 可用状态与禁用状态伪类 :enabled 和 :disabled](#911-可用状态与禁用状态伪类-enabled-和-disabled)
-      - [9.1.2 读写特性伪类 :read-only 和 :read-write](#912-读写特性伪类-read-only-和-read-write)
-      - [9.1.3 占位符显示伪类 :placeholder-shown](#913-占位符显示伪类-placeholder-shown)
-      - [9.1.4 默认选项伪类 :default](#914-默认选项伪类-default)
-    - [9.2 输入值状态](#92-输入值状态)
-      - [9.2.1 选中选项伪类 :checked](#921-选中选项伪类-checked)
-      - [9.2.2 不确定值伪类 :indeterminate](#922-不确定值伪类-indeterminate)
-    - [9.3 输入值验证](#93-输入值验证)
-      - [9.3.1 有效性验证伪类 :valid 和 :invalid](#931-有效性验证伪类-valid-和-invalid)
-      - [9.3.2 范围验证伪类 :in-range 和 :out-of-range](#932-范围验证伪类-in-range-和-out-of-range)
-      - [9.3.3 可选性伪类 :required 和 :optional](#933-可选性伪类-required-和-optional)
-      - [9.3.4 用户交互伪类 :user-invalid 和空值伪类 :blank](#934-用户交互伪类-user-invalid-和空值伪类-blank)
-  - [十. 树结构伪类](#十-树结构伪类)
-    - [10.1 :root 为类](#101-root-为类)
-      - [10.1.1 :root 伪类和 html 元素](#1011-root-伪类和-html-元素)
-      - [10.1.2 :root 伪类的应用场景](#1012-root-伪类的应用场景)
-    - [10.2 :empty 伪类](#102-empty-伪类)
-      - [10.2.1 对 :empty 伪类可能的误解](#1021-对-empty-伪类可能的误解)
-      - [10.2.2 超实用超高频使用的 :empty 伪类](#1022-超实用超高频使用的-empty-伪类)
-    - [10.3 子索引伪类](#103-子索引伪类)
-      - [10.3.1 ::first-child 伪类和 ::last-child 伪类](#1031-first-child-伪类和-last-child-伪类)
-      - [10.3.2 :only-child 伪类](#1032-only-child-伪类)
-      - [10.3.3 :nth-child() 伪类和 :nth-last-child() 伪类](#1033-nth-child-伪类和-nth-last-child-伪类)
-    - [10.4 匹配类型的子索引伪类](#104-匹配类型的子索引伪类)
-      - [10.4.1 :first-of-type 伪类和 :last-of-type 伪类](#1041-first-of-type-伪类和-last-of-type-伪类)
-      - [10.4.2 :only-of-type 伪类](#1042-only-of-type-伪类)
-      - [10.4.3 :nth-of-type() 伪类和 :nth-last-of-type() 伪类](#1043-nth-of-type-伪类和-nth-last-of-type-伪类)
-  - [十一. 逻辑组合伪类](#十一-逻辑组合伪类)
-    - [11.1 否定伪类 :not()](#111-否定伪类-not)
-    - [11.2 任意匹配伪类 :is()](#112-任意匹配伪类-is)
-      - [11.2.1 :is() 伪类与 :matches() 伪类及 :any() 伪类之间的关系](#1121-is-伪类与-matches-伪类及-any-伪类之间的关系)
-      - [11.2.2 :is() 伪类的语法与作用](#1122-is-伪类的语法与作用)
-    - [11.3 任意匹配伪类 :where()](#113-任意匹配伪类-where)
-    - [11.4 关联伪类 :has()](#114-关联伪类-has)
-  - [十二. 其他伪类选择器](#十二-其他伪类选择器)
-    - [12.1 与作用域相关的伪类](#121-与作用域相关的伪类)
-      - [12.1.1 参考元素伪类 :scope](#1211-参考元素伪类-scope)
-      - [12.1.2 Shadow 树根元素伪类 :host](#1212-shadow-树根元素伪类-host)
-      - [12.1.3 Shadow 树根元素匹配伪类 :host()](#1213-shadow-树根元素匹配伪类-host)
-      - [12.1.4 Shadow 树根元素上下文匹配伪类 :host-context()](#1214-shadow-树根元素上下文匹配伪类-host-context)
-    - [12.2 与全屏相关的伪类：fullscreen](#122-与全屏相关的伪类fullscreen)
-    - [12.3 了解语言相关伪类](#123-了解语言相关伪类)
-      - [12.3.1 方向伪类 :dir()](#1231-方向伪类-dir)
-      - [12.3.2 语言伪类 :lang()](#1232-语言伪类-lang)
-    - [12.4 了解资源状态伪类](#124-了解资源状态伪类)
+- [CSS 选择器](#-css-选择器)
+  - [一. 概述](#-一-概述)
+    - [1.1 为什么 CSS 选择器很强](#-11-为什么-css-选择器很强)
+    - [1.2 CSS 选择器世界的一些基本概念](#-12-css-选择器世界的一些基本概念)
+      - [1.2.1 选择器/选择符/伪类/伪元素](#-121-选择器选择符伪类伪元素)
+      - [1.2.2 CSS 选择器的作用域](#-122-css-选择器的作用域)
+      - [1.2.3 CSS 选择器的命名空间](#-123-css-选择器的命名空间)
+    - [1.3 无效 CSS 选择器特性与实际应用](#-13-无效-css-选择器特性与实际应用)
+  - [二. CSS 选择器的优先级](#-二-css-选择器的优先级)
+    - [2.1 CSS 优先级规则概览](#-21-css-优先级规则概览)
+    - [2.2 深入 CSS 选择器优先级](#-22-深入-css-选择器优先级)
+      - [2.2.1 CSS 选择器优先级的计算规则](#-221-css-选择器优先级的计算规则)
+  - [三. CSS 选择器的命名](#-三-css-选择器的命名)
+    - [3.1 CSS 选择器是否区分大小写](#-31-css-选择器是否区分大小写)
+    - [3.2 CSS 选择器命名的合法性](#-32-css-选择器命名的合法性)
+    - [3.3 CSS 选择器的命名](#-33-css-选择器的命名)
+      - [3.3.1 长命名还是短命名](#-331-长命名还是短命名)
+      - [3.3.2 单命名还是组合命名](#-332-单命名还是组合命名)
+      - [3.3.3 面向属性的命名和面向语义的命名](#-333-面向属性的命名和面向语义的命名)
+  - [四. CSS 选择符](#-四-css-选择符)
+    - [4.1 后代选择符](#-41-后代选择符)
+    - [4.2 子选择符（>）](#-42-子选择符)
+    - [4.3 相邻兄弟选择符（+）](#-43-相邻兄弟选择符)
+    - [4.4 通用兄弟选择符](#-44-通用兄弟选择符)
+    - [4.5 列选择符（||）](#-45-列选择符)
+  - [五. 元素选择器](#-五-元素选择器)
+    - [5.1 元素选择器的级联语法](#-51-元素选择器的级联语法)
+    - [5.2 标签选择器优化](#-52-标签选择器优化)
+      - [5.2.1 标签选择器混合其他选择器的优化](#-521-标签选择器混合其他选择器的优化)
+      - [5.2.2 标签选择器与自定义元素](#-522-标签选择器与自定义元素)
+    - [5.3 特殊的标签选择器：通配选择器](#-53-特殊的标签选择器通配选择器)
+  - [六. 属性选择器](#-六-属性选择器)
+    - [6.1 ID 选择器和类选择器](#-61-id-选择器和类选择器)
+    - [6.2 属性值直接匹配选择器](#-62-属性值直接匹配选择器)
+      - [6.2.2 AMCSS 开发模式简介](#-622-amcss-开发模式简介)
+    - [6.3 属性值正则匹配选择器](#-63-属性值正则匹配选择器)
+      - [6.3.1 CSS 属性选择器搜索过滤技术](#-631-css-属性选择器搜索过滤技术)
+    - [6.4 忽略属性值大小写的正则匹配运算符](#-64-忽略属性值大小写的正则匹配运算符)
+  - [七. 用户行为伪类](#-七-用户行为伪类)
+    - [7.1 手型经过伪类 :hover](#-71-手型经过伪类-hover)
+      - [7.1.2 非子元素的 :hover 显示](#-712-非子元素的-hover-显示)
+    - [7.2 激活状态伪类 :active](#-72-激活状态伪类-active)
+      - [7.2.1 :active 伪类概述](#-721-active-伪类概述)
+      - [7.2.2 按钮的通用 :active 样式技巧](#-722-按钮的通用-active-样式技巧)
+      - [7.2.3 :active 伪类与 CSS 数据上报](#-723-active-伪类与-css-数据上报)
+    - [7.3 焦点伪类 :focus](#-73-焦点伪类-focus)
+      - [7.3.1 :focus 伪类匹配机制](#-731-focus-伪类匹配机制)
+      - [7.3.2 :focus 伪类与 outline](#-732-focus-伪类与-outline)
+      - [7.3.3 CSS :focus 伪类与键盘无障碍访问](#-733-css-focus-伪类与键盘无障碍访问)
+    - [7.4 整体焦点伪类 :focus-within](#-74-整体焦点伪类-focus-within)
+      - [7.4.1 :focus-within 和：focus 伪类的区别](#-741-focus-within-和focus-伪类的区别)
+      - [7.4.2 :focus-within 实现无障碍访问的下拉列表](#-742-focus-within-实现无障碍访问的下拉列表)
+    - [7.5 键盘焦点伪类 :focus-visible](#-75-键盘焦点伪类-focus-visible)
+  - [八. URL 定位伪类](#-八-url-定位伪类)
+    - [8.1 链接历史伪类 :link 和 :visited](#-81-链接历史伪类-link-和-visited)
+      - [8.1.1 深入理解 :link](#-811-深入理解-link)
+      - [8.1.2 怪癖最多的 CSS 伪类 :visited](#-812-怪癖最多的-css-伪类-visited)
+    - [8.2 超链接伪类 :any-link](#-82-超链接伪类-any-link)
+    - [8.3 目标伪类 :target](#-83-目标伪类-target)
+      - [8.3.1 :target 与锚点](#-831-target-与锚点)
+      - [8.3.2 :target 交互布局技术简介](#-832-target-交互布局技术简介)
+    - [8.4 目标容器伪类 :target-within](#-84-目标容器伪类-target-within)
+  - [九. 输入伪类](#-九-输入伪类)
+    - [9.1 输入控件状态](#-91-输入控件状态)
+      - [9.1.1 可用状态与禁用状态伪类 :enabled 和 :disabled](#-911-可用状态与禁用状态伪类-enabled-和-disabled)
+      - [9.1.2 读写特性伪类 :read-only 和 :read-write](#-912-读写特性伪类-read-only-和-read-write)
+      - [9.1.3 占位符显示伪类 :placeholder-shown](#-913-占位符显示伪类-placeholder-shown)
+      - [9.1.4 默认选项伪类 :default](#-914-默认选项伪类-default)
+    - [9.2 输入值状态](#-92-输入值状态)
+      - [9.2.1 选中选项伪类 :checked](#-921-选中选项伪类-checked)
+      - [9.2.2 不确定值伪类 :indeterminate](#-922-不确定值伪类-indeterminate)
+    - [9.3 输入值验证](#-93-输入值验证)
+      - [9.3.1 有效性验证伪类 :valid 和 :invalid](#-931-有效性验证伪类-valid-和-invalid)
+      - [9.3.2 范围验证伪类 :in-range 和 :out-of-range](#-932-范围验证伪类-in-range-和-out-of-range)
+      - [9.3.3 可选性伪类 :required 和 :optional](#-933-可选性伪类-required-和-optional)
+      - [9.3.4 用户交互伪类 :user-invalid 和空值伪类 :blank](#-934-用户交互伪类-user-invalid-和空值伪类-blank)
+  - [十. 树结构伪类](#-十-树结构伪类)
+    - [10.1 :root 为类](#-101-root-为类)
+      - [10.1.1 :root 伪类和 html 元素](#-1011-root-伪类和-html-元素)
+      - [10.1.2 :root 伪类的应用场景](#-1012-root-伪类的应用场景)
+    - [10.2 :empty 伪类](#-102-empty-伪类)
+      - [10.2.1 对 :empty 伪类可能的误解](#-1021-对-empty-伪类可能的误解)
+      - [10.2.2 超实用超高频使用的 :empty 伪类](#-1022-超实用超高频使用的-empty-伪类)
+    - [10.3 子索引伪类](#-103-子索引伪类)
+      - [10.3.1 ::first-child 伪类和 ::last-child 伪类](#-1031-first-child-伪类和-last-child-伪类)
+      - [10.3.2 :only-child 伪类](#-1032-only-child-伪类)
+      - [10.3.3 :nth-child() 伪类和 :nth-last-child() 伪类](#-1033-nth-child-伪类和-nth-last-child-伪类)
+    - [10.4 匹配类型的子索引伪类](#-104-匹配类型的子索引伪类)
+      - [10.4.1 :first-of-type 伪类和 :last-of-type 伪类](#-1041-first-of-type-伪类和-last-of-type-伪类)
+      - [10.4.2 :only-of-type 伪类](#-1042-only-of-type-伪类)
+      - [10.4.3 :nth-of-type() 伪类和 :nth-last-of-type() 伪类](#-1043-nth-of-type-伪类和-nth-last-of-type-伪类)
+  - [十一. 逻辑组合伪类](#-十一-逻辑组合伪类)
+    - [11.1 否定伪类 :not()](#-111-否定伪类-not)
+    - [11.2 任意匹配伪类 :is()](#-112-任意匹配伪类-is)
+      - [11.2.1 :is() 伪类与 :matches() 伪类及 :any() 伪类之间的关系](#-1121-is-伪类与-matches-伪类及-any-伪类之间的关系)
+      - [11.2.2 :is() 伪类的语法与作用](#-1122-is-伪类的语法与作用)
+    - [11.3 任意匹配伪类 :where()](#-113-任意匹配伪类-where)
+    - [11.4 关联伪类 :has()](#-114-关联伪类-has)
+  - [十二. 其他伪类选择器](#-十二-其他伪类选择器)
+    - [12.1 与作用域相关的伪类](#-121-与作用域相关的伪类)
+      - [12.1.1 参考元素伪类 :scope](#-1211-参考元素伪类-scope)
+      - [12.1.2 Shadow 树根元素伪类 :host](#-1212-shadow-树根元素伪类-host)
+      - [12.1.3 Shadow 树根元素匹配伪类 :host()](#-1213-shadow-树根元素匹配伪类-host)
+      - [12.1.4 Shadow 树根元素上下文匹配伪类 :host-context()](#-1214-shadow-树根元素上下文匹配伪类-host-context)
+    - [12.2 与全屏相关的伪类：fullscreen](#-122-与全屏相关的伪类fullscreen)
+    - [12.3 了解语言相关伪类](#-123-了解语言相关伪类)
+      - [12.3.1 方向伪类 :dir()](#-1231-方向伪类-dir)
+      - [12.3.2 语言伪类 :lang()](#-1232-语言伪类-lang)
+    - [12.4 了解资源状态伪类](#-124-了解资源状态伪类)
 
 <!-- /code_chunk_output -->
 
@@ -879,7 +879,12 @@ ID 选择器和类选择器虽然性质一致，都属于属性选择器，但�
    checked 在浏览器下有一个很奇特的行为表现，那就是表单控件元素在 checked 状态变化的时候并不会同步修改 checked 属性的值，而 disabled 状态就不会这样。例如，已知 HTML 如下：
 
    ```html
-   <input id="checkbox" type="checkbox" checked disabled />
+   <input
+     id="checkbox"
+     type="checkbox"
+     checked
+     disabled
+   />
    ```
 
    此时，使用 JS 代码修改复选框的状态：
@@ -892,7 +897,11 @@ ID 选择器和类选择器虽然性质一致，都属于属性选择器，但�
    浏览器中的 HTML 会变成这样：
 
    ```html
-   <input id="checkbox" type="checkbox" checked />
+   <input
+     id="checkbox"
+     type="checkbox"
+     checked
+   />
    ```
 
    disabled 消失了，但是 checked 属性却还在，也就是明明复选框已经取消了选择，但是 `[checked]` 依然在生效，这会导致严重的样式显示错误，因此实际开发不能使用 `[checked]` 进行状态控制，也正是由于这个原因，才有了 `:checked` 这些伪类。不仅原生属性支持属性选择器，自定义属性也是支持的。
@@ -929,7 +938,11 @@ ID 选择器和类选择器虽然性质一致，都属于属性选择器，但�
    `[attr~="val"]` 是属性值单词完全匹配选择器，专门用来匹配属性中的单词，其中，`~=` 用来连接属性和属性值。有些属性值（如 class 属性、rel 属性或者一些自定义属性）包含多个关键词，这时可以使用空格分隔这些关键词，例如：
 
    ```html
-   <a href rel="nofollow noopener">链接</a>
+   <a
+     href
+     rel="nofollow noopener"
+     >链接</a
+   >
    ```
 
    此时就可以借助该选择器实现匹配，例如：
@@ -1062,7 +1075,7 @@ button-blue
    `[attr*="val"]` 表示匹配 attr 属性值包含字符 val 的元素。它也可以用来匹配链接元素是否是外网地址，例如：
 
    ```css
-   a[href*="//"]: not([href * = 'example.com' ]);
+   a[href*="//"]: not([href * = 'example.com']);
    ```
 
    此外，它还可以用来匹配 style 属性值，这在实际开发中用得非常多。例如，想知道一个参与 JS 交互的元素是否隐藏，可以这么处理：
@@ -1339,8 +1352,14 @@ textarea:focus {
 既然普通元素也可以响应 :focus 伪类，是不是就可以利用这种特性实现任意元素的点击下拉效果呢？如果纯展示下拉内容，无交互效果是可以的。例如，实现一个点击二维码图标显示完整二维码图片的交互效果：
 
 ```html
-<img src="icon-qrcode.svg" tabindex="0" />
-<img class="img-qrcode" src="qrcode.png" />
+<img
+  src="icon-qrcode.svg"
+  tabindex="0"
+/>
+<img
+  class="img-qrcode"
+  src="qrcode.png"
+/>
 <style>
   .img-qrcode {
     position: absolute;
@@ -1356,7 +1375,10 @@ textarea:focus {
 
 ```html
 <body>
-  <div class="container" tabindex="-1"></div>
+  <div
+    class="container"
+    tabindex="-1"
+  ></div>
 </body>
 <style>
   .container {
@@ -1437,8 +1459,15 @@ textarea:focus {
    总之，使用 span 或者 div 模拟按钮的 UI 效果是一件高成本低收益的事情，不到万不得已，没有使用 span 或者 div 模拟按钮的理由！如果是嫌弃按钮本身的兼容性不够好，可以使用 label 元素模拟，使用 for 属性进行关联。例如：
 
    ```html
-   <input id="submit" type="submit" />
-   <label class="button" for="submit">提交</label>
+   <input
+     id="submit"
+     type="submit"
+   />
+   <label
+     class="button"
+     for="submit"
+     >提交</label
+   >
    <style>
      [type='submit'] {
        position: absolute;
@@ -1464,7 +1493,15 @@ textarea:focus {
    以 `[type="checkbox"]` 复选框为例：
 
    ```html
-   <input id="checkbox" type="checkbox" /> <label class="checkbox" for="checkbox">提交</label>
+   <input
+     id="checkbox"
+     type="checkbox"
+   />
+   <label
+     class="checkbox"
+     for="checkbox"
+     >提交</label
+   >
    ```
 
    需要隐藏原生的 `[type="checkbox"]` 多选框，使用关联的 label 元素自定义的复选框样式。关键 CSS 如下：
@@ -1786,7 +1823,12 @@ location.hash = 'cs-anchor';
 ```html
 <ul>
   <li id="cs-first">第1行，id是cs-first</li>
-  <li id="cs-anchor" hidden>第2行，id是cs-anchor</li>
+  <li
+    id="cs-anchor"
+    hidden
+  >
+    第2行，id是cs-anchor
+  </li>
   <li id="cs-last">第3行，id是cs-last</li>
 </ul>
 <style>
@@ -1809,10 +1851,23 @@ location.hash = 'cs-anchor';
 
    ```html
    文章内容，文章内容，文章内容，文章内容，文章内容，文章内容，文章内容…
-   <div id="articleMore" hidden></div>
-   <a href="#articleMore" class="cs-button" data-open="true">阅读更多</a>
+   <div
+     id="articleMore"
+     hidden
+   ></div>
+   <a
+     href="#articleMore"
+     class="cs-button"
+     data-open="true"
+     >阅读更多</a
+   >
    <p class="cs-more-p">更多文章内容，更多文章内容，更多文章内容，更多文章内容。</p>
-   <a href="##" class="cs-button" data-open="false">收起</a>
+   <a
+     href="##"
+     class="cs-button"
+     data-open="false"
+     >收起</a
+   >
    ```
 
    这里依次出现了以下 4 个标签元素：
@@ -1856,13 +1911,33 @@ location.hash = 'cs-anchor';
    ```html
    <div class="cs-tab-x">
      <!-- 锚链元素 -->
-     <i id="tabPanel2" class="cs-tab-anchor-2" hidden></i>
-     <i id="tabPanel3" class="cs-tab-anchor-3" hidden></i>
+     <i
+       id="tabPanel2"
+       class="cs-tab-anchor-2"
+       hidden
+     ></i>
+     <i
+       id="tabPanel3"
+       class="cs-tab-anchor-3"
+       hidden
+     ></i>
      <!-- 以下HTML为标准选项卡DOM结构 -->
      <div class="cs-tab">
-       <a href="#tabPanel1" class="cs-tab-li">选项卡1</a>
-       <a href="#tabPanel2" class="cs-tab-li">选项卡2</a>
-       <a href="#tabPanel3" class="cs-tab-i">选项卡3</a>
+       <a
+         href="#tabPanel1"
+         class="cs-tab-li"
+         >选项卡1</a
+       >
+       <a
+         href="#tabPanel2"
+         class="cs-tab-li"
+         >选项卡2</a
+       >
+       <a
+         href="#tabPanel3"
+         class="cs-tab-i"
+         >选项卡3</a
+       >
      </div>
      <div class="cs-panel">
        <div class="cs-panel-i">面板内容1</div>
@@ -1994,8 +2069,14 @@ location.hash = 'cs-anchor';
        background: lightskyblue;
      }
    </style>
-   <input disabled value="禁用" />
-   <input readonly value="只读" />
+   <input
+     disabled
+     value="禁用"
+   />
+   <input
+     readonly
+     value="只读"
+   />
    <input value="普通" />
    ```
 
@@ -2041,7 +2122,12 @@ location.hash = 'cs-anchor';
    至于 :disabled 伪类，最常用的应该就是按钮了。只要网页项目不需要兼容很旧的 IE 浏览器，就可以使用原生的 button 按钮实现，这样做的优点非常多。以按钮禁用为例，点击按钮发送 Ajax 请求是一个异步过程，为了防止重复点击请求，通常的做法是设置标志量。实际上，如果按钮是原生的按钮（无论是 button 按钮还是 input 按钮），此时，只要设置按钮 disabled=true，点击事件自然就会失效，无须用额外的 JS 代码进行判断，同时语义更好，还可以使用 :disabled 伪类精确控制样式。例如：
 
    ```html
-   <button id="csButton" class="cs-button">删除</button>
+   <button
+     id="csButton"
+     class="cs-button"
+   >
+     删除
+   </button>
    <style>
      /* 按钮处于禁用状态时的样式 */
      .cs-button:disabled {
@@ -2120,7 +2206,10 @@ location.hash = 'cs-anchor';
 
    ```html
    <div class="input-fill-x">
-     <input class="input-fill" placeholder="邮箱" />
+     <input
+       class="input-fill"
+       placeholder="邮箱"
+     />
      <label class="input-label">邮箱</label>
    </div>
    ```
@@ -2211,9 +2300,22 @@ location.hash = 'cs-anchor';
        transform: scale(1.5);
      }
    </style>
-   <input type="radio" name="city" value="0" />
-   <input type="radio" name="city" value="1" checked />
-   <input type="radio" name="city" value="2" />
+   <input
+     type="radio"
+     name="city"
+     value="0"
+   />
+   <input
+     type="radio"
+     name="city"
+     value="1"
+     checked
+   />
+   <input
+     type="radio"
+     name="city"
+     value="2"
+   />
    <script>
      document.querySelectorAll('[type="radio"]')[1].checked = true;
    </script>
@@ -2242,7 +2344,10 @@ location.hash = 'cs-anchor';
   }
 </style>
 <input type="checkbox" />
-<input type="checkbox" checked />
+<input
+  type="checkbox"
+  checked
+/>
 ```
 
 处于选中状态的复选框外多了 2 个像素的红色线框。
@@ -2289,9 +2394,15 @@ input[checked] {
 
       ```html
       <!-- 原生单选框，写在前面 -->
-      <input type="radio" id="radio" />
+      <input
+        type="radio"
+        id="radio"
+      />
       <!-- label元素模拟单选框 -->
-      <label for="radio" class="cs-radio"></label>
+      <label
+        for="radio"
+        class="cs-radio"
+      ></label>
       <!-- 单选文案 -->
       <label for="radio">单选项</label>
       <style>
@@ -2326,7 +2437,10 @@ input[checked] {
 
       ```html
       <!-- 复选框，写在前面 -->
-      <input type="checkbox" id="switch" />
+      <input
+        type="checkbox"
+        id="switch"
+      />
       <!--label元素模拟开关状态-->
       <label class="cs-switch"></label>
       <style>
@@ -2389,9 +2503,16 @@ input[checked] {
 
         ```html
         <!-- 复选框，hidden 隐藏 -->
-        <input type="checkbox" id="switch" hidden />
+        <input
+          type="checkbox"
+          id="switch"
+          hidden
+        />
         <!-- label 元素模拟开关状态 -->
-        <label class="cs-switch" for="switch"></label>
+        <label
+          class="cs-switch"
+          for="switch"
+        ></label>
         ```
 
    3. 标签/列表/素材的选择
@@ -2401,10 +2522,24 @@ input[checked] {
       例如，一个常见的标签选择功能——新用户第一次使用某产品的时候会让用户选择自己感兴趣的话题，这本质上就是一些复选框，于是只需要将 label 作为标签元素，再通过 for 属性和隐藏的复选框产生关联就可以实现想要的交互效果了：
 
       ```html
-      <input type="checkbox" id="topic1" />
-      <label for="topic1" class="cs-topic">科技</label>
-      <input type="checkbox" id="topic2" />
-      <label for="topic2" class="cs-topic">体育</label>
+      <input
+        type="checkbox"
+        id="topic1"
+      />
+      <label
+        for="topic1"
+        class="cs-topic"
+        >科技</label
+      >
+      <input
+        type="checkbox"
+        id="topic2"
+      />
+      <label
+        for="topic2"
+        class="cs-topic"
+        >体育</label
+      >
       <!-- CSS实现原理如下： -->
       <style>
         /*默认*/
@@ -2477,8 +2612,22 @@ checkbox.indeterminate = true;
        background: skyblue;
      }
    </style>
-   <input type="radio" name="radio" /><label>文案1</label> <input type="radio" name="radio" /><label>文案2</label>
-   <input type="radio" name="radio" /><label>文案3</label> <input type="radio" name="radio" /><label>文案4</label>
+   <input
+     type="radio"
+     name="radio"
+   /><label>文案1</label>
+   <input
+     type="radio"
+     name="radio"
+   /><label>文案2</label>
+   <input
+     type="radio"
+     name="radio"
+   /><label>文案3</label>
+   <input
+     type="radio"
+     name="radio"
+   /><label>文案4</label>
    ```
 
    此时总共有 4 个 name 属性值都是 "radio" 的单选框，默认没有一个被选中，此时这 4 个单选框都匹配 :indeterminate 伪类，label 元素的背景色表现为天蓝色。
@@ -2498,7 +2647,10 @@ checkbox.indeterminate = true;
 先看一段 HTML:
 
 ```html
-验证码：<input required pattern="\w{4,6}" />
+验证码：<input
+  required
+  pattern="\w{4,6}"
+/>
 ```
 
 这是一个验证码输入框，这个输入框必填，同时要求验证码为 4~6 个常规字符。现在有如下 CSS:
@@ -2522,12 +2674,23 @@ input:invalid {
 鉴于以上原因，现在新出了一个 :user-invalid 伪类，它需要用户的交互才触发匹配，不过目前 :user-invalid 伪类的规范还没有完全成熟，浏览器尚未支持，无法使用。但没关系，可以辅助 JS 优化 :invalid 伪类的验证体验。请看下面这个可以实际开发应用的案例，其 HTML 如下：
 
 ```html
-<form id="csForm" novalidate>
+<form
+  id="csForm"
+  novalidate
+>
   <p>
-    验证码：<input class="cs-input" placeholder="" required pattem="\w{4,6}" />
+    验证码：<input
+      class="cs-input"
+      placeholder=""
+      required
+      pattem="\w{4,6}"
+    />
     <span class="cs-valid-tips"></span>
   </p>
-  <input type="submit" value="提交" />
+  <input
+    type="submit"
+    value="提交"
+  />
 </form>
 ```
 
@@ -2612,7 +2775,16 @@ if (typeof document.msHidden !== 'undefined' || !history.pushState) {
 :in-range 和 :out-of-range 伪类与 min 属性和 max 属性密切相关，因此这两个伪类常用来匹配 number 类型的输入框或 range 类型的输入框。例如：
 
 ```html
-<input type="number" min="1" max="100" /> <input type="range" min="1" max="100" />
+<input
+  type="number"
+  min="1"
+  max="100"
+/>
+<input
+  type="range"
+  min="1"
+  max="100"
+/>
 ```
 
 即输入框的最小值是 1，最大值是 100。此时，如果输入框的值不在这个范围，则会匹配 :out-of-range 伪类；如果输入框的值在这个范围内，则匹配 :in-range 伪类。
@@ -2630,8 +2802,14 @@ if (typeof document.msHidden !== 'undefined' || !history.pushState) {
   <option value="1">选项1</option>
   <option value="2">选项2</option>
 </select>
-<input type="radio" required />
-<input type="checkbox" required />
+<input
+  type="radio"
+  required
+/>
+<input
+  type="checkbox"
+  required
+/>
 ```
 
 以上 4 个表单元素均可以匹配 :required 伪类。
@@ -2645,7 +2823,10 @@ if (typeof document.msHidden !== 'undefined' || !history.pushState) {
   }
 </style>
 <button>按钮</button>
-<input type="submit" value="按钮" />
+<input
+  type="submit"
+  value="按钮"
+/>
 ```
 
 这两种写法的按钮元素都呈现出红色的线框。
@@ -3274,7 +3455,11 @@ NodeList(1)[div.inner]
 例如，自定义一个 square-img 元素，让图片永远以正方形显示，同时如果有 alt 属性值，则直接在图片上显示：
 
 ```html
-<square-img src="/1.jpg" size="200" alt="提示信息"></square-img>
+<square-img
+  src="/1.jpg"
+  size="200"
+  alt="提示信息"
+></square-img>
 ```
 
 如果创建如下所示的 Shadow DOM 结构：
@@ -3318,8 +3503,17 @@ img {
 例如，要使上面自定义的 square-img 元素支持圆角状态，也就是这个元素可以在 A 页面是直角，在 B 页面是圆角，就可以使用一个自定义属性 data-radius 外加 :host() 伪类非常方便地进行针对性开发。例如：
 
 ```html
-<square-img src="/1.jpg" size="200" alt="直角头像"></square-img>
-<square-img src="/1.jpg" size="200" alt="圆角头像" data-radius></square-img>
+<square-img
+  src="/1.jpg"
+  size="200"
+  alt="直角头像"
+></square-img>
+<square-img
+  src="/1.jpg"
+  size="200"
+  alt="圆角头像"
+  data-radius
+></square-img>
 ```
 
 如果没有 :host() 伪类，只能借助 JS 判断是否有设置 data-radius 属性，然后根据判断结果设置不同的 CSS 样式，很麻烦。但有了 :host() 伪类，可以直接使用 CSS 样式进行区分，代码很简单也很干净，如下：
@@ -3351,10 +3545,16 @@ img {
 
 ```html
 <p>
-  <square-img src="/1.jpg" alt="直角头像"></square-img>
+  <square-img
+    src="/1.jpg"
+    alt="直角头像"
+  ></square-img>
 </p>
 <p class="cs-radius">
-  <square-img src="/1.jpg" alt="圆角头像"></square-img>
+  <square-img
+    src="/1.jpg"
+    alt="圆角头像"
+  ></square-img>
 </p>
 ```
 
@@ -3386,8 +3586,14 @@ img {
 举个简单的例子，如果希望一个普通的 img 元素全屏时绝对定位居中显示，就可以使用 :fullscreen 进行设置：
 
 ```html
-<div id="img" class="cs-img-x">
-  <img class="cs-img" src="/images/common/1.jpg" />
+<div
+  id="img"
+  class="cs-img-x"
+>
+  <img
+    class="cs-img"
+    src="/images/common/1.jpg"
+  />
 </div>
 <script>
   img.addEventListener('click', function () {
