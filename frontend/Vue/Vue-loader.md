@@ -4,53 +4,53 @@
 
 <!-- code_chunk_output -->
 
-- [Vue-loader](#vue-loader)
-  - [一. 介绍](#一-介绍)
-  - [二. 起步](#二-起步)
-    - [2.1 Vue CLI](#21-vue-cli)
-    - [2.2 手动设置](#22-手动设置)
-      - [2.2.1 安装](#221-安装)
-      - [2.2.2 webpack 配置](#222-webpack-配置)
-  - [三 处理资源路径](#三-处理资源路径)
-    - [2.1 转换规则](#21-转换规则)
-    - [2.2 相关的 Loader](#22-相关的-loader)
-    - [2.3 转换资源 URL 的好处](#23-转换资源-url-的好处)
-  - [四. 使用预处理器](#四-使用预处理器)
-    - [4.1 Sass](#41-sass)
-      - [4.1.1 Sass vs SCSS](#411-sass-vs-scss)
-      - [4.1.2 共享全局变量](#412-共享全局变量)
-    - [4.2 Less](#42-less)
-    - [4.3 Stylus](#43-stylus)
-    - [4.4 PostCSS](#44-postcss)
-    - [4.5 Babel](#45-babel)
-      - [4.5.1 排除 node_modules](#451-排除-node_modules)
-    - [4.6 TypeScript](#46-typescript)
-    - [4.7 Pug](#47-pug)
-  - [五. Scoped CSS](#五-scoped-css)
-    - [5.1 混用本地和全局样式](#51-混用本地和全局样式)
-    - [5.2 子组件的根元素](#52-子组件的根元素)
-    - [5.3 深度作用选择器](#53-深度作用选择器)
-    - [5.4 动态生成的内容](#54-动态生成的内容)
-    - [5.5 还有一些要留意](#55-还有一些要留意)
-  - [六. CSS Modules](#六-css-modules)
-    - [6.1 用法](#61-用法)
-    - [6.2 可选用法](#62-可选用法)
-    - [6.3 和预处理器配合使用](#63-和预处理器配合使用)
-    - [6.4 自定义的注入名称](#64-自定义的注入名称)
-  - [七. 热重载](#七-热重载)
-    - [7.1 状态保留规则](#71-状态保留规则)
-    - [7.2 用法](#72-用法)
-    - [7.3 关闭热重载](#73-关闭热重载)
-  - [八. 函数式组件](#八-函数式组件)
-  - [九. 自定义块](#九-自定义块)
-    - [9.1 Example](#91-example)
-  - [十. CSS 提取](#十-css-提取)
-    - [10.1 webpack 4](#101-webpack-4)
-  - [十一. 代码校验（Linting）](#十一-代码校验linting)
-    - [11.1 ESLint](#111-eslint)
-    - [11.2 stylelint](#112-stylelint)
-      - [11.2.1 具体实例](#1121-具体实例)
-  - [十二. 测试](#十二-测试)
+- [Vue-loader](#-vue-loader-)
+  - [一. 介绍](#-一-介绍-)
+  - [二. 起步](#-二-起步-)
+    - [2.1 Vue CLI](#-21-vue-cli-)
+    - [2.2 手动设置](#-22-手动设置-)
+      - [2.2.1 安装](#-221-安装-)
+      - [2.2.2 webpack 配置](#-222-webpack-配置-)
+  - [三 处理资源路径](#-三-处理资源路径-)
+    - [2.1 转换规则](#-21-转换规则-)
+    - [2.2 相关的 Loader](#-22-相关的-loader-)
+    - [2.3 转换资源 URL 的好处](#-23-转换资源-url-的好处-)
+  - [四. 使用预处理器](#-四-使用预处理器-)
+    - [4.1 Sass](#-41-sass-)
+      - [4.1.1 Sass vs SCSS](#-411-sass-vs-scss-)
+      - [4.1.2 共享全局变量](#-412-共享全局变量-)
+    - [4.2 Less](#-42-less-)
+    - [4.3 Stylus](#-43-stylus-)
+    - [4.4 PostCSS](#-44-postcss-)
+    - [4.5 Babel](#-45-babel-)
+      - [4.5.1 排除 node_modules](#-451-排除-node_modules-)
+    - [4.6 TypeScript](#-46-typescript-)
+    - [4.7 Pug](#-47-pug-)
+  - [五. Scoped CSS](#-五-scoped-css-)
+    - [5.1 混用本地和全局样式](#-51-混用本地和全局样式-)
+    - [5.2 子组件的根元素](#-52-子组件的根元素-)
+    - [5.3 深度作用选择器](#-53-深度作用选择器-)
+    - [5.4 动态生成的内容](#-54-动态生成的内容-)
+    - [5.5 还有一些要留意](#-55-还有一些要留意-)
+  - [六. CSS Modules](#-六-css-modules-)
+    - [6.1 用法](#-61-用法-)
+    - [6.2 可选用法](#-62-可选用法-)
+    - [6.3 和预处理器配合使用](#-63-和预处理器配合使用-)
+    - [6.4 自定义的注入名称](#-64-自定义的注入名称-)
+  - [七. 热重载](#-七-热重载-)
+    - [7.1 状态保留规则](#-71-状态保留规则-)
+    - [7.2 用法](#-72-用法-)
+    - [7.3 关闭热重载](#-73-关闭热重载-)
+  - [八. 函数式组件](#-八-函数式组件-)
+  - [九. 自定义块](#-九-自定义块-)
+    - [9.1 Example](#-91-example-)
+  - [十. CSS 提取](#-十-css-提取-)
+    - [10.1 webpack 4](#-101-webpack-4-)
+  - [十一. 代码校验（Linting）](#-十一-代码校验linting-)
+    - [11.1 ESLint](#-111-eslint-)
+    - [11.2 stylelint](#-112-stylelint-)
+      - [11.2.1 具体实例](#-1121-具体实例-)
+  - [十二. 测试](#-十二-测试-)
 
 <!-- /code_chunk_output -->
 
@@ -185,7 +185,7 @@ module.exports = {
 例如，下面的模板代码片段：
 
 ```vue
-<img src="../image.png">
+<img src="../image.png" />
 ```
 
 将会被编译成为：
@@ -230,7 +230,7 @@ createElement('img', {
 
 ### 2.2 相关的 Loader
 
-因为像 `.png` 这样的文件不是一个 JavaScript 模块，需要配置 webpack 使用 `file-loader` 或者 `url-loader` 去合理地处理它们。通过 Vue CLI 创建的项目已经把这些预配置好了。
+因为像 `.png` 这样的文件不是一个 JS 模块，需要配置 webpack 使用 `file-loader` 或者 `url-loader` 去合理地处理它们。通过 Vue CLI 创建的项目已经把这些预配置好了。
 
 ### 2.3 转换资源 URL 的好处
 
@@ -477,9 +477,9 @@ npm install -D pug pug-plain-loader
 <template lang="pug"> div h1 Hello world! </template>
 ```
 
-如果还打算使用它在 JavaScript 中将 `.pug` 文件作为字符串导入，需要在这个预处理 loader 之后链上 `raw-loader`。
+如果还打算使用它在 JS 中将 `.pug` 文件作为字符串导入，需要在这个预处理 loader 之后链上 `raw-loader`。
 
-> **注意** : 添加 `raw-loader` 会破坏 Vue 组件内的用法，所以需要定义两条规则，其中一条指向使用了一个 `resourceQuery` 的 Vue 文件，另一条指向 (回退到) JavaScript 导入：
+> **注意** : 添加 `raw-loader` 会破坏 Vue 组件内的用法，所以需要定义两条规则，其中一条指向使用了一个 `resourceQuery` 的 Vue 文件，另一条指向 (回退到) JS 导入：
 
 ```js
 // webpack.config.js -> module.rules
@@ -491,7 +491,7 @@ npm install -D pug pug-plain-loader
       resourceQuery: /^\?vue/,
       use: ['pug-plain-loader']
     },
-    // 这条规则应用到 JavaScript 内的 pug 导入
+    // 这条规则应用到 JS 内的 pug 导入
     {
       use: ['raw-loader', 'pug-plain-loader']
     }
@@ -523,7 +523,12 @@ npm install -D pug pug-plain-loader
 </style>
 
 <template>
-  <div class="example" data-v-f3f3eg9>hi</div>
+  <div
+    class="example"
+    data-v-f3f3eg9
+  >
+    hi
+  </div>
 </template>
 ```
 
@@ -643,7 +648,7 @@ CSS Modules 是一个流行的，用于模块化和组合 CSS 的系统。`vue-l
 </template>
 ```
 
-也可以通过 JavaScript 访问到它：
+也可以通过 JS 访问到它：
 
 ```js
 <script>

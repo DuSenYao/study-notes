@@ -10,14 +10,17 @@
     - [1.2 Vue3 新特性](#-12-vue3-新特性)
     - [1.3 Vue2 升级到 Vue3](#-13-vue2-升级到-vue3)
       - [1.3.1 Vue 3 不兼容的那些写法](#-131-vue-3-不兼容的那些写法)
+        - [1.3.1.1 新的注册方式](#-1311-新的注册方式)
+        - [1.3.1.2 v-model](#-1312-v-model)
       - [1.3.2 使用自动化升级工具进行 Vue 的升级](#-132-使用自动化升级工具进行-vue-的升级)
-    - [1.4 新一代工程化工具 vite](#-14-新一代工程化工具-vite)
+    - [1.4 新一代工程化工具 vite 与工具选型](#-14-新一代工程化工具-vite-与工具选型)
+      - [1.4.1 优势](#-141-优势)
+      - [1.4.2 短板](#-142-短板)
   - [二. Vue3 基础](#-二-vue3-基础)
     - [2.1 项目启动](#-21-项目启动)
     - [2.2 巧妙的响应式](#-22-巧妙的响应式)
       - [2.2.1 响应式原理](#-221-响应式原理)
     - [2.3 组件](#-23-组件)
-    - [2.4 vue3 中的 v-model](#-24-vue3-中的-v-model)
   - [三. 实际应用](#-三-实际应用)
     - [3.1 路由](#-31-路由)
       - [3.1.1 前后端开发模式的演变](#-311-前后端开发模式的演变)
@@ -189,6 +192,8 @@ Vue 2.7 会移植 Vue 3 的一些新特性，让在 Vue 2 的生态中，也能�
 
 #### 1.3.1 Vue 3 不兼容的那些写法
 
+##### 1.3.1.1 新的注册方式
+
 在 Vue 2 中，使用 new Vue() 来新建应用，有一些全局的配置会直接挂在 Vue 上，比如通过 Vue.use 来使用插件，通过 Vue.component 来注册全局组件。
 
 ```js
@@ -227,12 +232,49 @@ const app2 = createApp({})
 app2.mount('#app2')
 ```
 
-createApp 还移除了很多常见的写法，比如在 createApp 中，就不再支持 filter、$on、$off、$set、$delete 等 API。在 Vue 3 中，v-model 的用法也有更改。Vue 3 还有很多小细节的更新，比如 slot 和 slot-scope 两者实现了合并，而 directive 注册指令的 API 等也有变化。
+createApp 还移除了很多常见的写法，比如在 createApp 中，就不再支持 filter、$on、$off、$set、$delete 等 API。Vue 3 还有很多小细节的更新，比如 slot 和 slot-scope 两者实现了合并，而 directive 注册指令的 API 等也有变化。
 
 **Vue 3 生态现状介绍**
 vue-router 是复杂项目必不可少的路由库，它也包含一些写法上的变化，比如从 new Router 变成 createRouter；使用方式上，也全面拥抱 Composition API 风格，提供了 useRouter 和 useRoute 等方法。
 
 Vuex 4.0 也支持 Vue 3，不过变化不大。有趣的是 Vue 官方成员还发布了一个 Pinia，Pinia 的 API 非常接近 Vuex5 的设计，并且对 Composition API 特别友好，更优雅一些。其他生态诸如 Nuxt、组件库 Ant-design-vue、Element 等等，都有 Vue 3 的版本发布。
+
+##### 1.3.1.2 v-model
+
+v-model="modalVisible" 本质上是数据绑定和事件监听的语法糖。
+
+```vue
+<Modal :modelValue="modalVisible" @update:modelValue="modalVisible = $event" />
+```
+
+v-model 默认绑定的数据名为 modelValue，监听事件为 update:modelValue，所以只需要对 Modal.vue 文件做以下修改。
+
+```vue
+<script setup>
+const props = defineProps({
+  // visible 修改为 v-model 默认的 modelValue
+  modelValue: {
+    type: Boolean,
+    default: false
+  }
+});
+
+const emits = defineEmits(['update:modelValue', 'handleCancel', 'handleOk']);
+
+const onCancel = () => {
+  // 触发 update:modelValue 事件
+  emits('update:modelValue', false);
+};
+</script>
+```
+
+父组件中使用 v-model 绑定，v-model 包含了数据绑定和监听，不需要额外添加监听事件。
+
+相对于 Vue2 来说，Vue3 中的 v-model 使用更加方便，具体差异如下：
+
+- Vue3 中的 v-model 默认名称修改为 modelValue 和 update:modelValue。
+- Vue3 中的 v-model 支持 `v-model:text` 的方式自定义属性名，如上的 v-model="modalVisible" 可以修改为 v-model:status="modalVisible"，在 Modal 组件中名称就可以修改为 status。
+- 通过自定义属性名可以在同一组件上使用多个 v-model。
 
 #### 1.3.2 使用自动化升级工具进行 Vue 的升级
 
@@ -274,7 +316,7 @@ Vuex 4.0 也支持 Vue 3，不过变化不大。有趣的是 Vue 官方成员还
 
 对于替换过程的中间编译成的 AST，可以理解为用 JS 的对象去描述这段代码，这和虚拟 DOM 的理念有一些相似，基于这个对象去做优化，最终映射生成新的 Vue 3 代码。
 
-### 1.4 新一代工程化工具 vite
+### 1.4 新一代工程化工具 vite 与工具选型
 
 Vite 不在 Vue 3 的代码包内，和 Vue 也不是强绑定，Vite 的竞品是 Webpack。Vite 主要提升的是开发的体验。
 
@@ -284,10 +326,16 @@ Webpack 等工程化工具的原理，就是根据 import 依赖逻辑，形成�
 
 ![Webpack工作原理](./image/Webpack工作原理.webp)
 
+Vite 最新版 3.x 中，开发模式是用 esbuild 进行代码编译，而生产模式依旧是用 Rollup 进行打包和编译。
+
+![编译工具选型](./image/编译工具选型.webp)
+
+#### 1.4.1 优势
+
 Vite 在冷启动的时候，将代码分为依赖和源码两部分，源码部分通常会使用 ESModules（ES6 的 import 语法） 或者 CommonJS 拆分到大量小模块中，而对于依赖部分，Vite 使用 ESbuild 对依赖进行预构建。 而 ESbuild 有以下优势：
 
-- 语言优势，ESbuild 使用 Go 语言开发，相对于 JS，Go 语言是一种编译型语言，在编译阶段就已经将源码转译为机器码。
-- 多线程，Rollup 和 webpack 都没有使用多线程的能力，而 ESbuild 在算法上进行了大量的优化，充分的利用了多 CPU 的优势。
+- **语言优势**：ESbuild 使用 Go 语言开发，相对于 JS，Go 语言是一种编译型语言，在编译阶段就已经将源码转译为机器码。
+- **多线程**：Rollup 和 webpack 都没有使用多线程的能力，而 ESbuild 在算法上进行了大量的优化，充分的利用了多 CPU 的优势。
 
 以上这些原因，导致 ESbuild 构建模块的速度比 webpack 快到 10-100 倍。
 
@@ -298,6 +346,8 @@ Vite 在冷启动的时候，将代码分为依赖和源码两部分，源码部
 而在热更新方面，基于已经启动的服务，不应该对所有的改动都完全重构打包项目，只需要对失活的模块进行热重载，而不影响页面的其他部分，但 webpack 依然会随着项目规模的扩大而变得更慢，因为 webpack 包含了完整的打包项目，对失活模块的替换和查找都会因为体积的增大而更加耗时。
 
 相比之下，Vite 的热更新也是在原生的 ESM 上进行的，热更新的范围只在当前模块上，无论项目的规模多大，也只会加载当前使用到的模块，编辑一般也是在当前加载的模块上进行，控制住了体积，热更新的速度自然不受影响。
+
+#### 1.4.2 短板
 
 已经从冷启动，热更新，使用的语言方面，解释了 Vite 为什么会这么快，但是 Vite 也存在一些短板：
 
@@ -447,28 +497,38 @@ Vue 中用过三种响应式解决方案，分别是 defineProperty、Proxy 和 
 
 - **value setter**
 
-  有了 Proxy 后，响应式机制就比较完备了。但是在 Vue 3 中还有另一个响应式实现的逻辑，就是利用对象的 get 和 set 函数来进行监听，这种响应式的实现方式，只能拦截某一个属性的修改，这也是 Vue 3 中 ref 这个 API 的实现。在下面的代码中，拦截了 count 的 value 属性，并且拦截了 set 操作，也能实现类似的功能：
+  有了 Proxy 后，响应式机制就比较完备了。但是在 Vue 3 中还有另一个响应式实现的逻辑，就是利用对象的 get 和 set 函数来进行监听，这种响应式的实现方式，只能拦截某一个属性的修改，这也是 Vue 3 中 ref 这个 API 的实现。
+
+  ref 可以接收基础类型和对象类型数据，如果 ref 接收的是对象的数据类型，那么返回的响应式数据类型也是 RefImpl 数据类型。但基于 Proxy 封装的数据是放在 RefImpl 数据中的 value 属性里。
 
   ```js
-  let getDouble = n => n * 2;
-  let _value = 1;
-  double = getDouble(_value);
+  import { ref } from 'vue';
+  const count = ref(1);
+  const state = ref({
+    count: 2
+  });
+  console.log(count); // RefImpl { value: 1 }
 
-  let count = {
-    get value() {
-      return _value;
-    },
-    set value(val) {
-      _value = val;
-      double = getDouble(_value);
-    }
-  };
-  console.log(count.value, double);
-  count.value = 2;
-  console.log(count.value, double);
+  console.log(state); // RefImpl { value: Proxy { count: 2 } }
   ```
 
 ![vue三种响应式的区别](./image/vue三种响应式的区别.webp)
+
+#### 2.2.2 注意事项
+
+- **响应式数据解构或者属性赋值后，可能会丢失响应式联系**
+
+  ```js
+  import { reactive } from 'vue';
+  const state = reactive({ text: '今天是2022年01月01日' });
+  const { text } = state; // text 丢失响应式联系
+  ```
+
+- **慎用浅层响应式作用 API**
+
+  例如 shallowReactive 和 shallowReadonly，因为 shallowReactive 这类响应式 API 生成的响应式对象数据，只作用对象数据的下一级属性，至于对象的下下一级属性就作用不到了。
+
+- **慎用副作用 API**
 
 ### 2.3 组件
 
@@ -480,44 +540,74 @@ Vue 中用过三种响应式解决方案，分别是 defineProperty、Proxy 和 
 
 在目录结构划分中，单独的留了一个文件夹 components 表示用来放公共组件，并且说明了如果是与业务的耦合度较高的组件，会在 pages 下另建 components 文件夹，就是对应这里的公共组件和业务组件，而 pages 文件下对应存放的就是页面组件了。
 
-### 2.4 vue3 中的 v-model
+### 2.4 模版语法和 JSX 语法
 
-v-model="modalVisible" 本质上就是数据绑定和事件监听的语法糖。
+- **模板语法**
 
-```vue
-<Modal :modelValue="modalVisible" @update:modelValue="modalVisible = $event" />
-```
+Vue.js 的模板语法，可以直接理解为 HTML 语法的一种扩展，它所有的模板节点声明、属性设置和事件注册等都是按照 HTML 的语法来进行扩展设计的。按照官方的说法就是 “所有的 Vue 模板都是语法层面合法的 HTML，可以被符合规范的浏览器和 HTML 解析器解析”。
 
-v-model 默认绑定的数据名为 modelValue，监听事件为 update:modelValue，所以只需要对 Modal.vue 文件做以下修改。
+- **JSX 语法**
 
-```vue
-<script setup>
-import { defineProps, defineEmits } from 'vue';
+虽然官方推荐用模板语法来写 Vue，但是有些功能场景用模板语法可能会很难实现，甚至不能实现，那么就需要用到 JSX 语法来辅助实现了。
 
-const props = defineProps({
-  // visible 修改为 v-model 默认的 modelValue
-  modelValue: {
-    type: Boolean,
-    default: false
+JSX 语法，是 JS 语法的一种语法扩展，支持在 JS 直接写类似 HTML 的模板代码，可以直接理解为 “HTML in JavaScript”。
+
+```jsx
+// JSX 语法其实可以直接看做是纯 JS 文件代码
+import { defineComponent, reactive } from 'vue';
+
+// JSX 定义 Vue 组件可以通过 API defineComponent 来进行声明定义
+const Counter = defineComponent({
+  // 模板语法中 <script> 标签中的 JS 逻辑代码，就是 JSX 语法中的 defineComponent 里除掉 render 函数外剩下的代码内容
+  setup() {
+    const state = reactive({
+      count: 0
+    });
+    const onClick = () => {
+      state.count++;
+    };
+    return {
+      state,
+      onClick
+    };
+  },
+
+  // 模板语法组件视图层相关的代码，类比 JSX 语法里定义组件中的 render 方法
+  // render 函数返回的代码，就是 JSX 的写法，用来描述 HTML 模板内容。
+  render(ctx) {
+    const { state, onClick } = ctx;
+    return (
+      <div class="counter">
+        <div class="text">Count: {state.count}</div>
+        <button
+          class="btn"
+          onClick={onClick}
+        >
+          Add
+        </button>
+      </div>
+    );
   }
 });
 
-const emits = defineEmits(['update:modelValue', 'handleCancel', 'handleOk']);
-
-const onCancel = () => {
-  // 触发 update:modelValue 事件
-  emits('update:modelValue', false);
-};
-</script>
+export default Counter;
 ```
 
-父组件中使用 v-model 绑定，v-model 包含了数据绑定和监听，不需要额外添加监听事件。
+> **注意**：所有 JSX 写法中都是用单大括号 `{state.count}` 来作为内部变量处理，而 Vue 模板语法是通过双大括号来表示 `{{state.count}}`，单大括号描述变量这个是 JSX 通用写法，Vue 的 JSX 语法也是遵循了这个通用写法。
 
-相对于 Vue2 来说，Vue3 中的 v-model 使用更加方便，具体差异如下：
+组件的 CSS 代码是放在独立的 CSS 文件，最后通过 import 引用的，如下代码所示：
 
-- Vue3 中的 v-model 默认名称修改为 modelValue 和 update:modelValue。
-- Vue3 中的 v-model 支持 `v-model:text` 的方式自定义属性名，如上的 v-model="modalVisible" 可以修改为 v-model:status="modalVisible"，在 Modal 组件中名称就可以修改为 status。
-- 通过自定义属性名可以在同一组件上使用多个 v-model。
+```js
+import './counter.css';
+```
+
+#### 2.4.1 区别
+
+- 模板语法能通过**设置标签 `<style>` 属性 scoped**，让 CSS 和对应的 DOM 在编译后能加上随机的 CSS 属性选择器，避免干扰其它同名 class 名称的样式。而在 JSX 语法中并没有可以设置 scoped 的地方，所以 JSX 语法在使用样式 class 名称的时候，不能配置 scoped 避免 CSS 样式干扰。
+
+- **实现需求场景**
+
+  在面对普通功能开发中，可以选择模板语法进行开发，是基于模板语法的简易学习成本，方便团队组员的项目协同合作，在面对一些**动态功能**开发（例如对话框等动态渲染场景），可以选择 JSX 语法进行开发，让**代码更灵活扩展和维护迭代**。
 
 ## 三. 实际应用
 

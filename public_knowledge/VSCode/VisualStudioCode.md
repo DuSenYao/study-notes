@@ -1013,6 +1013,10 @@ VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 
 
 ![VSCode插件能力](./image/VSCode%E6%8F%92%E4%BB%B6%E8%83%BD%E5%8A%9B.jpg)
 
+> **注意**：扩展无法访问 VS Code UI 的 DOM。不能编写将自定义 CSS 应用于 VS 代码或将 HTML 元素添加到 VS 代码 UI 的扩展。
+
+具体 API 可以看[官网](https://code-visualstudio-com.translate.goog/api/extension-guides/command?_x_tr_sl=auto&_x_tr_tl=zh-CN&_x_tr_hl=zh-CN&_x_tr_pto=wapp)。
+
 #### 4.2.1 开发环境及项目结构
 
 需要在本地环境有 Node.js、git，然后借助脚手架 Yeoman 和 VSCode Extension Generator 还快速生成项目框架：
@@ -1046,7 +1050,7 @@ vscode 插件的核心实现主要在：
     - **onView**：${viewId}：指定 id 的视图展开时插件被激活
     - **onUri**：插件的系统级 URI 打开时插件被激活
     - **onWebviewPanel**：webview 触发时插件被激活
-    - `*`：VSCode 启动时插件被激活。
+    - `*`：VSCode 启动时插件被激活
 
   - **contributes**
 

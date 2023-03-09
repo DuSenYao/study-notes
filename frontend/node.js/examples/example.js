@@ -1,20 +1,24 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const fs = require('fs');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-let exec = require('child_process').exec;
+let playerAction = process.argv[process.argv.length - 1];
+console.log(playerAction);
 
-fs.readFile('C:/Users/dsy/Documents/gogs/customer_service/src/views/main/chat/data.js', 'utf8', (err, text) => {
-  // 读取文件时出错了
-  if (err) {
-    console.error(err);
-    return;
-  }
-  try {
-    let data = JSON.stringify(text);
-    // 复制文件到接切板
-    exec(`echo ${data} | clip`);
-  } catch (e) {
-    // 解析文件内容时出错了
-    console.error(e);
-  }
-});
+let random = Math.random() * 3;
+let computerAction = '';
+if (random < 1) {
+  computerAction = 'rock';
+} else if (random > 2) {
+  computerAction = 'scissor';
+} else {
+  computerAction = 'paper';
+}
+
+if (computerAction === playerAction) {
+  console.log('平局');
+} else if (
+  (computerAction === 'rock' && playerAction === 'paper') ||
+  (computerAction === 'scissor' && playerAction === 'rock') ||
+  (computerAction === 'paper' && playerAction === 'scissor')
+) {
+  console.log('你赢了');
+} else {
+  console.log('你输了');
+}
