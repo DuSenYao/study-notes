@@ -192,7 +192,7 @@ Symbol 可以具有字符串类型的描述，但是即使描述相同，Symbol 
 创建 Symbol 的方式是使用全局的 Symbol 函数。
 
 ```js
-var symbol = Symbol('my symbol');
+let symbol = Symbol('my symbol');
 ```
 
 可以使用 `Symbol.iterator` 来自定义 `for...of` 在对象上的行为。当需要对一个对象进行迭代时（比如开始用于一个 for...of 循环中），它的 `Symbol.iterator` 方法都会在不传参情况下被调用，返回的迭代器用于获取要迭代的值。

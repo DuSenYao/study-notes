@@ -16,9 +16,6 @@
       "label": "echo",
       "type": "shell",
       "command": "echo Hello",
-      "windows": {
-        "command": ".\\scripts\\test.cmd"
-      },
       "group": "test",
       "presentation": {
         "reveal": "always",
@@ -42,7 +39,6 @@
       "type": "shell",
       "group": "build",
       "command": "dir",
-      "args": ["/b"],
       "detail": "cmd目录操作-dir命令，显示当前文件夹下的所有文件夹和文件名"
     },
     {
@@ -52,6 +48,21 @@
       "command": "dir",
       "args": ["/?"],
       "detail": "windows命令提示符-cmd目录操作-dir命令的帮助提示"
+    },
+    {
+      "label": "markdown count",
+      "type": "shell",
+      "group": "build",
+      "command": "node ${workspaceFolder}/frontend/node.js/examples/markdownCount.mjs",
+      "presentation": {
+        "echo": false,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "detail": "统计当前文件夹下的所有markdown文件的字数"
     },
     {
       "label": "tsc: -p tsconfig.json",

@@ -322,7 +322,7 @@ Vue.js 的核心是一个允许采用简洁的模板语法来声明式地将数�
 ```
 
 ```js
-var app = new Vue({
+let app = new Vue({
   el: '#app',
   data: {
     message: 'Hello Vue!'
@@ -343,7 +343,7 @@ var app = new Vue({
 ```
 
 ```js
-var app2 = new Vue({
+let app2 = new Vue({
   el: '#app-2',
   data: {
     message: '页面加载于 ' + new Date().toLocaleString()
@@ -364,7 +364,7 @@ var app2 = new Vue({
 ```
 
 ```js
-var app3 = new Vue({
+let app3 = new Vue({
   el: '#app-3',
   data: {
     seen: true
@@ -385,7 +385,7 @@ var app3 = new Vue({
 ```
 
 ```js
-var app4 = new Vue({
+let app4 = new Vue({
   el: '#app-4',
   data: {
     todos: [{ text: '学习 JavaScript' }, { text: '学习 Vue' }, { text: '整个项目' }]
@@ -405,7 +405,7 @@ var app4 = new Vue({
 ```
 
 ```js
-var app5 = new Vue({
+let app5 = new Vue({
   el: '#app-5',
   data: {
     message: 'Hello Vue.js!'
@@ -430,7 +430,7 @@ Vue 还提供了 `v-model` 指令，它能轻松实现表单输入和应用状�
 ```
 
 ```js
-var app6 = new Vue({
+let app6 = new Vue({
   el: '#app-6',
   data: {
     message: 'Hello Vue!'
@@ -452,7 +452,7 @@ Vue.component('todo-item', {
   template: '<li>这是个待办项</li>'
 })
 
-var app = new Vue(...)
+let app = new Vue(...)
 ```
 
 现在可以用它构建另一个组件模板：
@@ -500,7 +500,7 @@ Vue.component('todo-item', {
   template: '<li>{{ todo.text }}</li>'
 });
 
-var app7 = new Vue({
+let app7 = new Vue({
   el: '#app-7',
   data: {
     groceryList: [
@@ -528,7 +528,7 @@ Vue 组件非常类似于自定义元素——它是 Web 组件规范的一部�
 每个 Vue 应用都是通过用 Vue 函数创建一个新的 Vue 实例开始的：
 
 ```js
-var vm = new Vue({
+let vm = new Vue({
   // 选项
 });
 ```
@@ -556,10 +556,10 @@ var vm = new Vue({
 
 ```js
 // 数据对象
-var data = { a: 1 };
+let data = { a: 1 };
 
 // 该对象被加入到一个 Vue 实例中
-var vm = new Vue({
+let vm = new Vue({
   data: data
 });
 
@@ -597,7 +597,7 @@ data: {
 这里唯一的例外是使用 `Object.freeze()`，这会阻止修改现有的 property，也意味着响应系统无法再追踪变化。
 
 ```js
-var obj = {
+let obj = {
   foo: 'bar'
 };
 
@@ -620,8 +620,8 @@ new Vue({
 除了数据 property，Vue 实例还暴露了一些有用的实例 property 与方法。它们都有前缀 `$`，以便与用户定义的 property 区分开来。例如：
 
 ```js
-var data = { a: 1 };
-var vm = new Vue({
+let data = { a: 1 };
+let vm = new Vue({
   el: '#example',
   data: data
 });
@@ -741,7 +741,7 @@ Mustache 语法不能作用在 HTML attribute 上，遇到这种情况应该使�
 
 ```Vue
 <!-- 这是语句，不是表达式 -->
-{{ var a = 1 }}
+{{ let a = 1 }}
 
 <!-- 流控制也不会生效，请使用三元表达式 -->
 {{
@@ -879,7 +879,7 @@ Mustache 语法不能作用在 HTML attribute 上，遇到这种情况应该使�
 ```
 
 ```js
-var vm = new Vue({
+let vm = new Vue({
   el: '#example',
   data: {
     message: 'Hello'
@@ -954,7 +954,7 @@ Vue 提供了一种更通用的方式来观察和响应 Vue 实例上的数据�
 ```
 
 ```js
-var vm = new Vue({
+let vm = new Vue({
   el: '#demo',
   data: {
     firstName: 'Foo',
@@ -975,7 +975,7 @@ var vm = new Vue({
 上面代码是命令式且重复的。将它与计算属性的版本进行比较：
 
 ```js
-var vm = new Vue({
+let vm = new Vue({
   el: '#demo',
   data: {
     firstName: 'Foo',
@@ -1003,7 +1003,7 @@ computed: {
     },
     // setter
     set: function (newValue) {
-      var names = newValue.split(' ')
+      let names = newValue.split(' ')
       this.firstName = names[0]
       this.lastName = names[names.length - 1]
     }
@@ -1034,7 +1034,7 @@ computed: {
 <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
 <script>
-var watchExampleVM = new Vue({
+let watchExampleVM = new Vue({
   el: '#watch-example',
   data: {
     question: '',
@@ -1062,7 +1062,7 @@ var watchExampleVM = new Vue({
         return
       }
       this.answer = 'Thinking...'
-      var vm = this
+      let vm = this
       axios.get('https://yesno.wtf/api')
         .then(function (response) {
           vm.answer = _.capitalize(response.data.answer)
@@ -1425,7 +1425,7 @@ Vue 会尽可能高效地渲染元素，通常会复用已有元素而不是从�
 ```
 
 ```js
-var example1 = new Vue({
+let example1 = new Vue({
   el: '#example-1',
   data: {
     items: [{ message: 'Foo' }, { message: 'Bar' }]
@@ -1442,7 +1442,7 @@ var example1 = new Vue({
 ```
 
 ```js
-var example2 = new Vue({
+let example2 = new Vue({
   el: '#example-2',
   data: {
     parentMessage: 'Parent',
@@ -1753,7 +1753,7 @@ new Vue({
 ```
 
 ```js
-var example1 = new Vue({
+let example1 = new Vue({
   el: '#example-1',
   data: {
     counter: 0
@@ -1773,7 +1773,7 @@ var example1 = new Vue({
 ```
 
 ```js
-var example2 = new Vue({
+let example2 = new Vue({
   el: '#example-2',
   data: {
     name: 'Vue.js'
@@ -2703,7 +2703,7 @@ new Vue({
 ```
 
 ```js
-var tabs = [
+let tabs = [
   {
     name: 'Home',
     component: {
@@ -2850,13 +2850,13 @@ new Vue({ el: '#app' });
 在这些情况下，可以通过一个普通的 JavaScript 对象来定义组件：
 
 ```js
-var ComponentA = {
+let ComponentA = {
   /* ... */
 };
-var ComponentB = {
+let ComponentB = {
   /* ... */
 };
-var ComponentC = {
+let ComponentC = {
   /* ... */
 };
 ```
@@ -2872,11 +2872,11 @@ new Vue({ el: '#app', components: { 'component-a': ComponentA, 'component-b': Co
 > 注意 : **局部注册的组件在其子组件中不可用**。例如，如果希望 `ComponentA` 在 `ComponentB` 中可用，则需要这样写：
 
 ```js
-var ComponentA = {
+let ComponentA = {
   /* ... */
 };
 
-var ComponentB = {
+let ComponentB = {
   components: {
     'component-a': ComponentA
   }
@@ -3418,7 +3418,7 @@ Vue.component('base-input', {
   props: ['label', 'value'],
   computed: {
     inputListeners: function () {
-      var vm = this;
+      let vm = this;
       // `Object.assign` 将所有的对象合并为一个新对象
       return Object.assign(
         {},
@@ -4769,7 +4769,7 @@ new Vue({
   },
   computed: {
     computedList: function () {
-      var vm = this;
+      let vm = this;
       return this.list.filter(function (item) {
         return item.msg.toLowerCase().indexOf(vm.query.toLowerCase()) !== -1;
       });
@@ -4781,13 +4781,13 @@ new Vue({
       el.style.height = 0;
     },
     enter: function (el, done) {
-      var delay = el.dataset.index * 150;
+      let delay = el.dataset.index * 150;
       setTimeout(function () {
         Velocity(el, { opacity: 1, height: '1.6em' }, { complete: done });
       }, delay);
     },
     leave: function (el, done) {
-      var delay = el.dataset.index * 150;
+      let delay = el.dataset.index * 150;
       setTimeout(function () {
         Velocity(el, { opacity: 0, height: 0 }, { complete: done });
       }, delay);
@@ -4831,7 +4831,7 @@ Vue.component('my-special-transition', {
 Vue.component('my-special-transition', {
   functional: true,
   render: function (createElement, context) {
-    var data = {
+    let data = {
       props: {
         name: 'very-special-transition',
         mode: 'out-in'
@@ -4926,7 +4926,7 @@ new Vue({
       el.style.opacity = 0;
     },
     enter: function (el, done) {
-      var vm = this;
+      let vm = this;
       Velocity(
         el,
         { opacity: 1 },
@@ -4940,7 +4940,7 @@ new Vue({
       );
     },
     leave: function (el, done) {
-      var vm = this;
+      let vm = this;
       Velocity(
         el,
         { opacity: 0 },
@@ -5030,7 +5030,7 @@ new Vue({
 ```
 
 ```js
-var Color = net.brehaut.Color;
+let Color = net.brehaut.Color;
 
 new Vue({
   el: '#example-7',
@@ -5149,7 +5149,7 @@ Vue.component('animated-integer', {
   },
   methods: {
     tween: function (startValue, endValue) {
-      var vm = this;
+      let vm = this;
       function animate() {
         if (TWEEN.update()) {
           requestAnimationFrame(animate);
@@ -5203,7 +5203,7 @@ Vue 可以帮到你。因为 SVG 的本质是数据，只需要这些动物兴�
 
 ```js
 // 定义一个混入对象
-var myMixin = {
+let myMixin = {
   created: function () {
     this.hello();
   },
@@ -5215,11 +5215,11 @@ var myMixin = {
 };
 
 // 定义一个使用混入对象的组件
-var Component = Vue.extend({
+let Component = Vue.extend({
   mixins: [myMixin]
 });
 
-var component = new Component(); // => "hello from mixin!"
+let component = new Component(); // => "hello from mixin!"
 ```
 
 #### 4.1.2 选项合并
@@ -5229,7 +5229,7 @@ var component = new Component(); // => "hello from mixin!"
 比如，数据对象在内部会进行递归合并，并在发生冲突时以组件数据优先。
 
 ```js
-var mixin = {
+let mixin = {
   data: function () {
     return {
       message: 'hello',
@@ -5256,7 +5256,7 @@ new Vue({
 同名钩子函数将合并为一个数组，因此都将被调用。另外，混入对象的钩子将在组件自身钩子之前调用。
 
 ```js
-var mixin = {
+let mixin = {
   created: function () {
     console.log('混入对象的钩子被调用');
   }
@@ -5276,7 +5276,7 @@ new Vue({
 值为对象的选项，例如 `methods`、`components` 和 `directives`，将被合并为同一个对象。两个对象键名冲突时，取组件对象的键值对。
 
 ```js
-var mixin = {
+let mixin = {
   methods: {
     foo: function () {
       console.log('foo');
@@ -5287,7 +5287,7 @@ var mixin = {
   }
 };
 
-var vm = new Vue({
+let vm = new Vue({
   mixins: [mixin],
   methods: {
     bar: function () {
@@ -5314,7 +5314,7 @@ vm.conflicting(); // => "from self"
 // 为自定义的选项 'myOption' 注入一个处理器。
 Vue.mixin({
   created: function () {
-    var myOption = this.$options.myOption;
+    let myOption = this.$options.myOption;
     if (myOption) {
       console.log(myOption);
     }
@@ -5342,7 +5342,7 @@ Vue.config.optionMergeStrategies.myOption = function (toVal, fromVal) {
 对于多数值为对象的选项，可以使用与 `methods` 相同的合并策略：
 
 ```js
-var strategies = Vue.config.optionMergeStrategies;
+let strategies = Vue.config.optionMergeStrategies;
 strategies.myOption = strategies.methods;
 ```
 
@@ -5437,7 +5437,7 @@ unbind：只调用一次，指令与元素解绑时调用。
 ```js
 Vue.directive('demo', {
   bind: function (el, binding, vnode) {
-    var s = JSON.stringify;
+    let s = JSON.stringify;
     el.innerHTML =
       'name: ' +
       s(binding.name) +
@@ -5506,7 +5506,7 @@ new Vue({
 Vue.directive('pin', {
   bind: function (el, binding, vnode) {
     el.style.position = 'fixed';
-    var s = binding.arg == 'left' ? 'left' : 'top';
+    let s = binding.arg == 'left' ? 'left' : 'top';
     el.style[s] = binding.value + 'px';
   }
 });
@@ -5790,7 +5790,7 @@ createElement(
 有了这些知识，现在可以完成最开始想实现的组件：
 
 ```js
-var getChildrenTextContent = function (children) {
+let getChildrenTextContent = function (children) {
   return children
     .map(function (node) {
       return node.children ? getChildrenTextContent(node.children) : node.text;
@@ -5801,7 +5801,7 @@ var getChildrenTextContent = function (children) {
 Vue.component('anchored-heading', {
   render: function (createElement) {
     // 创建 kebab-case 风格的 ID
-    var headingId = getChildrenTextContent(this.$slots.default)
+    let headingId = getChildrenTextContent(this.$slots.default)
       .toLowerCase()
       .replace(/\W+/g, '-')
       .replace(/(^-|-$)/g, '');
@@ -5835,7 +5835,7 @@ Vue.component('anchored-heading', {
 
 ```js
 render: function (createElement) {
-  var myParagraphVNode = createElement('p', 'hi')
+  let myParagraphVNode = createElement('p', 'hi')
   return createElement('div', [
     // 错误 - 重复的 VNode
     myParagraphVNode, myParagraphVNode
@@ -5890,7 +5890,7 @@ render: function (createElement) {
 ```js
 props: ['value'],
 render: function (createElement) {
-  var self = this
+  let self = this
   return createElement('input', {
     domProps: {
       value: self.value
@@ -6093,16 +6093,16 @@ Vue.component('my-component', {
 下面是一个 smart-list 组件的例子，它能根据传入 prop 的值来代为渲染更具体的组件：
 
 ```js
-var EmptyList = {
+let EmptyList = {
   /* ... */
 };
-var TableList = {
+let TableList = {
   /* ... */
 };
-var OrderedList = {
+let OrderedList = {
   /* ... */
 };
-var UnorderedList = {
+let UnorderedList = {
   /* ... */
 };
 
@@ -6117,7 +6117,7 @@ Vue.component('smart-list', {
   },
   render: function (createElement, context) {
     function appropriateListComponent() {
-      var items = context.props.items;
+      let items = context.props.items;
 
       if (items.length === 0) return EmptyList;
       if (typeof items[0] === 'object') return TableList;
@@ -6215,8 +6215,8 @@ Vue.js 官方提供的一些插件 (例如 `vue-router`) 在检测到 Vue 是可
 
 ```js
 // 用 Browserify 或 webpack 提供的 CommonJS 模块环境时
-var Vue = require('vue');
-var VueRouter = require('vue-router');
+let Vue = require('vue');
+let VueRouter = require('vue-router');
 
 // 不要忘了调用此方法
 Vue.use(VueRouter);
@@ -6594,7 +6594,7 @@ declare module 'vue/types/vue' {
 在项目中包含了上述作为声明文件的代码之后 (像 my-property.d.ts)，就可以在 Vue 实例上使用 `$myProperty` 了。
 
 ```js
-var vm = new Vue();
+let vm = new Vue();
 console.log(vm.$myProperty); // 将会顺利编译通过
 ```
 
@@ -6626,7 +6626,7 @@ declare module 'vue/types/options' {
 console.log(Vue.$myGlobal);
 
 // 额外的组件选项
-var vm = new Vue({
+let vm = new Vue({
   myOption: 'Hello'
 });
 ```
@@ -6733,7 +6733,7 @@ module.exports = {
 
   ```js
   // 使用 envify 自定义模块指定环境变量
-  var envify = require('envify/custom');
+  let envify = require('envify/custom');
 
   browserify(browserifyOptions)
     .transform(vueify)
@@ -6749,7 +6749,7 @@ module.exports = {
 
   ```js
   // 使用 envify 自定义模块指定环境变量
-  var envify = require('envify/custom');
+  let envify = require('envify/custom');
 
   browserify: {
     dist: {
@@ -7066,7 +7066,7 @@ Vue 最独特的特性之一，是其非侵入性的响应式系统。数据模�
 Vue 无法检测 property 的添加或移除。由于 Vue 会在初始化实例时对 property 执行 getter/setter 转化，所以 property 必须在 `data` 对象上存在才能让 Vue 将它转换为响应式的。例如：
 
 ```js
-var vm = new Vue({
+let vm = new Vue({
   data: {
     a: 1
   }
@@ -7107,7 +7107,7 @@ Vue 不能检测以下数组的变动：
 举个例子：
 
 ```js
-var vm = new Vue({
+let vm = new Vue({
   data: {
     items: ['a', 'b', 'c']
   }
@@ -7144,7 +7144,7 @@ vm.items.splice(newLength);
 由于 Vue 不允许动态添加根级响应式 property，所以必须在初始化实例前声明所有根级响应式 property，哪怕只是一个空值：
 
 ```js
-var vm = new Vue({
+let vm = new Vue({
   data: {
     // 声明 message 为一个空值字符串
     message: ''
@@ -7177,7 +7177,7 @@ vm.message = 'Hello!';
 ```
 
 ```js
-var vm = new Vue({
+let vm = new Vue({
   el: '#example',
   data: {
     message: '123'

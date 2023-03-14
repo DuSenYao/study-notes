@@ -6,6 +6,7 @@ module.exports = {
   },
   parser: '@typescript-eslint/parser',
   extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  plugins: ['html', '@typescript-eslint'],
   parserOptions: {
     sourceType: 'module',
     parser: 'babel-eslint',
@@ -17,7 +18,6 @@ module.exports = {
   settings: {
     'html/html-extensions': ['.html', '.vue']
   },
-  plugins: ['html', '@typescript-eslint', 'prettier'],
   rules: {
     'accessor-pairs': 2,
     'arrow-spacing': [

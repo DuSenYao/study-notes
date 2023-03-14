@@ -279,8 +279,8 @@ console.log(arr);
 new Map() 构造函数接受一个可迭代的 `entries`。借助 `Object.entries` 方法可以很容易的将 `Object` 转换为 `Map`:
 
 ```js
-var obj = { foo: 'bar', baz: 42 };
-var map = new Map(Object.entries(obj));
+let obj = { foo: 'bar', baz: 42 };
+let map = new Map(Object.entries(obj));
 console.log(map); // Map { foo: "bar", baz: 42 }
 ```
 

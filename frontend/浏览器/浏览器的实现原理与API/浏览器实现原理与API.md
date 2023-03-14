@@ -672,7 +672,7 @@ Range API 表示一个 HTML 上的范围，这个范围是以文字为最小单�
 创建 Range 一般是通过设置它的起止来实现：
 
 ```js
-var range = new Range(),
+let range = new Range(),
   firstText = p.childNodes[1],
   secondText = em.firstChild;
 range.setStart(firstText, 9); // 别忘了前导空格
@@ -682,13 +682,13 @@ range.setEnd(secondText, 4);
 通过 Range 也可以从用户选中区域创建，这样的 Range 用于处理用户选中区域：
 
 ```js
-var range = document.getSelection().getRangeAt(0);
+let range = document.getSelection().getRangeAt(0);
 ```
 
 更改 Range 选中区段内容的方式主要是取出和插入，分别由 `extractContents` 和 `insertNode` 来实现:
 
 ```js
-var fragment = range.extractContents();
+let fragment = range.extractContents();
 range.insertNode(document.createTextNode('aaaa'));
 ```
 
@@ -919,7 +919,7 @@ window.open('about:blank', '_blank', 'width=100,height=100,left=100,right=100');
    如果要获取相对坐标，或者包含滚动区域的坐标，需要一点小技巧：
 
    ```js
-   var offsetX = document.documentElement.getBoundingClientRect().x - element.getBoundingClientRect().x;
+   let offsetX = document.documentElement.getBoundingClientRect().x - element.getBoundingClientRect().x;
    ```
 
    > 这两个 API 的兼容性非常好，定义又非常清晰，如果是用 JS 实现视觉效果时，尽量使用这两个 API。
@@ -1054,7 +1054,7 @@ document.getElementById('i').addEventListener(
 除了来自输入设备的事件，还可以自定义事件，实际上事件也是一种非常好的代码架构，但是 DOM API 中的事件并不能用于普通对象，所以只能在 DOM 元素上使用自定义事件。
 
 ```js
-var evt = new Event('look', { bubbles: true, cancelable: false });
+let evt = new Event('look', { bubbles: true, cancelable: false });
 document.dispatchEvent(evt);
 ```
 

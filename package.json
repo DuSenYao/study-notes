@@ -4,12 +4,11 @@
   "description": "学习笔记与资料",
   "author": "杜森垚",
   "devDependencies": {
-    "@types/node": "^18.14.6",
-    "@typescript-eslint/eslint-plugin": "^5.54.1",
-    "@typescript-eslint/parser": "^5.54.1",
-    "eslint": "^8.35.0",
+    "@types/node": "^18.15.3",
+    "@typescript-eslint/eslint-plugin": "^5.55.0",
+    "@typescript-eslint/parser": "^5.55.0",
+    "eslint": "^8.36.0",
     "eslint-plugin-html": "^7.1.0",
-    "eslint-plugin-prettier": "^4.2.1",
     "prettier": "2.8.4",
     "typescript": "^4.9.5"
   },

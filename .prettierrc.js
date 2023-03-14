@@ -6,5 +6,5 @@ module.exports = {
   singleAttributePerLine: true,
   trailingComma: 'none',
   endOfLine: 'auto',
-  arrowParens: 'avoid',
+  arrowParens: 'avoid'
 };

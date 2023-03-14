@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Canvas</title>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="500"
+    ></canvas>
+
+    <script>
+      window.onload = () => {
+        let cnv = document.getElementById('canvas');
+        let cxt = cnv.getContext('2d');
+        cxt.setLineDash([5, 15]);
+        cxt.beginPath();
+        cxt.moveTo(0, 100);
+        cxt.lineTo(400, 100);
+        cxt.stroke();
+      };
+    </script>
+  </body>
+</html>
