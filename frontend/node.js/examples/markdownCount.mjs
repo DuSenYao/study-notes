@@ -1,4 +1,5 @@
-import { readdirSync, readFileSync } from 'fs';
+import { readdirSync, readFileSync, createWriteStream } from 'fs';
+import { oldMarkdownCount } from './config.mjs';
 
 /**
  * @param {import("fs").PathLike} path
@@ -7,7 +8,7 @@ function getFiles(path) {
   return readdirSync(path, { encoding: 'utf-8', withFileTypes: true });
 }
 
-let markdownCount = 0;
+let markdownCount = 0; // markdown 文件字数
 function getAllFiles(path = process.cwd()) {
   let filesArr = getFiles(path); // 获取目录下的所有文件
   filesArr.forEach(item => {
@@ -24,4 +25,6 @@ function getAllFiles(path = process.cwd()) {
   });
 }
 getAllFiles();
-console.log(markdownCount);
+console.table({ old: oldMarkdownCount, new: markdownCount, increase: markdownCount - oldMarkdownCount });
+// 这里的路径是相对于 node.js 执行的路径，而不是当前文件的路径
+createWriteStream('frontend/node.js/examples/config.mjs').write(`export let oldMarkdownCount = ${markdownCount};`); // 更新 config.mjs 文件中的旧 markdown 文件字数

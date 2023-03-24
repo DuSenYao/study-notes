@@ -315,7 +315,7 @@ rowspan "^"
 
 ### Emoji And Font-Awesome
 
-> 只适用于 markdown-it parser 而不适用于 pandoc parser。缺省下是启用的。可以在插件设置里禁用此功能。
+> 只适用于 markdown-it parser 而不适用于 pandoc parser。默认下是启用的。可以在插件设置里禁用此功能。
 
 :smile:
 :fa-car:

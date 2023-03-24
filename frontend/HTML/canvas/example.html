@@ -23,11 +23,18 @@
       window.onload = () => {
         let cnv = document.getElementById('canvas');
         let cxt = cnv.getContext('2d');
-        cxt.setLineDash([5, 15]);
-        cxt.beginPath();
-        cxt.moveTo(0, 100);
-        cxt.lineTo(400, 100);
-        cxt.stroke();
+        cxt.font = 'bold 30px 微软雅黑';
+        cxt.strokeText('Hello World', 100, 100);
+        console.log(cxt.measureText('Hello World'));
+
+        let rectWidth = 100;
+        let rectHeight = 50;
+        cxt.save();
+        cxt.translate(cnv.width / 2, cnv.height / 2); // 将旋转中心移动到图形中心
+        cxt.rotate((240 * Math.PI) / 180); // 累进旋转
+        cxt.fillStyle = 'HotPink';
+        cxt.fillRect(-rectWidth / 2, -rectHeight / 2, rectWidth, rectHeight); // 填充矩形
+        cxt.restore();
       };
     </script>
   </body>

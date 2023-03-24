@@ -62,7 +62,7 @@
         "showReuseMessage": true,
         "clear": false
       },
-      "detail": "统计当前文件夹下的所有markdown文件的字数"
+      "detail": "统计当前工作区下的 markdown 文件总字数"
     },
     {
       "label": "tsc: -p tsconfig.json",
