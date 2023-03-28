@@ -18,6 +18,7 @@
       width="800"
       height="500"
     ></canvas>
+    <button onclick="sepia()">反转</button>
 
     <script>
       window.onload = () => {
@@ -25,16 +26,11 @@
         let cxt = cnv.getContext('2d');
         cxt.font = 'bold 30px 微软雅黑';
         cxt.strokeText('Hello World', 100, 100);
-        console.log(cxt.measureText('Hello World'));
 
-        let rectWidth = 100;
-        let rectHeight = 50;
-        cxt.save();
-        cxt.translate(cnv.width / 2, cnv.height / 2); // 将旋转中心移动到图形中心
-        cxt.rotate((240 * Math.PI) / 180); // 累进旋转
-        cxt.fillStyle = 'HotPink';
-        cxt.fillRect(-rectWidth / 2, -rectHeight / 2, rectWidth, rectHeight); // 填充矩形
-        cxt.restore();
+        cxt.strokeStyle = 'red';
+
+        // cxt.strokeRect(50, 50, 100, 100);
+        console.log(cxt.isPointInPath(50, 50));
       };
     </script>
   </body>

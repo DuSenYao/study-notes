@@ -37,6 +37,31 @@
       - [2.4.7 direction](#247-direction)
     - [2.5 图片操作](#25-图片操作)
       - [2.5.1 drawImage()](#251-drawimage)
+      - [2.5.2 平铺图片](#252-平铺图片)
+      - [2.5.3 切割图片](#253-切割图片)
+    - [2.6 变形操作](#26-变形操作)
+      - [2.6.1 图形平移](#261-图形平移)
+      - [2.6.2 图形缩放](#262-图形缩放)
+      - [2.6.3 图形旋转](#263-图形旋转)
+      - [2.6.4 变换矩阵](#264-变换矩阵)
+    - [2.7 像素操作](#27-像素操作)
+      - [2.7.1 getImageData() 和 putImageData()](#271-getimagedata-和-putimagedata)
+      - [2.7.2 反转效果](#272-反转效果)
+      - [2.7.3 黑白效果](#273-黑白效果)
+      - [2.7.4 亮度效果](#274-亮度效果)
+      - [2.7.5 复古效果](#275-复古效果)
+      - [2.7.6 红色蒙版](#276-红色蒙版)
+      - [2.7.7 透明处理](#277-透明处理)
+        - [2.7.8 createImageData()](#278-createimagedata)
+    - [2.8 渐变与阴影](#28-渐变与阴影)
+      - [2.8.1 线性渐变](#281-线性渐变)
+      - [2.8.2 径向渐变](#282-径向渐变)
+      - [2.8.3 阴影](#283-阴影)
+    - [2.9 Canvas 路径](#29-canvas-路径)
+      - [2.9.1 beginPath()](#291-beginpath)
+      - [2.9.2 closePath()](#292-closepath)
+      - [2.9.3 isPointInPath()](#293-ispointinpath)
+    - [2.10 Canvas 状态](#210-canvas-状态)
 
 <!-- /code_chunk_output -->
 
@@ -150,9 +175,12 @@ cxt.strokeStyle = 'rgba(255, 0, 0, 0.8)'; // rgba 颜色值
 ```
 
 **strokeRect() 方法**
-strokeRect() 方法用于确定矩形的坐标，其中 (x, y) 为矩形左上角点的坐标，width 表示矩形的宽度，height 表示矩形的高度，默认情况下 width 和 height 都是以 px 为单位。
+使用当前的绘画样式，描绘一个起点在 (x, y)、宽度为 w、高度为 h 的矩形的方法。
 
-> **注意**：strokeStyle 属性必须在使用 strokeRect() 方法之前定义，否则 strokeStyle 属性无效。
+> **注意**：
+>
+> 1. strokeStyle 属性必须在使用 strokeRect() 方法之前定义，否则 strokeStyle 属性无效。
+> 2. **此方法直接绘制到画布而不修改当前路径**，因此任何后续 fill() 或 stroke() 调用对它没有影响。
 
 ##### 2.1.2.2 填充矩形
 
@@ -165,9 +193,12 @@ cxt.fillRect(x, y, width, height);
 
 fillStyle 属性跟 strokeStyle 属性一样，取值也有 3 种：颜色值、渐变色和图像。
 
-fillRect() 方法跟 strokeRect() 方法一样，用于确定矩形的坐标，其中 (x, y) 为矩形左上角点的坐标，width 表示矩形的宽度，height 表示矩形的高度。
+fillRect() 是绘制填充矩形的方法，其中 (x, y) 为矩形左上角点的坐标，width 表示矩形的宽度，height 表示矩形的高度。
 
-> **注意**：跟描边矩形一样，填充矩形的 fillStyle 属性也必须在使用 fillRect() 方法之前定义，否则 fillStyle 属性无效。
+> **注意**：
+>
+> 1. 跟描边矩形一样，填充矩形的 fillStyle 属性也必须在使用 fillRect() 方法之前定义，否则 fillStyle 属性无效。
+> 2. **此方法直接绘制到画布而不修改当前路径**，因此任何后续 fill() 或 stroke() 调用对它没有影响。
 
 ##### 2.1.2.3 rect() 方法
 
@@ -275,10 +306,11 @@ cxt.clearRect(0, 0, cnv.width, cnv.height);
 
 曲线和弧线是两个不同的概念。简单来说，弧线是圆的一部分，曲线则不一定。弧线上的每个点都具有相同的曲率，曲线则不一定。也可以这样说，曲线包含弧线。
 
-有关 Canvas 曲线图形，有以下 4 个：
+有关 Canvas 曲线图形，有以下几个：
 
 - 圆形
 - 弧线
+- 椭圆
 - 二次贝塞尔曲线
 - 三次贝塞尔曲线
 
@@ -448,7 +480,31 @@ window.onload = () => {
   };
   ```
 
-#### 2.2.3 二次贝塞尔曲线
+#### 2.2.3 椭圆
+
+ellipse() 是 Canvas 2D API 添加椭圆路径的方法。椭圆的圆心在（x,y）位置，半径分别是 radiusX 和 radiusY，按照 anticlockwise（默认顺时针）指定的方向，从 startAngle 开始绘制，到 endAngle 结束。
+
+```js
+ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, anticlockwise);
+```
+
+- **x**：椭圆圆心的 x 轴坐标。
+
+- **y**：椭圆圆心的 y 轴坐标。
+
+- **radiusX**：椭圆长轴的半径。
+
+- **radiusY**：椭圆短轴的半径。
+
+- **rotation**：椭圆的旋转角度，以弧度表示 (非角度度数)。
+
+- **startAngle**：将要绘制的起始点角度，从 x 轴测量，以弧度表示 (非角度度数)。
+
+- **endAngle**：椭圆将要绘制的结束点角度，以弧度表示 (非角度度数)。
+
+- **anticlockwise**（可选）：Boolean 选项，如果为 true，逆时针方向绘制椭圆（逆时针），反之顺时针方向绘制。
+
+#### 2.2.4 二次贝塞尔曲线
 
 Canvas 中画曲线，一般都是使用贝塞尔曲线（应用于二维图形应用程序的数学曲线）来实现。
 
@@ -483,7 +539,7 @@ cxt.quadraticCurveTo(125, 25, 75, 25);
 cxt.stroke();
 ```
 
-#### 2.2.4 三次贝塞尔曲线
+#### 2.2.5 三次贝塞尔曲线
 
 可以使用 bezierCurveTo() 方法来绘制三次贝塞尔曲线。
 
@@ -1086,3 +1142,432 @@ ctx.transform(a, b, c, d, e, f);
 getImageData() 和 putImageData() 都是配合使用的。一般都是先用 getImageData() 方法获取像素数据，然后利用一定的算法进行像素操作，最后使用 putImageData() 输出像素数据（即在 Canvas 中显示一张图片）。
 
 #### 2.7.2 反转效果
+
+反转效果，也叫“颜色反转”，指的是图片颜色颠倒的效果。实现算法：将红、绿、蓝 3 个通道的像素取各自的相反值。计算方法是：**255-原值**。
+
+```js
+for (let i = 0; i < data.length; i += 4) {
+  data[i] = 255 - data[i];
+  data[i + 1] = 255 - data[i + 1];
+  data[i + 2] = 255 - data[i + 2];
+}
+```
+
+反转效果是不需要对透明度进行操作的，也就是说不需要处理 `data[i+3]`。
+
+#### 2.7.3 黑白效果
+
+黑白效果，也叫“灰度图（average）"，是指将彩色图片转换成黑白图片。实现算法：首先取红、绿、蓝 3 个通道的平均值，也就是 `(data[i] + data[i+1] + data[i+2])/3`，然后将 `data[i] data[i+1] data[i+2]` 全部保存为这个平均值。
+
+```js
+for (let i = 0; i < data.length; i += 4) {
+  let average = (data[i] + data[i + 1] + data[i + 2]) / 3;
+  data[i] = average; // 红
+  data[i + 1] = average; // 绿
+  data[i + 2] = average; // 蓝
+}
+```
+
+上面这种黑白效果有时并不是很好，还可以使用加权平均值的方式实现：
+
+```js
+for (let i = 0; i < data.length; i += 4) {
+  let average = data[i] * 0.3 + data[i + 1] * 0.6 + data[i + 2] * 0.1; // 权值根据实际情况调整
+  data[i] = average; // 红
+  data[i + 1] = average; // 绿
+  data[i + 2] = average; // 蓝
+}
+```
+
+#### 2.7.4 亮度效果
+
+亮度效果（brightness），是指让图片变得更亮或者更暗。实现算法：将红、绿、蓝 3 个通道值，分别同时加上一个正值或负值。
+
+```js
+for (let i = 0; i < data.length; i += 4) {
+  let a = 50;
+  data[i] += a;
+  data[i + 1] += a;
+  data[i + 2] += a;
+}
+```
+
+#### 2.7.5 复古效果
+
+复古效果（sepia），是指使得图片有一种古旧的效果。实现算法：分别取红、绿、蓝这 3 个通道值的某种加权平均值。
+
+```js
+for (let i = 0; i < data.length; i += 4) {
+  let r = data[i];
+  let g = data[i + 1];
+  let b = data[i + 2];
+  data[i] = r * 0.393 + g * 0.769 + b * 0.189;
+  data[i + 1] = r * 0.349 + g * 0.686 + b * 0.168;
+  data[i + 2] = r * 0.272 + g * 0.534 + b * 0.131;
+}
+```
+
+#### 2.7.6 红色蒙版
+
+红色蒙版，指的是让图片呈现一种偏红的效果。实现算法：将红通道（R）赋值为红、绿、蓝 3 个通道的平均值，并且将绿通道、蓝通道都赋值为 0。
+
+```js
+for (let i = 0; i < data.length; i += 4) {
+  let r = data[i];
+  let g = data[i + 1];
+  let b = data[i + 2];
+  let average = (r + g + b) / 3;
+  data[i] = average;
+  data[i + 1] = 0;
+  data[i + 2] = 0;
+}
+```
+
+通过这个算法，同样也可以实现类似效果的绿色蒙版、蓝色蒙版等。
+
+#### 2.7.7 透明处理
+
+在得到像素数组后，将该数组中每一个像素的透明度乘以 n，然后保存像素数组，最后使用 putImageData() 方法将图像重新绘制在画布上。
+
+```js
+for (let i = 0; i < data.length; i += 4) {
+  data[i + 3] = data[i + 3] * n;
+}
+```
+
+n 取值范围为 0.0~1.0。
+
+##### 2.7.8 createImageData()
+
+createImageData() 创建一个新的、空白的、指定大小的 ImageData 对象。所有的像素在新对象中都是透明的。可对这个区域进行像素操作。如果没有创建像素操作区域，是没办法进行像素操作的。
+
+```js
+ctx.createImageData(width, height);
+ctx.createImageData(imagedata);
+```
+
+- **width**：ImageData 新对象的宽度。
+- **height**：ImageData 新对象的高度。
+
+- **imagedata**：从现有的 ImageData 对象中，复制一个和其宽度和高度相同的对象。图像自身不允许被复制。
+
+配合使用 createImageData() 和 putImageData() 方法可以对“一个区域”进行像素操作。
+
+```js
+let cnv = document.getElementById('canvas');
+let cxt = cnv.getContext('2d');
+let imgData = cxt.createImageData(100, 100);
+let data = imgData.data;
+for (let i = 0; i < 100 * 100 * 4; i += 4) {
+  data[i] = 0;
+  data[i + 1] = 0;
+  data[i + 2] = 255;
+  data[i + 3] = 255;
+}
+cxt.putImageData(imgData, 20, 20);
+```
+
+### 2.8 渐变与阴影
+
+#### 2.8.1 线性渐变
+
+线性渐变，指的是沿一条直线进行的渐变。在 Canvas 中，可以配合使用 createLinearGradient() 和 addColorStop() 这两个方法来实现线性渐变。
+
+```js
+// x1、y1 分别表示渐变开始点的横、纵坐标，x2、y2 分别表示渐变结束点的横、纵坐标
+let gnt = cxt.createLinearGradient(x1, y1, x2, y2);
+// 参数 value 表示渐变位置的偏移量，取值为 0~1 的任意值。value1 表示渐变开始位置，value2 表示渐变结束位置。
+// 参数 color 表示渐变颜色，取值为任意颜色值（如十六进制颜色值、RGB 等）。color1 表示渐变开始时的颜色，color2 表示渐变结束时的颜色。
+gnt.addColorStop(value1, color1);
+gnt.addColorStop(value2, color2);
+cxt.fillStyle = gnt;
+// 在线性渐变中，fill() 可以改为 fillRect() 或 fillText()。其中 fillRect() 表示图形渐变，fillText() 表示文字渐变。
+cxt.fill();
+```
+
+在 Canvas 中，想要实现线性渐变，需要以下 3 步：
+
+1. 调用 createLinearGradient() 方法创建一个 linearGradient 对象，并赋值给变量 gnt。
+2. 调用 linearGradient 对象（即 gnt）的 addColorStop() 方法 n 次：第 1 次表示渐变开始时的颜色；第 2 次表示渐变结束时的颜色；第 3 次
+   则以第 2 次渐变结束时的颜色作为开始进行颜色渐变，依次类推。
+3. 把 linearGradient 对象赋值给 fillStyle 属性，并且调用 fill() 方法来绘制带有渐变色的图形。
+
+`createLinearGradient(x1, y1, x2, y2)` 表示绘制从点 (x1, y1) 到点 (x2, y2) 的线性渐变。开始点坐标和结束点坐标之间有以下 3 种关系。
+
+- 如果 y1 与 y2 相同，则表示沿着水平方向从左到右渐变。
+- 如果 x1 与 x2 相同，则表示沿着垂直方向从上到下渐变。
+- 如果 x1 与 x2 不相同，并且 y1 与 y2 也不相同，则表示渐变色沿着矩形对角线方向渐变。
+
+#### 2.8.2 径向渐变
+
+径向渐变，是一种颜色从内到外进行的圆形渐变（从中间向外拉，像圆一样）。径向渐变是圆形或椭圆形渐变，颜色不再沿着一条直线渐变，而是从一个起点向所有方向渐变。
+
+在 Canvas 中，可以配合使用 createRadialGradient() 和 addColorStop() 两个方法来实现径向渐变。
+
+```js
+// (x1, y1) 表示渐变开始时圆心的坐标，r1 表示渐变开始时圆的半径。
+// (x2, y2) 表示渐变结束时圆心的坐标，r2 表示渐变结束时圆的半径。
+// 从圆心为 (x1, y1)、半径为 r1 的圆到圆心为 (x2, y2)、半径为 r2 的圆的径向渐变
+let gnt = cxt.createRadialGradient(x1, y1, r1, x2, y2, r2);
+// 参数 value 表示渐变位置，取值为 0~1 的任意值。value1 表示渐变开始位置，value2 表示渐变结束位置。
+// 参数 color 表示渐变的颜色，取值为任意颜色值（如十六进制颜色值、RGBA 等）。color1 表示渐变开始时的颜色，color2 表示渐变结束时的颜色。
+gnt.addColorStop(value1, color1);
+gnt.addColorStop(value2, color2);
+cxt.fillStyle = gnt;
+cxt.fill();
+```
+
+在 Canvas 中，想要实现径向渐变，需要以下 3 步：
+
+1. 调用 createLinearGradient() 方法创建一个 radialGradient 对象，并赋值给变量 gnt。
+2. 调用 radialGradient 对象（即 gnt）的 addColorStop()方法 n 次：第 1 次表示渐变开始时的颜色；第 2 次表示渐变结束时的颜色；第 3 次则以第 2 次渐变结束时的颜色作为开始颜色进行渐变，依次类推。
+3. 把 radialGradient 对象（即 gnt）赋值给 fillStyle 属性，并且调用 fill() 方法来绘制有渐变色的图形。
+
+![径向渐变分析](./image/%E5%BE%84%E5%90%91%E6%B8%90%E5%8F%98%E5%88%86%E6%9E%90.jpg)
+
+#### 2.8.3 阴影
+
+在 Canvas 中，常见的阴影属性：
+
+| 属性          | 说明                                                                     |
+| ------------- | ------------------------------------------------------------------------ |
+| shadowOffsetX | 阴影与图形的水平距离，默认值为 0。大于 0 时向右偏移，小于 0 时向上偏移， |
+| shadowOffsetY | 阴影与图形的垂直距离，默认值为 0。大于 0 时向下偏移，小于 0 时向左偏移   |
+| shadowColor   | 阴影的颜色，默认为黑色                                                   |
+| shadowBlur    | 阴影的模糊值，默认值为 0，该值越大，模糊度越强；越小，模糊度越弱         |
+
+```js
+// 设置右下方向的阴影
+cxt.shadowOffsetX = 5;
+cxt.shadowOffsetY = 5;
+cxt.shadowColor = 'LightSkyBlue';
+cxt.shadowBlur = 10;
+cxt.fillStyle = 'HotPink';
+cxt.fillRect(100, 30, 50, 50);
+```
+
+```js
+// 定义文字
+let text = '绿叶学习网';
+cxt.font = 'bold 60px 微软雅黑';
+// 定义阴影
+cxt.shadowOffsetX = 5;
+cxt.shadowOffsetY = 5;
+cxt.shadowColor = 'LightSkyBlue';
+cxt.shadowBlur = 10;
+// 填充文字
+cxt.fillStyle = 'HotPink';
+cxt.fillText(text, 10, 90);
+```
+
+### 2.9 Canvas 路径
+
+在 Canvas 中，“路径” 是一个非常重要的概念。除了矩形，其他所有的 Canvas 基本图形，包括直线、多边形、圆形、弧线、贝塞尔曲线，都是以路径为基础的。
+
+Canvas 提供了 3 种操作路径的方法：
+
+| 方法            | 说明                             |
+| --------------- | -------------------------------- |
+| beginPath()     | 开始一条新的路径                 |
+| closePath()     | 关闭当前路径                     |
+| isPointInPath() | 判断某一个点是否存在于当前路径内 |
+
+#### 2.9.1 beginPath()
+
+通过清空子路径列表开始一个新路径的方法。当想创建一个新的路径时，调用此方法。
+
+```js
+ctx.beginPath();
+```
+
+Canvas 是基于[“状态”](#210-canvas-状态)来绘制图形的。每一次绘制（使用 stroke() 或 fill()），Canvas 会检测整个程序定义的所有状态，这些状态包括 strokeStyle、fillStyle 和 lineWidth 等。当一个状态值没有被改变时，Canvas 就一直使用最初的值。当一个状态值被改变时，分两种情况考虑：
+
+- 如果使用 beginPath() 开始一个新的路径，则不同路径使用不同的值。
+- 如果没有使用 beginPath() 开始一个新的路径，则后面的值会覆盖前面的值（“后来者居上”原则）。
+
+beginPath() 有以下注意事项：
+
+- 判断**是否属于同一路径的标准是是否使用了 beginPath() 方法，而不是视觉上是否有首尾连线**。
+- 在 Canvas 中，只有 beginPath() 这一种方法可以开始新的路径。判断新路径的唯一标准为“是否使用 beginPath()”。
+- 如果画出来的图形跟预期不一样，记得检查一下是否有合理地使用 beginPath()方法。
+- 使用以下方法只是绘制图形，并不会开始新路径：moveTo()、lineTo()、strokeRect()、fillRect()、rect()、arc()、arcTo()、quadricCurveTo() 和 bezierCurveTo()。
+- Canvas 中的绘制方法，如 stroke()、fill() 等，都是以“之前最近的 beginPath()”后面所有定义的状态为基础进行绘制的。
+
+#### 2.9.2 closePath()
+
+将笔点返回到当前子路径起始点的方法。它尝试从当前点到起始点绘制一条直线。如果图形已经是封闭的或者只有一个点，那么此方法不会做任何操作。
+
+```js
+ctx.closePath();
+```
+
+closePath() 方法，需要注意以下几点：
+
+- closePath() 是关闭路径，并不是结束路径。关闭路径，指的是连接起点与终点；结束路径，指的是开始新的路径。
+- closePath() 方法**主要用于实现“封闭图形”**，例如三角形、多边形、圆形、扇形等。然后，才能使用 fill() 方法来进行填充操作。
+
+#### 2.9.3 isPointInPath()
+
+用于判断在当前路径中是否包含检测点的方法。
+
+```js
+isPointInPath(x, y);
+isPointInPath(x, y, fillRule);
+isPointInPath(path, x, y);
+isPointInPath(path, x, y, fillRule);
+```
+
+- **x**：检测点的 X 坐标
+
+- **y**：检测点的 Y 坐标
+
+- **fillRule**：用来决定点在路径内还是在路径外的算法。 允许的值：
+
+  - nonzero：[非零环绕规则](https://en.wikipedia.org/wiki/Nonzero-rule)，默认的规则。
+  - evenodd：[奇偶环绕原则](https://en.wikipedia.org/wiki/Even%E2%80%93odd_rule)
+
+- **path**：[Path2D](https://developer.mozilla.org/zh-CN/docs/Web/API/Path2D) 应用的路径。
+
+> **注意**：isPointInPath() 不支持 strokeRect() 和 fillRect()，而只支持 rect()，因为这两个方法直接绘制到画布而不修改当前路径。
+
+### 2.10 Canvas 状态
+
+除了路径，Canvas 中还有一个非常重要的概念：**状态**。路径和状态，这两个概念在 Canvas 中极其重要。
+
+Canvas 是基于“状态”来绘制图形的。每一次绘制，Canvas 会检测整个程序定义的所有状态，这些状态包括 strokeStyle、fillStyle 和 lineWidth 等。当一个状态值没有被改变时，Canvas 就一直使用最初的值。当一个状态值被改变时，分两种情况考虑：
+
+- 如果使用 beginPath() 方法开始一个新的路径，则不同路径使用不同的值。
+- 如果没有使用 beginPath() 方法开始一个新的路径，则后面的值会覆盖前面的值（“后来者居上”原则）。
+
+Canvas 提供了两个操作状态的方法：
+
+- `save()`：保存当前状态。
+- `restore()`：恢复之前保存的状态。
+
+#### 2.10.1 clip()
+
+将当前创建的路径设置为当前剪切路径的方法。
+
+```js
+ctx.clip();
+ctx.clip(fillRule);
+ctx.clip(path, fillRule);
+```
+
+- **fillRule**：用来决定点在路径内还是在路径外的算法。 允许的值：
+
+  - nonzero：[非零环绕规则](https://en.wikipedia.org/wiki/Nonzero-rule)，默认的规则。
+  - evenodd：[奇偶环绕原则](https://en.wikipedia.org/wiki/Even%E2%80%93odd_rule)
+
+- **path**：[Path2D](https://developer.mozilla.org/zh-CN/docs/Web/API/Path2D) 应用的路径。
+
+> **注意**：clip() 不支持 strokeRect() 和 fillRect()，而只支持 rect()，因为这两个方法直接绘制到画布而不修改当前路径。
+
+```js
+let cnv = document.getElementById('canvas');
+let cxt = cnv.getContext('2d');
+// 绘制一个描边圆，圆心为 (50, 50)，半径为 40
+cxt.beginPath();
+cxt.arc(50, 50, 40, 0, (360 * Math.PI) / 180, true);
+cxt.closePath();
+cxt.strokeStyle = 'HotPink';
+cxt.stroke();
+// 使用 clip()，使得描边圆成为一个剪切区域
+cxt.clip();
+// 绘制一个填充矩形
+cxt.beginPath();
+cxt.fillStyle = '#66CCFF';
+cxt.fillRect(50, 50, 100, 80);
+```
+
+![clip()方法切割图形](<./image/clip()%E6%96%B9%E6%B3%95%E5%88%87%E5%89%B2%E5%9B%BE%E5%BD%A2.png>)
+
+![无clip()效果](<./image/%E6%97%A0clip()%E6%95%88%E6%9E%9C.png>)
+
+从上面可以知道，使用 clip() 方法可以使得某一个基本图形成为一个“剪切区域”，从而使得后面绘制的图形都只限于这个剪切区域，超出剪切区域的部分就不会显示（也就是被剪切掉）。
+
+#### 2.10.2 save() 和 restore()
+
+如果取消剪切区域，然后绘制其他图形，就需要用到 save() 和 restore() 这两个方法了。
+
+可以使用 save() 方法来保存当前状态，然后使用 restore() 方法来恢复之前保存的状态。save() 和 restore() 一般情况下都是成对使用的。
+
+Canvas 状态的保存和恢复，主要用于以下 3 种场合：
+
+- **图形或图片剪切**：在图形或图片中剪切可以分为 3 步：
+
+  1. save() 方法来保存当前状态
+  2. clip() 剪切
+  3. restore() 方法恢复之前保存的状态
+
+- **图形或图片变形**：在图形或图片中剪切可以分为 3 步：
+
+  1. save() 方法来保存当前状态
+  2. [变形操作](#26-变形操作)（平移、缩放、旋转）
+  3. 使用 restore() 方法恢复之前保存的状态
+
+- **改变状态属性的时候**：这些状态属性包括：填充效果、描边效果、线条效果、文本效果、阴影效果和全局属性。
+
+  - 填充效果：fillStyle
+  - 描边效果：strokeStyle
+  - 线条效果：lineCap、lineJoin、lineWidth、miterLimit
+  - 文本效果：font、textAlign、textBaseline
+  - 阴影效果：shadowBlur、shadowColor、shadowOffsetX、shadowOffsetY
+  - 全局属性：globalAlpha、globalCompositeOperation
+
+### 2.11 其他应用
+
+#### 2.11.1 Canvas 对象
+
+Canvas 常用对象方法
+
+| 属性             | 说明                               |
+| ---------------- | ---------------------------------- |
+| getContext('2d') | 获取 Canvas2D 上下文环境对象       |
+| toDataURL()      | 获取 Canvas 对象产生的位图的字符串 |
+
+可以使用 toDataURL()方法来将画布保存为一张图片。
+
+```js
+cnv.toDataURL(type, encoderOptions);
+```
+
+- **type**（可选）：图片格式，默认为 image/png。
+- **encoderOptions**（可选）：在指定图片格式为 image/jpeg 或 image/webp 的情况下，可以从 0 到 1 的区间内选择图片的质量。如果超出取值范围，将会使用默认值 0.92。其他参数会被忽略。
+
+#### 2.11.2 globalAlpha
+
+用来描述在 canvas 上绘图之前，设置图形和图片透明度的属性。数值的范围从 0.0（完全透明）到 1.0（完全不透明）。
+
+```js
+ctx.globalAlpha = value;
+```
+
+#### 2.11.3 globalCompositeOperation
+
+在 Canvas 中经常会看到不同图形交叉在一起。正常情况下，浏览器会按照图形绘制的顺序，依次显示每个图形，后面绘制的会覆盖前面绘制的，遵循“后来者居上”原则。改变交叉图形的显示方式，可以使用这个属性来实现。
+
+```js
+ctx.globalCompositeOperation = type;
+```
+
+| 属性值           | 说明                                                                 |
+| ---------------- | -------------------------------------------------------------------- |
+| source-over      | 默认值，新图形覆盖旧图形                                             |
+| copy             | 只显示新图形，旧图形作透明处理                                       |
+| darker           | 两种图形都显示，在重叠部分，颜色由两种图形的颜色值相减后形成         |
+| destination-atop | 只显示新图形与旧图形重叠部分以及新图形的其余部分，其他部分作透明处理 |
+| destination-in   | 只显示旧图形中与新图形重叠部分，其他部分作透明处理                   |
+| destination-out  | 只显示旧图形中与新图形不重叠部分，其他部分作透明处理                 |
+| destination-over | 与 source-over 属性相反，旧图形覆盖新图形                            |
+| lighter          | 两种图形都显示，在图形重叠部分，颜色由两种图形的颜色值相加后形成     |
+| source-ato       | 只显示旧图形与新图形重叠部分及旧图形的其余部分，其他部分作透明处理   |
+| source-in        | 只显示新图形中与旧图形重费部分，其他部分作透明处理                   |
+| source-out       | 只显示新图形中与旧图形不重叠部分，其他部分作透明处理                 |
+| xor              | 两种图形都绘制，其中重叠部分作透明处理                               |
+
+![globalCompositeOperation属性取值](./image/globalCompositeOperation%E5%B1%9E%E6%80%A7%E5%8F%96%E5%80%BC.jpg)
+
+## 三. Canvas 进阶
+
+### 3.1
