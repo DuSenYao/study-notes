@@ -20,8 +20,9 @@
     - [2.2 曲线图形](#22-曲线图形)
       - [2.2.1 圆形](#221-圆形)
       - [2.2.2 弧线](#222-弧线)
-      - [2.2.3 二次贝塞尔曲线](#223-二次贝塞尔曲线)
-      - [2.2.4 三次贝塞尔曲线](#224-三次贝塞尔曲线)
+      - [2.2.3 椭圆](#223-椭圆)
+      - [2.2.4 二次贝塞尔曲线](#224-二次贝塞尔曲线)
+      - [2.2.5 三次贝塞尔曲线](#225-三次贝塞尔曲线)
     - [2.3 线条操作](#23-线条操作)
       - [2.3.1 lineWidth](#231-linewidth)
       - [2.3.2 lineCap](#232-linecap)
@@ -62,6 +63,14 @@
       - [2.9.2 closePath()](#292-closepath)
       - [2.9.3 isPointInPath()](#293-ispointinpath)
     - [2.10 Canvas 状态](#210-canvas-状态)
+      - [2.10.1 clip()](#2101-clip)
+      - [2.10.2 save() 和 restore()](#2102-save-和-restore)
+    - [2.11 其他应用](#211-其他应用)
+      - [2.11.1 Canvas 对象](#2111-canvas-对象)
+      - [2.11.2 globalAlpha](#2112-globalalpha)
+      - [2.11.3 globalCompositeOperation](#2113-globalcompositeoperation)
+  - [三. Canvas 进阶](#三-canvas-进阶)
+    - [3.1](#31)
 
 <!-- /code_chunk_output -->
 
@@ -1570,4 +1579,64 @@ ctx.globalCompositeOperation = type;
 
 ## 三. Canvas 进阶
 
-### 3.1
+### 3.1 事件操作
+
+在 Canvas 中，常见的事件共有 3 种：
+
+- 鼠标事件
+- 键盘事件
+- 循环事件
+
+有了这些事件，就可以开发出交互性更强的动画，使得用户可以参与到 Canvas 动画交互中来。
+
+#### 3.1.1 鼠标事件
+
+在 Canvas 中，鼠标事件分为 3 种：
+
+- **mousedown**：表示按下鼠标一瞬间所触发的事件
+- **mouseup**：表示松开鼠标一瞬间所触发的事件
+- **mousemove**：表示鼠标移动事件
+
+在 Canvas 中，mousedown、mouseup 和 mousemove 这 3 种事件常用于实现拖拽功能。
+
+#### 3.1.2 键盘事件
+
+在 Canvas 中，常用的键盘事件共有 2 种：
+
+- keydown
+- keyup
+
+> **注意**：元素本身不支持键盘事件，因此一般情况下都是使用 window.addEventListener 来实现对键盘事件的监听。
+
+游戏方向按键对应 keyCode
+
+| 按键    | keyCode |
+| ------- | ------- |
+| W（上） | 87      |
+| S（下） | 83      |
+| A（左） | 65      |
+| D（右） | 68      |
+| ↑       | 38      |
+| ↓       | 40      |
+| ←       | 37      |
+| →       | 39      |
+
+```js
+let direction = '';
+window.addEventListener('keydown', ({ code }) => {
+  if (['ArrowUp', 'KeyW'].includes(code)) {
+    direction = 'up';
+  }
+  if (['ArrowDown', 'KeyS'].includes(code)) {
+    direction = 'down';
+  }
+  if (['ArrowLeft', 'KeyA'].includes(code)) {
+    direction = 'left';
+  }
+  if (['ArrowRight', 'KeyD'].includes(code)) {
+    direction = 'right';
+  }
+});
+```
+
+#### 3.1.3 循环事件

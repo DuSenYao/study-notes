@@ -299,7 +299,7 @@ const onCancel = () => {
    ```js
    // vue.config.js
    module.exports = {
-     chainWebpack: config => {
+     chainWebpack: (config) => {
        config.resolve.alias.set('vue', '@vue/compat');
        // ......
      }
@@ -437,7 +437,7 @@ Vue 中用过三种响应式解决方案，分别是 defineProperty、Proxy 和 
   在下面的代码中，定义个一个对象 obj，使用 defineProperty 代理了 count 属性。这样就对 obj 对象的 value 属性实现了拦截，读取 count 属性的时候执行 get 函数，修改 count 属性的时候执行 set 函数，并在 set 函数内部重新计算了 double：
 
   ```js
-  let getDouble = n => n * 2;
+  let getDouble = (n) => n * 2;
   let obj = {};
   let count = 1;
   let double = getDouble(count);
@@ -673,7 +673,7 @@ SPA 应用相比于模板的开发方式，对前端更加友好，比如：前�
 
 举个例子：需要通过一个值的范围在数字 1 到 6 之间的变量，去渲染标题组件 h1~h6，并根据传递的 props 去渲染标签名，可以使用 Vue3 中的 [h 函数](https://v3.cn.vuejs.org/api/global-api.html#h)来实现：
 
-由于 render 函数可以直接返回虚拟 DOM，因而就不再需要 template。可以新建一个文件 Heading.jsx ，要注意的是，这里 Heading 的结尾从 .vue 变成了 .jsx。
+由于 render 函数可以直接返回虚拟 DOM，因而就不再需要 template。可以新建一个文件 Heading.jsx，要注意的是，这里 Heading 的结尾从 .vue 变成了 .jsx。
 
 在下面的代码中，使用 defineComponent 定义一个组件，组件内部配置了 props 和 setup。这里的 setup 函数返回值是一个函数，就是 render 函数。render 函数返回 h 函数的执行结果，h 函数的第一个参数就是标签名，可以很方便地使用字符串拼接的方式，实现和上面代码一样的需求。像这种连标签名都需要动态处理的场景，就需要通过手写 h 函数来实现：
 
@@ -743,10 +743,12 @@ export default defineConfig({
 
 ```jsx
 setup(props, { slots }) {
-  const tag = 'h'+props.level
-  return () => <tag>{slots.default()}</tag>
+  const Tag = `h${props.level}`;
+  return () => <Tag>{slots.default ? slots.default() : ''}</Tag>;
 }
 ```
+
+> **注意**：在 JSX 中，组件名称必须是大写字母开头的标识符。
 
 JSX 的语法详细要点在 [GitHub 文档](https://github.com/vuejs/babel-plugin-jsx/blob/dev/packages/babel-plugin-jsx/README-zh_CN.md)中也有全面的介绍。
 
@@ -778,7 +780,7 @@ export default defineComponent({
         <button onClick={addTodo}>click</button>
         <ul>
           {todos.value.length ? (
-            todos.value.map(todo => {
+            todos.value.map((todo) => {
               return <li>{todo.title}</li>;
             })
           ) : (
@@ -796,7 +798,7 @@ export default defineComponent({
 就像在 TimeLine 组件的[源码](https://github.com/hug-sun/element3/blob/master/packages/element3/packages/timeline/Timeline.vue#L35)中，有一个 reverse 的属性来决定是否倒序渲染，在下面写出了类似的代码。代码中的 Timeline 是一个数组，数组中的两个元素都是 JSX，可以通过数组的 reverse 方法直接进行数组反转，实现逆序渲染。类似这种动态性要求很高的场景，template 是较难实现的。
 
 ```jsx
-export const Timeline = props => {
+export const Timeline = (props) => {
   const timeline = [<div className="start">8.21 开始自由职业</div>, <div className="online">10.18 专栏上线</div>];
   if (props.reverse) {
     timeline.reverse();
@@ -814,8 +816,8 @@ template 的语法是固定的，只有 v-if、v-for 等等语法。也就是说
 
 ```jsx
 export const Button = (props, { slots }) => <button {...props}>slots.default()</button>;
-export const Input = props => <input {...props} />;
-export const Timeline = props => {
+export const Input = (props) => <input {...props} />;
+export const Timeline = (props) => {
   // ...
 };
 ```
@@ -1080,7 +1082,7 @@ export const nodeOps: Omit<RendererOptions<Node, Element>, 'patchProp'> = {
     parent.insertBefore(child, anchor || null);
   },
   // 删除元素
-  remove: child => {
+  remove: (child) => {
     const parent = child.parentNode;
     if (parent) {
       parent.removeChild(child);
