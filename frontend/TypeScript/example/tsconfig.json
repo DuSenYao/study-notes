@@ -51,7 +51,6 @@
     // "outFile": "./",                                  /* 指定将所有输出捆绑到一个 JavaScript 文件中的文件。如果 “declaration” 为 true，还要指定一个捆绑所有 .d.ts 输出的文件。 */
     "outDir": "./out" /* 为所有已发出的文件指定输出文件夹。 */,
     "removeComments": true /* 删除注释 */,
-    // "importsNotUsedAsValues": "remove",               /* 指定仅用于类型的导入的发出/检查行为 */
     // "downlevelIteration": true,                       /* 发出更合规但更详细且性能较低的 JavaScript 进行迭代。 */
     // "sourceRoot": "",                                 /* 指定调试程序的根路径以查找引用源代码。 */
     // "mapRoot": "",                                    /* 指定调试程序应将映射文件放置到的位置而不是生成的位置。 */
@@ -65,7 +64,6 @@
     // "noEmitHelpers": true,                            /* 在已编译输出中禁用生成自定义帮助程序函数(如 “__extends”)。 */
     // "importHelpers": true,                            /* 允许每个项目从 tslib 导入帮助程序函数一次，而不是将它们包含在每个文件中。 */
     // "preserveConstEnums": true,                       /* 在生成的代码中禁用擦除 “const enum” 声明。 */
-    // "preserveValueImports": true,                     /* 保留 JavaScript 输出中未使用的导入值，否则将删除这些值。 */
 
     /* 互操作约束 */
     // "isolatedModules": true,                          /* 确保可以安全地转译每个文件，而无需依赖其他导入。 */

@@ -328,7 +328,6 @@
       - [4.6.6 针对类型的模块导入与导出](#466-针对类型的模块导入与导出)
         - [4.6.6.1 背景介绍](#4661-背景介绍)
         - [4.6.6.2 导入与导出类型](#4662-导入与导出类型)
-        - [4.6.6.3 importsNotUsedAsValues 编译选项](#4663-importsnotusedasvalues-编译选项)
       - [4.6.7 动态模块导入](#467-动态模块导入)
       - [4.6.8 module 编译选项](#468-module-编译选项)
     - [4.7 外部声明](#47-外部声明)
@@ -375,6 +374,7 @@
         - [4.10.4.4 命名空间与枚举合并](#41044-命名空间与枚举合并)
       - [4.10.5 扩充模块声明](#4105-扩充模块声明)
       - [4.10.6 扩充全局声明](#4106-扩充全局声明)
+    - [4.11 装饰器](#411-装饰器)
   - [五. TypeScript 配置管理](#五-typescript-配置管理)
     - [5.1 编译器](#51-编译器)
       - [5.1.1 安装编译器](#511-安装编译器)
@@ -441,6 +441,8 @@
         - [5.5.3.6 @deprecated](#5536-deprecated)
         - [5.5.3.7 @see](#5537-see)
         - [5.5.3.8 @link](#5538-link)
+        - [5.5.3.9 @satisfies](#5539-satisfies)
+        - [5.5.3.10 @overload](#55310-overload)
     - [5.6 三斜线指令](#56-三斜线指令)
       - [5.6.1 reference path](#561-reference-path)
       - [5.6.2 reference types](#562-reference-types)
@@ -471,7 +473,7 @@
 
 <!-- /code_chunk_output -->
 
-增补到 4.9。
+内容升级到 5.0
 
 ## 一. 介绍
 
@@ -2281,10 +2283,6 @@ const point: { x: number } = { x: 0, y: 0 }; // y 是多余属性
   // 无编译错误
   const p1: { x: number } = { x: 0, y: 0 } as { x: 0; y: 0 };
   ```
-
-- **启用 `--suppressExcessPropertyErrors` 编译选项**
-
-  启用该编译选项能够完全禁用整个 TypeScript 工程的多余属性检查，但同时也将完全失去多余属性检査带来的帮助。可以在 [tsconfig.json](#53-tsconfigjson) 配置文件中或命令行上启用该编译选项。
 
 - **使用 "// @ts-ignore" 注释指令**
 
@@ -8203,7 +8201,7 @@ const palette = {
   red: [255, 0, 0],
   green: '#00ff00',
   bleu: [0, 0, 255]
-  //  ^^^^ 拼写错误
+  // ^^^^ 拼写错误
 };
 
 // 想要在 'red' 上调用数组的方法
@@ -8778,66 +8776,42 @@ type S = NotEmpty<true>;
 
 ##### 4.1.7.2 泛型函数类型
 
-与检查函数类型相似，编译器在检查泛型函数类型时有两种检查模式可供选择：
+在严格的泛型函数类型检查模式下，不使用 any 类型替换所有的类型参数，而是先通过类型推断来统一两个泛型函数的类型参数，然后再确定两者的子类型关系。例如，有如下的泛型函数类型 A 和 B：
 
-- **非严格泛型函数类型检查**
+```ts
+type A = <T, U>(x: T, y: U) => [T, U];
+type B = <S>(x: S, y: S) => [S, S];
+```
 
-  TypeScript 编译器提供了 `--noStrictGenericChecks` 编译选项用来启用或关闭严格泛型函数类型检查。
+如果想要确定 A 是否为 B 的子类型，那么先尝试使用 B 的类型来推断 A 的类型。通过比较每个参数类型和返回值类型，能够得出类型参数 T 和 U 均为 S。接下来使用推断的结果来实例化 A 类型，即将类型 A 中的 T 和 U 均替换为 S，替换后的结果如下：
 
-  在非严格泛型函数类型检查模式下，编译器先将所有的泛型类型参数替换为 any 类型，然后再确定子类型关系。这意味着泛型类型参数不影响泛型函数的子类型关系。例如，有以下两个泛型函数类型：
+```ts
+type A = <S>(x: S, y: S) => [S, S];
+```
 
-  ```ts
-  type A = <T, U>(x: T, y: U) => [T, U];
-  type B = <S>(x: S, y: S) => [S, S];
-  ```
+在统一了类型参数之后，再来比较泛型函数间的子类型关系。因为统一后的类型 A 和 B 相同，所以 A 是 B 的子类型。示例如下：
 
-  首先，将所有的类型参数替换为 any 类型：
+```ts
+type A = <S>(x: S, y: S) => [S, S];
+type B = <S>(x: S, y: S) => [S, S];
+```
 
-  ```ts
-  type A = (x: any, y: any) => [any, any];
-  type B = (x: any, y: any) => [any, any];
-  ```
+至此，A 和 B 的子类型关系确定完毕。注意，这时不能确定 B 是否也为 A 的子类型，因为当前的推导过程是由 B 向 A 推导。
 
-  在替换后，A 和 B 类型变成了相同的类型，因此 A 是 B 的子类型，同时 B 也是 A 的子类型。
+现在反过来，如果最开始想要确定 B 是否为 A 的子类型，那么这时将由 A 向 B 来推断并统一类型参数的值。经推断，S 的类型为联合类型 “T|U"，然后使用"S=T|U" 来实例化 B 类型，结果如下：
 
-- **严格泛型函数类型检查**
+```ts
+type B = <T, U>(x: T | U, y: T | U) => [[T | U, T | U]];
+```
 
-  在严格的泛型函数类型检查模式下，不使用 any 类型替换所有的类型参数，而是先通过类型推断来统一两个泛型函数的类型参数，然后再确定两者的子类型关系。例如，有如下的泛型函数类型 A 和 B：
+在统一了类型参数之后，再来比较 A 和 B 之间的子类型关系。示例如下：
 
-  ```ts
-  type A = <T, U>(x: T, y: U) => [T, U];
-  type B = <S>(x: S, y: S) => [S, S];
-  ```
+```ts
+type A = <T, U>(x: T, y: U) => [T, U];
+type B = <T, U>(x: T | U, y: T | U) => [T | U, T | U];
+```
 
-  如果想要确定 A 是否为 B 的子类型，那么先尝试使用 B 的类型来推断 A 的类型。通过比较每个参数类型和返回值类型，能够得出类型参数 T 和 U 均为 S。接下来使用推断的结果来实例化 A 类型，即将类型 A 中的 T 和 U 均替换为 S，替换后的结果如下：
-
-  ```ts
-  type A = <S>(x: S, y: S) => [S, S];
-  ```
-
-  在统一了类型参数之后，再来比较泛型函数间的子类型关系。因为统一后的类型 A 和 B 相同，所以 A 是 B 的子类型。示例如下：
-
-  ```ts
-  type A = <S>(x: S, y: S) => [S, S];
-  type B = <S>(x: S, y: S) => [S, S];
-  ```
-
-  至此，A 和 B 的子类型关系确定完毕。注意，这时不能确定 B 是否也为 A 的子类型，因为当前的推导过程是由 B 向 A 推导。
-
-  现在反过来，如果最开始想要确定 B 是否为 A 的子类型，那么这时将由 A 向 B 来推断并统一类型参数的值。经推断，S 的类型为联合类型 “T|U"，然后使用"S=T|U" 来实例化 B 类型，结果如下：
-
-  ```ts
-  type B = <T, U>(x: T | U, y: T | U) => [[T | U, T | U]];
-  ```
-
-  在统一了类型参数之后，再来比较 A 和 B 之间的子类型关系。示例如下：
-
-  ```ts
-  type A = <T, U>(x: T, y: U) => [T, U];
-  type B = <T, U>(x: T | U, y: T | U) => [T | U, T | U];
-  ```
-
-  此时，B 不是 A 的子类型，因为 B 的返回值类型不是 A 的返回值类型的子类型。
+此时，B 不是 A 的子类型，因为 B 的返回值类型不是 A 的返回值类型的子类型。
 
 #### 4.1.8 联合类型
 
@@ -10069,51 +10043,6 @@ const p = { x: 0, y: 0 };
 
 此例中，"utils.ts" 模块导出的 Point 接口在生成的 "utils.js" 文件中被删除，因为接口只能表示一种类型。在 "index.ts" 文件中，导入 Point 接口的语句在生成的 "index.js" 文件中也被删除了，因为在 "index.ts" 中 Point 作为类型来使用，它不影响生成的 JS 代码。
 
-虽然在大部分情况下，编译器删除针对类型的导入导出语句不会影响生成的 JS 代码，但有时候也会给开发者带来困扰。一个典型的例子是使用了带有副作用的模块。如果一个模块只从带有副作用的模块中导入了类型，那么这条导入语句将会被编译器删除。因此，带有副作用的模块代码将不会被执行，这有可能不是期望的行为。例如，有如下目录结构的工程：
-
-C:\app
-|--index.ts
-`--utils.ts
-
-```ts
-// utils.ts
-globalThis.mode = 'dev';
-export interface Point {
-  x: number;
-  y: number;
-}
-```
-
-```ts
-// index.ts
-import { Point } from './utils';
-const p: Point = { x: 0, y: 0 };
-if (globalThis.mode === 'dev') {
-  console.log(p);
-}
-```
-
-由于在 "index.ts" 文件中只导入了 "utils.ts" 模块中的接口类型，因此在编译生成的 JS 文件中会删除导入 “utils.ts” 模块的语句，生成的 "index.js" 文件的内容如下：
-
-```ts
-const p = { x: 0, y: 0 };
-if (globalThis.mode === 'dev') {
-  console.log(p);
-}
-```
-
-而事实上，此例中的 "index.ts" 模块依赖于 "utils.ts" 模块中的副作用，即设置全局的 mode 属性。因此，期望生成的 “index.js” 文件的内容如下：
-
-```ts
-import './utils';
-const p = { x: 0, y: 0 };
-if (globalThis.mode === 'dev') {
-  console.log(p);
-}
-```
-
-在 TypeScript 3.8 版本中，引入了只针对类型的模块导入导出语句以及 `--importsNotUsedAsValues` 编译选项来帮助缓解上述问题。
-
 ##### 4.6.6.2 导入与导出类型
 
 总的来说，针对类型的模块导入导出语法是在前面介绍的模块导入导出语法中添加 `type` 关键字。
@@ -10123,6 +10052,7 @@ if (globalThis.mode === 'dev') {
 ```ts
 export type { Type };
 export type { Type } from 'mod';
+export type * from mod from 'mod';
 ```
 
 该语法中，Type 表示类型名。从模块中导入默认模块导出类型的语法如下所示：
@@ -10172,7 +10102,7 @@ const p: Point = { x: 0, y: 0 };
 
 ```ts
 import type { Point } from './utils';
-const p = new Point(); // 编译错误：Point'不能作为值来使用，因为它使用了import type导入语句
+const p = new Point(); // 编译错误：Point'不能作为值来使用，因为它使用了 import type 导入语句
 ```
 
 此外，就算在 "index.ts" 文件中不是使用 "import type" 来导入 Point，而是使用常规的 import 语句，也不能将 Point 作为一个值来使用，因为在"utils.ts" 模块中只导出了 Point 类型，而没有导出 Point 值：
@@ -10181,45 +10111,6 @@ const p = new Point(); // 编译错误：Point'不能作为值来使用，因为
 import { Point } from './utils';
 const p = new Point(); // 编译错误：'Point'不能作为值来使用，因为它是由 export type 语句导出的
 ```
-
-##### 4.6.6.3 importsNotUsedAsValues 编译选项
-
-针对类型的模块导入与导出的一个重要性质是，在编译生成 JS 代码时，编译器一定会删除 "import type" 和 "export type" 语句，因为能够完全确定它们只与类型相关。
-
-```ts
-// utils.ts
-class A {
-  x: number = 0;
-}
-class B {
-  x: number = 0;
-}
-export { A };
-export type { B };
-```
-
-```js
-// 编译后生成的 utils.js
-class A {
-  constructor() {
-    this.x = 0;
-  }
-}
-class B {
-  constructor() {
-    this.x = 0;
-  }
-}
-export { A };
-```
-
-此例中，对类型 B 的导出语句被编译器删除了。
-
-对于常规的 import 语句，编译器提供了 `--importsNotUsedAsValues` 编译选项来精确控制在编译时如何处理它们。该编译选项接受以下三个可能的值：
-
-- **remove**（默认值）：该选项是编译器的默认行为，它自动删除只和类型相关的 import 语句。
-- **preserve**：该选项会保留所有 import 语句。
-- **error**：该选项会保留所有 import 语句，发现可以改写为 "import type" 的 import 语句时会报错。
 
 #### 4.6.7 动态模块导入
 
@@ -11641,6 +11532,263 @@ const config: object = window.myAppConfig;
 ```
 
 此例中，"declare global {}" 是全局对象扩充语法，它扩展了全局的 Window 对象，增加了一个 myAppConfig 属性。全局对象扩充也具有和模块扩充相同的限制，不能在全局对象扩充语法中增加新的顶层声明，只能扩充现有的声明。
+
+### 4.11 装饰器
+
+装饰器是即将到来的 ECMAScript 特性，它**允许定制可重用的类以及类成员**。
+
+```ts
+class Person {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  greet() {
+    console.log(`Hello, my name is ${this.name}.`);
+  }
+}
+
+const p = new Person('Ron');
+p.greet();
+```
+
+这里的 greet 方法很简单，在实际中它内部可能会跟复杂，比如需要执行异步逻辑，或者进行递归，亦或是有副作用等。那就可能需要使用 console.log 来调试 greet：
+
+```ts
+class Person {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  greet() {
+    console.log('LOG: Entering method.');
+
+    console.log(`Hello, my name is ${this.name}.`);
+
+    console.log('LOG: Exiting method.');
+  }
+}
+```
+
+如果有一种方法可以为每种方法做到这一点，可能会很好。这就是装饰器的用武之地。可以编写一个名为 loggedMethod 的函数，如下所示：
+
+```ts
+function loggedMethod(originalMethod: any, _context: any) {
+  function replacementMethod(this: any, ...args: any[]) {
+    console.log('LOG: Entering method.');
+    const result = originalMethod.call(this, ...args);
+    console.log('LOG: Exiting method.');
+    return result;
+  }
+
+  return replacementMethod;
+}
+```
+
+这里，loggedMethod 需要传入一个参数（originalMethod）并返回一个函数。执行过程如下：
+
+1. 打印：LOG: Entering method.
+2. 将 this 及其所有参数传递给原始方法
+3. 打印：LOG: Exiting method.
+4. 返回原始方法的执行结果
+
+现在就可以使用 loggedMethod 来修饰 greet 方法：
+
+```ts
+class Person {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  // 它会被原始方法和 context 对象调用。因为 loggedMethod 返回了一个新函数，该函数替换了 greet 的原始定义
+  // loggedMethod 的第二个参数被称为 “context 对象”，它包含一些关于如何声明装饰方法的有用信息——比如它是 #private 成员还是静态成员，或者方法的名称是什么。
+  @loggedMethod
+  greet() {
+    console.log(`Hello, my name is ${this.name}.`);
+  }
+}
+
+const p = new Person('Ray');
+p.greet();
+// LOG: Entering method.
+// Hello, my name is Ray.
+// LOG: Exiting method.
+```
+
+下面来重写 loggedMethod 以利用它并打印出被修饰的方法的名称。
+
+```ts
+function loggedMethod(originalMethod: any, context: ClassMethodDecoratorContext) {
+  const methodName = String(context.name);
+
+  function replacementMethod(this: any, ...args: any[]) {
+    console.log(`LOG: Entering method '${methodName}'.`);
+    const result = originalMethod.call(this, ...args);
+    console.log(`LOG: Exiting method '${methodName}'.`);
+    return result;
+  }
+
+  return replacementMethod;
+}
+```
+
+TypeScript 提供了一个名为 `ClassMethodDecoratorContext` 的类型，它对方法装饰器采用的 context 对象进行建模。除了元数据之外，方法的 context 对象还有一个有用的函数：addInitializer。这是一种挂接到构造函数开头的方法（如果使用静态方法，则挂接到类本身的初始化）。
+
+举个例子，在 JavaScript 中，经常会写如下的模式：
+
+```ts
+class Person {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+
+    this.greet = this.greet.bind(this);
+  }
+
+  greet() {
+    console.log(`Hello, my name is ${this.name}.`);
+  }
+}
+```
+
+或者，greet 可以声明为初始化为箭头函数的属性。
+
+```ts
+class Person {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  greet = () => {
+    console.log(`Hello, my name is ${this.name}.`);
+  };
+}
+```
+
+编写这段代码是为了确保在 greet 作为独立函数调用或作为回调函数传递时不会重新绑定。
+
+```js
+const greet = new Person('Ray').greet;
+
+greet();
+```
+
+可以编写一个装饰器，使用 addInitializer 在构造函数中调用 bind。
+
+```ts
+function bound(originalMethod: any, context: ClassMethodDecoratorContext) {
+  const methodName = context.name;
+  if (context.private) {
+    throw new Error(`'bound' cannot decorate private properties like ${methodName as string}.`);
+  }
+  context.addInitializer(function () {
+    this[methodName] = this[methodName].bind(this);
+  });
+}
+```
+
+bound 不会返回任何内容，所以当它装饰一个方法时，它会保留原来的方法。相反，它会在其他字段初始化之前添加逻辑。
+
+```ts
+class Person {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  @bound
+  @loggedMethod
+  greet() {
+    console.log(`Hello, my name is ${this.name}.`);
+  }
+}
+
+const p = new Person('Ray');
+const greet = p.greet;
+
+greet();
+```
+
+这里使用了两个装饰器：@bound 和 @loggedMethod。这些装饰是以“相反的顺序”运行的。也就是说 **@loggedMethod 修饰了原始方法 greet，@bound 修饰了 @loggedMethod 的结果**。在这个例子中，这没有关系——但如果装饰器有副作用或期望某种顺序，则可能有关系。
+
+可以将这些装饰器放在同一行：
+
+```ts
+@bound @loggedMethod greet() {
+  console.log(`Hello, my name is ${this.name}.`);
+}
+```
+
+甚至可以创建返回装饰器函数的函数。这可以对最终的装饰器进行一些自定义。可以让 loggedMethod 返回一个装饰器，并自定义它记录消息的方式。
+
+```ts
+function loggedMethod(headMessage = 'LOG:') {
+  return function actualDecorator(originalMethod: any, context: ClassMethodDecoratorContext) {
+    const methodName = String(context.name);
+
+    function replacementMethod(this: any, ...args: any[]) {
+      console.log(`${headMessage} Entering method '${methodName}'.`);
+      const result = originalMethod.call(this, ...args);
+      console.log(`${headMessage} Exiting method '${methodName}'.`);
+      return result;
+    }
+
+    return replacementMethod;
+  };
+}
+```
+
+如果这样做，必须在使用 loggedMethod 作为装饰器之前调用它。然后，可以传入任何字符串作为记录到控制台的消息的前缀。
+
+```ts
+class Person {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  @loggedMethod('LOG: ')
+  greet() {
+    console.log(`Hello, my name is ${this.name}.`);
+  }
+}
+
+const p = new Person('Ray');
+p.greet();
+// LOG: Entering method 'greet'.
+// LOG: Hello, my name is Ray.
+// LOG: Exiting method 'greet'.
+```
+
+装饰器可不仅仅用于方法，还可以用于属性/字段、getter、setter 和自动存取器。甚至类本身也可以装饰成子类化和注册。
+
+上面的 loggedMethod 和 bound 装饰器示例写的很简单，并省略了大量关于类型的细节。实际上，编写装饰器可能相当复杂。例如，上面的 loggedMethod 类型良好的版本可能看起来像这样：
+
+```ts
+function loggedMethod<This, Args extends any[], Return>(
+  target: (this: This, ...args: Args) => Return,
+  context: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => Return>
+) {
+  const methodName = String(context.name);
+
+  function replacementMethod(this: This, ...args: Args): Return {
+    console.log(`LOG: Entering method '${methodName}'.`);
+    const result = target.call(this, ...args);
+    console.log(`LOG: Exiting method '${methodName}'.`);
+    return result;
+  }
+
+  return replacementMethod;
+}
+```
+
+必须使用 this、Args 和 return 类型参数分别建模 this、参数和原始方法的返回类型。
+
+具体定义装饰器函数的复杂程度取决于想要保证什么。需要记住，装饰器的使用次数将超过它们的编写次数，所以类型良好的版本通常是更好的——但显然与可读性有一个权衡，所以请尽量保持简单。
 
 ## 五. TypeScript 配置管理
 
@@ -13163,6 +13311,106 @@ function related() {}
 function harvestCarrot(carrot: Carrot) {}
 
 function plantCarrot(seed: Seed) {}
+```
+
+##### 5.5.3.9 @satisfies
+
+TypeScript 4.9 引入了 [satisfies](#314-satisfies-运算符) 操作符。它确保表达式的类型是兼容的，而不影响类型本身。
+
+这对 TypeScript 用户很有帮助，但是很多人使用 JSDoc 注释对 TypeScript 代码进行类型检查。`/** @satisfies */` 可以捕获类型不匹配：
+
+```ts
+/**
+ * @typedef CompilerOptions
+ * @prop {boolean} [strict]
+ * @prop {string} [outDir]
+ */
+
+/**
+ * @satisfies {CompilerOptions}
+ */
+let myCompilerOptions = {
+  outdir: '../lib'
+  //  ~~~~~~ 应该是 outDir
+};
+```
+
+`/** @satisfies */` 也可以内嵌在任何带括号的表达式上。可以这样写 myCompilerOptions：
+
+```ts
+let myConfigSettings = /** @satisfies {ConfigSettings} */ {
+  compilerOptions: {
+    strict: true,
+    outDir: '../lib'
+  },
+  extends: ['@tsconfig/strictest/tsconfig.json', '../../../tsconfig.base.json']
+};
+```
+
+这可能在函数调用时更有意义：
+
+```ts
+compileCode(
+  /** @satisfies {CompilerOptions} */ {
+    // ...
+  }
+);
+```
+
+##### 5.5.3.10 @overload
+
+在 TypeScript 中，可以为函数指定重载。重载提供了一种方式，用不同的参数调用一个函数，并返回不同的结果。它可以限制调用者实际使用函数的方式，并优化将返回的结果。
+
+```ts
+// 重载:
+function printValue(str: string): void;
+function printValue(num: number, maxFractionDigits?: number): void;
+
+// 实现:
+function printValue(value: string | number, maximumFractionDigits?: number) {
+  if (typeof value === 'number') {
+    const formatter = Intl.NumberFormat('en-US', {
+      maximumFractionDigits
+    });
+    value = formatter.format(value);
+  }
+
+  console.log(value);
+}
+```
+
+这里，printValue 将字符串或数字作为第一个参数。如果它需要一个数字，它可以使用第二个参数来确定可以打印多少个小数位。
+
+TypeScript 5.0 现在允许 JSDoc 使用新的 @overload 标签声明重载。 每个带有 @overload 标签的 JSDoc 注释都被视为以下函数声明的不同重载。
+
+```ts
+/**
+ * @overload
+ * @param {string} value
+ * @return {void}
+ */
+
+/**
+ * @overload
+ * @param {number} value
+ * @param {number} [maximumFractionDigits]
+ * @return {void}
+ */
+
+/**
+ * @param {string | number} value
+ * @param {number} [maximumFractionDigits]
+ */
+function printValue(value, maximumFractionDigits) {
+  if (typeof value === 'number') {
+    const formatter = Intl.NumberFormat('en-US', {
+      maximumFractionDigits
+    });
+    value = formatter.format(value);
+  }
+
+  console.log(value);
+}
 ```
 
 ### 5.6 三斜线指令
