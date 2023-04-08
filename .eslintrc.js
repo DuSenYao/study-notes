@@ -234,7 +234,6 @@ module.exports = {
       }
     ],
     'array-bracket-spacing': [2, 'never'],
-    'arrow-parens': [1, 'as-needed'],
     'computed-property-spacing': [1, 'never'],
     'consistent-return': 0,
     'default-case': 1,

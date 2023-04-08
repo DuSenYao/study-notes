@@ -70,7 +70,14 @@
       - [2.11.2 globalAlpha](#2112-globalalpha)
       - [2.11.3 globalCompositeOperation](#2113-globalcompositeoperation)
   - [三. Canvas 进阶](#三-canvas-进阶)
-    - [3.1](#31)
+    - [3.1 事件操作](#31-事件操作)
+      - [3.1.1 鼠标事件](#311-鼠标事件)
+      - [3.1.2 键盘事件](#312-键盘事件)
+      - [3.1.3 循环事件](#313-循环事件)
+    - [3.2 物理动画](#32-物理动画)
+      - [3.2.1 三角函数](#321-三角函数)
+        - [3.2.1.1 追随鼠标指针旋转](#3211-追随鼠标指针旋转)
+        - [3.2.1.2 两点间距离](#3212-两点间距离)
 
 <!-- /code_chunk_output -->
 
@@ -341,7 +348,7 @@ cxt.closePath();
 
 - **x 和 y**：x 表示圆心横坐标，y 表示圆心纵坐标。(x, y) 表示圆心坐标。
 
-- **开始角度、结束角度**：开始角度和结束角度都是以弧度为单位。例如 180 就应该写成 Math.PI，而 360 就应该写成 Math.Pl\*2，依此类推。
+- **开始角度、结束角度**：开始角度和结束角度都是以弧度为单位。例如 180 就应该写成 Math.PI，而 360 就应该写成 Math.PI\*2，依此类推。
 
   对于开始角度和结束角度，在实际开发中推荐这种写法：`度数 * Math.PI/180`。这种写法可以一眼就能看出角度是多少，如下。
 
@@ -932,7 +939,7 @@ let cnv = document.getElementById('canvas');
 let cxt = cnv.getContext('2d');
 // 第1步，绘制基本图形，用于切割
 cxt.beginPath();
-cxt.arc(70, 70, 50, 0, (360 * Math.Pl) / 180, true);
+cxt.arc(70, 70, 50, 0, (360 * Math.PI) / 180, true);
 cxt.closePath();
 cxt.stroke();
 // 第2步，使用clip()方法，使得切割区域为上面绘制的基本图形;
@@ -1640,3 +1647,361 @@ window.addEventListener('keydown', ({ code }) => {
 ```
 
 #### 3.1.3 循环事件
+
+一般都使用 `requestAnimationFrame()` 方法来实现 Canvas 动画效果。
+
+```js
+window.requestAnimationFrame(callback);
+```
+
+- **callback**：下一次重绘之前更新动画帧所调用的函数。该回调函数会被传入 [DOMHighResTimeStamp](https://developer.mozilla.org/zh-CN/docs/Web/API/DOMHighResTimeStamp) 参数，该参数与 performance.now() 的返回值相同，它表示 requestAnimationFrame() 开始去执行回调函数的时刻。
+
+```js
+let cnv = document.getElementById('canvas');
+let cxt = cnv.getContext('2d');
+let x = 0;
+(function frame() {
+  window.requestAnimationFrame(frame);
+  // 清空画布
+  cxt.clearRect(0, 0, cnv.width, cnv.height);
+  // 绘制圆
+  cxt.beginPath();
+  cxt.arc(x, 70, 20, 0, (360 * Math.PI) / 180, true);
+  cxt.closePath();
+  cxt.fillStyle = '#6699FF';
+  cxt.fill();
+  // 变量递增
+  x += 1;
+})();
+```
+
+### 3.2 物理动画
+
+物理动画，简单来说，就是模拟现实世界的一种动画效果。主要有以下几个方面的内容：
+
+- 三角函数
+- 匀速运动
+- 加速运动
+- 重力
+- 摩擦力
+
+#### 3.2.1 三角函数
+
+三角函数一般用于计算三角形中“未知长度的边”和“未知度数的角”。常见的三角函数有 3 种：
+
+- 正弦函数 sin(θ)
+- 余弦函数 cos(θ)
+- 正切函数 tan(θ)
+
+![三角函数](./image/%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0.jpg)
+
+```js
+let PI = Math.PI / 180;
+Math.sin(θ * PI); // sin(θ)
+Math.cos(θ * PI); // cos(θ)
+Math.tan(θ * PI); // tan(θ)
+
+Math.asin(x / R) * PI; // arcsin(x/R)
+Math.acos(x / y) * PI; // arccos(y/R)
+Math.atan(x / y) * PI; // arctan(x/y)
+```
+
+在三角函数中，可以使用反正切函数 `Math.atan()` 来求出两条边之间夹角的度数。不过反正切函数 Math.atan() 有一个很大的问题：使用 Math.atan() 可能会出现一个度数对应两个夹角的情况。也就是说，此时无法准确判断该度数对应的是哪一个夹角。如下图：
+
+![四个象限的角](./image/%E5%9B%9B%E4%B8%AA%E8%B1%A1%E9%99%90%E7%9A%84%E8%A7%92.jpg)
+
+在图中有 4 个不同的三角形：A、B、C 与 D。其中 A、B 的 x 轴坐标为正值，C、D 的 x 轴坐标为负值，B、C 的 y 轴坐标为正值，A、D 的 y 轴坐标为负值。因此，对于 4 个内角来说，将会得到以下的正切值：
+
+tan(A) = -0.5
+tan(B) = 0.5
+tan(C) = -0.5
+tan(D) = 0.5
+
+假如将 0.5 作为参数传入 Math.atan() 函数中，然后再将结果转化为度数，将会得到一个接近 26.57° 的值，但是 `Math.atan(1/2)`（B 的夹角的值）和 `Math.atan((-1)/(-2))`（D 的夹角）的值都是 26.57°。也就是说，此时没办法判断 26.57° 对应的三角形是 B 还是 D，因为这两个角对应的正切值都是 0.5。Math.atan() 方法对于这种情况就显得无能为力了。这个时候就需要用到 JS 中的另一个反正切函数：`Math.atan2()`。
+
+在 Canvas 中，可以使用反正切函数 Math.atan2() 来求出两条边之间夹角的度数，并且准确判断该度数对应的是哪一个夹角。
+
+```js
+Math.atan2(y, x);
+```
+
+- **y**：表示对边的边长
+- **×**：表示邻边的边长
+
+![Math.atan2()函数的分析](<./image/Math.atan2()%E5%87%BD%E6%95%B0%E7%9A%84%E5%88%86%E6%9E%90.jpg>)
+
+对于反正切函数 Math.atan2() 来说，Math.atan2(1, 2) 和 Math.atan2(-1, -2) 的结果是不一样的：
+
+```js
+Math.atan2(1, 2) * (180 / Math.PI); // 26.56505117707799
+Math.atan2(-1, -2) * (180 / Math.PI); // -153.434948822922
+```
+
+![测量角的两种方法](./image/%E6%B5%8B%E9%87%8F%E8%A7%92%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E6%B3%95.jpg)
+
+实际上，Math.atan2(1, 2) 对应角 D，而 Math.atan2(-1, -2) 对应角 D 的补角。从上图中可以看出，-153.43 是从 x 轴正方向开始，以逆时针方向计算的。这样就把两个角区分开了。
+
+由此可知使用**反正切函数 Math.atan2() 求出两条边之间夹角的度数，并且能够准确判断该度数对应的是哪一个夹角**。在实际开发中，基本上用不到
+Math.atan() 函数，反而是 Math.atan2() 函数用得较多。
+
+##### 3.2.1.1 追随鼠标指针旋转
+
+Math.atan2() 函数可以实现一个经典效果：[追随鼠标指针旋转](./example/followMouseRotation.html)。
+
+![箭头跟随鼠标指针旋转的分析](./image/%E7%AE%AD%E5%A4%B4%E8%B7%9F%E9%9A%8F%E9%BC%A0%E6%A0%87%E6%8C%87%E9%92%88%E6%97%8B%E8%BD%AC%E7%9A%84%E5%88%86%E6%9E%90.jpg)
+
+##### 3.2.1.2 两点间距离
+
+![两点间距离](./image/%E4%B8%A4%E7%82%B9%E9%97%B4%E8%B7%9D%E7%A6%BB.jpg)
+
+假设有两点 (x1, y1) 和 (x2, y2)，求这两点之间的距离：
+
+```js
+dx = x2 - x1;
+dy = y2 - y1;
+distance = Math.sqrt(dx * dx + dy * dy);
+```
+
+Math.sqrt() 方法用于求一个数的平方根。
+
+##### 3.2.1.3 圆周运动
+
+在 Canvas 中，圆周运动共有两种形式：正圆运动和椭圆运动。
+
+- **正圆运动**
+
+  ![圆上任意一点的坐标（圆心是坐标原点）](./image/%E5%9C%86%E4%B8%8A%E4%BB%BB%E6%84%8F%E4%B8%80%E7%82%B9%E7%9A%84%E5%9D%90%E6%A0%87%EF%BC%88%E5%9C%86%E5%BF%83%E6%98%AF%E5%9D%90%E6%A0%87%E5%8E%9F%E7%82%B9%EF%BC%89.jpg)
+
+  从上图可以看出，通过“圆的标准方程”的数学推理，可以得到圆上任意一点的坐标：
+
+  ```js
+  x = centerX + Math.cos(angle) * radius;
+  y = centerY + Math.sin(angle) * radius;
+  ```
+
+  - **(centerX, centerY)**：圆心坐标
+  - **angle**：角度（弧度制）
+  - **radius**：圆的半径
+
+  从上面两条公式可以得到当前点的坐标，分析思路如下图所示：
+
+  ![圆上任意一点坐标（圆心不是坐标原点）](./image/%E5%9C%86%E4%B8%8A%E4%BB%BB%E6%84%8F%E4%B8%80%E7%82%B9%E5%9D%90%E6%A0%87%EF%BC%88%E5%9C%86%E5%BF%83%E4%B8%8D%E6%98%AF%E5%9D%90%E6%A0%87%E5%8E%9F%E7%82%B9%EF%BC%89.jpg)
+
+  接下来建立一个 [ball.js](./example/utils/ball.js) 文件。并将它引入[示例文件](./example/circularMotion.html)中。
+
+- **椭圆运动**
+
+  ![椭圆上任意一点的坐标](./image/%E6%A4%AD%E5%9C%86%E4%B8%8A%E4%BB%BB%E6%84%8F%E4%B8%80%E7%82%B9%E7%9A%84%E5%9D%90%E6%A0%87.jpg)
+
+  椭圆和正圆的不同之处在于：正圆的半径在 x 轴和 y 轴两个方向是相同的，而椭圆的半径在 x 轴和 y 轴两个方向是不同的。
+
+  从上图中可以看出，可以通过“椭圆的标准方程”的数学推理得到楠圆上任意一点的坐标：
+
+  ```js
+  x = centerX + Math.cos(angle) * radiusX;
+  y = centerY + Math.sin(angle) * radiusY;
+  ```
+
+  - **(centerX, centerY)**：圆心坐标
+  - **angle**：角度（弧度制）
+  - **radiusX**：椭圆在 x 轴方向的半径
+  - **radiusY**：椭圆在 y 轴方向的半径
+
+##### 3.2.1.4 波形运动
+
+![正弦函数的波形](./image/%E6%AD%A3%E5%BC%A6%E5%87%BD%E6%95%B0%E7%9A%84%E6%B3%A2%E5%BD%A2.jpg)
+
+在 Canvas 中，根据正弦函数作用对象的不同，常见的波形运动可以分为 3 种：
+
+- **作用于 x 轴坐标**
+
+  当正弦函数作用于物体中心的 x 轴坐标时，物体会左右摇摆，类似于水草在水流中左右摇摆。
+
+  ```js
+  x = centerX + Math.sin(angle) * range;
+  angle += speed;
+  ```
+
+  - **(centerX, centerY)**：物体中心坐标
+  - **angle**：角度（弧度制）
+  - **range**：振幅
+  - **speed**：角度改变的大小
+
+- **作用于 y 轴坐标**
+
+  当正弦函数作用于物体中心的 y 轴坐标时，物体运动的轨迹刚好就是 sin 函数的波形。
+
+  ```js
+  y = centerY + Math.sin(angle) * range;
+  angle += speed;
+  ```
+
+  - **(centerX, centerY)**：物体中心坐标
+  - **angle**：角度（弧度制）
+  - **range**：振幅
+  - **speed**：角度改变的大小
+
+- **作用于缩放属性（scaleX 或 scaleY）**
+
+  当正弦函数作用于物体的缩放属性（scaleX 或 scaleY）时，物体会不断地放大然后缩小，从而呈现一种脉冲动画的效果。
+
+  ```js
+  scaleX = 1 + Math.sin(angle) * range;
+  scaleY = 1 + Math.sin(angle) * range;
+  angle += speed;
+  ```
+
+  - **scaleX**：物体在 x 轴方向缩放的倍数
+  - **scaleY**：物体在 y 轴方向缩放的倍数
+  - **angle**：角度（弧度制）
+  - **range**：振幅
+  - **speed**：角度改变的大小
+
+[例子](./example/waveformMotion.html)
+
+#### 3.2.2 匀速运动
+
+匀速运动，又称为“匀速直线运动”，指的是物体在一条直线上运动，并且在单位时间内位移的距离是相等的。匀速运动需要具备两个条件：
+
+- 速度大小相同
+- 速度方向相同
+
+匀速运动是一种加速度为 0 的运动。匀速运动只有一种，那就是：匀速直线运动。
+
+> 匀速圆周运动是匀速率圆周运动或匀角速度运动，它的加速度不为 0，因此匀速圆周运动并不是匀速直线运动。
+
+```js
+object.x += vx;
+object.y += vy;
+```
+
+- **object.x**：物体 x 轴坐标
+- **object.y**：物体 y 轴坐标
+- **vx**：x 轴方向的速度大小
+- **vy**：y 轴方向的速度大小
+
+在匀速运动中，速度是有正反方向之分的，可以用正数表示正方向，用负数表示反方向。
+
+```js
+import { useCanvas } from './utils/tools.js';
+import { Ball } from './utils/ball.js';
+
+let { cnv, cxt } = useCanvas();
+// 实例化一个小球
+let ball = new Ball(cnv.width / 2, cnv.height / 2);
+// 定义 x 轴速度为 2，也就是每帧向正方向移动 2 px
+let vx = 2;
+(function frame() {
+  window.requestAnimationFrame(frame);
+  cxt.clearRect(0, 0, cnv.width, cnv.height);
+  ball.x += vx;
+  ball.fill(cxt);
+})();
+```
+
+##### 3.2.2.1 速度的合成与分解
+
+如果想让小球沿着任意方向匀速运动，就需要用到速度的合成与分解了，如下图所示。
+
+![分解速度](./image/%E5%88%86%E8%A7%A3%E9%80%9F%E5%BA%A6.jpg)
+
+速度的分解很简单，只需要将该方向的速度分解为 x 轴和 y 轴两个方向的分速度，然后再分别进行处理即可。对于速度的分解，也需要用到三角函数。
+
+```js
+vx = speed * Math.cos((angle * Math.PI) / 180);
+vy = speed * Math.sin((angle * Math.PI) / 180);
+object.x += vx;
+object.y += vy;
+```
+
+- **object.x**：物体 x 轴坐标
+- **object.y**：物体 y 轴坐标
+- **vx**：x 轴方向的速度大小
+- **vy**：y 轴方向的速度大小
+- **speed**：表示任意方向的速度大小
+- **angle**：表示该速度的方向与 x 轴正方向的夹角
+
+```js
+import { useCanvas } from './utils/tools.js';
+import { Ball } from './utils/ball.js';
+
+let { cnv, cxt } = useCanvas();
+// 实例化一个小球，球心坐标、半径以及颜色都采用默认值
+let ball = new Ball();
+let speed = 2;
+// 速度方向与 x 轴正方向角度为 30°
+let vx = speed * Math.cos((30 * Math.PI) / 180);
+let vy = speed * Math.sin((30 * Math.PI) / 180);
+(function drawFrame() {
+  window.requestAnimationFrame(drawFrame);
+  cxt.clearRect(0, 0, cnv.width, cnv.height);
+  ball.x += vx;
+  ball.y += vy;
+  ball.fill(cxt);
+})();
+```
+
+在前面有一个箭头跟随鼠标移动的[例子](./example/followMouseRotation.html)，可在此基础上加入匀速运动，实现箭头跟随鼠标指针匀速运动的效果。
+
+#### 3.2.3 变速运动
+
+变速运动，指的是方向相同、速度大小变化的运动。速度递增的是加速运动，速度递减的是减速运动。加速运动分为两种：
+
+- **匀加速运动**
+
+  ```js
+  vx += ax;
+  vy += ay;
+  object.x += vx;
+  object.y += vy;
+  ```
+
+  - **object.x**：物体 x 轴坐标
+  - **object.y**：物体 y 轴坐标
+  - **vx**：x 轴方向的速度大小
+  - **vy**：y 轴方向的速度大小
+  - **ax**：x 轴方向的加速度（单位时间内速度改变的矢量）
+  - **ay**：y 轴方向的加速度
+
+  当 ax 大于 0 时，物体向右做匀加速运动；当 ax 小于 0 时，物体向左做匀加速运动；当 ax 等于 0 时，物体按原来速度运动。ay 跟 ax 同理。
+
+- **变加速运动**
+
+##### 3.2.3.1 加速度的合成和分解
+
+如想让小球沿着任意方向进行加速运动，这个时候，需要对**加速度**进行分解。
+
+![分解加速度](./image/%E5%88%86%E8%A7%A3%E5%8A%A0%E9%80%9F%E5%BA%A6.jpg)
+
+```js
+ax = a * Math.cos((angle * Math.PI) / 180);
+ay = a * Math.sin((angle * Math.PI) / 180);
+vx += ax;
+vy += ay;
+object.x += vx;
+object.y += vy;
+```
+
+- **object.x**：物体 x 轴坐标
+- **object.y**：物体 y 轴坐标
+- **vx**：x 轴方向的速度大小
+- **vy**：y 轴方向的速度大小
+- **ax**：x 轴方向的加速度（单位时间内速度改变的矢量）
+- **ay**：y 轴方向的加速度
+- **a**：任意方向的加速度大小
+- **angle**：该加速度的方向与 x 轴正方向的夹角
+
+#### 3.2.4 重力
+
+说起重力，不得不提重力加速度。重力加速度是加速度中比较特殊的一种。重力加速度其实是物体受地球引力形成的。
+
+在地球上，任何一个物体从空中下落到地面，都有一个垂直向下的加速度。对于重力引起的运动，可以看成是沿着 y 轴正方向的加速运动。
+
+```js
+vy += gravity;
+object.y += vy;
+```
+
+借助重力，可以实现很多有趣的效果。这个例子中有一个很常见的效果：小球从空中自由降落到地面，然后反弹，循环往复，直到它的最终速度为 0 而停止在地面。
+
+#### 3.2.5 摩擦力

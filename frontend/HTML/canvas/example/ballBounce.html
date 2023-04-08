@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>ball bounce</title>
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="500"
+    ></canvas>
+
+    <script type="module">
+      import { Ball } from './utils/ball.js';
+      import { useCanvas } from './utils/tools.js';
+
+      let { cnv, cxt } = useCanvas();
+      let ball = new Ball(cnv.width / 2, 0);
+      let vy = 0; // Y 轴方向的速度
+      let gravity = 0.2; // 重力加速度为 0.2
+      let bounce = -0.8; // 反弹系数为 -0.8（反弹系数取值一般为 -1.0~0 的任意数）
+      (function drawFrame() {
+        window.requestAnimationFrame(drawFrame);
+        cxt.clearRect(0, 0, cnv.width, cnv.height);
+        ball.y += vy;
+        // 边界检测
+        if (ball.y > cnv.height - ball.radius) {
+          ball.y = cnv.height - ball.radius;
+          // 速度反向并且减小
+          vy *= bounce;
+        }
+        ball.fill(cxt);
+        vy += gravity;
+      })();
+    </script>
+  </body>
+</html>

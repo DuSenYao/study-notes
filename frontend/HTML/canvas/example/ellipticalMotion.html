@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Elliptical motion</title>
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="500"
+    ></canvas>
+
+    <script type="module">
+      import { Ball } from './utils/ball.js';
+
+      let cnv = document.getElementById('canvas');
+      let cxt = cnv.getContext('2d');
+      let ball = new Ball(100, 25);
+      let centerX = cnv.width / 2;
+      let centerY = cnv.height / 2;
+      let radiusX = 60;
+      let radiusY = 40;
+      let angle = 0;
+      (function frame() {
+        window.requestAnimationFrame(frame);
+        cxt.clearRect(0, 0, cnv.width, cnv.height);
+        // 计算小球坐标
+        ball.x = centerX + Math.cos(angle) * radiusX;
+        ball.y = centerY + Math.sin(angle) * radiusY;
+        ball.fill(cxt);
+        // 角度递增
+        angle += 0.05;
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Waveform motion</title>
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="800"
+    ></canvas>
+
+    <script type="module">
+      import { useCanvas } from './utils/tools.js';
+      import { Ball } from './utils/ball.js';
+
+      let { cnv, cxt } = useCanvas();
+      let ball = new Ball(cnv.width / 2, cnv.height / 2);
+      let angle = 0; // 角度
+      let range = 180; // 振幅
+      (function frame() {
+        window.requestAnimationFrame(frame);
+        cxt.clearRect(0, 0, cnv.width, cnv.height);
+        // 当正弦函数只作用于物体的 x 轴坐标时，可以实现类似水草摆动的平滑运动效果。
+        // 此外，由于正弦函数的值是在 [-1, 1]，因此在实际开发中需要乘以一个较大的值（也就是振幅），使摆动的幅度看起来更加明显。
+
+        // 作用于 x 轴坐标
+        // ball.x = cnv.width / 2 + Math.sin(angle) * range;
+
+        // 作用于 y 轴坐标
+        // ball.y = cnv.width / 2 + Math.sin(angle) * range;
+
+        // 作用于缩放属性（scaleX 或 scaleY）
+        ball.scaleX = Math.sin(angle) * 0.5 + 1;
+        ball.scaleY = Math.sin(angle) * 0.5 + 1;
+
+        ball.fill(cxt);
+        // 角度递增
+        angle += 0.05;
+      })();
+    </script>
+  </body>
+</html>
