@@ -454,7 +454,7 @@ Object.defineProperty(o, 'b', {
   get: () => {
     return o.a + 'get';
   },
-  set: value => {
+  set: (value) => {
     o.a = value;
   }
 });
@@ -865,10 +865,10 @@ Promise 有三个状态：
 new Promise(function (resolve, reject) {
   resolve('成功');
 }).then(
-  res => {
+  (res) => {
     console.log(res);
   },
-  err => {
+  (err) => {
     console.log(err);
   }
 );
@@ -1479,7 +1479,7 @@ JS 语法中定义了以下 no LIneTerminator here 规则：
     // 这段代码本意是一个变量 a 赋值，然后对一个数组执行 forEach，但是因为没有自动插入分号，被理解为下标运算符和逗号表达式
     (3, 2, 1, 0)
   ]
-    .forEach(e => console.log(e)); // 这里不会抛出错误，代码排查非常困难
+    .forEach((e) => console.log(e)); // 这里不会抛出错误，代码排查非常困难
   ```
 
 - 以正则表达式开头的语句
@@ -2228,6 +2228,7 @@ try {
   // 不会出现问题。但有时候也可能抛出异常:
   // 直接通过 throw 语句抛出，或者由于调用了一个抛出异常的方法而抛出
 } catch (e) {
+  // 在 es2019 以后也可以不带 (e)
   // 当且仅当 try 块抛出异常时，才会执行这个块中的语句。
   // 这里的语句可以使用局部变量 e 引用被抛出的 Error 对象。
   // 这个块可以以某种方式来处理异常，也可以生命都不做以忽略异常
@@ -2241,10 +2242,6 @@ try {
   //   (4) 由于异常未被处理而继续传播而执行
 }
 ```
-
-> 注意：
-> catch 关键字后面通常会跟着一个包含在圆括号中的标识符。这个标识符类似函数的参数。当捕获到异常时，与异常关联的值(比如 Error 对象)就会被赋给这个参数。
-> 与 catch 子句关联的标识符具有块作用域，即只在 catch 块中有定义。
 
 **finally 块执行特殊情况**：
 

@@ -140,7 +140,7 @@
 
       POSIX 流派还有一个特殊的地方，就是有自己的字符组，叫 POSIX 字符组。这个类似于 `\d` 表示数字，`\s` 表示空白符等，POSIX 中也定义了一系列的字符组。
 
-      ![POSIX字符组](./%E7%A4%BA%E4%BE%8B%E6%96%87%E4%BB%B6/image/POSIX%E5%AD%97%E7%AC%A6%E7%BB%84.png)
+      ![POSIX字符组](./examples/image/POSIX%E5%AD%97%E7%AC%A6%E7%BB%84.png)
 
 2. **PCRE 流派**
 
@@ -165,7 +165,7 @@
 
 在 Linux 系统中有个 `man` 命令可以使用。比如，macOS 上执行 `man grep` ，可以看到选项 -G 是指定使用 BRE 标准（默认），-E 是 ERE 标准，-P 是 PCRE 标准。
 
-![UNIX或LINUX系统里PCRE与POSIX的对比](./%E7%A4%BA%E4%BE%8B%E6%96%87%E4%BB%B6/image/UNIX%E6%88%96LINUX%E7%B3%BB%E7%BB%9F%E9%87%8CPCRE%E4%B8%8EPOSIX%E7%9A%84%E5%AF%B9%E6%AF%94.png)
+![UNIX或LINUX系统里PCRE与POSIX的对比](./examples/image/UNIX%E6%88%96LINUX%E7%B3%BB%E7%BB%9F%E9%87%8CPCRE%E4%B8%8EPOSIX%E7%9A%84%E5%AF%B9%E6%AF%94.png)
 
 ### 1.5 使用注意事项
 
@@ -253,7 +253,7 @@
 
 - **括号嵌套**：数左括号（开括号）是第几个，就可以确定是第几个子组。
 
-  ![分组-括号嵌套](./%E7%A4%BA%E4%BE%8B%E6%96%87%E4%BB%B6/image/%E5%88%86%E7%BB%84-%E6%8B%AC%E5%8F%B7%E5%B5%8C%E5%A5%97.png)
+  ![分组-括号嵌套](./examples/image/%E5%88%86%E7%BB%84-%E6%8B%AC%E5%8F%B7%E5%B5%8C%E5%A5%97.png)
 
 - **命名分组**：与数字相比更容易辨别，后续改动正则更容易，各个语言提供的命名分组格式不同，使用前查对应文档。JS 的格式为 `(?<分组名>)`
 
@@ -270,29 +270,72 @@
 
 ### 2.5 匹配模式
 
-匹配模式指的是，正则中一些**改变元字符匹配行为**的方式，JS 的匹配模式有六种：
+匹配模式指的是，正则中一些**改变元字符匹配行为**的方式，JS 的匹配模式有七种：
 
 1. **不区分大小写模式**（Case-Insensitive）
-   例: /regex/i
+
+   ```js
+   /regex/i;
+   ```
 
 2. **点号通配模式**（Dot All）
+
    让 `.` 可以匹配包括换行的任意字符
-   例：/\d./s
+
+   ```js
+   /\d./s;
+   ```
 
 3. **多行匹配模式**（MultiLine）
+
    通常情况下，`^` 匹配整个字符串的开头，`$` 匹配整个字符串的结尾。多行匹配模式改变的就是 `^` 和 `$` 的匹配行为，使 `^` 和 `$` 能匹配每行的开头和结尾，JS 使用修饰符 `m` 来使用。
-   例：/^\w$/m
+
+   ```js
+   /^\w$/m;
+   ```
 
 4. **全局搜索**
-   例：/\d?/g
+
+   ```js
+   /\d?/g;
+   ```
 
 5. **使用 unicode 码的模式进行匹配**
-   例：/\u{61}/u.test("a") /\w/iu.test('\u017F')
+
+   ```js
+   /\u{61}/u.test('a');
+   /\w/iu.test('\u017F');
+   ```
 
 6. **粘性搜索**（Sticky）
    执行"粘性搜索"，匹配从源字符串的 **RegExp.prototype.lastIndex** 位置开始匹配。
 
-   例：[正则表达式示例 粘性搜索](./%E7%A4%BA%E4%BE%8B%E6%96%87%E4%BB%B6/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%A4%BA%E4%BE%8B.html)
+   例：[正则表达式示例 粘性搜索](./examples/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%A4%BA%E4%BE%8B.html)
+
+7. **正则表达式匹配索引**（es2022）
+
+   d 标志表示正则表达式匹配的结果应该包含每个捕获组子字符串开始和结束的索引。它不会以任何方式改变正则表达式的解释或匹配行为，它只在匹配的结果中提供额外的信息。
+
+   ```js
+   const matchObj = /(a+)(b+)/d.exec('aaaabb');
+
+   console.log(matchObj[1]); // 'aaaa'
+   console.log(matchObj[2]); // 'bb'
+
+   // 由于 /d 标识的存在，matchObj 还有一个属性 .indices，它用来记录捕获的每个编号组：
+   console.log(matchObj.indices[1]); // [0, 4]
+   console.log(matchObj.indices[2]); // [4, 6]
+
+   // 还可以使用命名组
+   const matchObj2 = /(?<as>a+)(?<bs>b+)/d.exec('aaaabb');
+
+   console.log(matchObj2.groups.as); // 'aaaa'
+   console.log(matchObj2.groups.bs); // 'bb'
+
+   // 它们的索引存储在 matchObj.indices.groups 中：
+   console.log(matchObj2.indices.groups.as); // [0, 4]
+   console.log(matchObj2.indices.groups.bs); // [4, 6]
+   ```
 
 ## 三. 正则高级内容
 
@@ -304,7 +347,7 @@
 
   正则中使用 `\b` 来表示单词的边界，`\w` 范围以外的字符。`\B` 是匹配非单词边界。
 
-  例：[./示例文件/正则表达式示例 wordBoundary()](./%E7%A4%BA%E4%BE%8B%E6%96%87%E4%BB%B6/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%A4%BA%E4%BE%8B.html)
+  例：[./示例文件/正则表达式示例 wordBoundary()](./examples/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%A4%BA%E4%BE%8B.html)
 
 - **行的开始或结束**
   如果要求匹配的内容要出现在一行文本的开头或结尾，可以使用 `^` 和 `$` 来进行位置界定。可以在以下方面使用：
@@ -339,7 +382,7 @@
      /t(?!om)/.test('tom'); // false
      ```
 
-  ![正则环视](./%E7%A4%BA%E4%BE%8B%E6%96%87%E4%BB%B6/image/%E6%AD%A3%E5%88%99%E7%8E%AF%E8%A7%86.png)
+  ![正则环视](./examples/image/%E6%AD%A3%E5%88%99%E7%8E%AF%E8%A7%86.png)
 
   > **注意**：环视中虽然有括号，但不会保存成子组。保存成子组的一般是匹配到的文本内容，后续用于替换等操作，而环视是表示对文本左右环境的要求，即环视只匹配位置，不匹配文本内容。
 
@@ -387,7 +430,7 @@ Unicode 至今仍在不断增修，每个新版本都加入更多新的字符。
 
 现在的 Unicode 字符分为 17 组编排，每组为一个平面（Plane），而每个平面拥有 65536（即 2 的 16 次方）个码值（Code Point）。然而，目前 Unicode 只用了少数平面，平常用到的绝大多数字符都属于**第 0 号平面**，即 `BMP 平面`。除了 BMP 平面之外，其它的平面都被称为**补充平面**。
 
-![Unicode平面介绍](./%E7%A4%BA%E4%BE%8B%E6%96%87%E4%BB%B6/image/Unicode%E5%B9%B3%E9%9D%A2%E4%BB%8B%E7%BB%8D.png)
+![Unicode平面介绍](./examples/image/Unicode%E5%B9%B3%E9%9D%A2%E4%BB%8B%E7%BB%8D.png)
 
 Unicode 相当于规定了字符对应的码值，这个码值可以编码成字节的形式去传输和存储。最常见的编码方式是 **UTF-8** ，另外还有 UTF-16，UTF-32 等。UTF-8 之所以能够流行起来，是因为其编码比较巧妙，采用的是变长的方法。也就是一个 Unicode 字符，在使用 UTF-8 编码表示时占用 1 到 4 个字节不等。
 
@@ -427,22 +470,32 @@ Unicode 相当于规定了字符对应的码值，这个码值可以编码成字
 
 1. **校验文本内容**
    通常在网页上输入的手机号、邮箱、日期等，都需要校验。校验的特点在于，整个文本的内容要符合正则。
-   例: /\d{4}-\d{2}-\d{2}/.test("2020-12-01")
+
+   ```js
+   /\d{4}-\d{2}-\d{2}/.test('2020-12-01');
+   ```
 
 2. **提取文本内容**
    内容提取，就是从大段的文本中抽取出关心的内容。比较常见的例子是网页爬虫，或者说从页面上提取邮箱、抓取需要的内容等。在 JS 中，想要提取文本中所有符合要求的内容，正则必须使用 `g 模式`，否则找到第一个结果后，正则就不会继续向后查找了。
 
-   例: "2020-06 2020-07".match(/\d{4}-\d{2}/g)
+   ```js
+   '2020-06 2020-07'.match(/\d{4}-\d{2}/g);
+   ```
 
 3. **替换文本内容**
    文本内容替换，替换通常用于对原来的文本内容进行一些调整。在 JS 中替换和查找类似，需要指定 `g 模式`，否则只会替换第一个。
 
-   例: "02-20-2020 05-21-2020".replace(/(\d{2})-(\d{2})-(\d{4})/g, "$3 年$1 月$2 日") // 2020 年 02 月 20 日 2020 年 05 月 21 日
+   ```js
+   '02-20-2020 05-21-2020'.replace(/(\d{2})-(\d{2})-(\d{4})/g, '$3 年$1 月$2 日'); // 2020 年 02 月 20 日 2020 年 05 月 21 日
+   ```
 
 4. **切割文本内容**
-   文本内容切割，通常切割用于变长的空白符号，多变的标点符号等。在 JS 中，正则的切割 split 当第二个参数是 2 的时候，表示切割成 2 个部分，而不是切 2 刀，且是全部切割后的前两个。
+   文本内容切割，通常切割用于变长的空白符号，多变的标点符号等。在 JS 中，正则的切割 [split](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/RegExp/@@split) 当第二个参数是 2 的时候，表示切割成 2 个部分，而不是切 2 刀，且是全部切割后的前两个。
 
-   例: "apple, pear! orange; tea".split(/\W+/) "apple, pear! orange; tea".split(/\W+/, 2)
+   ```js
+   'apple, pear! orange; tea'.split(/\W+/);
+   'apple, pear! orange; tea'.split(/\W+/, 2);
+   ```
 
 ### 4.3 正则的匹配原理-有穷状态自动机
 
@@ -604,7 +657,7 @@ POSIX NFA 的应用很少，主要是 Unix/Linux 中的某些工具。POSIX NFA 
 
 编程语言的发展历程，大致上分为了 5 代：
 
-![编程语言发展史](./%E7%A4%BA%E4%BE%8B%E6%96%87%E4%BB%B6/image/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%8F%91%E5%B1%95%E5%8F%B2.jpg)
+![编程语言发展史](./examples/image/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%8F%91%E5%B1%95%E5%8F%B2.jpg)
 
 正则表达式也是一种编程语言，是属于第 4 代语言——面向问题语言中的一种。第 4 代语言相对于第 3 代语言，更**专注于某个特定、专门的业务逻辑和问题领域**。
 
@@ -664,5 +717,7 @@ POSIX NFA 的应用很少，主要是 Unix/Linux 中的某些工具。POSIX NFA 
    ```js
    new RegExp('![.*]([^./h]');
    ```
+
+2. [身份证号码](./examples/identityCard.js)
 
 ## 七. JS 中的正则

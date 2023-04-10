@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "学习笔记与资料",
   "author": "杜森垚",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --ext .js,.ts frontend"
+  },
   "devDependencies": {
     "@types/node": "^18.15.11",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
@@ -11,9 +15,6 @@
     "eslint-plugin-html": "^7.1.0",
     "prettier": "2.8.7",
     "typescript": "^5.0.4"
-  },
-  "scripts": {
-    "lint": "eslint --ext .js,.ts frontend"
   },
   "repository": {
     "type": "git",

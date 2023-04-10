@@ -294,7 +294,7 @@ open -n /Applications/Google\ Chrome.app/ --args --disable-web-security --ignore
 
 - `$0` 在 Chrome 的 Elements 面板中，是对当前选中的 html 节点的引用。`$1` 是对上一次选择的节点的引用，`$2` 是对在那之前选择的节点的引用，等等。一直到 `$4`。
 
-- 如果没有在 `页面` 中定义过 `$` 变量（例如 jQuery）的话，它在 `Console` 中就是函数 `document.querySelector` 的别名。
+- 如果没有在页面中定义过 `$` 或 `$$` 变量的话，`$` 在 `Console` 中就是函数 `document.querySelector` 的别名，`$$` 是函数 `document.querySelectorAll` 的别名。
 
 - `$_` 是对上次执行结果的引用
 
@@ -1197,7 +1197,7 @@ function runWorker(url, num) {
 
 ```js
 function b() {
-  runWorker('./worker.js', 10 * 10000 * 10000).then(res => {
+  runWorker('./worker.js', 10 * 10000 * 10000).then((res) => {
     console.log('b:', res);
   });
 }

@@ -4,44 +4,50 @@
 
 <!-- code_chunk_output -->
 
-- [package.json](#-packagejson)
-  - [一. 必须属性](#-一-必须属性)
-    - [1.1 name](#-11-name)
-    - [1.2 version](#-12-version)
-  - [二. 描述信息](#-二-描述信息)
-  - [三. 依赖配置](#-三-依赖配置)
-    - [3.1 dependencies](#-31-dependencies)
-    - [3.2 devDependencies](#-32-devdependencies)
-    - [3.3 peerDependencies](#-33-peerdependencies)
-    - [3.4 optionalDependencies](#-34-optionaldependencies)
-    - [3.5 bundledDependencies](#-35-bundleddependencies)
-    - [3.6 engines](#-36-engines)
-  - [四. 脚本配置](#-四-脚本配置)
-    - [4.1 scripts](#-41-scripts)
-    - [4.2 config](#-42-config)
-  - [五. 文件和目录](#-五-文件和目录)
-    - [5.1 main](#-51-main)
-    - [5.2 browser](#-52-browser)
-    - [5.3 module](#-53-module)
-    - [5.4 bin](#-54-bin)
-    - [5.5 files](#-55-files)
-    - [5.6 man](#-56-man)
-    - [5.7 directories](#-57-directories)
-  - [六. 发布配置](#-六-发布配置)
-    - [6.1 private](#-61-private)
-    - [6.2 preferGlobal](#-62-preferglobal)
-    - [6.3 publishConfig](#-63-publishconfig)
-    - [6.4 os](#-64-os)
-    - [6.5 cpu](#-65-cpu)
-    - [6.6 license](#-66-license)
-  - [七. 第三方配置](#-七-第三方配置)
-    - [7.1 typings](#-71-typings)
-    - [7.2 eslintConfig](#-72-eslintconfig)
-    - [7.3 babel](#-73-babel)
-    - [7.4 unpkg](#-74-unpkg)
-    - [7.5 lint-staged](#-75-lint-staged)
-    - [7.6 gitHooks](#-76-githooks)
-    - [7.7 browserslist](#-77-browserslist)
+- [package.json](#packagejson)
+  - [一. 必须属性](#一-必须属性)
+    - [1.1 name](#11-name)
+    - [1.2 version](#12-version)
+  - [二. 描述信息](#二-描述信息)
+    - [2.1 type](#21-type)
+  - [三. 依赖配置](#三-依赖配置)
+    - [3.1 dependencies](#31-dependencies)
+    - [3.2 devDependencies](#32-devdependencies)
+    - [3.3 peerDependencies](#33-peerdependencies)
+      - [3.3.1 peerDependenciesMeta](#331-peerdependenciesmeta)
+    - [3.4 optionalDependencies](#34-optionaldependencies)
+    - [3.5 bundledDependencies](#35-bundleddependencies)
+    - [3.6 engines](#36-engines)
+  - [四. 脚本配置](#四-脚本配置)
+    - [4.1 scripts](#41-scripts)
+    - [4.2 config](#42-config)
+  - [五. 文件和目录](#五-文件和目录)
+    - [5.1 main](#51-main)
+    - [5.2 browser](#52-browser)
+    - [5.3 module](#53-module)
+    - [5.4 bin](#54-bin)
+    - [5.5 files](#55-files)
+    - [5.6 man](#56-man)
+    - [5.7 directories](#57-directories)
+    - [5.8 workspaces](#58-workspaces)
+  - [六. 发布配置](#六-发布配置)
+    - [6.1 private](#61-private)
+    - [6.2 preferGlobal](#62-preferglobal)
+    - [6.3 publishConfig](#63-publishconfig)
+    - [6.4 os](#64-os)
+    - [6.5 cpu](#65-cpu)
+    - [6.6 license](#66-license)
+    - [6.7 exports](#67-exports)
+  - [七. 第三方配置](#七-第三方配置)
+    - [7.1 typings](#71-typings)
+    - [7.2 eslintConfig](#72-eslintconfig)
+    - [7.3 babel](#73-babel)
+    - [7.4 unpkg](#74-unpkg)
+    - [7.5 lint-staged](#75-lint-staged)
+    - [7.6 gitHooks](#76-githooks)
+    - [7.7 browserslist](#77-browserslist)
+  - [八. package-lock.json](#八-package-lockjson)
+    - [8.1 意外更改的原因和防止的方法](#81-意外更改的原因和防止的方法)
 
 <!-- /code_chunk_output -->
 
@@ -78,9 +84,9 @@ version 字段表示该项目包的版本号，它是一个字符串。在每次
 可以通过以下命令来查看 npm 包的版本信息，以 react 为例：
 
 ```sh
-// 查看最新版本
+# 查看最新版本
 npm view react version
-// 查看所有版本
+# 查看所有版本
 npm view react versions
 ```
 
@@ -173,6 +179,22 @@ package.json 中有 7 个和项目包描述信息相关的配置字段：
 
    最常见的 bugs 就是 Github 中的 issues 页面。
 
+### 2.1 type
+
+js 的模块化规范包含了 commonjs、CMD、UMD、AMD 和 ES module 等，最早先在 node 中支持的仅仅是 commonjs 字段，但是从 node13.2.0 开始后，node 正式支持了 ES module 规范，在 package.json 中可以通过 type 字段来声明 npm 包遵循的模块化规范。
+
+```json
+{
+  "type": "module"
+}
+```
+
+type 的默认值是 commonjs。当 type 字段指定值为 module 则采用 ESModule 规范。
+
+当 type 字段指定时，目录下的所有 .js 后缀结尾的文件，都遵循 type 所指定的模块化规范。
+
+除了 type 可以指定模块化规范外，通过文件的后缀来指定文件所遵循的模块化规范，以 .mjs 结尾的文件就是使用的 ESModule 规范，以 .cjs 结尾的遵循的是 commonjs 规范。
+
 ## 三. 依赖配置
 
 通常情况下，项目会依赖一个或者多个外部的依赖包，根据依赖包的不同用途，可以将配置在下面的五个属性下：dependencies、devDependencies、peerDependencies、bundledDependencies、optionalDependencies。
@@ -203,7 +225,7 @@ npm install --save <PACKAGENAME>
 
 - **固定版本**：前面无符号，比如 `4.0.3` 就是固定版本，安装时只安装这个指定的版本。
 
-- **波浪号**： 比如 `~4.0.3`，表示安装 4.0.x 的最新版本（不低于 4.0.3），也就是说安装时不会改变主版本号和次版本号。
+- **波浪号**：比如 `~4.0.3`，表示安装 4.0.x 的最新版本（不低于 4.0.3），也就是说安装时不会改变主版本号和次版本号。
 
 - **插入号**：比如 `^17.0.2`，表示安装 17.x.x 的最新版本（不低于 17.0.2），也就是说安装时不会改变主版本号。如果主版本号为 0，那么插入号和波浪号的行为是一致的。
 
@@ -244,6 +266,30 @@ peerDependencies 字段就是用来供插件指定其所需要的主工具的版
 ```
 
 上面代码指定在安装 chai-as-promised 模块时，主程序 chai 必须一起安装，而且 chai 的版本必须是 1.x。如果项目指定的依赖是 chai 的 2.0 版本，就会报错。
+
+#### 3.3.1 peerDependenciesMeta
+
+peerDependenciesMeta 就是详细修饰了 peerDependencies，比如在 react-redux 这个 npm 包中的 package.json 中有这么一段：
+
+```json
+{
+  "peerDependencies": {
+    "react": "^16.8.3 || ^17 || ^18"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
+  }
+}
+```
+
+这里指定了"react-dom"、"react-native"在 peerDependenciesMeta 中，且为可选项，因此如果项目中检测没有安装 "react-dom" 和 "react-native" 都不会报错。
+
+> **注意**：通过 peerDependenciesMeta 确实是取消了限制，但是这里经常存在非 A 即 B 的场景，比如上述例子中，需要的是 “react-dom” 和 “react-native” 中安装一个，但是实际上通过上述的声明，实现不了这种提示。
 
 ### 3.4 optionalDependencies
 
@@ -461,6 +507,39 @@ directories 字段用来规范项目的目录。node.js 模块是基于 CommonJS
 
 这个属性实际上没有什么实际的作用，当然不排除未来会有什么比较有意义的用处。
 
+### 5.8 workspaces
+
+在项目过大的时候，最近越来越流行 monorepo。提到 monorepo 就绕不开 workspaces。它解决了本地文件系统中如何在一个顶层 root package 下管理多个子 packages 的问题，在 workspaces 声明目录下的 package 会软链到最上层 root package 的 node_modules 中。
+
+```json
+{
+  "name": "my-project",
+  "workspaces": ["packages/a"]
+}
+```
+
+在一个 npm 包名为 my-project 的 npm 包中，存在 workspaces 配置的目录。
+
+```sh
++-- package.json
++-- index.js
+`-- packages
+   +-- a
+   |  `-- package.json
+```
+
+并且该最上层的名为 my-project 的 root 包，有 packages/a 子包。此时，如果 npm install，那么在 root package 中 node_modules 中安装的 npm 包 a，指向的是本地的 package/a。
+
+```sh
++-- node_modules
+|  `-- packages/a -> ../packages/a
++-- package-lock.json
++-- package.json
+`-- packages
+   +-- a
+   |   `-- package.json
+```
+
 ## 六. 发布配置
 
 ### 6.1 private
@@ -522,6 +601,51 @@ license 字段用于指定软件的开源协议，开源协议表述了其他人
 
 ```json
 "license": "MIT"
+```
+
+### 6.7 exports
+
+这个字段定义的内容是该 npm 包的真实和全部的导出，优先级会高于 main 和 file、module、browser 等字段。
+
+```json
+{
+  "name": "pkg",
+  "exports": {
+    ".": "./main.mjs",
+    "./foo": "./foo.js"
+  }
+}
+```
+
+```js
+import { something } from 'pkg'; // from "pkg/main.mjs"
+
+const { something } = require('pkg/foo'); // require("pkg/foo.js")
+```
+
+从上述的例子来看，exports 可以定义不同 path 的导出。如果存在 exports 后，以前正常生效的 file 目录到处会失效，比如 require('pkg/package.json')，因为在 exports 中没有指定，就会报错。
+
+exports 还有一个最大的特点，就是**条件引用**，比如可以根据不同的引用方式或者模块化类型，来指定 npm 包引用不同的入口文件。
+
+```json
+{
+  "name": "pkg",
+  "main": "./main-require.cjs",
+  "exports": {
+    ".": {
+      "import": "./main-module.js",
+      "require": "./main-require.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "type": "module"
+}
+```
+
+```js
+const p = require('pkg'); // 引用的是 "./main-require.cjs"
+
+import p from 'pkg'; // 引用的是 "./main-module.js"
 ```
 
 ## 七. 第三方配置
@@ -606,3 +730,24 @@ browserslist 字段用来告知支持哪些浏览器及版本。Babel、Autopref
 ```
 
 这里指定了一个对象，里面定义了生产环境和开发环境的浏览器要求。上面的 development 就是指定开发环境中支持最后一个版本的 chrome、Firefox、safari 浏览器。这个属性是不同的前端工具之间共用目标浏览器和 node 版本的配置工具，被很多前端工具使用，比如 Babel、Autoprefixer 等。
+
+## 八. package-lock.json
+
+本质上 package-lock.json 文件是为了锁版本，在 package.json 中指定的子 npm 包比如：react: "^16.0.0"，在实际安装中，只要高于 react 的版本都满足 package.json 的要求。这样就使得根据同一个 package.json 文件，两次安装的子依赖版本不能保证一致。
+
+### 8.1 意外更改的原因和防止的方法
+
+原因：
+
+- **package.json 文件修改了**
+
+- **挪动了包的位置**
+  将部分包的位置从 dependencies 移动到 devDependencies 这种操作，虽然包未变，但是也会影响 package-lock.json，会将部分包的 dev 字段设置为 true
+
+- **registry 的影响**
+
+  node_modules 文件夹下的包中下载时，就算版本一样，安装源 registry 不同，执行 npm i 时也会修改 package-lock.json
+
+一般情况下 npm install 是可以的，它能保证根据 package-lock.json 还原出开发时的 node_modules。但是为了防止出现刚刚提到的意外情况，除非涉及到对包的调整，其他情况下建议使用 `npm ci` 来安装依赖，会避免异常的修改 package-lock.json，
+
+持续集成工具中更推荐是用 npm ci，保证构建环境的准确性，npm i 和 npm ci 的区别可以参考官方文档 [npm-ci](https://docs.npmjs.com/cli/v8/commands/npm-ci)。
