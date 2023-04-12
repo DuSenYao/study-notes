@@ -500,7 +500,7 @@ Task（任务）可以被用来**运行脚本**或**启动一个进程**。因�
   - `${fileExtname}` :当前打开的文件的扩展名
   - `${cwd}`：Task 启动时的工作目录
   - `${lineNumber}`：当前光标所在的行号
-  - `${selectedText}`：当前 打开的文件中选中的文本
+  - `${selectedText}`：当前打开的文件中选中的文本
   - `${execPath}`：VSCode 可执行文件的完整路径
   - `${defaultBuildTask}`：默认的 Build Task 的名字
   - `${userHome}`：用户主页，如：C:\Users\dsy

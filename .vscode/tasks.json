@@ -65,6 +65,21 @@
       "detail": "统计当前工作区下的 markdown 文件总字数"
     },
     {
+      "label": "markdown TOC",
+      "type": "shell",
+      "group": "build",
+      "command": "node ${workspaceFolder}/frontend/node.js/examples/markdownTOC.mjs ${file}",
+      "presentation": {
+        "echo": false,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "detail": "更改 markdown 目录中的导入目录"
+    },
+    {
       "label": "tsc: -p tsconfig.json",
       "type": "shell",
       "group": "build",

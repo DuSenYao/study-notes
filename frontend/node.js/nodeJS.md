@@ -294,7 +294,7 @@ Node 程序通常是异步的，并且基于回调和事件处理程序。Node �
 如果程序中的代码抛出异常，也没有 catch 子句捕获该异常，程序会打印栈追踪信息并退出。由于 Node 天生异步，发生在回调或事件处理程序中的异常必须局部处理，否则根本得不到处理。这意味着处理异步逻辑中的异常是一件麻烦事。如果不想让这些异常导致程序崩溃，可以注册一个全局处理程序，以备调用，防止崩溃：
 
 ```js
-process.setUncaughtExceptionCaptureCallback(e => {
+process.setUncaughtExceptionCaptureCallback((e) => {
   console.error('Uncaught exception: ', e);
 });
 ```
@@ -387,7 +387,7 @@ const pfs = {
 };
 
 function readConfigFile(path) {
-  return pfs.readFile(path, 'utf-8').then(text => {
+  return pfs.readFile(path, 'utf-8').then((text) => {
     return JSON.parse(text);
   });
 }
@@ -461,7 +461,7 @@ for (let i = 0; i < computer.length; i++) {
 computer.toString('ascii'); // "HAL2000"
 computer
   .subarray(0, 3)
-  .map(x => x + 1)
+  .map((x) => x + 1)
   .toString(); // "IBM“
 
 // 使用 Buffer.alloc() 创建一个 “空” 缓冲区
@@ -498,7 +498,7 @@ EventEmitter 的主要功能是允许使用 `on()` 方法注册事件处理程�
 ```js
 const net = require('net');
 let server = new net.Server(); // 创建一个 Server 对象
-server.on('connection', socket => {
+server.on('connection', (socket) => {
   // 监听 “connection” 事件
   // Server的 “connection” 事件回调会接收一个 socket 对象表示刚刚连接的客户端。
   // 这里向客户端发送了一些数据，然后就断开了连接
@@ -639,7 +639,7 @@ class GrepStream extends stream.Transform {
 
     // 查找所有匹配的行
     let output = lines // 从所有完整的行开始
-      .filter(l => this.pattern.test(l)) // 筛选匹配的行
+      .filter((l) => this.pattern.test(l)) // 筛选匹配的行
       .join('\n'); // 最后将它们拼接起来
 
     // 如果有匹配，在最后加一个换行符
@@ -682,7 +682,7 @@ async function grep(source, destination, pattern, encoding = 'utf8') {
   source.setEncoding(encoding);
 
   // 在目标流上设置错误处理程序，以防标准输出意外关闭（比如，通过管道输出到 “head” 等）
-  destination.on('error', err => process.exit());
+  destination.on('error', (err) => process.exit());
 
   // 读取的块不太可能以换行符结尾，因此每个块都可能包含不完整的行。在这里记录
   let incompleteLine = '';
@@ -710,7 +710,7 @@ async function grep(source, destination, pattern, encoding = 'utf8') {
 let pattern = new RegExp(process.argv[2]); // 从命令行取得正则表达式
 grep(process.stdin, process.stdout, pattern) // 调用这个异步 grep() 函数
   // 处理异步错误
-  .catch(err => {
+  .catch((err) => {
     console.log(err);
     process.exit();
   });
@@ -762,7 +762,7 @@ function write(stream, chunk) {
     return Promise.resolve(null); // 一个解决的期约对象
   } else {
     // 否则，返回一个在 “耗尽”
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       stream.once('drain', resolve); // 事件发生时解决的期约
     });
   }
@@ -771,7 +771,7 @@ function write(stream, chunk) {
 // 从来源流向目标流复制数据，并且处理来自目标流的背压，非常类似调用 source.pipe(destination)
 async function copy(source, destination) {
   // 在目标流上设置错误处理程序，以防标准输出意外关闭
-  destination.on('error', err => process.exit());
+  destination.on('error', (err) => process.exit());
 
   // 使用 for/await 循环异步从输入流读取块
   for await (let chunk of source) {
@@ -807,7 +807,7 @@ const fs = require('fs');
 function copyFile(sourceFilename, destinationFilename, callback) {
   let input = fs.createReadStream(sourceFilename);
   let output = fs.createWriteStream(destinationFilename);
-  input.on('data', chunk => {
+  input.on('data', (chunk) => {
     // 在取得新数据时
     let hasroom = output.write(chunk); // 将其写入输出
     if (!hasRoom) {
@@ -820,7 +820,7 @@ function copyFile(sourceFilename, destinationFilename, callback) {
     // 在到达输入末尾时
     output.end(); // 告知输出流结束
   });
-  input.on('error', err => {
+  input.on('error', (err) => {
     // 如果输入流报错
     callback(err); // 以该错误调用回调
     process.exit(); // 然后退出
@@ -831,7 +831,7 @@ function copyFile(sourceFilename, destinationFilename, callback) {
     input.resume(); // 恢复输入流的“data”事件
   });
 
-  output.on('error', err => {
+  output.on('error', (err) => {
     // 如果输出流报错
     callback(err); // 以该错误调用回调
     process.exit(); // 然后退出
@@ -847,7 +847,7 @@ function copyFile(sourceFilename, destinationFilename, callback) {
 let from = process.argv[2],
   to = process.argv[3];
 console.log(`Copying file ${from} to ${to}...`);
-copyFile(from, to, err => {
+copyFile(from, to, (err) => {
   if (err) {
     console.error(err);
   } else {
@@ -1185,7 +1185,7 @@ fs.copyFileSync('ch15.txt', 'h15.bak');
 
 // COPYFILE_EXCL 参数表示只在新文件不存在时复制
 // 这个参数可以防止复制操作重写已有的文件
-fs.copyFile('ch15.txt', 'ch16.txt', fs.constants.COPYFILE_EXCL, err => {
+fs.copyFile('ch15.txt', 'ch16.txt', fs.constants.COPYFILE_EXCL, (err) => {
   // 这个回调将在复制完成时被调用。如果出错，err 将为非空值
 });
 
@@ -1202,7 +1202,7 @@ fs.promises
   .then(() => {
     console.log('Backup complete');
   })
-  .catch(err => {
+  .catch((err) => {
     console.error('Backup failed', err);
   });
 ```
@@ -1290,11 +1290,11 @@ let tempFiles = fs.readdirSync('/tmp'); // 返回字符串数组
 // 使用基于期约的 API 取得 Dirent 数组，然后打印出子目录的路径
 fs.promises
   .readdir('/tmp', { withFileTypes: true })
-  .then(entries => {
+  .then((entries) => {
     entries
-      .filter(entry => entry.isDirectory())
-      .map(entry => entry.name)
-      .forEach(name => console.log(path, join('/tmp/', name)));
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .forEach((name) => console.log(path, join('/tmp/', name)));
   })
   .catch(console.error);
 ```
@@ -1373,10 +1373,10 @@ function postJSON(host, endpoint, body, port, username, password) {
     request.end();
 
     // 请求出错时失败（如没有网络连接）
-    request.on('error', e => reject(e));
+    request.on('error', (e) => reject(e));
 
     // 当响应到达时处理响应
-    request.on('response', response => {
+    request.on('response', (response) => {
       if (response.statusCode !== 200) {
         reject(new Error(`HTTP status ${response.statusCode}`));
 
@@ -1391,7 +1391,7 @@ function postJSON(host, endpoint, body, port, username, password) {
 
       // Node 没有流式 JSON 解析器，因此这里要把整个响应体都读取到一个字符串中
       let body = '';
-      response.on('data', chunk => {
+      response.on('data', (chunk) => {
         body + chunk;
       });
 
@@ -1503,7 +1503,7 @@ function serve(rootDirectory, port) {
         stream.pipe(response);
       });
 
-      stream.on('error', err => {
+      stream.on('error', (err) => {
         // 如果在打开流时出错了，说明文件可能不存在
         // 或者没有读取权限。此时发送一个 “404 Not Found” 的纯文本响应并在响应中带上错误消息
         response.setHeader('Content-Type', 'text/plain; charset=UTF-8');
@@ -1540,10 +1540,10 @@ let server = net.create.Server();
 server.listen(6789, () => console.log('Delivering Laughs on port 6789'));
 
 // 当客户端连接时，给它讲一个 knock-knock 笑话
-server.on('connection', socket => {
+server.on('connection', (socket) => {
   tellJoke(socket)
     .then(() => socket.end()) // 讲完笑话，关闭套接口
-    .catch(err => {
+    .catch((err) => {
       console.error(err); // 打印发生的错误
       socket.end(); // 但还是要关闭套接口
     });
@@ -1559,7 +1559,7 @@ const jokes = {
 // 通过套接口交互式表演 knock-knock 笑话，不阻塞
 async function tellJoke(socket) {
   // 随机选一个笑话
-  let randomELement = a => a[Math.floor(Math.randon() * a.length)];
+  let randomELement = (a) => a[Math.floor(Math.randon() * a.length)];
   let who = randomELement(object.keys(jokes));
   let punchline = jokes[who];
 
@@ -1697,9 +1697,9 @@ const util = require('util');
 const execP = util.promisify(child_process.exec);
 function parallelExec(commands) {
   // 使用命令数组创建一个期约数组
-  let promises = commands.map(command => execP(command, { encoding: 'utf8' }));
+  let promises = commands.map((command) => execP(command, { encoding: 'utf8' }));
   // 返回一个期约，将兑现为一个数组，包含每个期约的兑现值（不返回包含 stdout 和 stderr 属性的对象，只返回 stdout 属性的值）
-  return Promise.all(promises).then(outputs => outputs.map(out => out.stdout));
+  return Promise.all(promises).then((outputs) => outputs.map((out) => out.stdout));
 }
 
 module.exports = parallelExec;
@@ -1741,7 +1741,7 @@ let child = child_process.fork(`${__dirname}/child.js`);
 child.send({ x: 4, y: 3 });
 
 // 收到子进程回应后把它打印出来
-child.on('message', message => {
+child.on('message', (message) => {
   console.log(message.hypotenuse); // 这里应该打印 “5”
   // 因为只发送了一条消息，所以只期待一个回应
   // 收到回应后，调用 disconnect() 终止父进程与子进程的连接。这样两个进程都可以明确退出
@@ -1753,7 +1753,7 @@ child.on('message', message => {
 
 ```js
 // 等待父进程发来消息
-process.on('message', message => {
+process.on('message', (message) => {
   // 收到消息后，计算一个值，把结果发回父进程
   process.send({ hypotenuse: Math.hypot(message.x, message.y) });
 });
@@ -1807,7 +1807,7 @@ if (threads.isMainThread) {
 } else {
   // 如果执行到这里，意味着是在工作线程中，因此注册一个处理程序从主线程接收消息。
   // 这个工作线程只接收一个消息，因此使用 once() 而非 on() 来注册这个事件处理程序。这样工作线程在完成工作后就会自然地退出
-  threads.parentPort.once('message', splines => {
+  threads.parentPort.once('message', (splines) => {
     // 从父线程取得样条函数后，遍历数组并将它们全部编织起来
     for (let spline of splines) {
       // 为了本例的需要，假设 spline 对象通常有一个需要大量计算的 reticulate() 方法
@@ -1965,7 +1965,7 @@ if (threads.isMainThread) {
     }
 
     // 两个线程都完成后，使用线程安全的函数读取共享数组，确认其中包含了期待的 20 000 000。
-    worker.on('message', message => {
+    worker.on('message', (message) => {
       console.log(Atomics.load(sharedArray, 0));
     });
   });

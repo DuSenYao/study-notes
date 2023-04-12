@@ -49,7 +49,7 @@
 ### 1.1 关闭页面弹出框
 
 ```js
-window.addEventListener('beforeunload', event => {
+window.addEventListener('beforeunload', (event) => {
   event.preventDefault();
   event.returnValue = '确定离开当前页面吗？';
 });
@@ -254,7 +254,7 @@ function findTest1(name) {
 }
 
 //Shorthand
-filteredData = data.find(data => data.type === 'test1' && data.name === 'fgh');
+filteredData = data.find((data) => data.type === 'test1' && data.name === 'fgh');
 console.log(filteredData); // { type: 'test1', name: 'fgh' }
 ```
 

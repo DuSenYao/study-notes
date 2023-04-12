@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Pixel Art</title>
+    <style>
+      .pixel {
+        background: transparent;
+        transform: scale(50);
+        animation: flash 3s ease-in-out infinite;
+        height: 1px;
+        width: 1px;
+        box-shadow:
+              /* 1st row */ 5px 1px 0 0 rgba(217, 216, 216, 255),
+          6px 1px 0 0 rgba(217, 216, 216, 255), 7px 1px 0 0 rgba(217, 216, 216, 255),
+          8px 1px 0 0 rgba(217, 216, 216, 255), 10px 1px 0 0 rgba(255, 255, 255, 1), 11px 1px 0 0 rgba(255, 255, 255, 1),
+          12px 1px 0 0 rgba(255, 255, 255, 1), /* 2nd row */ 3px 2px 0 0 rgba(253, 254, 254, 255),
+          4px 2px 0 0 rgba(234, 232, 236, 255), 5px 2px 0 0 rgba(236, 235, 235, 255),
+          6px 2px 0 0 rgba(234, 232, 236, 255), 7px 2px 0 0 rgba(234, 232, 236, 255),
+          8px 2px 0 0 rgba(234, 232, 236, 255), 9px 2px 0 0 rgba(234, 232, 236, 255),
+          11px 2px 0 0 rgba(255, 255, 255, 1), 12px 2px 0 0 rgba(255, 255, 255, 1),
+          /* 3rd row */ 3px 3px 0 0 rgba(234, 232, 236, 255), 6px 3px 0 0 rgba(254, 254, 254, 255),
+          8px 3px 0 0 rgba(252, 252, 252, 255), 9px 3px 0 0 rgba(234, 232, 236, 255),
+          10px 3px 0 0 rgba(234, 232, 236, 255), 11px 3px 0 0 rgba(255, 255, 255, 1),
+          12px 3px 0 0 rgba(255, 255, 255, 1), /* 4th row */ 2px 4px 0 0 rgba(234, 232, 236, 255),
+          3px 4px 0 0 rgba(0, 0, 0, 1), 4px 4px 0 0 rgba(0, 0, 0, 1), 5px 4px 0 0 rgba(0, 0, 0, 1),
+          6px 4px 0 0 rgba(48, 63, 70, 1), 7px 4px 0 0 rgba(48, 63, 70, 1), 9px 4px 0 0 rgba(250, 248, 249, 255),
+          11px 4px 0 0 rgba(234, 232, 236, 255), 12px 4px 0 0 rgba(255, 255, 255, 1),
+          /* 5th row */ 1px 5px 0 0 rgba(140, 232, 202, 255), 2px 5px 0 0 rgba(217, 216, 216, 255),
+          3px 5px 0 0 rgba(0, 0, 0, 1), 4px 5px 0 0 rgba(52, 165, 115, 255), 5px 5px 0 0 rgba(0, 0, 0, 1),
+          6px 5px 0 0 rgba(0, 0, 11, 255), 7px 5px 0 0 rgba(0, 0, 0, 1), 8px 5px 0 0 rgba(0, 0, 0, 1),
+          9px 5px 0 0 rgba(52, 165, 115, 255), 10px 5px 0 0 rgba(0, 0, 0, 255), 11px 5px 0 0 rgba(217, 216, 216, 255),
+          12px 5px 0 0 rgba(144, 235, 204, 255), /* 6th row */ 1px 6px 0 0 rgba(144, 235, 204, 255),
+          2px 6px 0 0 rgba(217, 216, 216, 255), 3px 6px 0 0 rgba(0, 0, 0, 1), 4px 6px 0 0 rgba(0, 0, 0, 1),
+          5px 6px 0 0 rgba(52, 165, 115, 255), 6px 6px 0 0 rgba(0, 0, 0, 1), 7px 6px 0 0 rgba(0, 0, 0, 1),
+          8px 6px 0 0 rgba(52, 165, 115, 255), 9px 6px 0 0 rgba(0, 0, 0, 255), 10px 6px 0 0 rgba(0, 0, 0, 255),
+          11px 6px 0 0 rgba(217, 216, 216, 255), 12px 6px 0 0 rgba(144, 235, 204, 255),
+          /* 7th row */ 1px 7px 0 0 rgba(144, 235, 204, 255), 2px 7px 0 0 rgba(217, 216, 216, 255),
+          3px 7px 0 0 rgba(0, 0, 0, 1), 4px 7px 0 0 rgba(52, 165, 115, 255), 5px 7px 0 0 rgba(0, 0, 0, 1),
+          6px 7px 0 0 rgba(0, 0, 0, 1), 7px 7px 0 0 rgba(0, 0, 0, 1), 8px 7px 0 0 rgba(0, 0, 0, 1),
+          9px 7px 0 0 rgba(52, 165, 115, 255), 10px 7px 0 0 rgba(0, 0, 0, 255), 11px 7px 0 0 rgba(217, 216, 216, 255),
+          12px 7px 0 0 rgba(144, 235, 204, 255), /* 8th row */ 3px 8px 0 0 rgba(217, 216, 216, 255),
+          4px 8px 0 0 rgba(0, 0, 0, 255), 5px 8px 0 0 rgba(0, 0, 8, 255), 6px 8px 0 0 rgba(0, 0, 10, 255),
+          7px 8px 0 0 rgba(0, 0, 0, 255), 8px 8px 0 0 rgba(0, 0, 0, 1), 9px 8px 0 0 rgba(0, 0, 0, 1),
+          10px 8px 0 0 rgba(217, 216, 216, 255), 11px 8px 0 0 rgba(255, 255, 255, 1),
+          12px 8px 0 0 rgba(255, 255, 255, 1), /* 9th row */ 4px 9px 0 0 rgba(217, 216, 216, 255),
+          5px 9px 0 0 rgba(217, 216, 216, 255), 6px 9px 0 0 rgba(217, 216, 216, 255),
+          7px 9px 0 0 rgba(217, 216, 216, 255), 8px 9px 0 0 rgba(217, 216, 216, 255),
+          9px 9px 0 0 rgba(217, 216, 216, 255), 11px 9px 0 0 rgba(255, 255, 255, 1), 12px 9px 0 0 rgba(255, 255, 255, 1);
+      }
+
+      @keyframes flash {
+        0%,
+        100% {
+          box-shadow:
+              /* 1st row */ 5px 1px 0 0 rgba(217, 216, 216, 255),
+            6px 1px 0 0 rgba(217, 216, 216, 255), 7px 1px 0 0 rgba(217, 216, 216, 255),
+            8px 1px 0 0 rgba(217, 216, 216, 255), 10px 1px 0 0 rgba(255, 255, 255, 1),
+            11px 1px 0 0 rgba(255, 255, 255, 1), 12px 1px 0 0 rgba(255, 255, 255, 1),
+            /* 2nd row */ 3px 2px 0 0 rgba(253, 254, 254, 255), 4px 2px 0 0 rgba(234, 232, 236, 255),
+            5px 2px 0 0 rgba(236, 235, 235, 255), 6px 2px 0 0 rgba(234, 232, 236, 255),
+            7px 2px 0 0 rgba(234, 232, 236, 255), 8px 2px 0 0 rgba(234, 232, 236, 255),
+            9px 2px 0 0 rgba(234, 232, 236, 255), 11px 2px 0 0 rgba(255, 255, 255, 1),
+            12px 2px 0 0 rgba(255, 255, 255, 1), /* 3rd row */ 3px 3px 0 0 rgba(234, 232, 236, 255),
+            6px 3px 0 0 rgba(254, 254, 254, 255), 8px 3px 0 0 rgba(252, 252, 252, 255),
+            9px 3px 0 0 rgba(234, 232, 236, 255), 10px 3px 0 0 rgba(234, 232, 236, 255),
+            11px 3px 0 0 rgba(255, 255, 255, 1), 12px 3px 0 0 rgba(255, 255, 255, 1),
+            /* 4th row */ 2px 4px 0 0 rgba(234, 232, 236, 255), 3px 4px 0 0 rgba(0, 0, 0, 1),
+            4px 4px 0 0 rgba(0, 0, 0, 1), 5px 4px 0 0 rgba(0, 0, 0, 1), 6px 4px 0 0 rgba(48, 63, 70, 1),
+            7px 4px 0 0 rgba(48, 63, 70, 1), 9px 4px 0 0 rgba(250, 248, 249, 255), 11px 4px 0 0 rgba(234, 232, 236, 255),
+            12px 4px 0 0 rgba(255, 255, 255, 1), /* 5th row */ 1px 5px 0 0 rgba(140, 232, 202, 255),
+            2px 5px 0 0 rgba(217, 216, 216, 255), 3px 5px 0 0 rgba(0, 0, 0, 1), 4px 5px 0 0 rgba(52, 165, 115, 255),
+            5px 5px 0 0 rgba(0, 0, 0, 1), 6px 5px 0 0 rgba(0, 0, 11, 255), 7px 5px 0 0 rgba(0, 0, 0, 1),
+            8px 5px 0 0 rgba(0, 0, 0, 1), 9px 5px 0 0 rgba(52, 165, 115, 255), 10px 5px 0 0 rgba(0, 0, 0, 255),
+            11px 5px 0 0 rgba(217, 216, 216, 255), 12px 5px 0 0 rgba(144, 235, 204, 255),
+            /* 6th row */ 1px 6px 0 0 rgba(144, 235, 204, 255), 2px 6px 0 0 rgba(217, 216, 216, 255),
+            3px 6px 0 0 rgba(0, 0, 0, 1), 4px 6px 0 0 rgba(0, 0, 0, 1), 5px 6px 0 0 rgba(52, 165, 115, 255),
+            6px 6px 0 0 rgba(0, 0, 0, 1), 7px 6px 0 0 rgba(0, 0, 0, 1), 8px 6px 0 0 rgba(52, 165, 115, 255),
+            9px 6px 0 0 rgba(0, 0, 0, 255), 10px 6px 0 0 rgba(0, 0, 0, 255), 11px 6px 0 0 rgba(217, 216, 216, 255),
+            12px 6px 0 0 rgba(144, 235, 204, 255), /* 7th row */ 1px 7px 0 0 rgba(144, 235, 204, 255),
+            2px 7px 0 0 rgba(217, 216, 216, 255), 3px 7px 0 0 rgba(0, 0, 0, 1), 4px 7px 0 0 rgba(52, 165, 115, 255),
+            5px 7px 0 0 rgba(0, 0, 0, 1), 6px 7px 0 0 rgba(0, 0, 0, 1), 7px 7px 0 0 rgba(0, 0, 0, 1),
+            8px 7px 0 0 rgba(0, 0, 0, 1), 9px 7px 0 0 rgba(52, 165, 115, 255), 10px 7px 0 0 rgba(0, 0, 0, 255),
+            11px 7px 0 0 rgba(217, 216, 216, 255), 12px 7px 0 0 rgba(144, 235, 204, 255),
+            /* 8th row */ 3px 8px 0 0 rgba(217, 216, 216, 255), 4px 8px 0 0 rgba(0, 0, 0, 255),
+            5px 8px 0 0 rgba(0, 0, 8, 255), 6px 8px 0 0 rgba(0, 0, 10, 255), 7px 8px 0 0 rgba(0, 0, 0, 255),
+            8px 8px 0 0 rgba(0, 0, 0, 1), 9px 8px 0 0 rgba(0, 0, 0, 1), 10px 8px 0 0 rgba(217, 216, 216, 255),
+            11px 8px 0 0 rgba(255, 255, 255, 1), 12px 8px 0 0 rgba(255, 255, 255, 1),
+            /* 9th row */ 4px 9px 0 0 rgba(217, 216, 216, 255), 5px 9px 0 0 rgba(217, 216, 216, 255),
+            6px 9px 0 0 rgba(217, 216, 216, 255), 7px 9px 0 0 rgba(217, 216, 216, 255),
+            8px 9px 0 0 rgba(217, 216, 216, 255), 9px 9px 0 0 rgba(217, 216, 216, 255),
+            11px 9px 0 0 rgba(255, 255, 255, 1), 12px 9px 0 0 rgba(255, 255, 255, 1);
+        }
+        50%,
+        80% {
+          box-shadow:
+          /* 1st row */ 5px 1px 0 0 rgba(217, 216, 216, 255), 6px 1px 0 0 rgba(217, 216, 216, 255),
+            7px 1px 0 0 rgba(217, 216, 216, 255), 8px 1px 0 0 rgba(217, 216, 216, 255),
+            10px 1px 0 0 rgba(255, 255, 255, 1), 11px 1px 0 0 rgba(255, 255, 255, 1),
+            12px 1px 0 0 rgba(255, 255, 255, 1), /* 2nd row */ 3px 2px 0 0 rgba(253, 254, 254, 255),
+            4px 2px 0 0 rgba(234, 232, 236, 255), 5px 2px 0 0 rgba(236, 235, 235, 255),
+            6px 2px 0 0 rgba(234, 232, 236, 255), 7px 2px 0 0 rgba(234, 232, 236, 255),
+            8px 2px 0 0 rgba(234, 232, 236, 255), 9px 2px 0 0 rgba(234, 232, 236, 255),
+            11px 2px 0 0 rgba(255, 255, 255, 1), 12px 2px 0 0 rgba(255, 255, 255, 1),
+            /* 3rd row */ 3px 3px 0 0 rgba(234, 232, 236, 255), 6px 3px 0 0 rgba(254, 254, 254, 255),
+            8px 3px 0 0 rgba(252, 252, 252, 255), 9px 3px 0 0 rgba(234, 232, 236, 255),
+            10px 3px 0 0 rgba(234, 232, 236, 255), 11px 3px 0 0 rgba(255, 255, 255, 1),
+            12px 3px 0 0 rgba(255, 255, 255, 1), /* 4th row */ 2px 4px 0 0 rgba(234, 232, 236, 255),
+            3px 4px 0 0 rgba(0, 0, 0, 1), 4px 4px 0 0 rgba(0, 0, 0, 1), 5px 4px 0 0 rgba(0, 0, 0, 1),
+            6px 4px 0 0 rgba(48, 63, 70, 1), 7px 4px 0 0 rgba(48, 63, 70, 1), 9px 4px 0 0 rgba(250, 248, 249, 255),
+            11px 4px 0 0 rgba(234, 232, 236, 255), 12px 4px 0 0 rgba(255, 255, 255, 1),
+            /* 5th row */ 1px 5px 0 0 rgba(140, 232, 202, 255), 2px 5px 0 0 rgba(217, 216, 216, 255),
+            3px 5px 0 0 rgba(0, 0, 0, 1), 4px 5px 0 0 rgba(52, 165, 115, 255), 5px 5px 0 0 rgba(0, 0, 0, 1),
+            6px 5px 0 0 rgba(0, 0, 11, 255), 7px 5px 0 0 rgba(0, 0, 0, 1), 8px 5px 0 0 rgba(0, 0, 0, 1),
+            9px 5px 0 0 rgba(52, 165, 115, 255), 10px 5px 0 0 rgba(0, 0, 0, 255), 11px 5px 0 0 rgba(217, 216, 216, 255),
+            12px 5px 0 0 rgba(144, 235, 204, 255), /* 6th row */ 1px 6px 0 0 rgba(144, 235, 204, 255),
+            2px 6px 0 0 rgba(217, 216, 216, 255), 3px 6px 0 0 rgba(52, 165, 115, 255), 4px 6px 0 0 rgba(0, 0, 0, 1),
+            5px 6px 0 0 rgba(52, 165, 115, 255), 6px 6px 0 0 rgba(0, 0, 0, 1), 7px 6px 0 0 rgba(0, 0, 0, 1),
+            8px 6px 0 0 rgba(52, 165, 115, 255), 9px 6px 0 0 rgba(0, 0, 0, 255), 10px 6px 0 0 rgba(52, 165, 115, 255),
+            11px 6px 0 0 rgba(217, 216, 216, 255), 12px 6px 0 0 rgba(144, 235, 204, 255),
+            /* 7th row */ 1px 7px 0 0 rgba(144, 235, 204, 255), 2px 7px 0 0 rgba(217, 216, 216, 255),
+            3px 7px 0 0 rgba(0, 0, 0, 1), 4px 7px 0 0 #333, 5px 7px 0 0 rgba(0, 0, 0, 1), 6px 7px 0 0 rgba(0, 0, 0, 1),
+            7px 7px 0 0 rgba(0, 0, 0, 1), 8px 7px 0 0 rgba(0, 0, 0, 1), 9px 7px 0 0 rgba(0, 0, 0, 1),
+            10px 7px 0 0 rgba(0, 0, 0, 255), 11px 7px 0 0 rgba(217, 216, 216, 255),
+            12px 7px 0 0 rgba(144, 235, 204, 255), /* 8th row */ 3px 8px 0 0 rgba(217, 216, 216, 255),
+            4px 8px 0 0 rgba(0, 0, 0, 255), 5px 8px 0 0 rgba(0, 0, 8, 255), 6px 8px 0 0 rgba(0, 0, 10, 255),
+            7px 8px 0 0 rgba(0, 0, 0, 255), 8px 8px 0 0 rgba(0, 0, 0, 1), 9px 8px 0 0 rgba(0, 0, 0, 1),
+            10px 8px 0 0 rgba(217, 216, 216, 255), 11px 8px 0 0 rgba(255, 255, 255, 1),
+            12px 8px 0 0 rgba(255, 255, 255, 1), /* 9th row */ 4px 9px 0 0 rgba(217, 216, 216, 255),
+            5px 9px 0 0 rgba(217, 216, 216, 255), 6px 9px 0 0 rgba(217, 216, 216, 255),
+            7px 9px 0 0 rgba(217, 216, 216, 255), 8px 9px 0 0 rgba(217, 216, 216, 255),
+            9px 9px 0 0 rgba(217, 216, 216, 255), 11px 9px 0 0 rgba(255, 255, 255, 1),
+            12px 9px 0 0 rgba(255, 255, 255, 1);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="pixel"></div>
+  </body>
+</html>
