@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Boundary Wrapping</title>
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="500"
+    ></canvas>
+
+    <script type="module">
+      import { Ball } from './utils/ball.js';
+      import { useCanvas } from './utils/tools.js';
+
+      let { cnv, cxt } = useCanvas();
+      let ball = new Ball(0, cnv.height / 2);
+
+      let vx = 2;
+      (function frame() {
+        window.requestAnimationFrame(frame);
+        cxt.clearRect(0, 0, cnv.width, cnv.height);
+        ball.x += vx;
+        // 当小球完全超出右边界时
+        if (ball.x > cnv.width + ball.radius) {
+          ball.x = -ball.radius;
+        }
+        ball.fill(cxt);
+      })();
+    </script>
+  </body>
+</html>

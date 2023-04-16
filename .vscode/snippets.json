@@ -1,13 +1,11 @@
 {
   "html": {
     "snippets": {
-      "meta-hect": "<meta http-equiv='content-type' content='text/html; charset=UTF-8;'>",
-      "meta-viewport": "<meta name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scale=no' >"
+      "canvas": "<canvas id=\"${1:canvas}\" width=\"${2:800}\" height=\"${3:500}\"></canvas>",
+      "script:module": "<script type=\"module\" ${1:src=\"\"}>\n${2}\n</script>"
     }
   },
   "css": {
-    "snippets": {
-      "bsd": "border: 1px solid ${1:blue}"
-    }
+    "snippets": {}
   }
 }

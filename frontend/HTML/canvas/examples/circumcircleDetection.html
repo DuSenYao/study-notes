@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Circumcircle Determination</title>
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="500"
+    ></canvas>
+
+    <p id="msg"></p>
+
+    <script type="module">
+      import { Ball } from './utils/ball.js';
+      import { useCanvas, checkCircle, useMouse } from './utils/tools.js';
+
+      let { cnv, cxt } = useCanvas();
+      let { getMouse } = useMouse(cnv);
+
+      let msg = document.getElementById('msg');
+
+      // 定义一个位置固定的小球ballA
+      let ballA = new Ball(cnv.width / 2, cnv.height / 2, 20, '#FF6699');
+      let mouse = getMouse(cnv);
+
+      (function frame() {
+        window.requestAnimationFrame(frame);
+        cxt.clearRect(0, 0, cnv.width, cnv.height);
+        // 定义一个位置不固定的小球 ballB，小球追随鼠标指针移动
+        let ballB = new Ball(mouse.x, mouse.y, 20, '#66CCFF');
+        // 碰撞检测
+        msg.innerHTML = checkCircle(ballA, ballB) ? '撞上了' : '没撞上';
+        ballA.fill(cxt);
+        ballB.fill(cxt);
+      })();
+    </script>
+  </body>
+</html>

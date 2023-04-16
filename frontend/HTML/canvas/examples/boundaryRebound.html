@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Boundary Rebound</title>
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="500"
+    ></canvas>
+
+    <script type="module">
+      import { Ball } from './utils/ball.js';
+      import { useCanvas, getRandom, getRandomColor } from './utils/tools.js';
+
+      let { cnv, cxt } = useCanvas();
+      let balls = []; // 用来存放小球的数组 balls
+      let n = 50; // 小球数量
+      let radius = 8; // 小球半径
+      // 生成n个小球，其中小球的color、vx、vy都是随机的
+      for (let i = 0; i < n; i++) {
+        let ball = new Ball(cnv.width / 2, cnv.height / 2, radius, getRandomColor());
+        // 随机产生 -3~3 的任意数，作为 vx、vy 的值
+        ball.vx = getRandom(-3, 3);
+        ball.vy = getRandom(-3, 3);
+        // 添加到数组 balls 中
+        balls.push(ball);
+      }
+
+      let maxX = cnv.width - radius; // 小球最大 x 坐标
+      let maxY = cnv.height - radius; // 小球最大 y 坐标
+      (function frame() {
+        window.requestAnimationFrame(frame);
+        cxt.clearRect(0, 0, cnv.width, cnv.height);
+        // 使用 forEach() 函数遍历数组 balls
+        balls.forEach((ball) => {
+          ball.x += ball.vx;
+          ball.y += ball.vy;
+          // 边界检测
+          // 碰到左边界
+          if (ball.x < radius) {
+            ball.x = radius;
+            ball.vx = -ball.vx;
+            // 碰到右边界
+          } else if (ball.x > maxX) {
+            ball.x = maxX;
+            ball.vx = -ball.vx;
+          }
+          // 碰到上边界
+          if (ball.y < radius) {
+            ball.y = radius;
+            ball.vy = -ball.vy;
+            // 碰到下边界
+          } else if (ball.y > maxY) {
+            ball.y = maxY;
+            ball.vy = -ball.vy;
+          }
+          ball.fill(cxt);
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Boundary Restrictions</title>
+
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="500"
+    ></canvas>
+
+    <script type="module">
+      import { Ball } from './utils/ball.js';
+      import { useCanvas, useKeyDirection } from './utils/tools.js';
+
+      let { cnv, cxt } = useCanvas();
+      let ball = new Ball(cnv.width / 2, cnv.height / 2);
+      ball.fill(cxt);
+
+      // 边界检测
+      function checkBorder() {
+        const radius = ball.radius;
+        const maxY = cnv.height - radius;
+        const maxX = cnv.width - radius;
+        // 当小球碰到上边界时
+        if (ball.y < radius) {
+          ball.y = radius;
+          // 当小球碰到下边界时
+        } else if (ball.y > maxY) {
+          ball.y = maxY;
+        }
+        // 当小球碰到左边界时
+        if (ball.x < radius) {
+          ball.x = radius;
+          // 当小球碰到右边界时
+        } else if (ball.x > maxX) {
+          ball.x = maxX;
+        }
+      }
+
+      window.addEventListener(
+        'keydown',
+        ({ key }) => {
+          cxt.clearRect(0, 0, cnv.width, cnv.height);
+          switch (useKeyDirection(key)) {
+            case 'top':
+              ball.y -= 10;
+              checkBorder();
+              ball.fill(cxt);
+              break;
+            case 'bottom':
+              ball.y += 10;
+              checkBorder();
+              ball.fill(cxt);
+              break;
+            case 'left':
+              ball.x -= 10;
+              checkBorder();
+              ball.fill(cxt);
+              break;
+            case 'right':
+              ball.x += 10;
+              checkBorder();
+              ball.fill(cxt);
+              break;
+            default:
+              checkBorder();
+              ball.fill(cxt);
+          }
+        },
+        false
+      );
+    </script>
+  </body>
+</html>

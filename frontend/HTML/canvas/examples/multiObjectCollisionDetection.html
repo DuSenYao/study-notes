@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Multi Object Collision Detection</title>
+
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="500"
+    ></canvas>
+
+    <script type="module">
+      import { Ball } from './utils/ball.js';
+      import { useCanvas, checkCircle, getRandom, getRandomColor } from './utils/tools.js';
+
+      let { cnv, cxt } = useCanvas();
+      let n = 8;
+      let balls = [];
+      // 生成 n 个小球，小球的 x、y、color、vx、vy属性的取值都是随机值
+      for (let i = 0; i < n; i++) {
+        let ball = new Ball();
+        ball.x = Math.random() * cnv.width;
+        ball.y = Math.random() * cnv.height;
+        ball.radius = 10;
+        ball.color = getRandomColor();
+        ball.vx = getRandom(3, 6);
+        ball.vy = getRandom(3, 6);
+        // 添加到数组 balls 中
+        balls.push(ball);
+      }
+
+      // 碰撞检测（小球与小球）
+      function checkCollision(ballA, i) {
+        function moveBall(ball) {
+          ball.x += Math.sign(ball.vx) * 5;
+          ball.y += Math.sign(ball.vy) * 5;
+        }
+
+        for (let j = i + 1; j < balls.length; j++) {
+          let ballB = balls[j];
+          // 如果两个小球碰撞，则碰撞后vx、vy都取相反值
+          if (checkCircle(ballB, ballA)) {
+            ballA.vx = -ballA.vx;
+            ballA.vy = -ballA.vy;
+            ballB.vx = -ballB.vx;
+            ballB.vy = -ballB.vy;
+            // 每次碰撞，为小球的 x、y 加入偏移量，避免相互重叠
+            moveBall(ballA);
+            moveBall(ballB);
+          }
+        }
+      }
+
+      // 边界检测（小球与边界）
+      function checkBorder(ball) {
+        const { radius, x, y, vx, vy } = ball;
+        const maxX = cnv.width - radius;
+        const maxY = cnv.height - radius;
+        // 碰到左边界
+        if (x < radius) {
+          ball.x = radius;
+          ball.vx = -vx;
+          // 碰到右边界
+        } else if (x > maxX) {
+          ball.x = maxX;
+          ball.vx = -vx;
+        }
+        // 碰到上边界
+        if (y < radius) {
+          ball.y = radius;
+          ball.vy = -vy;
+          // 碰到下边界
+        } else if (y > maxY) {
+          ball.y = maxY;
+          ball.vy = -vy;
+        }
+      }
+
+      // 绘制小球
+      function drawBall(ball) {
+        ball.fill(cxt);
+        ball.x += ball.vx;
+        ball.y += ball.vy;
+      }
+
+      (function frame() {
+        window.requestAnimationFrame(frame);
+        cxt.clearRect(0, 0, cnv.width, cnv.height);
+        // 碰撞检测
+        balls.forEach(checkCollision);
+        // 边界检测
+        balls.forEach(checkBorder);
+        // 绘制小球
+        balls.forEach(drawBall);
+      })();
+    </script>
+  </body>
+</html>

@@ -12,6 +12,8 @@ export class Ball {
     this.scaleX = 1; // 小球水平方向缩放比例
     this.scaleY = 1; // 小球垂直方向缩放比例
     this.rotation = 0; // 小球旋转角度
+    this.vx = 0; // 小球在 x 轴方向上的速度
+    this.vy = 0; // 小球在 y 轴方向上的速度
   }
 
   /**
@@ -44,5 +46,18 @@ export class Ball {
     cxt.closePath();
     cxt.fill();
     cxt.restore();
+  }
+
+  /**
+   * 获取小球的包围盒
+   * @returns {{x: number, y: number, width: number, height: number}}
+   */
+  getRect() {
+    return {
+      x: this.x - this.radius,
+      y: this.y - this.radius,
+      width: this.radius * 2,
+      height: this.radius * 2
+    };
   }
 }

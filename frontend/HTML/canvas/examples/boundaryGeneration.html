@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Boundary Generation</title>
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="500"
+    ></canvas>
+
+    <script type="module">
+      import { Ball } from './utils/ball.js';
+      import { useCanvas, getRandom, getRandomColor } from './utils/tools.js';
+
+      let { cnv, cxt } = useCanvas();
+      let balls = []; // 用来存放小球的数组 balls
+      let n = 50; // 小球数量
+      let radius = 5; // 小球半径
+      let gravity = 0.02; // 重力加速度为 0.2
+      let maxX = cnv.width + radius; // 小球最大 x 坐标
+      let maxY = cnv.height + radius; // 小球最大 y 坐标
+      // 生成 n 个小球，其中小球的 color、vx、vy 都是随机值
+      for (let i = 0; i < n; i++) {
+        // 球心坐标为 Canvas 中心，color 为随机颜色值
+        let ball = new Ball(cnv.width / 2, cnv.height / 2, radius, getRandomColor());
+        // ball.vx 和 ball.vy 取值都是：-1~1 的任意数
+        ball.vx = getRandom(-3, 3);
+        ball.vy = getRandom(-3, 3);
+        // 添加到数组 balls 中
+        balls.push(ball);
+      }
+
+      (function frame() {
+        window.requestAnimationFrame(frame);
+        cxt.clearRect(0, 0, cnv.width, cnv.height);
+        // 使用 forEach() 函数遍历数组 balls
+        balls.forEach((ball) => {
+          // 边界检测，使得小球完全超出画布后会在中心位置重新生成
+          if (ball.x < -radius || ball.x > maxX || ball.y < -radius || ball.y > maxY) {
+            ball.x = cnv.width / 2;
+            ball.y = cnv.height / 2;
+            ball.vx = getRandom(-3, 3);
+            ball.vy = getRandom(-3, 3);
+          }
+          ball.fill(cxt);
+          ball.x += ball.vx;
+          ball.y += ball.vy;
+          ball.vy += gravity;
+        });
+      })();
+    </script>
+  </body>
+</html>

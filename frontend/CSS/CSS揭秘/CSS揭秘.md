@@ -496,7 +496,7 @@ background-origin: border-box;
 
 这个技巧的另一个用武之地是生成好玩的蚂蚁行军边框！蚂蚁行军边框是一种虚线边框，看起在不断转动，就好像排队前进的蚂蚁一样。这个技巧在图形界面中有大量应用—几乎所有的图像编辑软件都会使用这个效果来标示选区。
 
-为了创建[蚂蚁行军](./example/marching-ants.html)效果，将会用到 “老式信封” 技巧的一个变种。将把条纹转变为黑白两色，并把边框的宽度减少至 1px，然后再把 `background-size` 改为某个合适的值。最后，把 `background-position` 以动画的方式改变为 100%，就可以让它滚动起来了：
+为了创建[蚂蚁行军](./examples/marching-ants.html)效果，将会用到 “老式信封” 技巧的一个变种。将把条纹转变为黑白两色，并把边框的宽度减少至 1px，然后再把 `background-size` 改为某个合适的值。最后，把 `background-position` 以动画的方式改变为 100%，就可以让它滚动起来了：
 
 ```css
 @keyframes ants {
@@ -522,7 +522,7 @@ background-origin: border-box;
 
 当前，如果要通过 border-image 来实现类似的效果，唯一的办法是为 border-image-source 指定一个 GIF 动画，当浏览器开始支持渐变插值的时候，还可以用渐变来实现它。
 
-`border-image` 也有它强大的地方，尤其是在搭配渐变图案时更是威力倍增。举个例子，假设需要一个[顶部边框被裁切](./example/top-clip.html)的效果，就像一般的脚注那样。所需要的就是 border-image 属性再加上一条由渐变生成的垂直条纹，并把要裁切的长度在渐变中写好。边框线的粗细交给 border-width 来控制：
+`border-image` 也有它强大的地方，尤其是在搭配渐变图案时更是威力倍增。举个例子，假设需要一个[顶部边框被裁切](./examples/top-clip.html)的效果，就像一般的脚注那样。所需要的就是 border-image 属性再加上一条由渐变生成的垂直条纹，并把要裁切的长度在渐变中写好。边框线的粗细交给 border-width 来控制：
 
 ```css
 .top-clip {
@@ -638,11 +638,11 @@ img:hover {
 }
 ```
 
-[示例](./example/diamond-image.html)
+[示例](./examples/diamond-image.html)
 
 ### 3.3 切角效果
 
-[切角](./example/chamfer.html)最常见的形态是把元素的一个或多个角切成 45° 的缺口。
+[切角](./examples/chamfer.html)最常见的形态是把元素的一个或多个角切成 45° 的缺口。
 
 #### 3.3.1 CSS 渐变
 
@@ -906,7 +906,7 @@ circle {
 然后在每个 .pie 元素内部生成一个 SVG 图像，并添入所有必要的图形元件和属性。为确保可访问性，还可以在它内部增加 `<title>` 元素，这样屏幕阅读器的读者也可以知道这个图像显示的是什么比率了。这段脚本最终可能是这样的：
 
 ```js
-$$('.pie').forEach(pie => {
+$$('.pie').forEach((pie) => {
   let p = parseFloat(pie.textContent);
   let NS = 'http://www.w3.org/2000/svg';
   let svg = document.createElementNS(NS, 'svg');
@@ -925,7 +925,7 @@ $$('.pie').forEach(pie => {
 });
 ```
 
-[完整示例](./example/SimplePieChart.html)
+[完整示例](./examples/SimplePieChart.html)
 
 SVG 的方案具有不少优点，而这恰恰是纯 CSS 方案存在不足的地方：
 
@@ -2125,7 +2125,7 @@ h1 {
 这个动画现在的表现相当完美，不过还不是很易于维护：需要根据每个标题的字数来给它们分别指定不同的宽度样式，而且还需要在每次改变标题内容时同步更新这些宽度样式。显然，这种场景正是 JS 的用武之地：
 
 ```js
-$$('h1').forEach(h1 => {
+$$('h1').forEach((h1) => {
   let len = h1.textContent.length,
     s = h1.style;
   s.width = len + 'ch';

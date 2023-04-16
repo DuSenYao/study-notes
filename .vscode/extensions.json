@@ -20,7 +20,6 @@
     "eamodio.gitlens",
     "pflannery.vscode-versionlens",
     "alefragnani.bookmarks",
-    "gruntfuggly.todo-tree",
-    "vue.volar"
+    "gruntfuggly.todo-tree"
   ]
 }

@@ -1746,7 +1746,7 @@ Math.atan() 函数，反而是 Math.atan2() 函数用得较多。
 
 ##### 3.2.1.1 追随鼠标指针旋转
 
-Math.atan2() 函数可以实现一个经典效果：[追随鼠标指针旋转](./example/followMouseRotation.html)。
+Math.atan2() 函数可以实现一个经典效果：[追随鼠标指针旋转](./examples/followMouseRotation.html)。
 
 ![箭头跟随鼠标指针旋转的分析](./image/%E7%AE%AD%E5%A4%B4%E8%B7%9F%E9%9A%8F%E9%BC%A0%E6%A0%87%E6%8C%87%E9%92%88%E6%97%8B%E8%BD%AC%E7%9A%84%E5%88%86%E6%9E%90.jpg)
 
@@ -1787,7 +1787,7 @@ Math.sqrt() 方法用于求一个数的平方根。
 
   ![圆上任意一点坐标（圆心不是坐标原点）](./image/%E5%9C%86%E4%B8%8A%E4%BB%BB%E6%84%8F%E4%B8%80%E7%82%B9%E5%9D%90%E6%A0%87%EF%BC%88%E5%9C%86%E5%BF%83%E4%B8%8D%E6%98%AF%E5%9D%90%E6%A0%87%E5%8E%9F%E7%82%B9%EF%BC%89.jpg)
 
-  接下来建立一个 [ball.js](./example/utils/ball.js) 文件。并将它引入[示例文件](./example/circularMotion.html)中。
+  接下来建立一个 [ball.js](./examples/utils/ball.js) 文件。并将它引入[示例文件](./examples/circularMotion.html)中。
 
 - **椭圆运动**
 
@@ -1857,7 +1857,7 @@ Math.sqrt() 方法用于求一个数的平方根。
   - **range**：振幅
   - **speed**：角度改变的大小
 
-[例子](./example/waveformMotion.html)
+[例子](./examples/waveformMotion.html)
 
 #### 3.2.2 匀速运动
 
@@ -1941,7 +1941,7 @@ let vy = speed * Math.sin((30 * Math.PI) / 180);
 })();
 ```
 
-在前面有一个箭头跟随鼠标移动的[例子](./example/followMouseRotation.html)，可在此基础上加入匀速运动，实现箭头跟随鼠标指针匀速运动的效果。
+在前面有一个箭头跟随鼠标移动的[例子](./examples/followMouseRotation.html)，可在此基础上加入匀速运动，实现箭头跟随鼠标指针匀速运动的效果。
 
 #### 3.2.3 变速运动
 
@@ -2005,3 +2005,233 @@ object.y += vy;
 借助重力，可以实现很多有趣的效果。这个例子中有一个很常见的效果：小球从空中自由降落到地面，然后反弹，循环往复，直到它的最终速度为 0 而停止在地面。
 
 #### 3.2.5 摩擦力
+
+摩擦力，指的是阻碍物体相对运动的力。其中摩擦力的方向与物体相对运动的方向相反。摩擦力只会改变速度的大小而不会改变运动的方向。
+
+```js
+let friction = 0.95;
+vx *= friction;
+vy *= friction;
+object.x += vx;
+object.y += vy;
+```
+
+### 3.3 边界检测
+
+边界检测，指的是检测一个物体所处“运动环境的范围”（也就是边界）。简单来说，就是给运动物体限定一个范围，从而实现某些动画效果。
+
+在 Canvas 动画中，可以为物体设置一个运动范围。这个运动范围可以是整个画布，也可以是画布的一部分。大多数情况下，都会把物体运动范围设置为整个画布。
+
+对于边界检测，主要有以下 4 个方面：
+
+- 边界限制
+- 边界环绕
+- 边界生成
+- 边界反弹
+
+#### 3.3.1 边界限制
+
+[边界限制](./examples/boundaryRestrictions.html)，指的是通过边界检测的办法来限制物体的运动范围使得其无法超出这个运动范围，而只能在范围内运动。
+
+```js
+const radius = ball.radius;
+const maxY = cnv.height - radius;
+const maxX = cnv.width - radius;
+if (ball.x < radius) {
+  // 小球 “碰到” 左边界时
+} else if (ball.x > cnv.width - radius) {
+  // 小球 “碰到” 右边界时
+}
+
+if (ball.y < radius) {
+  // 小球 “碰到” 上边界时
+} else if (ball.y > cnv.height - radius) {
+  // 小球 “碰到” 下边界时
+}
+```
+
+#### 3.3.2 边界环绕
+
+[边界环绕](./examples/boundaryWrap.html)，指的是当物体从一个边界消失后，它就会从对面的边界重新出现，从而形成一种环绕效果。
+
+```js
+const radius = ball.radius;
+const maxY = cnv.height + radius;
+const maxX = cnv.width + radius;
+if (ball.x < -radius) {
+  // 小球 “完全超出” 左边界时
+} else if (ball.x > maxX) {
+  // 小球 “完全超出” 右边界时
+}
+if (ball.y < -radius) {
+  // 小球 “完全超出” 上边界时
+} else if (ball.y > maxY) {
+  // 小球 “完全超出” 下边界时
+}
+```
+
+#### 3.3.3 边界生成
+
+[边界生成](./examples/boundaryGeneration.html)，指的是物体完全超出边界之后，会在最开始的位置重新生成。这种技巧非常实用，可用于创建喷泉效果以及各种粒子特效。例如在喷泉效果中，水滴不断地飞溅出来，飞出 Canvas 后会重新出现在水流的源头。
+
+通过边界生成，可以源源不断地为 Canvas 提供运动物体，而又不用担心 Canvas 上的物体过多以至于影响浏览器性能，因为物体的数量是固定不变的。
+
+```js
+if (
+  ball.x < -ball.radius ||
+  ball.x > cnv.width + ball.radius ||
+  ball.y < -ball.radius ||
+  ball.y > cnv.height + ball.radius
+) {
+  // ......
+}
+```
+
+这里使用与运算，列举了 “完全超出” 边界的 4 种情况。当这 4 种情况中的任何一种为 true 时，都表示物体已经完全超出了边界。
+
+#### 3.3.4 边界反弹
+
+[边界反弹](./examples/boundaryRebound.html)，指的是物体触碰到边界之后就会反弹回来。
+
+物体触碰边界就反弹，说明需要判断物体什么时候碰到边界，这也就是需要进行边界检测。在物体碰到边界后，需要做两件事：保持它的位置不变；改变它的速度向量。也就是说，如果物体碰到左边界或右边界，就对 vx（x 轴方向速度）取反，而 vy 不变；如果物体碰到上边界或下边界，就对 vy（y 轴方向速度）取反，而 vx 不变。
+
+```js
+let radius = ball.radius;
+let maxX = cnv.width - radius;
+let maxY = cnv.height - radius;
+// 碰到左边界
+if (ball.x < radius) {
+  ball.x = radius;
+  vx = -vx;
+  // 碰到右边界
+} else if (ball.x > maxX) {
+  ball.x = maxX;
+  vx = -vx;
+}
+// 碰到上边界
+if (ball.y < radius) {
+  ball.y = radius;
+  vy = -vy;
+  // 碰到下边界
+} else if (ball.y > maxY) {
+  ball.y = maxY;
+  vy = -vy;
+}
+```
+
+### 3.4 碰撞检测
+
+在边界检测中，检测的是 “物体与边界” 之间是否发生碰撞。不过在碰撞检测中，检测的是“物体与物体”之间是否发生碰撞。也就是说，边界检测与碰撞检测的区别在于检测对象的不同。碰撞检测比较常用的是以下 2 种方法：
+
+- 外接矩形判定法
+- 外接圆判定法
+
+#### 3.4.1 外接矩形判定法
+
+[外接矩形判定法](https://developer.mozilla.org/zh-CN/docs/Games/Techniques/2D_collision_detection#%E7%9F%A9%E5%BD%A2%E7%9B%B8%E4%BA%A4)，指的是如果检测物体是一个矩形或近似矩形，可以把这个物体抽象成一个矩形，然后用判断两个矩形是否碰撞的方法进行检测。简单来说，就是把物体看成一个矩形来处理。
+
+对于外接矩形判定法，一般需要两步：
+
+1. **找出物体的外接矩形**
+
+   可以选择一个物体，在它周围画一个矩形。矩形的上边穿过物体最顶端的像素，下边穿过物体最底端的像素，然后左边穿过物体最左端的像素，右边穿过物体最右端的像素。
+
+2. **[对外接矩形进行碰撞检测](./examples/collisionDetection.html)**
+
+   判断两个矩形是否发生碰撞，只需要判断：两个矩形左上角顶点的坐标所处的范围。如果两个矩形左上角顶点的坐标满足一定条件，则可判定两个矩形发生了碰撞。
+
+   ```js
+   function checkRect(rectA, rectB) {
+     return !(
+       rectA.x + rectA.width < rectB.x ||
+       rectB.x + rectB.width < rectA.x ||
+       rectA.y + rectA.height < rectB.y ||
+       rectB.y + rectB.height < rectA.y
+     );
+   }
+   ```
+
+可以用这种方式实现[类似俄罗斯方块的小游戏](./examples/tetris.html)。
+
+#### 3.4.2 外接圆判定法
+
+[外接圆判定法](./examples/collisionDetection.html)，指的是如果检测物体是一个圆或近似圆，可以把这个物体抽象成一个圆，然后用判断两个圆是否碰撞的方法进行检测。
+
+对于外接圆判定法，一般也需要两步：
+
+1. **找出物体的外接圆**
+
+   判断两个圆是否发生碰撞，只需要判断 “两个圆心之间的距离”。如果两个圆心之间的距离大于或等于两个圆的半径之和，则两个圆没有发生碰撞；如果两个圆心之间的距离小于两个圆的半径之和，则两个圆发生了碰撞。
+
+2. **对外接圆进行碰撞检测**
+
+   ```js
+   function checkCircle(circleB, circleA) {
+     return Math.sqrt((circleB.x - circleA.x) ** 2 + (circleB.y - circleA.y) ** 2) < circleA.radius + circleB.radius;
+   }
+   ```
+
+#### 3.4.3 多物体碰撞
+
+当画布中只有两个物体时，只有一种碰撞情况：A-B。当画布中有 3 个物体时，共有 3 种情况：A-B、A-C、B-C。当画布中有 4 个物体时，共有 6 种情况：A-B、A-C、A-D、B-C、B-D、C-D。依次类推。
+
+如果有 n 个物体，根据排列组合知识可以知道，此时共有 `n x (n-1)/2` 种碰撞情况，计算过程如下。
+
+```math
+(n-1) + (n-2) + ... + 1
+= (n-1+1) x (n-1)/2
+= n x (n-1) / 2
+```
+
+把上面的公式转为代码：
+
+```js
+balls.forEach((ballA, i) => {
+  for (let j = i + 1; balls.length; j++) {
+    let ballB = balls;
+    if (checkCircle(ballA, ballB)) {
+      // ......
+    }
+  }
+});
+```
+
+[多物体碰撞示例](./examples/multiObjectCollisionDetection.html)
+
+### 3.5 用户交互
+
+所谓的用户交互，指的是用户借助鼠标或键盘参与到 Canvas 动画中，以实现一些互动效果。用户交互，往往借助两个事件来实现：
+
+- **键盘事件**
+
+  - 控制物体的移动
+  - 根据不同的按键（或组合键）触发不同的效果（如释放技能）
+
+- **鼠标事件**
+
+  - 捕获物体
+  - 拖曳物体
+  - 抛掷物体
+
+#### 3.5.1 捕获物体
+
+想要拖曳一个物体或者抛一个物体，首先要知道怎样捕获一个物体。只有捕获了一个物体，才可以对该物体进行相应的操作。
+
+Canvas 中图形的捕获，跟 DOM 元素的捕获是不一样的。在 Canvas 中，对于物体的捕获，分为以下 4 种情况来考虑。
+
+- **矩形的捕获**
+
+  在下图的画布中，存在一个矩形，矩形左上角坐标为 (x, y)，宽度为 width，高度为 height。可以通过获取点击鼠标时的坐标来判断是否捕获了矩形。如果点击鼠标时的坐标落在矩形上，就说明捕获了这个矩形；如果点击鼠标时的坐标没有落在矩形上，就说明没有捕获到这个矩形。
+
+  ![矩形的捕获](./image/%E7%9F%A9%E5%BD%A2%E7%9A%84%E6%8D%95%E8%8E%B7.jpg)
+
+  ```js
+
+  ```
+
+- **圆的捕获**
+
+- 多边形的捕获
+- 不规则图形的捕获
+
+> 多边形以及不规则图形的捕获非常复杂，采用的方法是分离轴定理（SAT）和最小平移向量（MTV）。

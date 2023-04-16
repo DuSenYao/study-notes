@@ -24,18 +24,6 @@
       "outFiles": ["!**/node_modules/**"]
     },
     {
-      "name": "Launch chrome localhost",
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost/mypage.html",
-      "webRoot": "${workspaceFolder}/root",
-      "presentation": {
-        "hidden": false,
-        "group": "Chrome",
-        "order": 1
-      }
-    },
-    {
       "name": "调试 eslint api",
       "program": "${workspaceFolder}/api-test.js",
       "request": "launch",

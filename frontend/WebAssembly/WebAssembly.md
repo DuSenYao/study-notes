@@ -939,7 +939,7 @@ Response 对象（window.fetch 调用后的返回结果）是 Fetch API 的重�
 
 ![基于流式编译进行的 Wasm 模块初始化流程](./image/%E5%9F%BA%E4%BA%8E%E6%B5%81%E5%BC%8F%E7%BC%96%E8%AF%91%E8%BF%9B%E8%A1%8C%E7%9A%84%20Wasm%20%E6%A8%A1%E5%9D%97%E5%88%9D%E5%A7%8B%E5%8C%96%E6%B5%81%E7%A8%8B.webp)
 
-这是加载 wasm 代码一种非常有效的优化方式，同时返回 Module 及其第一个 Instance 实例。[例子](./example/instantiate-streaming.html)需要 Live Server 插件。
+这是加载 wasm 代码一种非常有效的优化方式，同时返回 Module 及其第一个 Instance 实例。[例子](./examples/instantiate-streaming.html)需要 Live Server 插件。
 
 ##### 2.7.3.2 模块流式编译方法
 
@@ -1202,7 +1202,7 @@ wasm 所有的提案可以在[这里](https://github.com/WebAssembly/proposals)�
 
 ## 四. Wasm DIP 应用
 
-Wasm 在 Web 多媒体资源处理领域具有的极大优势。因此，将尝试构建的应用，便是这样一个基于 Wasm 的[在线 DIP 应用](./example/DIP/node-wasm-server.js)。
+Wasm 在 Web 多媒体资源处理领域具有的极大优势。因此，将尝试构建的应用，便是这样一个基于 Wasm 的[在线 DIP 应用](./examples/DIP/node-wasm-server.js)。
 
 DIP 的全称为 “Digital Image Processing”，即 “数字图像处理”。在将要构建的 Web 应用中，会为在线播放的流媒体资源，去添加一个特定的实时 “图像处理滤镜”，以改变视频本身的播放显示效果。由于添加实时滤镜需要在视频播放时，同步地对当前某一帧画面上的所有像素点，进行一定的像素值的数学处理变换，因此整个应用从某个角度来说，是一个 “计算密集型” 应用。首先，来看下这个应用在实际运行时的样子。
 
@@ -1326,7 +1326,7 @@ http
   .createServer((req, res) => {
     let realPath = path.join(__dirname, `.${url.parse(req.url).pathname}`);
     // 检查所访问文件是否存在，且是否可读；
-    fs.access(realPath, fs.constants.R_OK, err => {
+    fs.access(realPath, fs.constants.R_OK, (err) => {
       if (err) {
         res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.end();
@@ -1396,7 +1396,7 @@ console.log('Server is runing at port: ' + PORT + '.');
    // 自动播放 <video> 载入的视频；
    let promise = video.play();
    if (promise !== undefined) {
-     promise.catch(error => {
+     promise.catch((error) => {
        console.error('The video can not autoplay!');
      });
    }
