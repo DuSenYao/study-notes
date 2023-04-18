@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Drag</title>
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="500"
+      data-name=""
+    ></canvas>
+
+    <script type="module">
+      import { Ball } from './utils/ball.js';
+      import { useCanvas, useMouse } from './utils/tools.js';
+
+      let { cnv, cxt } = useCanvas();
+      let { getMouse } = useMouse(cnv);
+
+      const ball = new Ball(cnv.width / 2, cnv.height / 2, 30);
+      ball.fill(cxt);
+      let mouse = getMouse(cnv);
+
+      let dx = 0;
+      let dy = 0;
+      // 移动鼠标时，更新小球坐标
+      function onMouseMove() {
+        ball.x = mouse.x - dx;
+        ball.y = mouse.y - dy;
+        // 边界检测
+        let { radius, x, y } = ball;
+        let maxX = cnv.width - radius;
+        let maxY = cnv.height - radius;
+        if (x < radius || x > maxX) {
+          ball.x = x < radius ? radius : maxX;
+        }
+        if (y < radius || y > maxY) {
+          ball.y = y < radius ? radius : maxY;
+        }
+      }
+
+      // 松开鼠标时，移除鼠标松开事件：mouseup（自身事件）、mousemove
+      function onMouseUp() {
+        cnv.removeEventListener('mouseup', onMouseUp, false);
+        cnv.removeEventListener('mousemove', onMouseMove, false);
+        cnv.removeEventListener('mouseout', onMouseUp, false);
+      }
+
+      // 为 Canvas 添加鼠标按下事件
+      cnv.addEventListener(
+        'mousedown',
+        () => {
+          // 判断鼠标点击是否落在小球上，如果是，就添加两个事件：mousemove、mouseup
+          if (ball.checkMouse(mouse)) {
+            dx = mouse.x - ball.x;
+            dy = mouse.y - ball.y;
+            cnv.addEventListener('mousemove', onMouseMove, false);
+            cnv.addEventListener('mouseup', onMouseUp, false);
+            cnv.addEventListener('mouseout', onMouseUp, false);
+          }
+        },
+        false
+      );
+
+      (function drawFrame() {
+        window.requestAnimationFrame(drawFrame);
+        cxt.clearRect(0, 0, cnv.width, cnv.height);
+        ball.fill(cxt);
+      })();
+    </script>
+  </body>
+</html>

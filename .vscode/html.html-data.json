@@ -25,7 +25,12 @@
           "url": "https://developer.mozilla.org/zh-CN/docs/Web/HTML/Global_attributes/data-*"
         }
       ],
-      "valueSet": "data-name"
+      "values": [
+        {
+          "name": "id",
+          "description": "id"
+        }
+      ]
     },
     {
       "name": "data-name",

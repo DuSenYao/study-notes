@@ -6,6 +6,8 @@
     }
   },
   "css": {
-    "snippets": {}
+    "snippets": {
+      "bor": "border: 1px solid ${1:#000}"
+    }
   }
 }

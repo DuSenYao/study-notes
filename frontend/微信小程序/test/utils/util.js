@@ -1,4 +1,9 @@
-const formatTime = date => {
+/**
+ * 格式化时间
+ * @param {Date} date
+ * @returns {String}
+ */
+const formatTime = (date) => {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
@@ -9,9 +14,14 @@ const formatTime = date => {
   return [year, month, day].map(formatNumber).join('/') + ' ' + [hour, minute, second].map(formatNumber).join(':');
 };
 
-const formatNumber = n => {
-  n = n.toString();
-  return n[1] ? n : '0' + n;
+/**
+ * 格式化数字
+ * @param {Number} n
+ * @returns {String}
+ */
+const formatNumber = (n) => {
+  let ns = n.toString();
+  return ns[1] ? ns : '0' + ns;
 };
 
 function compareVersion(v1, v2) {

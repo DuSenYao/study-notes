@@ -1575,7 +1575,7 @@ Emmet 是 Web 开发者必不可少的工具，为 HTML 和 CSS 提供了丰富�
 
 #### 6.4.2 Vue 设置 VSCode 识别别名
 
-安装 Path intellisense，打开 `setting.json` 文件添加以下代码：
+安装 Path intellisense，打开 `./vscode/setting.json` 文件添加以下代码：
 
 ```json
 "path-intellisense.mappings" : {

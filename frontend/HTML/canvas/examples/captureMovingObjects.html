@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Capture Moving Objects</title>
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="500"
+    ></canvas>
+
+    <script type="module">
+      import { Ball } from './utils/ball.js';
+      import { useCanvas, useMouse, getRandom } from './utils/tools.js';
+
+      let { cnv, cxt } = useCanvas();
+      let { getMouse } = useMouse(cnv);
+      let mouse = getMouse();
+      let ball = new Ball(cnv.width / 2, cnv.height / 2, 20);
+
+      let isMouseDown = false;
+      // 随机产生-3-3的任意数，作为 vx、vy 的值
+      let vx = getRandom(-3, 3);
+      let vy = getRandom(-3, 3);
+      // 为画布添加 mousedown 事件
+      cnv.addEventListener(
+        'mousedown',
+        () => {
+          if (ball.checkMouse(mouse)) {
+            isMouseDown = true;
+            alert('捕获成功');
+          }
+        },
+        false
+      );
+
+      function ballMove() {
+        ball.x += vx;
+        ball.y += vy;
+        let { radius, x, y } = ball;
+        let maxX = cnv.width - radius;
+        let maxY = cnv.height - radius;
+        // 边界检测
+        // x < radius 碰到左边界 x > maxX 碰到右边界
+        if (x < radius || x > maxX) {
+          vx = -vx;
+          ball.x = x < radius ? radius : maxX;
+        }
+        // y < radius 碰到上边界 y > maxY 碰到下边界
+        if (y < radius || y > maxY) {
+          vy = -vy;
+          ball.y = y < radius ? radius : maxY;
+        }
+        ball.fill(cxt);
+      }
+
+      (function drawFrame() {
+        window.requestAnimationFrame(drawFrame);
+        cxt.clearRect(0, 0, cnv.width, cnv.height);
+        // 如果鼠标不是按下状态，则小球继续运动，否则就会停止
+        if (isMouseDown) return;
+        ballMove();
+      })();
+    </script>
+  </body>
+</html>

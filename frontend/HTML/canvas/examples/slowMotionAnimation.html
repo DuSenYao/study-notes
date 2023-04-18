@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Slow motion animation</title>
+
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="500"
+    ></canvas>
+
+    <script type="module">
+      import { Ball } from './utils/ball.js';
+      import { useCanvas, useMouse } from './utils/tools.js';
+
+      let { cnv, cxt } = useCanvas();
+      let { getMouse } = useMouse(cnv);
+      let mouse = getMouse();
+
+      const ball = new Ball(cnv.width / 2, cnv.height / 2, 25);
+      const smallBall = new Ball(cnv.width / 2, cnv.height / 2, 15, 'red');
+      let targetX = cnv.width - ball.radius; // 终点的 x 轴坐标
+      let targetY = cnv.height - ball.radius; // 终点的 y 轴坐标
+      let easing = 0.05; // 缓动系数
+      (function frame() {
+        window.requestAnimationFrame(frame);
+        cxt.clearRect(0, 0, cnv.width, cnv.height);
+
+        // 跟随鼠标运动
+        let vx = (mouse.x - ball.x) * easing;
+        ball.x += vx;
+        let vy = (mouse.y - ball.y) * easing;
+        ball.y += vy;
+        // 跟随第一个小球运动
+        let vx1 = (ball.x - smallBall.x) * easing;
+        smallBall.x += vx1;
+        let vy1 = (ball.y - smallBall.y) * easing;
+        smallBall.y += vy1;
+        ball.fill(cxt);
+        smallBall.fill(cxt);
+      })();
+    </script>
+  </body>
+</html>

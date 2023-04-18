@@ -18,5 +18,25 @@
       "name": ":my-link",
       "description": ":any-link pseudo class. See details at https://preset-env.cssdb.org/features#any-link-pseudo-class"
     }
+  ],
+  "atDirectives": [
+    {
+      "name": "@my-media",
+      "browsers": ["IE >= 11", "E >= 12", "FF >= 18", "C >= 21", "S >= 6.1", "O >= 12.1"],
+      "references": [
+        {
+          "name": "GitHub",
+          "url": "https://github.com"
+        }
+      ],
+      "status": "experimental",
+      "description": "Media query. See details at https://preset-env.cssdb.org/features#media-query-ranges"
+    }
+  ],
+  "pseudoElements": [
+    {
+      "name": "::my-placeholder",
+      "description": "Placeholder pseudo element. See details at https://preset-env.cssdb.org/features#placeholder-pseudo-element"
+    }
   ]
 }

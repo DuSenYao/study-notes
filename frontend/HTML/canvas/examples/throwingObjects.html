@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Throwing Objects</title>
+
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="500"
+    ></canvas>
+
+    <script type="module">
+      import { Ball } from './utils/ball.js';
+      import { useCanvas, useMouse } from './utils/tools.js';
+
+      let { cnv, cxt } = useCanvas();
+      let { getMouse } = useMouse(cnv);
+
+      const ball = new Ball(cnv.width / 2, cnv.height / 2, 30);
+      ball.fill(cxt);
+      let mouse = getMouse(cnv);
+
+      let isMouseDown = false;
+      let dx = 0;
+      let dy = 0;
+      // oldX 和 oldY 用于存储小球旧的坐标
+      let oldX = 0;
+      let oldY = 0;
+      // 初始速度 vx 和 vy 都为 0
+      let vx = 0;
+      let vy = 0;
+      let gravity = 1.5; // 重力加速度
+      let bounce = -0.8; // 弹性系数
+      let friction = 0.99; // 摩擦系数
+
+      let preY = 0; // 用于存储小球上一次的 y 坐标
+      /**
+       * 边界检测
+       * @param {boolean} isTurn 是否反弹
+       */
+      function checkBoundary(isTurn = false) {
+        let { radius, x, y } = ball;
+        let maxX = cnv.width - radius;
+        let maxY = cnv.height - radius;
+        if (x < radius || x > maxX) {
+          ball.x = x < radius ? radius : maxX;
+          if (isTurn) vx *= bounce;
+        }
+        if (y < radius || y > maxY) {
+          ball.y = y < radius ? radius : maxY;
+          if (isTurn) vy *= bounce;
+        }
+        preY = y;
+        if (y === preY && isTurn) {
+          vx *= friction;
+        }
+      }
+
+      // 移动鼠标时，更新小球坐标
+      function onMouseMove() {
+        ball.x = mouse.x - dx;
+        ball.y = mouse.y - dy;
+        // 边界检测
+        checkBoundary();
+      }
+
+      // 松开鼠标时，将 isMouseDown 设置为false
+      function onMouseUp() {
+        isMouseDown = false;
+        cnv.removeEventListener('mouseup', onMouseUp, false);
+        cnv.removeEventListener('mousemove', onMouseMove, false);
+        cnv.removeEventListener('mouseout', onMouseUp, false);
+      }
+
+      cnv.addEventListener(
+        'mousedown',
+        () => {
+          // 判断点击鼠标时指针是否落在小球上
+          if (ball.checkMouse(mouse)) {
+            // 捕获小球时，将 isMouseDown 设置为 true
+            isMouseDown = true;
+            // 捕获小球时，将当前鼠标指针位置赋值给 oldX 和 oldY
+            oldX = ball.x;
+            oldY = ball.y;
+            dx = mouse.x - ball.x;
+            dy = mouse.y - ball.y;
+            cnv.addEventListener('mousemove', onMouseMove, false);
+            cnv.addEventListener('mouseup', onMouseUp, false);
+            cnv.addEventListener('mouseout', onMouseUp, false);
+          }
+        },
+        false
+      );
+
+      function drawFrame() {
+        window.requestAnimationFrame(drawFrame, cnv);
+        cxt.clearRect(0, 0, cnv.width, cnv.height);
+        if (isMouseDown) {
+          // 如果 isMouseDown 为 true，用当前小球的位置减去上一帧的坐标
+          vx = ball.x - oldX;
+          vy = ball.y - oldY;
+          // 如果 isMouseDown 为 true，更新 oldX 和 oldY 为当前小球中心坐标;
+          oldX = ball.x;
+          oldY = ball.y;
+        } else {
+          // 如果 isMouseDown 为 false，小球沿着抛掷方向运动
+          vy += gravity;
+          ball.x += vx;
+          ball.y += vy;
+          checkBoundary(true);
+        }
+        ball.fill(cxt);
+      }
+      drawFrame();
+    </script>
+  </body>
+</html>

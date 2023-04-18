@@ -43,14 +43,12 @@
         (function drawFrame() {
           window.requestAnimationFrame(drawFrame);
           cxt.clearRect(0, 0, cnv.width, cnv.height);
-          let dx = getMouse().x - cnv.width / 2;
-          let dy = getMouse().y - cnv.height / 2;
+
+          let { x, y } = getMouse();
           // 使用 Math.atan2() 函数计算出鼠标指针与箭头中心的夹角
-          arrow.angle = Math.atan2(dy, dx);
-          let vx = Math.cos(arrow.angle) * speed;
-          let vy = Math.sin(arrow.angle) * speed;
-          arrow.x += vx;
-          arrow.y += vy;
+          arrow.angle = Math.atan2(y - cnv.height / 2, x - cnv.width / 2);
+          arrow.x += Math.cos(arrow.angle) * speed;
+          arrow.y += Math.sin(arrow.angle) * speed;
 
           arrow.fill(cxt);
         })();

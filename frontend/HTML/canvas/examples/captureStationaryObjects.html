@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Capture Stationary Objects</title>
+
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="500"
+    ></canvas>
+    <p id="txt"></p>
+
+    <script type="module">
+      import { Ball } from './utils/ball.js';
+      import { useCanvas, useMouse } from './utils/tools.js';
+
+      let { cnv, cxt } = useCanvas();
+      let { getMouse } = useMouse(cnv);
+      let mouse = getMouse();
+
+      let txt = document.getElementById('txt');
+      let ball = new Ball(cnv.width / 2, cnv.height / 2, 30);
+      ball.fill(cxt);
+
+      cnv.addEventListener(
+        'mousemove',
+        () => {
+          txt.innerText = ball.checkMouse(mouse) ? '捕捉到了' : '没捕捉到';
+        },
+        false
+      );
+    </script>
+  </body>
+</html>

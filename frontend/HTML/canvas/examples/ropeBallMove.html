@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Rope Ball Movement</title>
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="800"
+      height="500"
+    ></canvas>
+
+    <script type="module">
+      import { Ball } from './utils/ball.js';
+      import { useCanvas, useMouse } from './utils/tools.js';
+
+      const { cnv, cxt } = useCanvas();
+      let ball = new Ball(cnv.width / 2, cnv.height / 2);
+      let { getMouse } = useMouse(cnv);
+      let mouse = getMouse();
+
+      let targetX = cnv.width / 2;
+      let spring = 0.02;
+      let vx = 0;
+      let vy = 0;
+      let friction = 0.95;
+      let gravity = 1;
+      function frame() {
+        window.requestAnimationFrame(frame);
+        cxt.clearRect(0, 0, cnv.width, cnv.height);
+        // 加入弹性动画
+        let ax = (mouse.x - ball.x) * spring;
+        let ay = (mouse.y - ball.y) * spring;
+        vx = (vx + ax) * friction;
+        vy = (vy + ay + gravity) * friction;
+        ball.x += vx;
+        ball.y += vy;
+        ball.fill(cxt);
+        // 将鼠标指针以及小球中心连接成一条直线
+        cxt.beginPath();
+        cxt.moveTo(ball.x, ball.y);
+        cxt.lineTo(mouse.x, mouse.y);
+        cxt.stroke();
+        cxt.closePath();
+      }
+      frame();
+    </script>
+  </body>
+</html>
