@@ -124,7 +124,7 @@
 - `Ctrl + K Ctrl + S`：打开快捷键编辑器
 - `Ctrl + W`：关闭当前窗口
 - `Ctrl + ,`：打开用户设置
-- Ctrl + `：打开集成终端
+- Ctrl + `：打开终端
 - `Shift + Alt + 鼠标左键`：列选择
 
 #### 1.1.2 跳转
@@ -988,8 +988,9 @@ VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 
   默认情况下，Code Runner 会把运行输出结果打印在输出面板中。在 Code Runner 插件的 GitHub 上，用户最多的问题是如何解决乱码问题和怎样支持输入。通过 `Run Code configuration: Run In Terminal` 设置，把代码放到 VSCode 内置的集成终端来运行，就可以解决上面的两个问题。
 
 - 自定义运行逻辑
-  **Debug Visualizer**
-  插件提供了实时的可视化调试方式，可以一键解析数据结构，并支持多种主流的编程语言。
+
+**Debug Visualizer**
+插件提供了实时的可视化调试方式，可以一键解析数据结构，并支持多种主流的编程语言。
 
 **Peacock**
 为 VSCode 窗口配置颜色。
@@ -999,9 +1000,6 @@ VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 
 
 **Polacode**
 插件可以把选中的代码导出为图片格式，并且完全保留代码在 VSCode 中原本的字体和颜色主题。在命令面板中，输入 Polacode 并执行。
-
-**Paste JSON as code**
-可以把 JSON 或 TS 转换成其他编程语言，包括 TS、Python、GO、Ruby、Java、Swift、C++、JS 等。
 
 ### 4.2 插件开发
 

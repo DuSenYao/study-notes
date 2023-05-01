@@ -32,8 +32,6 @@
       - [2.5.4 vue-cli-service inspect](#254-vue-cli-service-inspect)
       - [2.5.5 查看所有的可用命令](#255-查看所有的可用命令)
       - [2.5.6 缓存和并行处理](#256-缓存和并行处理)
-      - [2.5.7 Git Hook](#257-git-hook)
-      - [2.5.8 配置时无需 Eject](#258-配置时无需-eject)
   - [三. 开发](#三-开发)
     - [3.1 浏览器兼容性](#31-浏览器兼容性)
       - [3.1.1 browserslist](#311-browserslist)
@@ -619,29 +617,6 @@ npx vue-cli-service help [command]
 
 - `thread-loader` : 会在多核 CPU 的机器上为 Babel/TypeScript 转译开启。
 
-#### 2.5.7 Git Hook
-
-在安装之后，`@vue/cli-service` 也会安装 yorkie，它会让你在 `package.json` 的 `gitHooks` 字段中方便地指定 Git hook：
-
-```json
-{
-  "gitHooks": {
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.{js,vue}": ["vue-cli-service lint", "git add"]
-  }
-}
-```
-
-> 注意 : yorkie fork 自 husky 并且与后者不兼容。
-
-#### 2.5.8 配置时无需 Eject
-
-通过 `vue create` 创建的项目无需额外的配置就已经可以跑起来了。插件的设计也是可以相互共存的，所以绝大多数情况下，只需要在交互式命令提示中选取需要的功能即可。
-
-不过满足每一个需求是不太可能的，而且一个项目的需求也会不断改变。通过 Vue CLI 创建的项目无需 eject 就能够配置工具的几乎每个角落。更多细节请查阅[配置参考](https://cli.vuejs.org/zh/config/)。
-
 ## 三. 开发
 
 ### 3.1 浏览器兼容性
@@ -738,7 +713,10 @@ Vue CLI 会产生两个应用的版本：一个现代版的包，面向支持 ES
 除了被 `html-webpack-plugin` 暴露的默认值之外，所有客户端环境变量也可以直接使用。例如，`BASE_URL` 的用法：
 
 ```html
-<link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+<link
+  rel="icon"
+  href="<%= BASE_URL %>favicon.ico"
+/>
 ```
 
 更多内容可以查阅：[publicPath](https://cli.vuejs.org/zh/config/#publicpath)
@@ -762,13 +740,13 @@ Vue CLI 会产生两个应用的版本：一个现代版的包，面向支持 ES
 ```js
 // vue.config.js
 module.exports = {
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     // 移除 prefetch 插件
     config.plugins.delete('prefetch');
 
     // 或者
     // 修改它的选项：
-    config.plugin('prefetch').tap(options => {
+    config.plugin('prefetch').tap((options) => {
       options[0].fileBlacklist = options[0].fileBlacklist || [];
       options[0].fileBlacklist.push(/myasyncRoute(.)+?\.js$/);
       return options;
@@ -797,7 +775,7 @@ module.exports = {
   // 去掉文件名中的 hash
   filenameHashing: false,
   // 删除 HTML 相关的 webpack 插件
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     config.plugins.delete('html');
     config.plugins.delete('preload');
     config.plugins.delete('prefetch');
@@ -848,12 +826,12 @@ h('img', { attrs: { src: require('./image.png') } });
 ```js
 // vue.config.js
 module.exports = {
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     config.module
       .rule('images')
       .use('url-loader')
       .loader('url-loader')
-      .tap(options => Object.assign(options, { limit: 10240 }));
+      .tap((options) => Object.assign(options, { limit: 10240 }));
   }
 };
 ```
@@ -887,7 +865,10 @@ module.exports = {
 - 在 `public/index.html` 或其它通过 `html-webpack-plugin` 用作模板的 HTML 文件中，需要通过 `<%= BASE_URL %>` 设置链接前缀：
 
   ```html
-  <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+  <link
+    rel="icon"
+    href="<%= BASE_URL %>favicon.ico"
+  />
   ```
 
 - 在模板中，首先需要向组件传入基础 URL：
@@ -952,11 +933,9 @@ $color: red;
 const path = require('path');
 
 module.exports = {
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     const types = ['vue-modules', 'vue', 'normal-modules', 'normal'];
-    types.forEach(type =>
-      addStyleResource(config.module.rule('stylus').oneOf(type))
-    );
+    types.forEach((type) => addStyleResource(config.module.rule('stylus').oneOf(type)));
   }
 };
 
@@ -1102,7 +1081,7 @@ module.exports = {
 ```js
 // vue.config.js
 module.exports = {
-  configureWebpack: config => {
+  configureWebpack: (config) => {
     if (process.env.NODE_ENV === 'production') {
       // 为生产环境修改配置...
     } else {
@@ -1125,11 +1104,11 @@ Vue CLI 内部的 webpack 配置是通过 `webpack-chain` 维护的。这个库�
 ```js
 // vue.config.js
 module.exports = {
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     config.module
       .rule('vue')
       .use('vue-loader')
-      .tap(options => {
+      .tap((options) => {
         // 修改它的选项...
         return options;
       });
@@ -1145,7 +1124,7 @@ module.exports = {
 ```js
 // vue.config.js
 module.exports = {
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     // GraphQL Loader
     config.module
       .rule('graphql')
@@ -1168,7 +1147,7 @@ module.exports = {
 ```js
 // vue.config.js
 module.exports = {
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     const svgRule = config.module.rule('svg');
 
     // 清除已有的所有 loader。
@@ -1186,8 +1165,8 @@ module.exports = {
 ```js
 // vue.config.js
 module.exports = {
-  chainWebpack: config => {
-    config.plugin('html').tap(args => {
+  chainWebpack: (config) => {
+    config.plugin('html').tap((args) => {
       return [
         /* 传递给 html-webpack-plugin's 构造函数的新参数 */
       ];
@@ -1203,8 +1182,8 @@ module.exports = {
 ```js
 // vue.config.js
 module.exports = {
-  chainWebpack: config => {
-    config.plugin('html').tap(args => {
+  chainWebpack: (config) => {
+    config.plugin('html').tap((args) => {
       args[0].template = '/Users/username/proj/app/templates/index.html';
       return args;
     });

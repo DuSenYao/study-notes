@@ -641,13 +641,13 @@ $width: 5em;
 
 SassScript 支持 6 种主要的数据类型：
 
-- **数字** :`1, 2, 13, 10px`
-- **字符串** : 有引号字符串与无引号字符串，`"foo"`, `'bar'`, `baz`
-- **颜色** : `blue`, `#04a3f9`, `rgba(255,0,0,0.5)`
-- **布尔型** : `true`, `false`
-- **空值** : `null`
-- **数组（list）** : 用空格或逗号作分隔符，`1.5em 1em 0 2em, Helvetica, Arial, sans-serif`
-- **maps** : 相当于 JS 的 Object，`(key1: value1, key2: value2)`
+- **数字**：`1, 2, 13, 10px`
+- **字符串**：有引号字符串与无引号字符串，`"foo"`, `'bar'`, `baz`
+- **颜色**：`blue`, `#04a3f9`, `rgba(255,0,0,0.5)`
+- **布尔型**：`true`, `false`
+- **空值**：`null`
+- **数组（list）**：用空格或逗号作分隔符，`1.5em 1em 0 2em, Helvetica, Arial, sans-serif`
+- **maps**：相当于 JS 的 Object，`(key1: value1, key2: value2)`
 
 SassScript 也支持其他 CSS 属性值，比如 Unicode 字符集，或 `!important` 声明。然而 Sass 不会特殊对待这些属性值，一律视为无引号字符串。
 

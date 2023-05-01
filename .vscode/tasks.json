@@ -13,41 +13,11 @@
   ],
   "tasks": [
     {
-      "label": "echo",
-      "type": "shell",
-      "command": "echo Hello",
-      "group": "test",
-      "presentation": {
-        "reveal": "always",
-        "focus": true,
-        "clear": false,
-        "echo": true,
-        "revealProblems": "onProblem",
-        "showReuseMessage": true,
-        "panel": "shared"
-      }
-    },
-    {
       "label": "eslint",
       "type": "npm",
       "script": "lint",
       "group": "test",
       "problemMatcher": ["$eslint-stylish"]
-    },
-    {
-      "label": "dir",
-      "type": "shell",
-      "group": "build",
-      "command": "dir",
-      "detail": "cmd目录操作-dir命令，显示当前文件夹下的所有文件夹和文件名"
-    },
-    {
-      "label": "dir help",
-      "type": "shell",
-      "group": "build",
-      "command": "dir",
-      "args": ["/?"],
-      "detail": "windows命令提示符-cmd目录操作-dir命令的帮助提示"
     },
     {
       "label": "markdown count",
@@ -59,8 +29,8 @@
         "reveal": "always",
         "focus": true,
         "panel": "shared",
-        "showReuseMessage": true,
-        "clear": false
+        "showReuseMessage": false,
+        "clear": true
       },
       "detail": "统计当前工作区下的 markdown 文件总字数"
     },
@@ -95,6 +65,28 @@
       },
       "problemMatcher": "$tsc",
       "detail": "编译当前文件夹下的TS文件"
+    },
+    {
+      "label": "delete ts compile files",
+      "type": "shell",
+      "group": "build",
+      // Remove-Item 是 PowerShell 中删除目录的命令，rm 是 bash 的命令
+      "command": "Remove-Item -Recurse -Path ${relativeFileDirname}\\out",
+      "osx": {
+        "command": "rm -rf ${relativeFileDirname}\\out"
+      },
+      "linux": {
+        "command": "rm -rf ${relativeFileDirname}\\out"
+      },
+      "presentation": {
+        "echo": false,
+        "reveal": "silent",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false
+      },
+      "detail": "删除当前文件夹下的TS编译文件"
     },
     {
       "label": "Terminate All Tasks",

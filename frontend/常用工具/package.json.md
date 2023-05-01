@@ -689,9 +689,8 @@ lint-staged 是一个在 Git 暂存文件上运行 linters 的工具，配置后
 
 ```json
 "lint-staged": {
- "*.js": [
-   "eslint --fix",
-    "git add"
+ "src/**/*.{js,ts,tsx,vue}": [
+    "eslint --cache --max-warnings 0 --fix"
   ]
 }
 ```
@@ -700,15 +699,15 @@ lint-staged 是一个在 Git 暂存文件上运行 linters 的工具，配置后
 
 ### 7.6 gitHooks
 
-gitHooks 用来定义一个钩子，在提交（commit）之前执行 ESlint 检查。在执行 lint 命令后，会自动修复暂存区的文件。修复之后的文件并不会存储在暂存区，所以需要用 git add 命令将修复后的文件重新加入暂存区。在执行 pre-commit 命令之后，如果没有错误，就会执行 git commit 命令：
+gitHooks 用来定义一个钩子，在 [git 执行的特定点](/public_knowledge/Git/Git.md#15-githooks)中触发操作。
+
+例如：在执行 `git commit` 命令前，先执行 lint-staged 命令，这个命令在上一节中有定义，它会自动修复暂存区的文件。在执行 pre-commit 命令之后，如果没有错误，才会开始执行 git commit 命令：
 
 ```json
 "gitHooks": {
  "pre-commit": "lint-staged"
 }
 ```
-
-这里就是配合上面的 lint-staged 来进行代码的检查操作。
 
 ### 7.7 browserslist
 

@@ -1,9 +1,9 @@
-const fs = require('fs/promises');
+import { readFile, writeFile } from 'fs/promises';
 
-(async function () {
-  const fileContent = await fs.readFile('./package.json', {
+(async () => {
+  const fileContent = await readFile('./package.json', {
     encoding: 'utf-8'
   });
 
-  await fs.writeFile('./package2.json', fileContent);
+  await writeFile('./package2.json', fileContent);
 })();

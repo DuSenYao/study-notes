@@ -7,11 +7,17 @@
 
 // 这个类扩展了 Map，以便 get() 方法在 key 不在映射中时，返回指定的值，而不是 null
 class DefaultMap extends Map {
+  /**
+   * @param {number} defaultValue
+   */
   constructor(defaultValue) {
     super(); // 调用超类构造器
     this.defaultValue = defaultValue; // 记住默认值
   }
 
+  /**
+   * @param {String} key
+   */
   get(key) {
     if (this.has(key)) {
       // 如果映射中有 key 从超类返回它的值
@@ -27,7 +33,10 @@ class Histogram {
     this.totalLetters = 0; // 字符总数
   }
 
-  // 这个函数用文本中的字符更新柱形图
+  /**
+   * @description 添加文本到柱形图
+   * @param {string} text
+   */
   add(text) {
     // 移除文本中的空白，然后将字母转换为大写
     let a = text.replace(/\s/g, '').toUpperCase();
@@ -59,7 +68,7 @@ class Histogram {
     }
 
     // 删除小于 1% 的条目
-    entries = entries.filter(entry => entry[1] >= 1);
+    entries = entries.filter((entry) => entry[1] >= 1);
 
     // 接着把每个条目转换为一行文本
     let lines = entries.map(([l, n]) => `${l}: ${'#'.repeat(Math.round(n))} ${n.toFixed(2)}%`);
@@ -86,7 +95,7 @@ async function histogramFromStdin() {
 
 // 最后这行代码是这个程序的主体
 // 它基于标准输入创建一个 Histogram 对象，然后打印柱形图
-histogramFromStdin().then(histogram => {
+histogramFromStdin().then((histogram) => {
   console.log(histogram.toString());
   console.log(histogram.getTotalLetters());
 });

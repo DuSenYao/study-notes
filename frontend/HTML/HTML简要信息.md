@@ -300,7 +300,7 @@ dir 属性用来规定元素中文字的方向。其有效值有两个：
 
 #### 2.5.5 draggable
 
-draggable 属性是 HTML5 支持[拖放操作](<(#四-使用拖放)>)的方式，用来表示元素是否可被拖放。
+draggable 属性是 HTML5 支持[拖放操作](#四-使用拖放)的方式，用来表示元素是否可被拖放。
 
 #### 2.5.6 hidden
 
@@ -567,7 +567,7 @@ DataTransfer 对象允许使用一种更为复杂的方式克隆元素。可以�
 
 文件 API（File API），它允许使用本机文件，不过是以严格受控的方式。部分控制来自于通常不直接与文件 API 进行交互，而是使它通过其他功能显露出来，包括拖放功能。
 
-例子：[draggable](./%E6%BC%94%E7%A4%BA%E6%96%87%E4%BB%B6/draggable.html)
+例子：[draggable](./examples/draggable.html)
 
 ## 五. 地理定位
 

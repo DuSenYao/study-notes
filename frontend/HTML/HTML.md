@@ -560,7 +560,7 @@ picture 元素可以根据屏幕的条件为其中的 img 元素 提供不同的
 
 picture 的元素设计跟 audio 和 video 保持了一致。它跟 img 搭配 sizes 和 srcset 不同，它使用 `source` 元素来指定图片源，并且支持多个。
 
-source 元素的 media 属性是 media query，跟 CSS 的 [@media](../CSS/CSS.md#211-at-rule) 规则一致。
+source 元素的 media 属性是 media query，跟 CSS 的 [@media](../CSS/chapters/%E6%B7%BB%E5%8A%A0%E6%A0%B7%E5%BC%8F.md#211-at-rule) 规则一致。
 
 ```html
 <picture>

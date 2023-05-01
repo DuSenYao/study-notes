@@ -80,7 +80,7 @@ const KEY_MAP = new Map([
 ]);
 
 /**
- * 将 key 转为方向
+ * @description 将 key 转为方向
  * @param {string} key
  * @returns {string} 'left' | 'right' | 'top' | 'bottom'
  */
