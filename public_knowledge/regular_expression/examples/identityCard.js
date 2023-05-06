@@ -7,7 +7,7 @@ const PROVINCES = {
   15: '内蒙古',
   21: '辽宁',
   22: '吉林',
-  23: '黑龙江 ',
+  23: '黑龙江',
   31: '上海',
   32: '江苏',
   33: '浙江',
@@ -16,7 +16,7 @@ const PROVINCES = {
   36: '江西',
   37: '山东',
   41: '河南',
-  42: '湖北 ',
+  42: '湖北',
   43: '湖南',
   44: '广东',
   45: '广西',
@@ -25,7 +25,7 @@ const PROVINCES = {
   51: '四川',
   52: '贵州',
   53: '云南',
-  54: '西藏 ',
+  54: '西藏',
   61: '陕西',
   62: '甘肃',
   63: '青海',
@@ -38,7 +38,7 @@ const PROVINCES = {
 
 /**
  * 省份校验
- * @param {Number} val
+ * @param {String} val
  * @returns {Boolean}
  */
 function checkProv(val) {
@@ -52,7 +52,7 @@ function checkProv(val) {
 
 /**
  * 出生日期校验
- * @param {Number} val
+ * @param {String} val
  * @returns {Boolean}
  */
 function checkDate(val) {
@@ -60,14 +60,11 @@ function checkDate(val) {
 
   if (pattern.test(val)) {
     let year = val.substring(0, 4);
-
     let month = val.substring(4, 6);
+    let day = val.substring(6, 8);
+    let date = new Date(`${year}-${month}-${day}`);
 
-    let date = val.substring(6, 8);
-
-    let date2 = new Date(`${year}-${month}-${date}`);
-
-    if (date2 && date2.getMonth() === parseInt(month) - 1) {
+    if (date && date.getMonth() === parseInt(month) - 1) {
       return true;
     }
   }
@@ -78,7 +75,7 @@ function checkDate(val) {
 
 /**
  * 校验码校验
- * @param {Number} val
+ * @param {String} val
  * @returns {Boolean}
  */
 function checkCode(val) {
@@ -93,7 +90,7 @@ function checkCode(val) {
   if (p.test(val)) {
     let sum = 0;
     for (let i = 0; i < 17; i++) {
-      sum += val[i] * factor[i];
+      sum += Number(val[i]) * factor[i];
     }
 
     if (parity[sum % 11] === code.toUpperCase()) {
@@ -106,7 +103,7 @@ function checkCode(val) {
 
 /**
  * 身份证校验
- * @param {Number} val
+ * @param {String} val
  * @returns {Boolean}
  */
 function checkID(val) {
@@ -114,6 +111,7 @@ function checkID(val) {
     let date = val.substring(6, 14);
 
     if (checkDate(date) && checkProv(val.substring(0, 2))) {
+      console.log('合法');
       return true;
     }
   }

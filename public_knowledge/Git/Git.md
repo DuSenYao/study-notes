@@ -222,7 +222,7 @@ git cat-file -p 003e2f133adc5a53f21a72ca5b62eb08566121d1
 - `git config --unset [--local|--global|--system]`：清除配置
 
   ```sh
-   git config --unset --local user.name
+  git config --unset --local user.name
   ```
 
 **区别**：
@@ -384,7 +384,7 @@ git push origin master:master
 
 - `-a`：查看所有分支
 - `-m`：移动或重命名
-- `-M`：--move --force 的快捷键
+- `-M`：--move --force 的缩写
 - `-d <branchName>`：-d 是 `--delete` 的缩写，在使用 -d 删除分支时，该分支必须完全和它的上游分支 merge 完成，如果没有上游分支，必须要和 HEAD 完全 merge
 - `-f`：是 `--force` 的缩写，作用是将当前 branch 重置到初始点（startpoint），如果不使用 -f 的话，git 分支无法修改一个已经存在的分支
 - `-D <branchName>`：-D 是 `--delete --force` 的缩写，这样写可以在不检查 merge 状态的情况下删除分支
@@ -570,7 +570,7 @@ C --> A: git merge FETCH_HEAD
 - `config`：当前 **git** 的配置文件，这是个引用指向 **refs 文件夹** 下的 **heads 文件夹** 里的分支
 - `refs文件夹`：
 
-  - **heads 文件夹**：存放当前项目的所有分支文件，每个分支文件存放的是当前分支对应的是哪个 commit(提交)
+  - **heads 文件夹**：存放当前项目的所有分支文件，每个分支文件存放的是当前分支对应的是哪个 commit（提交）
   - **remotes 文件夹**：存放远程分支
   - **tags 文件夹**：存放当前项目的所有标签
 
@@ -617,7 +617,7 @@ HEAD~2^2
 
 - **文件夹**：filename/
 - **具体的文件**：filename.后缀名
-- **特定后缀名的文件**：\*.后缀名
+- **特定后缀名的文件**：`*.后缀名`
 
 #### 1.3.8 常用的传输协议
 

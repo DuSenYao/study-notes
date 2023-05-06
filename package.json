@@ -8,10 +8,10 @@
     "lint": "eslint --ext .js,.ts frontend"
   },
   "devDependencies": {
-    "@types/node": "^18.16.1",
-    "@typescript-eslint/eslint-plugin": "^5.59.1",
-    "@typescript-eslint/parser": "^5.59.1",
-    "eslint": "^8.39.0",
+    "@types/node": "^20.1.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.2",
+    "@typescript-eslint/parser": "^5.59.2",
+    "eslint": "^8.40.0",
     "eslint-plugin-html": "^7.1.0",
     "prettier": "2.8.8",
     "typescript": "^5.0.4"
