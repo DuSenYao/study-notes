@@ -1,19 +1,72 @@
 <!DOCTYPE html>
-<link rel="stylesheet" href="./css/base.css">
+<html lang="zn-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="./css/base.css"
+    />
+  </head>
+  <body>
+    <div class="main">
+      <!-- usemap 是将图像定义为客户器端图像映射（以“#”开头），与map元素的name或id属性相关联 -->
+      <img
+        src="../image/HTML与CSS知识结构.png"
+        usemap="#shapes"
+        alt="没有图片"
+      />
+      <!-- map的name和id值必须相同（浏览器兼容） -->
+      <map
+        name="shapes"
+        id="shapes"
+      >
+        <!-- 没有href属性不起作用 -->
+        <area
+          shape="rect"
+          coords="200,200,100,100"
+        />
 
-<div class="main">
-  <!-- usemap 是将图像定义为客户器端图像映射（以“#”开头），与map元素的name或id属性相关联 -->
-  <img src="../image/HTML与CSS知识结构.png" usemap="#shapes" alt="没有图片">
-  <!-- map的name和id值必须相同（浏览器兼容） -->
-  <map name="shapes" id="shapes">
-    <!-- 没有href属性不起作用 -->
-    <area shape=rect coords="200,200,100,100">
-    <!-- 这里的alt，为读屏软件提供链接的大致信息 -->
-    <area shape=rect coords="25,25,125,125" href="red.html" alt="red box">
-    <area shape=circle coords="200,75,50" href="green.html">
-    <area shape=poly coords="325,25,262,125,388,125" href="blue.html">
-    <area shape=poly coords="450,25, 435,60 ,400,75, 435,90, 450,125, 465,90, 500,75, 465,60" href="yellow.html">
-    <!-- shape的属性为default，指的是整个图像区域 -->
-    <area shape="default" href="pink.html">
-  </map>
-</div>
+        <!-- 这里的alt，为读屏软件提供链接的大致信息 -->
+        <area
+          shape="rect"
+          coords="25,25,125,125"
+          href="red.html"
+          alt="red box"
+        />
+
+        <area
+          shape="circle"
+          coords="200,75,50"
+          href="green.html"
+        />
+
+        <area
+          shape="poly"
+          coords="325,25,262,125,388,125"
+          href="blue.html"
+        />
+
+        <area
+          shape="poly"
+          coords="450,25, 435,60 ,400,75, 435,90, 450,125, 465,90, 500,75, 465,60"
+          href="yellow.html"
+        />
+
+        <!-- shape的属性为default，指的是整个图像区域 -->
+        <area
+          shape="default"
+          href="pink.html"
+        />
+      </map>
+    </div>
+  </body>
+</html>

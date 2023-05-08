@@ -2,6 +2,7 @@
   "cSpell.words": [
     "alloc",
     "ation",
+    "attributify",
     "Contentful",
     "EDVAC",
     "gitk",
@@ -15,7 +16,9 @@
     "SSIM",
     "Visio",
     "vorbis",
-    "WASI"
+    "WASI",
+    "Windi",
+    "windicss"
   ],
   "html.customData": [".vscode/html.html-data.json"],
   "css.customData": [".vscode/css.css-data.json"],

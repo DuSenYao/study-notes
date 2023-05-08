@@ -86,6 +86,7 @@
         "showReuseMessage": false,
         "clear": false
       },
+      "hide": true,
       "detail": "删除当前文件夹下的TS编译文件"
     },
     {
