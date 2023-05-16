@@ -2,6 +2,27 @@
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
+<!-- code_chunk_output -->
+
+- [Vite](#vite)
+  - [一. 基础使用](#一-基础使用)
+    - [1.1 样式方案](#11-样式方案)
+      - [1.1.1 CSS 预处理器](#111-css-预处理器)
+      - [1.1.2 CSS Modules](#112-css-modules)
+      - [1.1.3 PostCSS](#113-postcss)
+      - [1.1.4 CSS In JS](#114-css-in-js)
+      - [1.1.5 CSS 原子化框架](#115-css-原子化框架)
+      - [1.1.5.1 Tailwind CSS](#1151-tailwind-css)
+    - [1.2 代码规范](#12-代码规范)
+    - [1.3 静态资源](#13-静态资源)
+      - [1.3.1 JSON 加载](#131-json-加载)
+      - [1.3.2 Web Worker 脚本](#132-web-worker-脚本)
+      - [1.3.3 Web Assembly 文件](#133-web-assembly-文件)
+      - [1.3.4 其他静态资源](#134-其他静态资源)
+    - [1.4 预构建](#14-预构建)
+
+<!-- /code_chunk_output -->
+
 ## 一. 基础使用
 
 ```sh
@@ -150,10 +171,10 @@ export default defineConfig({
 
 #### 1.1.5 CSS 原子化框架
 
-在目前的社区当中，CSS 原子化框架主要包括：
+在目前的社区当中，CSS 原子化框架主要有：
 
 - **Tailwind CSS**
-- **Windi CSS**
+- **unocss**
 
 #### 1.1.5.1 Tailwind CSS
 
@@ -193,97 +214,6 @@ export default defineConfig({
    @tailwind components;
    @tailwind utilities;
    ```
-
-#### 1.1.5.2 Windi CSS
-
-Windi CSS 作为前者的替换方案，实现了按需生成 CSS 类名的功能，开发环境下的 CSS 产物体积大大减少，速度上比 Tailwind CSS v2 快 20~100 倍。当然，Tailwind CSS 在 v3 版本也引入 JIT（即时编译）的功能，解决了开发环境下 CSS 产物体积庞大的问题。
-
-1. 首先安装 windicss 及对应的 Vite 插件
-
-   ```sh
-   pnpm i windicss vite-plugin-windicss -D
-   ```
-
-2. 在 vite.config.ts 中配置
-
-   ```ts
-   import windi from 'vite-plugin-windicss';
-
-   export default {
-     plugins: [windi()]
-   };
-   ```
-
-3. 在 src/main.ts 中加入 import 语句
-
-   ```ts
-   // 用来注入 Windi CSS 所需的样式，一定要加上！
-   import 'virtual:windi.css';
-   ```
-
-除了本身的原子化 CSS 能力，Windi CSS 还有一些非常好用的高级功能，比如：
-
-- **attributify**
-
-  需要在项目根目录新建 windi.config.ts，配置如下：
-
-  ```ts
-  import { defineConfig } from 'vite-plugin-windicss';
-
-  export default defineConfig({
-    // 开启 attributify
-    attributify: true
-  });
-  ```
-
-  attributify 翻译过来就是属性化，也就是说可以用 props 的方式去定义样式属性，如下所示：
-
-  ```html
-  <button
-    bg="blue-400 hover:blue-500 dark:blue-500 dark:hover:blue-600"
-    text="sm white"
-    font="mono light"
-    p="y-2 x-4"
-    border="2 rounded blue-200"
-  >
-    Button
-  </button>
-  ```
-
-  这样的开发方式不仅省去了繁琐的 className 内容，还加强了语义化，让代码更易维护，大大提升了开发体验。
-
-  不过使用 attributify 的时候需要注意类型问题，需要添加 types/shim.d.ts 来增加类型声明，以防类型报错：
-
-  ```ts
-  import { AttributifyAttributes } from 'windicss/types/jsx';
-
-  declare module '*.vue' {
-    type HTMLAttributes<T> = AttributifyAttributes;
-  }
-  ```
-
-- **shortcuts**
-
-  用来封装一系列的原子化能力，尤其是一些常见的类名集合，在 windi.config.ts 来配置它:
-
-  ```js
-  import { defineConfig } from 'vite-plugin-windicss';
-
-  export default defineConfig({
-    attributify: true,
-    shortcuts: {
-      'flex-c': 'flex justify-center items-center'
-    }
-  });
-  ```
-
-  比如这里封装了 flex-c 的类名，接下来可以在业务代码直接使用这个类名：
-
-  ```html
-  <div className="flex-c"></div>
-  <!-- 等同于下面这段 -->
-  <div className="flex justify-center items-center"></div>
-  ```
 
 ### 1.2 代码规范
 

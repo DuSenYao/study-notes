@@ -812,13 +812,33 @@ launch.json 有 3 个属性：
 
   默认为 true，代表创建一个临时目录来保存用户数据。也可以设置为 false，使用默认 user data dir 启动 chrome。这样的好处就是登录状态、历史记录都有。也可以指定一个自定义的路径，这样用户数据就会保存在那个目录下。
 
-  更重要的是，安装的 Vue DevTools 等插件都是在默认用户数据目录的，要是用临时数据目录跑调试，这些就都没了。当 `userDataDir` 设置为 true 的时候，Vue DevTools 插件是没有的，需要再安装。这个问题可以用 `runtimeExecutable` 解决。
+  还可以与 `runtimeExecutable` 配合使用，调试用一个浏览器，平时用 chrome。
 
 - `runtimeExecutable`：运行时可执行文件路径。默认值为 node。
 
-  调试网页的 JS，需要先把 Chrome 跑起来，默认跑的是 Google Chrome，其实它还有另外一个版本 Canary。这是给开发者用的每日构建版，能够快速体验新特性，但是不稳定。可以在[官网](https://www.google.com/intl/zh-CN/chrome/canary/)下载。然后指定 `runtimeExecutable` 为 canary，使用默认的用户数据目录启动。这样就可以调试用 canary，平时用 chrome 了，两者不共用同一个数据目录。
+  调试网页的 JS，需要先把 Chrome 跑起来，默认跑的是 Google Chrome，它还有另外一个版本 Canary。这是给开发者用的每日构建版，能够快速体验新特性，但是不稳定。可以在[官网](https://www.google.com/intl/zh-CN/chrome/canary/)下载。然后指定 `runtimeExecutable` 为 canary，使用默认的用户数据目录启动。两者不共用一个数据目录。
 
-  `runtimeExecutable` 还可以指定用别的浏览器跑，可以是 stable，也就是稳定的 Google Chrome，或者 canary 还可以是 custom，然后用 CHROME_PATH 环境变量指定浏览器的地址。
+  `runtimeExecutable` 还可以指定用别的浏览器跑，可以是 stable（稳定的 Google Chrome），或 custom，然后用 CHROME_PATH 环境变量指定浏览器的地址。
+
+  ```jsonc
+  // 调试 vite vue3 项目的配置
+  {
+    "type": "chrome",
+    "request": "launch",
+    "name": "vue3 debug",
+    "url": "http://localhost:5173",
+    "webRoot": "${workspaceFolder}",
+    "userDataDir": false,
+    "runtimeExecutable": "canary",
+    "sourceMapPathOverrides": {
+      "/./*": "${webRoot}/*",
+      "/src/*": "${webRoot}/*",
+      "/*": "*",
+      "/./~/*": "${webRoot}/node_modules/*"
+    },
+    "preLaunchTask": "vuejs: start"
+  }
+  ```
 
 #### 3.2.4 只能被定义在 attach 的配置属性
 
