@@ -311,7 +311,7 @@ git restore public_knowledge\Git\Git.md
 - `show [remote]`: 显示某个远程仓库的信息
 
   ```sh
-  git remote show https://github.com/1758231591/Learning-notes-and-materials.git
+  git remote show https://github.com/1758231591/study-notes.git
   ```
 
 - `remove name`: 删除远程仓库
@@ -366,7 +366,7 @@ git push origin master:master
 
 - `-u`：如果当前分支与多个主机存在追踪关系，则可以使用 `-u` 参数指定一个默认主机，这样后面就可以不加任何参数使用 git push，不带任何参数的 git push，默认只推送当前分支。如果想更改设置，可以使用 git config 命令。`git config --global push.default matching` 或 `git config --global push.default simple`
 
-- 使用`ssh`协议推送：`gitHub: git push git@github.com:DuSenYao/Learning-notes-and-materials.git`
+- 使用`ssh`协议推送：`gitHub: git push git@github.com:DuSenYao/study-notes.git`
 
 > **注意**：需要 [配置公私钥](#211-配置公私钥)
 

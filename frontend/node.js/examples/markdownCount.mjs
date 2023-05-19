@@ -35,7 +35,7 @@ getAllFiles();
 // 打印旧字数、新字数、增加字数
 console.table({ old: oldMarkdownCount, new: markdownCount, increase: markdownCount - oldMarkdownCount });
 
-const fileURL = 'D:/GitHub/Learning-notes-and-materials/frontend/node.js/examples/markdownCount.mjs';
+const fileURL = 'D:/GitHub/study-notes/frontend/node.js/examples/markdownCount.mjs';
 // 更新 markdownCount.mjs 文件
 const rl = createInterface({
   input: createReadStream(fileURL)

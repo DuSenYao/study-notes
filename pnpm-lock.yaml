@@ -2,8 +2,8 @@ lockfileVersion: '6.0'
 
 devDependencies:
   '@types/node':
-    specifier: ^20.1.5
-    version: registry.npmmirror.com/@types/node@20.1.5
+    specifier: ^20.2.1
+    version: registry.npmmirror.com/@types/node@20.2.1
   '@typescript-eslint/eslint-plugin':
     specifier: ^5.59.6
     version: registry.npmmirror.com/@typescript-eslint/eslint-plugin@5.59.6(@typescript-eslint/parser@5.59.6)(eslint@8.40.0)(typescript@5.0.4)
@@ -130,10 +130,10 @@ packages:
     version: 7.0.11
     dev: true
 
-  registry.npmmirror.com/@types/node@20.1.5:
-    resolution: {integrity: sha512-IvGD1CD/nego63ySR7vrAKEX3AJTcmrAN2kn+/sDNLi1Ff5kBzDeEdqWDplK+0HAEoLYej137Sk0cUU8OLOlMg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/node/-/node-20.1.5.tgz}
+  registry.npmmirror.com/@types/node@20.2.1:
+    resolution: {integrity: sha512-DqJociPbZP1lbZ5SQPk4oag6W7AyaGMO6gSfRwq3PWl4PXTwJpRQJhDq4W0kzrg3w6tJ1SwlvGZ5uKFHY13LIg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/node/-/node-20.2.1.tgz}
     name: '@types/node'
-    version: 20.1.5
+    version: 20.2.1
     dev: true
 
   registry.npmmirror.com/@types/semver@7.5.0:

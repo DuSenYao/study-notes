@@ -1,10 +1,10 @@
-# Learning-notes-and-materials
+# study-notes
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
-- [Learning-notes-and-materials](#learning-notes-and-materials)
+- [study-notes](#learning-notes-and-materials)
   - [computer basics](#computer-basics)
   - [frontend](#frontend)
     - [浏览器](#浏览器)
