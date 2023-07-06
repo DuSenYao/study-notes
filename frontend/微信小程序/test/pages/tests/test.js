@@ -98,7 +98,7 @@ Page({
     }
     wx.createIntersectionObserver()
       .relativeToViewport()
-      .observe('.scroll-class', res => {
+      .observe('.scroll-class', (res) => {
         console.log(res);
         res.id; // 目标节点 id
         res.dataset; // 目标节点 dataset
@@ -118,7 +118,7 @@ Page({
     // 初始化 Worker
     const worker = wx.createWorker('/workers/request/index.js');
     // 接收 Worker 数据
-    worker.onMessage(msg => {
+    worker.onMessage((msg) => {
       console.log(msg);
       // 结束当前 Worker
       worker.terminate();

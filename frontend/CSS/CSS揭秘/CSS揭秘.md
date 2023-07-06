@@ -326,14 +326,19 @@ background-color: rebeccapurple;
 展开式属性与简写属性的配合使用也是非常有用的，可以让代码更加 DRY。对于那些接受一个用逗号分隔的列表的属性（比如 background），尤其如此。下面的例子可以很好地解释这一点：
 
 ```css
-background: url(tr.png) no-repeat top right/ 2em 2em, url(br.png) no-repeat bottom right / 2em 2em,
+background:
+  url(tr.png) no-repeat top right/ 2em 2em,
+  url(br.png) no-repeat bottom right / 2em 2em,
   url(bl.png) no-repeat bottom left / 2em 2em;
 ```
 
 background-size 和 background-repeat 的值被重复了三遍，尽管每层背景的这两个值确实是相同的。其实可以从 CSS 的 “列表扩散规则” 那里得到好处。它的意思是说，**如果只为某个属性提供一个值，那它就会扩散并应用到列表中的每一项**。因此，可以把这些重复的值从简写属性中抽出来写成一个展开式属性：
 
 ```css
-background: url(tr.png) top right, url(br.png) bottom right, url(bl.png) bottom left;
+background:
+  url(tr.png) top right,
+  url(br.png) bottom right,
+  url(bl.png) bottom left;
 background-size: 2em 2em;
 background-repeat: no-repeat;
 ```
@@ -367,7 +372,9 @@ box-shadow 的好处在于，它**支持逗号分隔语法，可以创建任意�
 
 ```css
 background: yellowgreen;
-box-shadow: 0 0 0 10px #655, 0 0 0 15px deeppink;
+box-shadow:
+  0 0 0 10px #655,
+  0 0 0 15px deeppink;
 ```
 
 > **注意**：box-shadow 是层层叠加的，第一层投影位于最顶层，依次类推。因此，需要按此规律调整扩张半径。比如说，在前面的代码中，想在外圈再加一道 5px 的外框，那就需要指定扩张半径的值为 15px（10px+5px）。
@@ -401,7 +408,10 @@ outline: 5px solid deeppink;
   background: hsl(20, 40%, 90%);
   background-image: linear-gradient(90deg, #fb3 10px, transparent 0), linear-gradient(90deg, #ab4 20px, transparent 0),
     linear-gradient(90deg, #655 20px, transparent 0);
-  background-size: 80px 100%, 60px 100%, 40px 100%;
+  background-size:
+    80px 100%,
+    60px 100%,
+    40px 100%;
 }
 ```
 
@@ -416,9 +426,14 @@ outline: 5px solid deeppink;
 ```css
 .pseudorandom-background {
   background: hsl(20, 40%, 90%);
-  background-image: linear-gradient(90deg, #fb3 11px, transparent 0), linear-gradient(90deg, #ab4 23px, transparent 0),
+  background-image:
+    linear-gradient(90deg, #fb3 11px, transparent 0),
+    linear-gradient(90deg, #ab4 23px, transparent 0),
     linear-gradient (90deg, #655 41px transparent 0);
-  background-size: 41px 100%, 61px 100%, 83px 100%;
+  background-size:
+    41px 100%,
+    61px 100%,
+    83px 100%;
 }
 ```
 
@@ -463,7 +478,9 @@ background-origin: border-box;
 .envelope {
   padding: 1em;
   border: 1em solid transparent;
-  background: linear-gradient(white, white) padding-box, repeating-linear-gradient(
+  background:
+    linear-gradient(white, white) padding-box,
+    repeating-linear-gradient(
         -45deg,
         red 0,
         red 12.5%,
@@ -507,13 +524,9 @@ background-origin: border-box;
 .marching-ants {
   padding: 1em;
   border: 1px solid transparent;
-  background: linear-gradient(white, white) padding-box, repeating-linear-gradient(
-        -45deg,
-        black 0,
-        black 25%,
-        white 0,
-        white 50%
-      ) 0 / 0.6em 0.6em;
+  background:
+    linear-gradient(white, white) padding-box,
+    repeating-linear-gradient(-45deg, black 0, black 25%, white 0, white 50%) 0 / 0.6em 0.6em;
   animation: ants 12s linear infinite;
 }
 ```
@@ -667,7 +680,9 @@ background: linear-gradient(-45deg, transparent 15px, #58a 0), linear-gradient(4
 但这样写是行不通的。默认情况下，这两层渐变都会填满整个元素，因此它们会相互覆盖。需要让它们都缩小一些，于是使用 `background-size` 让每层渐变分别只占据整个元素一半的面积，这时还需要把 `background-repeat` 关掉：
 
 ```css
-background: linear-gradient(-45deg, transparent 15px, #58a 0) right, linear-gradient(45deg, transparent 15px, #655 0) left;
+background:
+  linear-gradient(-45deg, transparent 15px, #58a 0) right,
+  linear-gradient(45deg, transparent 15px, #655 0) left;
 background-size: 50% 100%;
 background-repeat: no-repeat;
 ```
@@ -675,15 +690,11 @@ background-repeat: no-repeat;
 如果把四个角都做出切角效果，需要四层渐变图案：
 
 ```css
-background: linear-gradient(135deg, transparent 15px, #58a 0) top left, linear-gradient(
-      -135deg,
-      transparent 15px,
-      #58a 0
-    ) top right, linear-gradient(-45deg, transparent 15px, #58a 0) bottom right, linear-gradient(
-      45deg,
-      transparent 15px,
-      #58a 0
-    ) bottom left;
+background:
+  linear-gradient(135deg, transparent 15px, #58a 0) top left,
+  linear-gradient(-135deg, transparent 15px, #58a 0) top right,
+  linear-gradient(-45deg, transparent 15px, #58a 0) bottom right,
+  linear-gradient(45deg, transparent 15px, #58a 0) bottom left;
 background-size: 50% 50%;
 background-repeat: no-repeat;
 ```
@@ -693,12 +704,11 @@ background-repeat: no-repeat;
 ```scss
 @mixin beveled-corners($bg, $tl: 0, $tr: $tl, $br: $tl, $bl: $tr) {
   background: $bg;
-  background: linear-gradient(135deg, transparent $tl, $bg 0) top left, linear-gradient(225deg, transparent $tr, $bg 0) top
-      right, linear-gradient(-45deg, transparent $br, $bg 0) bottom right, linear-gradient(
-        45deg,
-        transparent $bl,
-        $bg 0
-      ) bottom left;
+  background:
+    linear-gradient(135deg, transparent $tl, $bg 0) top left,
+    linear-gradient(225deg, transparent $tr, $bg 0) top right,
+    linear-gradient(-45deg, transparent $br, $bg 0) bottom right,
+    linear-gradient(45deg, transparent $bl, $bg 0) bottom left;
   background-size: 50% 50%;
   background-repeat: no-repeat;
 }
@@ -717,15 +727,11 @@ background-repeat: no-repeat;
 上述渐变技巧还有一个变种，可以用来创建弧形切角（也称为“内凹圆角”，因为它看起来就像是圆角的反向版本）。唯一的区别在于，会用径向渐变来替代上述线性渐变：
 
 ```css
-background: radial-gradient(circle at top left, transparent 15px, #58a 0) top left, radial-gradient(
-      circle at top right,
-      transparent 15px,
-      #58a 0
-    ) top right, radial-gradient(circle at bottom right, transparent 15px, #58a 0) bottom right, radial-gradient(
-      circle at bottom left,
-      transparent 15px,
-      #58a 0
-    ) bottom left;
+background:
+  radial-gradient(circle at top left, transparent 15px, #58a 0) top left,
+  radial-gradient(circle at top right, transparent 15px, #58a 0) top right,
+  radial-gradient(circle at bottom right, transparent 15px, #58a 0) bottom right,
+  radial-gradient(circle at bottom left, transparent 15px, #58a 0) bottom left;
 background-size: 50% 50%;
 background-repeat: no-repeat;
 ```
@@ -1070,12 +1076,9 @@ background: linear-gradient(-135deg, transparent 2em, #58a 0);
 为了生成这个三角形，需要的就是一个有角度的线性渐变，而这个渐变的两个色标需要在正中央重合：
 
 ```css
-background: linear-gradient(225deg, transparent 50%, rgba(0, 0, 0, 0.4) 0) no-repeat 100% 0 / 2em 2em, linear-gradient(
-    -135deg,
-    transparent,
-    2em,
-    #58a 0
-  );
+background:
+  linear-gradient(225deg, transparent 50%, rgba(0, 0, 0, 0.4) 0) no-repeat 100% 0 / 2em 2em,
+  linear-gradient(-135deg, transparent, 2em, #58a 0);
 ```
 
 但这时它们的尺寸不匹配，原因在于第二层渐变中的 2em 折角尺寸是写在色标中的，因此它是沿着渐变轴进行度量的，是对角线尺寸。另一方面，在 background-size 中的 2em 长度是背景贴片的宽度和高度，是在水平和垂直方向上进行度量的。为了将这两者对齐，需要选择以下任意一项进行调整，选择哪一项取决于最终想保留哪一方的尺寸设置：
@@ -1087,12 +1090,9 @@ background: linear-gradient(225deg, transparent 50%, rgba(0, 0, 0, 0.4) 0) no-re
 
 ```css
 background: #58a; /* 回退样式 */
-background: linear-gradient(225deg, transparent 50%, rgba(0, 0, 0, 0.4) 0) no-repeat 100% 0 / 2em 2em, linear-gradient(
-    -135deg,
-    transparent,
-    2em,
-    #58a 0
-  );
+background:
+  linear-gradient(225deg, transparent 50%, rgba(0, 0, 0, 0.4) 0) no-repeat 100% 0 / 2em 2em,
+  linear-gradient(-135deg, transparent, 2em, #58a 0);
 ```
 
 #### 4.3.2 其他角度的解决方案
@@ -1395,13 +1395,23 @@ text-shadow: 0 -1px 1px black;
 ```css
 background: deeppink;
 color: white;
-text-shadow: 0.5px 0.5px black, -0.5px -0.5px black, 0.5px -0.5px black, -0.5px 0.5px black;
+text-shadow:
+  0.5px 0.5px black,
+  -0.5px -0.5px black,
+  0.5px -0.5px black,
+  -0.5px 0.5px black;
 ```
 
 除此以外，还可以重叠多层轻微模糊的投影来模拟描边。这种方法不需要设置偏移量：
 
 ```css
-text-shadow: 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black;
+text-shadow:
+  0 0 1px black,
+  0 0 1px black,
+  0 0 1px black,
+  0 0 1px black,
+  0 0 1px black,
+  0 0 1px black;
 ```
 
 不过，这种方法并不总是可以得到完美的效果，而且性能消耗较高。这是因为用了模糊算法。不幸的是，需要的描边越粗，这两种方案产生的结果就越差。
@@ -1419,7 +1429,9 @@ text-shadow: 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px
 
 ```css
 h1 {
-  font: 500%/1 Rockwell, serif;
+  font:
+    500%/1 Rockwell,
+    serif;
   background: deeppink;
   color: white;
 }
@@ -1445,7 +1457,9 @@ h1 use {
 ```css
 background: #203;
 color: #ffc;
-text-shadow: 0 0 0.1em, 0 0 0.3em;
+text-shadow:
+  0 0 0.1em,
+  0 0 0.3em;
 ```
 
 如果是为鼠标悬停状态添加这种效果，加上一个过渡效果就更好了：
@@ -1457,7 +1471,9 @@ a {
   transition: 1s;
 }
 a:hover {
-  text-shadow: 0 0 0.1em, 0 0 0.3em;
+  text-shadow:
+    0 0 0.1em,
+    0 0 0.3em;
 }
 ```
 
@@ -1471,7 +1487,9 @@ a {
 }
 a:hover {
   color: transparent;
-  text-shadow: 0 0 0.1em white, 0 0 0.3em white;
+  text-shadow:
+    0 0 0.1em white,
+    0 0 0.3em white;
 }
 ```
 
@@ -1495,8 +1513,13 @@ a:hover {
 ```css
 background: #58a;
 color: white;
-text-shadow: 0 1px hsl(0, 0%, 85%), 0 2px hsl(0, 0%, 80%), 0 3px hsl(0, 0%, 75%), 0 4px hsl(0, 0%, 70%),
-  0 5px hsl(0, 0%, 65%), 0 5px 10px black;
+text-shadow:
+  0 1px hsl(0, 0%, 85%),
+  0 2px hsl(0, 0%, 80%),
+  0 3px hsl(0, 0%, 75%),
+  0 4px hsl(0, 0%, 70%),
+  0 5px hsl(0, 0%, 65%),
+  0 5px 10px black;
 ```
 
 这种繁琐冗长的代码正是 CSS 预处理器的 mixin 功能所要解决的问题。在 SCSS 中可以这样来做：
@@ -1525,8 +1548,15 @@ h1 {
 ```css
 color: white;
 background: hsl(0, 50%, 45%);
-text-shadow: 1px 1px black, 2px 2px black, 3px 3px black, 4px 4px black, 5px 5px black, 6px 6px black, 7px 7px black, 8px
-    8px black;
+text-shadow:
+  1px 1px black,
+  2px 2px black,
+  3px 3px black,
+  4px 4px black,
+  5px 5px black,
+  6px 6px black,
+  7px 7px black,
+  8px 8px black;
 ```
 
 把这些代码转换成 mixin 甚至比前面的例子更加容易，不过在这个例子中用函数来组织代码可能更合适：
@@ -2116,7 +2146,9 @@ h1 {
   overflow: hidden;
   white-space: nowrap;
   border-right: 0.05em solid;
-  animation: typing 6s steps(15), caret 1s steps(1) infinite;
+  animation:
+    typing 6s steps(15),
+    caret 1s steps(1) infinite;
 }
 ```
 

@@ -8,7 +8,7 @@ function getFiles(path) {
   return readdirSync(path, { encoding: 'utf-8', withFileTypes: true });
 }
 
-let oldMarkdownCount = 3144825;
+let oldMarkdownCount = 3149355;
 let markdownCount = 0;
 /**
  * @param {import("fs").PathLike} [path] 文件路径

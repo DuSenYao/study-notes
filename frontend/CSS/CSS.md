@@ -1217,7 +1217,9 @@ export default {
     background-image: radial-gradient(circle closest-side, #09f, transparent);
     content: '';
     transform: translate3d(-50%, -50%, 0);
-    transition: width 200ms ease, height 200ms ease;
+    transition:
+      width 200ms ease,
+      height 200ms ease;
   }
   &:hover::before {
     --size: 400px;
@@ -1865,8 +1867,11 @@ h1 {
    ```css
    @font-face {
      font-family: Vollkorn;
-     src: url('fonts/Vollkorn-Regular.eot#?ie') format('embedded-opentype'), url('fonts/Vollkorn-Regular.woff2') format('woff2'),
-       url('fonts/Vollkorn-Regular.woff') format('woff'), url('fonts/Vollkorn-Regular.ttf') format('truetype'),
+     src:
+       url('fonts/Vollkorn-Regular.eot#?ie') format('embedded-opentype'),
+       url('fonts/Vollkorn-Regular.woff2') format('woff2'),
+       url('fonts/Vollkorn-Regular.woff') format('woff'),
+       url('fonts/Vollkorn-Regular.ttf') format('truetype'),
        url('fonts/Vollkorn-Regular.svg') format('svg');
    }
    ```
@@ -1891,21 +1896,26 @@ h1 {
    ```css
    @font-face {
      font-family: AlegreyaSans;
-     src: url('fonts/alegreya/AlegreyaSans-Regular.woff2') format('woff2'), url('fonts/alegreya/AlegreyaSans-Regular.woff')
-         format('woff');
+     src:
+       url('fonts/alegreya/AlegreyaSans-Regular.woff2') format('woff2'),
+       url('fonts/alegreya/AlegreyaSans-Regular.woff') format('woff');
      /* 字体粗细和样式都为默认值 normal */
    }
 
    @font-face {
      font-family: Vollkorn;
-     src: url('fonts/vollkorn/Vollkorn-Medium.woff2') format('woff2'), url('fonts/vollkorn/Vollkorn-Medium.woff') format('woff');
+     src:
+       url('fonts/vollkorn/Vollkorn-Medium.woff2') format('woff2'),
+       url('fonts/vollkorn/Vollkorn-Medium.woff') format('woff');
      font-weight: 500;
    }
 
    @font-face {
      font-family: Vollkorn;
      font-weight: bold;
-     src: url('fonts/vollkorn/Vollkorn-Bold.woff2') format('woff2'), url('fonts/vollkorn/Vollkorn-Bold.woff') format('woff');
+     src:
+       url('fonts/vollkorn/Vollkorn-Bold.woff2') format('woff2'),
+       url('fonts/vollkorn/Vollkorn-Bold.woff') format('woff');
    }
    ```
 
@@ -2128,12 +2138,16 @@ h1 {
 .impressed {
   background-color: #6990e1;
   color: #31446b;
-  text-shadow: 0 -1px 1px #b3d6f9, 0 1px 0 #243350;
+  text-shadow:
+    0 -1px 1px #b3d6f9,
+    0 1px 0 #243350;
 }
 .embossed {
   background-color: #3c5486;
   color: #92b1ef;
-  text-shadow: 0 -1px 0 #243350, 0 1px 0 #def2fe;
+  text-shadow:
+    0 -1px 0 #243350,
+    0 1px 0 #def2fe;
 }
 ```
 
@@ -2146,7 +2160,11 @@ h1 {
   text-transform: uppercase;
   font-weight: 700;
   /* 以 1px 为单位累加 */
-  text-shadow: -1px 1px 0 #743132, -2px 2px 0 #743132, -3px 3px 0 #743132, /* ... */ -22px 22px 0 #743132,
+  text-shadow:
+    -1px 1px 0 #743132,
+    -2px 2px 0 #743132,
+    -3px 3px 0 #743132,
+    /* ... */ -22px 22px 0 #743132,
     -23px 23px 0 #743132;
 }
 ```
@@ -2159,10 +2177,24 @@ h1 {
 h1 {
   /* 省略了一些属性 */
   /* 首先，各个方向上的白色阴影构成轮廓 */
-  text-shadow: -2px 2px 0 #fff, 0 -2px 0 #fff, 0 3px 0 #fff, 3px 0 0 #fff, -3px 0 0 #fff, 2px 2px 0 #fff,
-    2px -2px 0 #fff, -2px -2px 0 #fff, /* 其次，交错叠加的阴影让颜色沿两个方向凸显 */ -3px 3px 0 #743b34, -4px 3px 0
-      #a8564d, -4px 5px 0 #743b34, -5px 4px 0 #a8564d, -5px 6px 0 #743b34, /* 继续叠加 */ -22px 21px 0 #a8564d,
-    -22px 23px 0 #743b34, -23px 22px 0 #a8564d, -23px 24px 0 #743b34;
+  text-shadow:
+    -2px 2px 0 #fff,
+    0 -2px 0 #fff,
+    0 3px 0 #fff,
+    3px 0 0 #fff,
+    -3px 0 0 #fff,
+    2px 2px 0 #fff,
+    2px -2px 0 #fff,
+    -2px -2px 0 #fff,
+    /* 其次，交错叠加的阴影让颜色沿两个方向凸显 */ -3px 3px 0 #743b34,
+    -4px 3px 0 #a8564d,
+    -4px 5px 0 #743b34,
+    -5px 4px 0 #a8564d,
+    -5px 6px 0 #743b34,
+    /* 继续叠加 */ -22px 21px 0 #a8564d,
+    -22px 23px 0 #743b34,
+    -23px 22px 0 #a8564d,
+    -23px 24px 0 #743b34;
 }
 ```
 
@@ -2447,7 +2479,11 @@ CSS 背景有一个 `background` 简写属性，可以同时设置一堆背景�
 ```css
 .multi-bg {
   background-image: url(img/spades.png), url(img/hearts.png), url(img/diamonds.png), url(img/clubs.png);
-  background-position: left top, right top, left bottom, right bottom;
+  background-position:
+    left top,
+    right top,
+    left bottom,
+    right bottom;
   background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
   background-color: pink;
 }
@@ -2463,8 +2499,12 @@ CSS 背景有一个 `background` 简写属性，可以同时设置一堆背景�
 
 ```css
 .multi-bg-shorthand {
-  background: url(img/spades.png) left top no-repeat, url(img/hearts.png) right top no-repeat,
-    url(img/diamonds.png) left bottom no-repeat, url(img/clubs.png) right bottom no-repeat, pink;
+  background:
+    url(img/spades.png) left top no-repeat,
+    url(img/hearts.png) right top no-repeat,
+    url(img/diamonds.png) left bottom no-repeat,
+    url(img/clubs.png) right bottom no-repeat,
+    pink;
 }
 ```
 
@@ -2472,8 +2512,12 @@ CSS 背景有一个 `background` 简写属性，可以同时设置一堆背景�
 
 ```css
 .multi-bg-shorthand {
-  background: url(img/spades.png) left top, url(img/hearts.png) right top, url(img/diamonds.png) left bottom, url(img/clubs.png)
-      right bottom, pink;
+  background:
+    url(img/spades.png) left top,
+    url(img/hearts.png) right top,
+    url(img/diamonds.png) left bottom,
+    url(img/clubs.png) right bottom,
+    pink;
 
   background-repeat: no-repeat; /* 用于 4 张图片 */
 }
@@ -2628,7 +2672,11 @@ box-shadow 的另一个比 text-shadow 更为灵活之处是可以使用 `inset`
 
 ```css
 .profile-photo {
-  box-shadow: 0 0 0 10px #1c318d, 0 0 0 20px #3955c7, 0 0 0 30px #546dc7, 0 0 0 40px #7284d8;
+  box-shadow:
+    0 0 0 10px #1c318d,
+    0 0 0 20px #3955c7,
+    0 0 0 30px #546dc7,
+    0 0 0 40px #7284d8;
 }
 ```
 
@@ -3247,7 +3295,11 @@ figure {
 
    ```css
    .navbar ul {
-     font-family: Avenir Next, Avenir, Century Gothic, sans-serif;
+     font-family:
+       Avenir Next,
+       Avenir,
+       Century Gothic,
+       sans-serif;
      list-style: none;
      padding: 0;
      background-color: #486a8e;
@@ -4417,9 +4469,10 @@ HTML 代码如下：
 
 ```css
 .grid-a {
-display: grid;
-grid-template: auto minmax(4em, 1fr) minmax(4em, 1fr) / repeat(5, 1fr);
-margin: 0 -.6875em;
+  display: grid;
+  grid-template: auto minmax(4em, 1fr) minmax(4em, 1fr) / repeat(5, 1fr);
+  margin: 0 -0.6875em;
+}
 ```
 
 #### 7.3.3 添加网格项
@@ -5080,7 +5133,11 @@ CSS 文件中的第一批规则，既针对最小的屏幕，也针对那些不�
 
 ```css
 body {
-  font-family: 'Open Sans', Helvetica Neue, Arial, sans-serif;
+  font-family:
+    'Open Sans',
+    Helvetica Neue,
+    Arial,
+    sans-serif;
 }
 h1,
 h2,
@@ -5320,7 +5377,9 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
 @media only screen and (min-width: 37.5em) {
   .grid-b {
     grid-template-columns: 1fr 1fr;
-    grid-template-areas: 'hd hd ' 'st1 ...', '... st2';
+    grid-template-areas:
+      'hd hd ' 'st1 ...',
+      '... st2';
   }
 }
 ```
@@ -5331,7 +5390,9 @@ HTML 代码中包含这个区域的标题、两篇文章和两个广告。如果
 @media only screen and( min-width: 55em) {
   .grid-b {
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-areas: 'hd hd hd' 'st1 .. st2', 'st2 .. st2';
+    grid-template-areas:
+      'hd hd hd' 'st1 .. st2',
+      'st2 .. st2';
   }
 }
 ```
@@ -6496,11 +6557,15 @@ button {
   color: #fff;
   border-radius: 0.25em;
   background-color: #173b6d;
-  box-shadow: 0.25em 0 rgba(23, 59, 109, 0.3), inset 0 1px 0 rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0.25em 0 rgba(23, 59, 109, 0.3),
+    inset 0 1px 0 rgba(0, 0, 0, 0.3);
   transition: all 150ms;
 }
 .button:active {
-  box-shadow: 0 0 0 rgba(23, 59, 109, 0.3), inset 0 1px 0 rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 0 0 rgba(23, 59, 109, 0.3),
+    inset 0 1px 0 rgba(0, 0, 0, 0.3);
   transform: translateY(0.25em);
 }
 ```
@@ -6531,7 +6596,9 @@ button {
 
 ```css
 button {
-  transition: box-shadow 0.15s, transform 0.15s;
+  transition:
+    box-shadow 0.15s,
+    transform 0.15s;
 }
 ```
 
@@ -6701,7 +6768,10 @@ body {
 }
 .logo {
   color: #fff;
-  font-family: Helvetica Neue, Arial, sans-serif;
+  font-family:
+    Helvetica Neue,
+    Arial,
+    sans-serif;
   font-size: 2em;
   margin: 1em 0;
 }
@@ -7445,7 +7515,9 @@ SVG 蒙版源使用明度值（luminance）而非阿尔法级别来应用蒙版�
    .page-header {
      background-image: url(img/earth.svg), linear-gradient(to bottom, #000, #102133);
      background-repeat: no-repeat;
-     background-size: 100% auto, cover;
+     background-size:
+       100% auto,
+       cover;
      background-position: 50% bottom;
    }
    ```
