@@ -4270,7 +4270,11 @@ TypeScript 提供了一种简洁语法能够把构造函数的形式参数声明
 
 ```ts
 class A {
-  constructor(public x: number, protected y: number, private z: number) {}
+  constructor(
+    public x: number,
+    protected y: number,
+    private z: number
+  ) {}
 }
 const a = new A(0);
 a.x; // 0
