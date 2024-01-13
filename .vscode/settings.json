@@ -32,5 +32,6 @@
     "commandCenter.border": "#e7e7e799"
   },
   "peacock.color": "#215732",
-  "emmet.extensionsPath": [".vscode"]
+  "emmet.extensionsPath": [".vscode"],
+  "liveServer.settings.port": 5501
 }

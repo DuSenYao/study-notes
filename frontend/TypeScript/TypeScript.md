@@ -320,7 +320,7 @@
         - [4.6.4.2 导入整个模块](#4642-导入整个模块)
         - [4.6.4.3 导入默认模块导出](#4643-导入默认模块导出)
         - [4.6.4.4 空导入](#4644-空导入)
-        - [4.6.4.5 导入断言](#4645-导入断言)
+        - [4.6.4.5 导入属性（Import Attributes）](#4645-导入属性import-attributes)
       - [4.6.5 重命名模块导入和导出](#465-重命名模块导入和导出)
         - [4.6.5.1 重命名模块导出](#4651-重命名模块导出)
         - [4.6.5.2 重命名聚合模块](#4652-重命名聚合模块)
@@ -375,6 +375,7 @@
       - [4.10.5 扩充模块声明](#4105-扩充模块声明)
       - [4.10.6 扩充全局声明](#4106-扩充全局声明)
     - [4.11 装饰器](#411-装饰器)
+      - [4.11.1 装饰器元数据](#4111-装饰器元数据)
   - [五. TypeScript 配置管理](#五-typescript-配置管理)
     - [5.1 编译器](#51-编译器)
       - [5.1.1 安装编译器](#511-安装编译器)
@@ -470,10 +471,12 @@
     - [8.3 多线程类型安全](#83-多线程类型安全)
       - [8.3.1 在浏览器中：使用工作线程](#831-在浏览器中使用工作线程)
       - [8.3.2 在 NodeJS 中：使用子进程](#832-在-nodejs-中使用子进程)
+  - [九. 新功能](#九-新功能)
+    - [9.1 using 声明与显式资源管理](#91-using-声明与显式资源管理)
 
 <!-- /code_chunk_output -->
 
-内容升级到 5.0
+内容升级到 5.3
 
 ## 一. 介绍
 
@@ -1912,15 +1915,7 @@ type Range = [start: number, end: number];
 type Foo = [first: number, second?: string, ...rest: any[]];
 ```
 
-在使用标签元组时有一些规则要遵守：
-
-- 如果一个元组元素使用了标签，那么所有元组元素必须都使用标签。
-
-  ```ts
-  type Bar = [first: string, number]; // Tuple members must all have names or all not have names.(5084)
-  ```
-
-- 元组标签名不影响解构变量名，它们不必相同。元组标签仅用于文档和工具目的。
+> 元组标签名不影响解构变量名，它们不必相同。元组标签仅用于文档和工具目的。
 
 ### 2.11 对象类型
 
@@ -6757,14 +6752,14 @@ type T1 = string extends boolean ? string : number; // number
 type TypeName<T> = T extends string
   ? 'string'
   : T extends number
-  ? 'number'
-  : T extends boolear
-  ? 'boolean'
-  : T extends undefined
-  ? 'undefined'
-  : T extends Function
-  ? 'function'
-  : 'object';
+    ? 'number'
+    : T extends boolear
+      ? 'boolean'
+      : T extends undefined
+        ? 'undefined'
+        : T extends Function
+          ? 'function'
+          : 'object';
 
 type T0 = TypeName<'a'>; // 'string'
 type T1 = TypeName<0>; // 'number'
@@ -6812,14 +6807,14 @@ T extends U ? X : Y ≡ (A extends U ? X : Y) | (B extends U ? X : Y)
 type TypeName<T> = T extends string
   ? 'string'
   : T extends number
-  ? 'number'
-  : T extends boolean
-  ? 'boolean'
-  : T extends undefined
-  ? 'undefined'
-  : T extends Function
-  ? 'function'
-  : 'object';
+    ? 'number'
+    : T extends boolean
+      ? 'boolean'
+      : T extends undefined
+        ? 'undefined'
+        : T extends Function
+          ? 'function'
+          : 'object';
 
 // 使用联合类型 "string | number" 来实例化泛型类型别名 TypeName<T>，它表示的分布式条件类型会被展开为联合类型 "TypeName<string> | TypeName<number>
 // 因此最终的结果类型为联合类型 "'string' | 'number'"
@@ -7617,6 +7612,71 @@ function f(x: A | B) {
   }
 }
 ```
+
+JS 的一个稍微晦涩的特性是可以覆盖 `instanceof` 运算符的行为。为此，`instanceof` 运算符右侧的值需要具有一个名为 `Symbol.hasInstance` 的特定方法。
+
+```js
+class Weirdo {
+  static [Symbol.hasInstance](testedValue) {
+    // wait, what?
+    return testedValue === undefined;
+  }
+}
+
+// false
+console.log(new Thing() instanceof Weirdo);
+
+// true
+console.log(undefined instanceof Weirdo);
+```
+
+为了更好地支持 `instanceof` 的行为，TypeScript 现在会检查是否存在 `[Symbol.hasInstance]` 方法且被定义为类型判定函数。如果有的话，instanceof 运算符左侧的值会按照类型判定进行细化。
+
+```ts
+interface PointLike {
+  x: number;
+  y: number;
+}
+
+class Point implements PointLike {
+  x: number;
+  y: number;
+
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+
+  distanceFromOrigin() {
+    return Math.sqrt(this.x ** 2 + this.y ** 2);
+  }
+
+  static [Symbol.hasInstance](val: unknown): val is PointLike {
+    return (
+      !!val &&
+      typeof val === 'object' &&
+      null !== val &&
+      'x' in val &&
+      'y' in val &&
+      typeof val.x === 'number' &&
+      typeof val.y === 'number'
+    );
+  }
+}
+
+function f(value: unknown) {
+  if (value instanceof Point) {
+    // 可以同时访问这两个-正确！
+    value.x;
+    value.y;
+
+    // 无法访问
+    value.distanceFromOrigin();
+  }
+}
+```
+
+能够看到例子中，Point 定义了自己的 `[Symbol.hasInstance]` 方法。它实际上充当了对称为 PointLike 的单独类型的自定义类型保护。在函数 f 中，能够使用 `instanceof` 将 value 细化为 PointLike，但不能细化到 Point。这意味着可以访问属性 x 和 y，但无法访问 distanceFromOrigin 方法。
 
 ##### 3.11.1.3 in 类型守卫
 
@@ -9893,30 +9953,37 @@ console.log(globalThis.mode);
 
 此例中，使用空导入语句导入了 "utils.ts" 模块，这会执行 "utils.ts" 文件中的代码并设置全局作用域中 mode 属性的值。因此，在 "index.ts" 模块中能够读取并打印全局作用域中 mode 属性的值。
 
-##### 4.6.4.5 导入断言
+##### 4.6.4.5 导入属性（Import Attributes）
 
-TypeScript 4.5 支持了 ECMAScript Proposal 中的 _导入断言_。该语法会被运行时所使用来检查导入是否为期望的格式：
+TypeScript 5.3 支持了最新的 [import attributes](https://github.com/tc39/proposal-import-attributes) 提案。
 
-```ts
-import obj from './something.json' assert { type: 'json' };
-```
-
-TypeScript 不会检查这些断言，因为它们依赖于宿主环境。TypeScript 会保留原样，稍后让浏览器或者运行时来处理它们（也可能会出错）。
+该特性的一个用例是为运行时提供期望的模块格式信息。
 
 ```ts
-// TypeScript 允许，但浏览器可能不允许
-import obj from './something.json' assert { type: 'fluffy bunny' };
+// 只想将其解释为 JSON
+// 不是扩展名为 “.json” 的可运行/恶意 JS 文件
+import obj from "./something.json" with { type: "json" };
 ```
 
-动态的 import() 调用可以通过第二个参数来使用导入断言：
+TypeScript 不会检查属性内容，因为它们是宿主环境相关的。TypeScript 会原样保留它们，浏览器和运行时会处理它们。
+
+```ts
+// TypeScript 对此很好
+// 但是浏览器呢？可能不会。
+import * as foo from "./foo.js" with { type: "fluffy bunny" };
+```
+
+动态的 `import()` 调用也可以在第二个参数里使用该特性。
 
 ```ts
 const obj = await import('./something.json', {
-  assert: { type: 'json' }
+  with: { type: 'json' }
 });
 ```
 
-第二个参数的类型为 ImportCallOptions，并且目前它只接受一个 `assert` 属性。
+第二个参数的期望类型为 ImportCallOptions，默认只支持一个名为 with 的属性。
+
+> **注意**：导入属性是之前提案“导入断言”的演进，该提案已在 TypeScript 4.5 中实现。最明显的区别是使用 `with` 关键字而不是 `assert` 关键字。但不太明显的区别是，现在运行时可以自由地使用属性来指导导入路径的解析和解释，而导入断言只能在加载模块后断言某些特性。
 
 #### 4.6.5 重命名模块导入和导出
 
@@ -10063,6 +10130,9 @@ export type * from mod from 'mod';
 
 ```ts
 import type DefaultType from 'mod';
+
+// 5.2 支持使用 TypeScript 文件扩展名 .ts, .mts, .cts 以及 .tsx
+import type { JustAType } from './justTypes.ts';
 ```
 
 该语法中，DefaultType 可以为任意的标识符名，表示导入的默认模块导出类型在当前模块中所绑定的标识符。在当前模块中，将使用 DefaultType 这个名字来访问 mod 模块中的默认模块导出类型。从模块中导入命名类型的语法如下所示：
@@ -10114,6 +10184,46 @@ const p = new Point(); // 编译错误：Point'不能作为值来使用，因为
 ```ts
 import { Point } from './utils';
 const p = new Point(); // 编译错误：'Point'不能作为值来使用，因为它是由 export type 语句导出的
+```
+
+##### 4.6.6.3 import type 上的 resolution-mode
+
+TypeScript 4.7 在 `/// <reference types="..." />` 里支持了 `resolution-mode` 属性，它用来控制一个描述符是使用 `import` 还是 `require` 语义来解析。
+
+```ts
+/// <reference types="pkg" resolution-mode="require" />
+
+// or
+
+/// <reference types="pkg" resolution-mode="import" />
+```
+
+TypeScript 5.3 在 import type 上支持了 resolution-mode。
+
+```ts
+// 将 “pkg” 解析为使用 “require()” 导入
+import type { TypeFromRequire } from "pkg" with {
+    "resolution-mode": "require"
+};
+
+// 将 “pkg” 解析为使用 “import” 进行导入
+import type { TypeFromImport } from "pkg" with {
+    "resolution-mode": "import"
+};
+
+export interface MergedType extends TypeFromRequire, TypeFromImport {}
+```
+
+这些导入属性也可以用在 import() 类型上。
+
+```ts
+export type TypeFromRequire =
+    import("pkg", { with: { "resolution-mode": "require" } }).TypeFromRequire;
+
+export type TypeFromImport =
+    import("pkg", { with: { "resolution-mode": "import" } }).TypeFromImport;
+
+export interface MergedType extends TypeFromRequire, TypeFromImport {}
 ```
 
 #### 4.6.7 动态模块导入
@@ -10704,6 +10814,8 @@ tsc --module ES6
 # 等同于：
 tsc --module ES --moduleResolution Classic
 ```
+
+> 当 TypeScript 的模块解析策略无法解析一个路径时，它现在会相对于 typeRoots 继续解析。
 
 #### 4.9.4 模块解析策略之 Classic
 
@@ -11793,6 +11905,163 @@ function loggedMethod<This, Args extends any[], Return>(
 必须使用 this、Args 和 return 类型参数分别建模 this、参数和原始方法的返回类型。
 
 具体定义装饰器函数的复杂程度取决于想要保证什么。需要记住，装饰器的使用次数将超过它们的编写次数，所以类型良好的版本通常是更好的——但显然与可读性有一个权衡，所以请尽量保持简单。
+
+#### 4.11.1 装饰器元数据
+
+TypeScript 5.2 实现了 ECMAScript 即将引入的新功能 [Decorator Metadata](https://github.com/tc39/proposal-decorator-metadata)。
+
+这个功能的**关键思想是使装饰器能够轻松地在它们所使用或嵌套的任何类上创建和使用元数据**。
+
+在任意的装饰器函数上，现在可以访问上下文对象的 metadata 属性。metadata 属性是一个普通的对象。由于 JS 允许对其任意添加属性，它可以被用作可由每个装饰器更新的字典。或者，由于每个 metadata 对象对于每个被装饰的部分来讲是等同的，它可以被用作 Map 的键。当类的装饰器运行时，这个对象可以通过 Symbol.metadata 访问。
+
+```ts
+interface Context {
+  name: string;
+  metadata: Record;
+}
+
+function setMetadata(_target: any, context: Context) {
+  context.metadata[context.name] = true;
+}
+
+class SomeClass {
+  @setMetadata
+  foo = 123;
+
+  @setMetadata
+  accessor bar = 'hello!';
+
+  @setMetadata
+  baz() {}
+}
+
+const ourMetadata = SomeClass[Symbol.metadata];
+
+console.log(JSON.stringify(ourMetadata));
+// { "bar": true, "baz": true, "foo": true }
+```
+
+它可以被应用在不同的场景中。Metadata 信息可以附加在调试、序列化或者依赖注入的场景中。由于每个被装饰的类都会生成 metadata 对象，框架可以选择用它们做为 key 来访问 Map 或 WeakMap，或者跟踪它的属性。
+
+例如，想通过装饰器来跟踪哪些属性和存取器是可以通过 JSON.stringify 序列化的：
+
+```ts
+import { serialize, jsonify } from './serializer';
+
+class Person {
+  firstName: string;
+  lastName: string;
+
+  @serialize
+  age: number;
+
+  @serialize
+  get fullName() {
+    return `${this.firstName} ${this.lastName}`;
+  }
+
+  toJSON() {
+    return jsonify(this);
+  }
+
+  constructor(firstName: string, lastName: string, age: number) {
+    // ...
+  }
+}
+```
+
+此处的意图是，只有 age 和 fullName 可以被序列化，因为它们应用了 @serialize 装饰器。定义了 toJSON 方法来做这件事，但它只是调用了 jsonfy，它会使用 @serialize 创建的 metadata。
+
+```ts
+const serializables = Symbol();
+
+type Context = ClassAccessorDecoratorContext | ClassGetterDecoratorContext | ClassFieldDecoratorContext;
+
+export function serialize(_target: any, context: Context): void {
+  if (context.static || context.private) {
+    throw new Error('Can only serialize public instance members.');
+  }
+  if (typeof context.name === 'symbol') {
+    throw new Error('Cannot serialize symbol-named properties.');
+  }
+
+  const propNames = ((context.metadata[serializables] as string[] | undefined) ??= []);
+  propNames.push(context.name);
+}
+
+export function jsonify(instance: object): string {
+  const metadata = instance.constructor[Symbol.metadata];
+  const propNames = metadata?.[serializables] as string[] | undefined;
+  if (!propNames) {
+    throw new Error('No members marked with @serialize.');
+  }
+
+  const pairStrings = propNames.map((key) => {
+    const strKey = JSON.stringify(key);
+    const strValue = JSON.stringify((instance as any)[key]);
+    return `${strKey}: ${strValue}`;
+  });
+
+  return `{ ${pairStrings.join(', ')} }`;
+}
+```
+
+该方法有一个局部 symbol 名字为 serializables 用于保存和获取使用 @serializable 标记的属性。当每次调用 @serializable 时，它都会在 metadata 上保存这些属性名。当 jsonfy 被调用时，从 metadata 上获取属性列表，之后从实例上获取实际值，最后序列化名和值。
+
+使用 symbol 意味着该数据可以被他人访问。 另一选择是使用 WeakMap 并用该 metadata 对象做为键。 这样可以保持数据的私密性，并且在这种情况下使用更少的类型断言，但其他方面类似。
+
+```ts
+const serializables = new WeakMap();
+
+type Context = ClassAccessorDecoratorContext | ClassGetterDecoratorContext | ClassFieldDecoratorContext;
+
+export function serialize(_target: any, context: Context): void {
+  if (context.static || context.private) {
+    throw new Error('Can only serialize public instance members.');
+  }
+  if (typeof context.name !== 'string') {
+    throw new Error('Can only serialize string properties.');
+  }
+
+  let propNames = serializables.get(context.metadata);
+  if (propNames === undefined) {
+    serializables.set(context.metadata, (propNames = []));
+  }
+  propNames.push(context.name);
+}
+
+export function jsonify(instance: object): string {
+  const metadata = instance.constructor[Symbol.metadata];
+  const propNames = metadata && serializables.get(metadata);
+  if (!propNames) {
+    throw new Error('No members marked with @serialize.');
+  }
+  const pairStrings = propNames.map((key) => {
+    const strKey = JSON.stringify(key);
+    const strValue = JSON.stringify((instance as any)[key]);
+    return `${strKey}: ${strValue}`;
+  });
+
+  return `{ ${pairStrings.join(', ')} }`;
+}
+```
+
+由于该功能比较新，大多数运行时都没实现它。如果想要使用，则需要使用 Symbol.metadata 的 polyfill。 例如像下面这样就可以适用大部分场景：
+
+```ts
+Symbol.metadata ??= Symbol('Symbol.metadata');
+```
+
+还需要将编译 target 设为 es2022 或以下，配置 lib 为 "esnext" 或者 "esnext.decorators"。
+
+```json
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["es2022", "esnext.decorators", "dom"]
+  }
+}
+```
 
 ## 五. TypeScript 配置管理
 
@@ -14458,3 +14727,324 @@ process.send({ type: 'ack', data: [3] });
 ```
 
 可以看出，消息传递机制与 Web 中工作线程差不多。
+
+## 九. 新功能
+
+### 9.1 using 声明与显式资源管理
+
+TypeScript 5.2 支持了 ECMAScript 即将引入的新功能[显式资源管理](https://github.com/tc39/proposal-explicit-resource-management)。
+
+在创建对象之后需要进行某种形式的“清理”是很常见的。例如，可能需要关闭网络连接，删除临时文件，或者只是释放一些内存。比如一个函数，它创建一个临时文件，对它进行多种操作的读写，然后关闭并删除它。
+
+```js
+import * as fs from 'fs';
+
+export function doSomeWork() {
+  const path = '.some_temp_file';
+  const file = fs.openSync(path, 'w+');
+
+  // use file...
+
+  // 1. 如果需要提前退出，则可以看到存在重复的容易忘记的清理代码。同时无法保证在代码抛出异常时，关闭和删除文件会被执行。
+  if (someCondition()) {
+    // do some more work...
+
+    // 关闭文件并将其删除
+    fs.closeSync(file);
+    fs.unlinkSync(path);
+    return;
+  }
+
+  // 2. 解决办法是用 try/finally 语句包裹整段代码。
+  try {
+    // use file...
+
+    if (someCondition()) {
+      // do some more work...
+      return;
+    }
+  } finally {
+    // 关闭文件并将其删除
+    fs.closeSync(file);
+    fs.unlinkSync(path);
+  }
+
+  // 关闭文件并将其删除
+  fs.closeSync(file);
+  fs.unlinkSync(path);
+}
+```
+
+虽说使用 try/finally 写更加健壮，但是也为代码增加了一些“噪音”。如果在 finally 块中开始添加更多的清理逻辑，还可能遇到其他的自食其果的问题。例如，异常可能会阻止其他资源的释放。这些就是显式资源管理想要解决的问题。该提案的**关键思想是将资源释放（试图处理的清理工作）作为 JS 中的一等概念来支持**。
+
+首先，增加了一个新的 symbol 名字为 `Symbol.dispose`，然后可以定义包含 Symbol.dispose 方法的对象。为了方便，TypeScript 为此定义了一个新的全局类型 Disposable。
+
+```ts
+class TempFile implements Disposable {
+  #path: string;
+  #handle: number;
+
+  constructor(path: string) {
+    this.#path = path;
+    this.#handle = fs.openSync(path, 'w+');
+  }
+
+  // other methods
+
+  [Symbol.dispose]() {
+    // 关闭文件并将其删除
+    fs.closeSync(this.#handle);
+    fs.unlinkSync(this.#path);
+  }
+}
+```
+
+之后可以调用这些方法
+
+```js
+export function doSomeWork() {
+  const file = new TempFile('.some_temp_file');
+
+  try {
+    // ...
+  } finally {
+    file[Symbol.dispose]();
+  }
+}
+```
+
+将清理逻辑移动到 TempFile 本身没有带来多大的价值；仅仅是将清理的代码从 finally 提取到方法而已，你总是可以这样做。但如果该方法有一个众所周知的名字那么 JS 就可以基于此构造其它功能。
+
+这将引出该功能的第一个亮点：**using 声明**。`using` 是一个新的关键字，支持声明新的不可变绑定，像 const 一样。**不同点是 using 声明的变量在即将离开其作用域时，它的 Symbol.dispose 方法会被调用**。
+
+因此，可以这样编写代码：
+
+```ts
+export function doSomeWork() {
+  using file = new TempFile('.some_temp_file');
+
+  // use file...
+
+  if (someCondition()) {
+    // do some more work...
+    return;
+  }
+}
+```
+
+这里没有 try/finally 代码块。从功能上讲，这些正是 using 声明要帮做的事。using 提供了一种明确的方式来“清理”对象，在它们即将离开作用域时。using 声明在其所在的作用域的最后才执行清理工作，或在“提前返回”（如 return 语句或 throw 错误）之前执行清理工作。 释放的顺序是先入后出，像栈一样。
+
+```ts
+function loggy(id: string): Disposable {
+  console.log(`Creating ${id}`);
+
+  return {
+    [Symbol.dispose]() {
+      console.log(`Disposing ${id}`);
+    }
+  };
+}
+
+function func() {
+  using a = loggy('a');
+  using b = loggy('b');
+  {
+    using c = loggy('c');
+    using d = loggy('d');
+  }
+  using e = loggy('e');
+  return;
+
+  // 无法访问
+  // 从未创建，从未处置
+  using f = loggy('f');
+}
+
+func();
+// Creating a
+// Creating b
+// Creating c
+// Creating d
+// Disposing d
+// Disposing c
+// Creating e
+// Disposing e
+// Disposing b
+// Disposing a
+```
+
+`using` 声明对异常具有适应性；如果抛出了一个错误，那么在资源释放后会重新抛出错误。 另一方面，一个函数体可能正常执行，但是 Symbol.dispose 可能抛出异常。 这种情况下，异常会被重新抛出。
+
+但如果释放之前的逻辑以及释放时的逻辑都抛出了异常会发生什么？为处理这类情况引入了一个新的类型 SuppressedError，它是 Error 类型的子类型。SuppressedError 类型的 suppressed 属性保存了上一个错误，同时 error 属性保存了最后抛出的错误。
+
+```ts
+class ErrorA extends Error {
+  name = 'ErrorA';
+}
+class ErrorB extends Error {
+  name = 'ErrorB';
+}
+
+function throwy(id: string) {
+  return {
+    [Symbol.dispose]() {
+      throw new ErrorA(`Error from ${id}`);
+    }
+  };
+}
+
+function func() {
+  using a = throwy('a');
+  throw new ErrorB('oops!');
+}
+
+try {
+  func();
+} catch (e: any) {
+  console.log(e.name); // SuppressedError
+  console.log(e.message); // An error was suppressed during disposal.
+
+  console.log(e.error.name); // ErrorA
+  console.log(e.error.message); // Error from a
+
+  console.log(e.suppressed.name); // ErrorB
+  console.log(e.suppressed.message); // oops!
+}
+```
+
+在这些例子中使用的都是同步方法。然而，很多资源释放的场景涉及到异步操作，需要等待它们完成才能进行后续的操作。
+
+这就是为什么现在还有一个新的 `Symbol.asyncDispose`，它带来了另一个亮点 - `await using` 声明。 它与 `using` 声明相似，但关键是它查找需要 `await` 的资源。它使用名为 `Symbol.asyncDispose` 的方法，尽管它们也可以操作在任何具有 Symbol.dispose 的对象上操作。为了方便，TypeScript 引入了全局类型 AsyncDisposable 用来表示拥有异步 dispose 方法的对象。
+
+```ts
+async function doWork() {
+  // Do fake work for half a second.
+  await new Promise((resolve) => setTimeout(resolve, 500));
+}
+
+function loggy(id: string): AsyncDisposable {
+  console.log(`Constructing ${id}`);
+  return {
+    async [Symbol.asyncDispose]() {
+      console.log(`Disposing (async) ${id}`);
+      await doWork();
+    }
+  };
+}
+
+async function func() {
+  await using a = loggy('a');
+  await using b = loggy('b');
+  {
+    await using c = loggy('c');
+    await using d = loggy('d');
+  }
+  await using e = loggy('e');
+  return;
+
+  // Unreachable.
+  // Never created, never disposed.
+  await using f = loggy('f');
+}
+
+func();
+// Constructing a
+// Constructing b
+// Constructing c
+// Constructing d
+// Disposing (async) d
+// Disposing (async) c
+// Constructing e
+// Disposing (async) e
+// Disposing (async) b
+// Disposing (async) a
+```
+
+如果期望其他人能够一致地执行清理逻辑，通过使用 Disposable 和 AsyncDisposable 来定义类型可以使代码更易于使用。实际上，存在许多现有的类型，它们拥有 dispose() 或 close() 方法。例如，Visual Studio Code APIs 定义了 自己的 Disposable 接口。 在浏览器和诸如 Node.js 和 Bun 等运行时中，API 也可以选择对已经具有清理方法（如文件句柄、连接等）的对象使用 Symbol.dispose 和 Symbol.asyncDispose。
+
+现在也许对于库来说这听起来很不错，但对于某些场景来说可能有些过于复杂。如果需要进行大量的临时清理，创建一个新类型可能会引入过度抽象和关于最佳实践的问题。 例如，再次以 TempFile 示例为例。
+
+```ts
+class TempFile implements Disposable {
+  #path: string;
+  #handle: number;
+
+  constructor(path: string) {
+    this.#path = path;
+    this.#handle = fs.openSync(path, 'w+');
+  }
+
+  // other methods
+
+  [Symbol.dispose]() {
+    // Close the file and delete it.
+    fs.closeSync(this.#handle);
+    fs.unlinkSync(this.#path);
+  }
+}
+
+export function doSomeWork() {
+  using file = new TempFile('.some_temp_file');
+
+  // use file...
+
+  if (someCondition()) {
+    // do some more work...
+    return;
+  }
+}
+```
+
+只是想记住调用两个函数，但这是最好的写法吗？应该在构造函数中调用 openSync，创建一个 open() 方法，还是自己传递句柄？是否应该为每个需要执行的操作公开一个方法，还是只将属性公开？
+
+这就引出了这个特性的最后亮点：`DisposableStack` 和 `AsyncDisposableStack`。这些对象非常适用于一次性的清理工作，以及任意数量的清理工作。`DisposableStack` 是一个对象，它具有多个方法用于跟踪 Disposable 对象，并且可以接受函数来执行任意的清理工作。还可以将它们分配给 `using` 变量，因为它们也是 Disposable。所以下面是可以编写原始示例的方式。
+
+```ts
+function doSomeWork() {
+  const path = '.some_temp_file';
+  const file = fs.openSync(path, 'w+');
+
+  using cleanup = new DisposableStack();
+  cleanup.defer(() => {
+    fs.closeSync(file);
+    fs.unlinkSync(path);
+  });
+
+  // use file...
+
+  if (someCondition()) {
+    // do some more work...
+    return;
+  }
+
+  // ...
+}
+```
+
+在这里，defer() 方法只需要一个回调函数，该回调函数将在 cleanup 释放后运行。通常，在创建资源后应立即调用 defer（以及其他 DisposableStack 方法，如 use 和 adopt）。顾名思义，DisposableStack 以类似堆栈的方式处理它所跟踪的所有内容，按照先进后出的顺序进行处理，因此在创建值后立即进行 defer 处理有助于避免奇怪的依赖问题。AsyncDisposableStack 的工作原理类似，但可以跟踪异步函数和 AsyncDisposable，并且本身也是 AsyncDisposable。
+
+在许多方面，defer 方法与 Go、Swift、Zig、Odin 等语言中的 defer 关键字类似，因此其使用约定应该相似。由于这个特性非常新，大多数运行时环境不会原生支持它。要使用它，需要为以下内容提供运行时的 polyfills：
+
+- Symbol.dispose
+- Symbol.asyncDispose
+- DisposableStack
+- AsyncDisposableStack
+- SuppressedError
+
+然而，如果只对使用 `using` 和 `await using` 感兴趣，只需要为内置的 symbol 提供 polyfill，通常以下简单的方法可适用于大多数情况：
+
+```ts
+Symbol.dispose ??= Symbol('Symbol.dispose');
+Symbol.asyncDispose ??= Symbol('Symbol.asyncDispose');
+```
+
+还需要将编译 target 设置为 es2022 或以下，配置 lib 为 "esnext" 或 "esnext.disposable"。
+
+```json
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["es2022", "esnext.disposable", "dom"]
+  }
+}
+```

@@ -4,7 +4,7 @@
 
 <!-- code_chunk_output -->
 
-- [study-notes](#learning-notes-and-materials)
+- [study-notes](#study-notes)
   - [computer basics](#computer-basics)
   - [frontend](#frontend)
     - [浏览器](#浏览器)
@@ -60,8 +60,6 @@
 
 [CSS](/frontend/CSS/CSS.md)
 
-[精通 CSS-高级 Web 标准解决方案](/frontend/CSS/精通CSS/精通CSS-高级Web标准解决方案.md)
-
 [SCSS](/frontend/CSS/SCSS/Scss.md)
 
 [CSS 选择器](/frontend/CSS/CSS选择器/CSS选择器.md)
@@ -76,11 +74,9 @@
 
 [JavaScript 权威指南](/frontend/JavaScript/JavaScript权威指南/JavaScript权威指南.md)
 
-[JS 代码规范](/frontend/JavaScript/JS代码规范.md)
-
 [JS 开发优化技巧](/frontend/JavaScript/JS开发优化技巧.md)
 
-[JS 设计模式](/frontend/JavaScript/JS设计模式.md)
+[JS 设计模式](/frontend/JavaScript/设计模式/JS设计模式/JS设计模式.md)
 
 ### TypeScript
 
@@ -101,8 +97,6 @@
 [Vue-router](/frontend/Vue/Vue-router.md)
 
 [Vuex](/frontend/Vue/Vuex.md)
-
-[Vue 风格指南](/frontend/Vue/Vue风格指南.md)
 
 ### 小程序
 

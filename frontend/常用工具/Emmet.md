@@ -418,7 +418,7 @@ link[rel=prefetch title="Hello world"]
 link>xsl:apply-templates
 ```
 
-```html
+```xml
 <link rel="stylesheet" href="">
     <xsl:apply-templates></xsl:apply-templates>
 </link>
@@ -539,7 +539,7 @@ Emmet 使用特别的 CSS 解析器将缩写展开为完整的 CSS 属性。
 
 如果显式地指定单位，不再需要用连字号分隔值：
 
-```css
+```txt
 m10ex20em
 <!-- 展开为 -->
 margin: 10ex 20em;

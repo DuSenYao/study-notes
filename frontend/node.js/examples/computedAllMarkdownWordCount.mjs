@@ -8,8 +8,8 @@ function getFiles(path) {
   return readdirSync(path, { encoding: 'utf-8', withFileTypes: true });
 }
 
-let oldMarkdownCount = 3149357;
-let markdownCount = 0;
+let oldMarkdownWordCount = 3155201;
+let markdownWordCount = 0;
 /**
  * @param {import("fs").PathLike} [path] 文件路径
  */
@@ -25,7 +25,7 @@ function getAllFiles(path = process.cwd()) {
 
     // 如果是文件，判断是否是 markdown 文件
     if (name.endsWith('.md')) {
-      markdownCount += readFileSync(`${path}/${name}`, { encoding: 'utf-8' }).replace(/\s*/g, '').length; // 读取文件内容并统计字数
+      markdownWordCount += readFileSync(`${path}/${name}`, { encoding: 'utf-8' }).replace(/\s*/g, '').length; // 读取文件内容并统计字数
     }
   });
 }
@@ -33,17 +33,23 @@ function getAllFiles(path = process.cwd()) {
 getAllFiles();
 
 // 打印旧字数、新字数、增加字数
-console.table({ old: oldMarkdownCount, new: markdownCount, increase: markdownCount - oldMarkdownCount });
+console.table({
+  old: oldMarkdownWordCount,
+  new: markdownWordCount,
+  increase: markdownWordCount - oldMarkdownWordCount
+});
 
-const fileURL = 'D:/GitHub/study-notes/frontend/node.js/examples/markdownCount.mjs';
-// 更新 markdownCount.mjs 文件
+const fileURL = 'D:/GitHub/study-notes/frontend/node.js/examples/computedAllMarkdownWordCount.mjs';
+// 更新 computedAllMarkdownWordCount.mjs 文件
 const rl = createInterface({
   input: createReadStream(fileURL)
 });
 
 let content = '';
 rl.on('line', (line) => {
-  content += line.startsWith('let oldMarkdownCount =') ? `let oldMarkdownCount = ${markdownCount};\r\n` : `${line}\r\n`;
+  content += line.startsWith('let oldMarkdownWordCount =')
+    ? `let oldMarkdownWordCount = ${markdownWordCount};\r\n`
+    : `${line}\r\n`;
 });
 
 rl.on('close', () => {

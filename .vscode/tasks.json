@@ -20,10 +20,10 @@
       "problemMatcher": ["$eslint-stylish"]
     },
     {
-      "label": "markdown count",
+      "label": "all markdown word count",
       "type": "shell",
       "group": "build",
-      "command": "node ${workspaceFolder}/frontend/node.js/examples/markdownCount.mjs",
+      "command": "node ${workspaceFolder}/frontend/node.js/examples/computedAllMarkdownWordCount.mjs",
       "presentation": {
         "echo": false,
         "reveal": "always",
@@ -32,7 +32,7 @@
         "showReuseMessage": false,
         "clear": true
       },
-      "detail": "统计当前工作区下的 markdown 文件总字数"
+      "detail": "计算当前工作区下的 markdown 文件总字数"
     },
     {
       "label": "markdown TOC",
@@ -50,7 +50,17 @@
       "detail": "更改 markdown 目录中的导入目录"
     },
     {
-      "label": "tsc: -p tsconfig.json",
+      "label": "tsc -w",
+      "type": "shell",
+      "group": "build",
+      "command": "tsc",
+      "args": ["-w", "${file}", "--outDir", "${fileDirname}/out"],
+      "isBackground": true,
+      "problemMatcher": "$tsc-watch",
+      "detail": "监视当前文件夹下的TS文件"
+    },
+    {
+      "label": "tsc -p",
       "type": "shell",
       "group": "build",
       "command": "tsc",
@@ -87,39 +97,13 @@
         "clear": false
       },
       "hide": true,
-      "detail": "删除当前文件夹下的TS编译文件"
+      "detail": "删除当前文件夹下的TS编译文件夹"
     },
     {
-      "label": "Terminate All Tasks",
+      "label": "Select the task to stop",
+      "type": "shell",
       "command": "echo ${input:terminate}",
-      "type": "shell",
-      "detail": "停止所有Task"
-    },
-    {
-      "label": "tsc watch",
-      "type": "shell",
-      "command": "tsc",
-      "args": ["--watch", "${relativeFileDirname}"],
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "typescript",
-        "fileLocation": "relative",
-        "pattern": {
-          "regexp": "^([^\\s].*)\\((\\d+|\\d+,\\d+,\\d+,\\d+):\\s+(error|warning|info)\\s+(TS\\d+)\\s*:\\s*(.*)$",
-          "file": 1,
-          "location": 2,
-          "severity": 3,
-          "code": 4,
-          "message": 5
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^\\s*\\d(1,2):\\d(1,2):\\d(1,2)(?:AM|PM)? - File change detected\\. Starting incremental compilation\\.\\.\\.",
-          "endsPattern": "^\\s*\\d{1,2}:\\d{1,2}:\\d{1,2}(?:AM|PM)? - Compilation complete.\\. Watching for file changes\\."
-        },
-        "source": "typescript"
-      },
-      "detail": "捕获tsc编译器的错误和警告"
+      "detail": "选择要停止的 task"
     }
   ]
 }

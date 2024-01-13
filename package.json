@@ -9,21 +9,21 @@
     "lint": "eslint --ext .js,.ts frontend"
   },
   "devDependencies": {
-    "@types/node": "^20.4.0",
-    "@typescript-eslint/eslint-plugin": "^5.61.0",
-    "@typescript-eslint/parser": "^5.61.0",
-    "eslint": "^8.44.0",
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "eslint": "^8.56.0",
     "eslint-plugin-html": "^7.1.0",
-    "prettier": "3.0.0",
-    "typescript": "^5.1.6"
+    "prettier": "3.2.1",
+    "typescript": "^5.3.3"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/1758231591/study-notes.git"
+    "url": "git+https://github.com/DuSenYao/study-notes.git"
   },
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/1758231591/study-notes/issues"
+    "url": "https://github.com/DuSenYao/study-notes/issues"
   },
-  "homepage": "https://github.com/1758231591/study-notes#readme"
+  "homepage": "https://github.com/DuSenYao/study-notes#readme"
 }

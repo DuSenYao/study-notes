@@ -290,7 +290,7 @@
   - `TM_DIRECTORY`：当前文件的目录名
   - `TM_FILEPATH`：当前文档的完整文件路径
   - `RELATIVE_FILEPATH`：当前文档的相对（相对于打开的工作区或文件夹）文件路径
-  - `CLIPBOARD`：当前粘贴板的文本内容
+  - `CLIPBOARD`：当前剪贴板的文本内容
   - `WORKSPACE_NAME`：当前工作区的目录名
   - `WORKSPACE_FOLDER`：打开的工作区或文件夹的路径
   - `CURSOR_INDEX`：基于零索引的光标编号
@@ -1027,7 +1027,7 @@ VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 
 
 > **注意**：扩展无法访问 VS Code UI 的 DOM。不能编写将自定义 CSS 应用于 VS 代码或将 HTML 元素添加到 VS 代码 UI 的扩展。
 
-具体 API 可以看[官网](https://code-visualstudio-com.translate.goog/api/extension-guides/command?_x_tr_sl=auto&_x_tr_tl=zh-CN&_x_tr_hl=zh-CN&_x_tr_pto=wapp)。
+具体 API 可以看[官网](https://code-visualstudio-com.translate.goog/api/references/vscode-api?_x_tr_sl=auto&_x_tr_tl=zh-CN&_x_tr_hl=zh-CN&_x_tr_pto=wapp)。[官方示例](https://github.com/microsoft/vscode-extension-samples)。
 
 #### 4.2.1 开发环境及项目结构
 
@@ -1044,6 +1044,8 @@ yo code
 
 ![VSCode插件项目目录结构](./image/VSCode%E6%8F%92%E4%BB%B6%E9%A1%B9%E7%9B%AE%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84.png)
 
+可以使用 F5 快捷键启动调试。
+
 #### 4.2.2 插件核心实现
 
 vscode 插件的核心实现主要在：
@@ -1054,7 +1056,7 @@ vscode 插件的核心实现主要在：
 
     **主要用于指定插件的触发事件**。基于性能的考虑，vscode 插件都是 lazy load 的，只有激活的时候才启用插件。例子中用到的是 onCommand，在 Hello World 命令被调用时，插件才会被激活。目前支持 25 种激活事件：
 
-    - **onLanguage**：${language} ：当打开特定语言时插件被激活
+    - **onLanguage**：${language:languageId} ：当打开特定语言时插件被激活
     - **onCommand**：${command}：调用某个 VSCode 命令时插件被激活
     - **onDebug**：Debug 时插件被激活
     - **workspaceContains**：${toplevelfilename}：当打开包含某个命名规则的文件夹时插件被激活
@@ -1071,6 +1073,39 @@ vscode 插件的核心实现主要在：
 - **extension.js**
 
   **插件的执行入口文件**，通常包括激活（activate）和禁用（deactivate）2 个方法。vscode 会在激活插件的时候会执行 active 钩子，在卸载插件的时候会执行 deactivate 钩子。
+
+#### 4.2.3 打包
+
+插件打包为 .vsix 文件需要用到 [@vscode/vsce](https://github.com/microsoft/vscode-vsce)。
+
+```sh
+npm install --global @vscode/vsce
+```
+
+打包命令：
+
+```sh
+# npm
+vsce package
+```
+
+#### 4.2.4 发布
+
+1. 访问 [SignupAzureDevOps](https://aka.ms/SignupAzureDevOps) ，创建一个 Azure DevOps 组织，进入组织创建令牌，创建成功后将 token 记录下来
+
+2. 访问 [publisher](https://aka.ms/vscode-create-publisher) 创建一个发行方。发行方是有权发布 VS Code 插件的唯一标识，对应插件 package.json 文件中的 publisher 字段
+
+3. 使用创建的发行方登录，然后输入第 2 步生成的 token
+
+   ```sh
+   vsce login dsy
+   ```
+
+4. 登录成功后就可以发布插件了
+
+   ```sh
+   vsce publish
+   ```
 
 ## 五. 语言深入
 

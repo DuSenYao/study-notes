@@ -13,11 +13,11 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "编译调试单个 TS 文件",
+      "name": "编译运行单个 TS 文件",
       "skipFiles": ["<node_internals>/**"],
       "attachSimplePort": 0,
-      "program": "${file}",
-      "preLaunchTask": "tsc: -p tsconfig.json",
+      "program": "${fileDirname}/out/${fileBasenameNoExtension}.js",
+      "preLaunchTask": "tsc -p",
       "postDebugTask": "delete ts compile files",
       "outFiles": ["!**/node_modules/**"],
       "presentation": {

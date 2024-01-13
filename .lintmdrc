@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "no-empty-code-lang": 0,
+    "no-empty-url": 0,
+    "no-empty-list": 0,
+    "no-empty-code": 0,
+    "no-empty-inline-code": 0
+  }
+}

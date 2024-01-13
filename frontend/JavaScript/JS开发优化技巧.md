@@ -49,9 +49,12 @@
 ### 1.1 关闭页面弹出框
 
 ```js
-window.addEventListener('beforeunload', (event) => {
-  event.preventDefault();
-  event.returnValue = '确定离开当前页面吗？';
+window.addEventListener('beforeunload', (e) => {
+  // 取消默认的提示信息
+  e.preventDefault();
+  let confirmationMessage = '确定离开当前页面吗？';
+  e.returnValue = confirmationMessage; // 兼容旧版浏览
+  return confirmationMessage; // 兼容现代浏览器
 });
 ```
 
@@ -61,9 +64,9 @@ window.addEventListener('beforeunload', (event) => {
 // 异或运算有个特征，两次异或运算相当于取消
 let a = 102;
 let b = 304;
-a = a ^ b; // 342  102 ^ 304 = 342
-b = a ^ b; // 102  342 ^ 304 = 102
-a = a ^ b; // 304  342 ^ 102 = 304
+a = a ^ b; // 102 ^ 304 = 342
+b = a ^ b; // 342 ^ 304 = 102
+a = a ^ b; // 342 ^ 102 = 304
 console.log(a, b); // 304 102
 ```
 
