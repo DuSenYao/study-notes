@@ -583,7 +583,7 @@ npx vue-cli-service serve
 
 - `--target` : 允许将项目中的任何组件以一个库或 Web Components 组件的方式进行构建。更多细节请查阅[构建目标](#36-构建目标)。
 
-- `--report` 和 `--report-json` : 会根据构建统计生成报告，它会帮助你分析包中包含的模块们的大小。
+- `--report` 和 `--report-json` : 会根据构建统计生成报告，它会帮助分析包中包含的模块们的大小。
 
 #### 2.5.4 vue-cli-service inspect
 
@@ -1132,7 +1132,7 @@ module.exports = {
       .use('graphql-tag/loader')
       .loader('graphql-tag/loader')
       .end()
-      // 你还可以再添加一个 loader
+      // 还可以再添加一个 loader
       .use('other-loader')
       .loader('other-loader')
       .end();

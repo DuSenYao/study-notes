@@ -1728,7 +1728,7 @@ DebugPrint: 0x986080c5b35: [JS_OBJECT_TYPE]
  }
 ```
 
-根据这个打印出来的结果，可以明显看到，每次给对象添加了一个新属性之后，该对象的隐藏类的地址都会改变，这也就意味着隐藏类也随着改变了。同样，如果你删除了对象的某个属性，那么对象的形状也就随着发生了改变，这时 V8 也会重建该对象的隐藏类。
+根据这个打印出来的结果，可以明显看到，每次给对象添加了一个新属性之后，该对象的隐藏类的地址都会改变，这也就意味着隐藏类也随着改变了。同样，如果删除了对象的某个属性，那么对象的形状也就随着发生了改变，这时 V8 也会重建该对象的隐藏类。
 
 #### 3.6.5 最佳实践
 
@@ -2098,21 +2098,21 @@ foo();
 ```js
 function bar() {
   console.log('bar');
-  Promise.resolve().then(str => console.log('micro-bar'));
-  setTimeout(str => console.log('macro-bar'), 0);
+  Promise.resolve().then((str) => console.log('micro-bar'));
+  setTimeout((str) => console.log('macro-bar'), 0);
 }
 
 function foo() {
   console.log('foo');
-  Promise.resolve().then(str => console.log('micro-foo'));
-  setTimeout(str => console.log('macro-foo'), 0);
+  Promise.resolve().then((str) => console.log('micro-foo'));
+  setTimeout((str) => console.log('macro-foo'), 0);
 
   bar();
 }
 foo();
 console.log('global');
-Promise.resolve().then(str => console.log('micro-global'));
-setTimeout(str => console.log('macro-global'), 0);
+Promise.resolve().then((str) => console.log('micro-global'));
+setTimeout((str) => console.log('macro-global'), 0);
 ```
 
 执行这段代码，最终打印出来的顺序是：
@@ -2278,21 +2278,21 @@ GetUrlContent(IDCallback, id_url);
 
 ```js
 fetch(id_url)
-  .then(response => {
+  .then((response) => {
     return response.text();
   })
 
-  .then(response => {
+  .then((response) => {
     let new_name_url = name_url + '?id=' + response;
 
     return fetch(new_name_url);
   })
 
-  .then(response => {
+  .then((response) => {
     return response.text();
   })
 
-  .then(response => {
+  .then((response) => {
     console.log(response); //输出最终的结果
   });
 ```
@@ -2370,16 +2370,16 @@ function* getResult() {
 let result = getResult();
 result
   .next()
-  .value.then(response => {
+  .value.then((response) => {
     return result.next(response).value;
   })
-  .then(response => {
+  .then((response) => {
     return result.next(response).value;
   })
-  .then(response => {
+  .then((response) => {
     return result.next(response).value;
   })
-  .then(response => {
+  .then((response) => {
     return result.next(response).value;
   });
 ```

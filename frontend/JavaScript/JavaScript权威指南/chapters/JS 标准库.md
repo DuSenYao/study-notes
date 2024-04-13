@@ -1019,7 +1019,7 @@ while ((match = pattern.exec(text)) !== null) {
 ```
 
 **lastIndex 属性与重用 RegExp**
-JS 正则表达式 API 是比较复杂的。其中配合 `g` 和 `y` 标志的 `lastIndex` 属性则是这套 API 中最费解的地方。每当使用这两个标志时，都要在调用 match()、exec() 或 test()方法时特别小心。因为这些方法的行为依赖于 `lastIndex`，而 `lastIndex` 的值依赖于之前对 RegExp 对象做了什么。这一连串的依赖很容易导致写出问题代码。
+JS 正则表达式 API 是比较复杂的。其中配合 `g` 和 `y` 标志的 `lastIndex` 属性则是这套 API 中最费解的地方。每当使用这两个标志时，都要在调用 match()、exec() 或 test() 方法时特别小心。因为这些方法的行为依赖于 `lastIndex`，而 `lastIndex` 的值依赖于之前对 RegExp 对象做了什么。这一连串的依赖很容易导致写出问题代码。
 
 比如，假设想找到一段 HTML 文本中所有 `<p>` 标签的索引，可能会写出下面这样的代码：
 

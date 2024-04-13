@@ -1091,11 +1091,11 @@ vsce package
 
 #### 4.2.4 发布
 
-1. 访问 [SignupAzureDevOps](https://aka.ms/SignupAzureDevOps) ，创建一个 Azure DevOps 组织，进入组织创建令牌，创建成功后将 token 记录下来
+1. 访问 [SignupAzureDevOps](https://aka.ms/SignupAzureDevOps) ，创建一个 Azure DevOps 组织，进入组织创建令牌，创建成功后将 token 记录下来（token 有过期时间，过期后再创建一个就行）
 
 2. 访问 [publisher](https://aka.ms/vscode-create-publisher) 创建一个发行方。发行方是有权发布 VS Code 插件的唯一标识，对应插件 package.json 文件中的 publisher 字段
 
-3. 使用创建的发行方登录，然后输入第 2 步生成的 token
+3. 使用创建的发行方登录，然后输入第 1 步生成的 token
 
    ```sh
    vsce login dsy

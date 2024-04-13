@@ -95,7 +95,7 @@ Vue.use(VueRouter);
 如果使用全局的 script 标签，则无须如此 (手动安装)。
 
 **Vue CLI**
-如果有一个正在使用 Vue CLI 的项目，可以以项目插件的形式添加 Vue Router。CLI 可以生成上述代码及两个示例路由。它**也会覆盖你的 App.vue**，因此请确保在项目中运行以下命令之前备份这个文件：
+如果有一个正在使用 Vue CLI 的项目，可以以项目插件的形式添加 Vue Router。CLI 可以生成上述代码及两个示例路由。它**也会覆盖 App.vue**，因此请确保在项目中运行以下命令之前备份这个文件：
 
 ```sh
 vue add router
@@ -511,8 +511,14 @@ router.push({ name: 'user', params: { userId: 123 } });
 
 ```html
 <router-view class="view one"></router-view>
-<router-view class="view two" name="a"></router-view>
-<router-view class="view three" name="b"></router-view>
+<router-view
+  class="view two"
+  name="a"
+></router-view>
+<router-view
+  class="view three"
+  name="b"
+></router-view>
 ```
 
 一个视图使用一个组件渲染，因此对于同个路由，多个视图就需要多个组件。确保正确使用 `components` 配置 (带上 s)：
@@ -611,7 +617,7 @@ const router = new VueRouter({
   routes: [
     {
       path: '/a',
-      redirect: to => {
+      redirect: (to) => {
         // 方法接收 目标路由 作为参数
         // return 重定向的 字符串路径/路径对象
       }
@@ -713,7 +719,7 @@ const router = new VueRouter({
     {
       path: '/search',
       component: SearchUser,
-      props: route => ({ query: route.query.q })
+      props: (route) => ({ query: route.query.q })
     }
   ]
 });
@@ -1070,7 +1076,7 @@ const router = new VueRouter({
 
 ```js
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth)) {
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
     // 此路由需要验证，请检查是否已登录
     // 如果没有，请重定向到登录页面。
     if (!auth.loggedIn()) {
@@ -1163,11 +1169,24 @@ watch: {
 ```html
 <template>
   <div class="post">
-    <div v-if="loading" class="loading">Loading...</div>
+    <div
+      v-if="loading"
+      class="loading"
+    >
+      Loading...
+    </div>
 
-    <div v-if="error" class="error">{{ error }}</div>
+    <div
+      v-if="error"
+      class="error"
+    >
+      {{ error }}
+    </div>
 
-    <div v-if="post" class="content">
+    <div
+      v-if="post"
+      class="content"
+    >
       <h2>{{ post.title }}</h2>
       <p>{{ post.body }}</p>
     </div>
@@ -1410,7 +1429,7 @@ import VueRouter from 'vue-router';
 const { isNavigationFailure, NavigationFailureType } = VueRouter;
 
 // 正在尝试访问 admin 页面
-router.push('/admin').catch(failure => {
+router.push('/admin').catch((failure) => {
   if (isNavigationFailure(failure, NavigationFailureType.redirected)) {
     // 向用户显示一个小通知
     showToast('Login in order to access the admin panel');
@@ -1435,7 +1454,7 @@ NavigationFailureType 可以帮助开发者来区分不同类型的导航故障�
 
 ```js
 // 正在尝试访问 admin 页面
-router.push('/admin').catch(failure => {
+router.push('/admin').catch((failure) => {
   if (isNavigationFailure(failure, NavigationFailureType.redirected)) {
     failure.to.path; // '/admin'
     failure.from.path; // '/'

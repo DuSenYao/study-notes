@@ -6504,6 +6504,8 @@ Flavor; // 自动补全显示：VANILLA, CHOCOLATE, STRAWBERRY
 Flavor[0]; // 值是 "VANILLA"
 ```
 
+> TypeScript 5.4 不再允许枚举成员名使用 Infinity，-Infinity，或 NaN。
+
 赞成用枚举的理由是，比起直接用数字，枚举提供了更多的安全性和透明度。但是，TypeScript 中的枚举还是有一些小瑕疵。实际上 TypeScript 中有几个关于枚举的变体，它们的行为都有微妙的不同：
 
 - **数字值的枚举**（像 Flavor）。任何数字都可以分配到这个枚举，所以它不是很安全（当初这样设计是为了可以实现标志位结构）。

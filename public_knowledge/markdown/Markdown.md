@@ -4,47 +4,76 @@
 
 <!-- code_chunk_output -->
 
-- [Markdown](#-markdown)
-  - [一.Markdown 基本要素](#-一markdown-基本要素)
-    - [1.1 什么是 Markdown](#-11-什么是-markdown)
-  - [二. 语法说明](#-二-语法说明)
-    - [标题](#-标题)
-    - [强调](#-强调)
-    - [列表](#-列表)
-      - [无序列表](#-无序列表)
-      - [有序列表](#-有序列表)
-    - [定义型列表](#-定义型列表)
-    - [插入图片](#-插入图片)
-    - [链接](#-链接)
-    - [引用](#-引用)
-    - [注释](#-注释)
-    - [分割线](#-分割线)
-    - [行内代码](#-行内代码)
-    - [代码块](#-代码块)
-      - [代码块 class（MPA 扩展特性）](#-代码块-classmpa-扩展特性)
-    - [表格](#-表格)
-    - [目录列表(TOC)](#-目录列表toc)
-    - [todo list](#-todo-list)
-    - [序列图](#-序列图)
-    - [流程图](#-流程图)
-  - [三. markdown-preview-enhanced 插件扩展语法](#-三-markdown-preview-enhanced-插件扩展语法)
-    - [表格合并](#-表格合并)
-    - [Emoji And Font-Awesome](#-emoji-and-font-awesome)
-    - [上标](#-上标)
-    - [下标](#-下标)
-    - [注脚](#-注脚)
-    - [标记](#-标记)
-    - [导入外部文件](#-导入外部文件)
+- [Markdown](#markdown)
+  - [一. 语法说明](#一-语法说明)
+    - [标题](#标题)
+    - [强调](#强调)
+    - [列表](#列表)
+      - [无序列表](#无序列表)
+      - [有序列表](#有序列表)
+    - [定义型列表](#定义型列表)
+    - [插入图片](#插入图片)
+    - [链接](#链接)
+    - [引用](#引用)
+    - [注释](#注释)
+    - [分割线](#分割线)
+    - [行内代码](#行内代码)
+    - [代码块](#代码块)
+      - [代码块 class（MPA 扩展特性）](#代码块-classmpa-扩展特性)
+    - [表格](#表格)
+    - [目录列表(TOC)](#目录列表toc)
+    - [todo list](#todo-list)
+    - [序列图](#序列图)
+    - [流程图](#流程图)
+  - [二. markdown-preview-enhanced 插件扩展语法](#二-markdown-preview-enhanced-插件扩展语法)
+    - [表格合并](#表格合并)
+    - [Emoji And Font-Awesome](#emoji-and-font-awesome)
+    - [上标](#上标)
+    - [下标](#下标)
+    - [注脚](#注脚)
+    - [标记](#标记)
+    - [导入外部文件](#导入外部文件)
+  - [三. LaTex 语法](#三-latex-语法)
+    - [3.1 文本 & 变量](#31-文本--变量)
+      - [加粗](#加粗)
+      - [斜体](#斜体)
+      - [矢量](#矢量)
+      - [对变量](#对变量)
+      - [平均值](#平均值)
+      - [波浪号](#波浪号)
+      - [换行](#换行)
+      - [分式](#分式)
+      - [花体](#花体)
+      - [黑板粗体](#黑板粗体)
+    - [3.2 公式](#32-公式)
+      - [对齐与颜色](#对齐与颜色)
+      - [上下标](#上下标)
+      - [求和 & 积分符号](#求和--积分符号)
+      - [矩阵](#矩阵)
+    - [3.3 符号](#33-符号)
+      - [属于](#属于)
+      - [集合之间的各种关系](#集合之间的各种关系)
+      - [任意](#任意)
+      - [存在](#存在)
+      - [因为 & 所以](#因为--所以)
+      - [无穷大](#无穷大)
+      - [尖括号](#尖括号)
+      - [小于等于 & 大于等于 & 不等于 & 恒等于 & 恒不等于](#小于等于--大于等于--不等于--恒等于--恒不等于)
+      - [远小于 & 远大于](#远小于--远大于)
+      - [约等于](#约等于)
+      - [向上取整 & 向下取整](#向上取整--向下取整)
+      - [绝对值](#绝对值)
+      - [双竖线](#双竖线)
+      - [花括号](#花括号)
+      - [乘号](#乘号)
+      - [根号](#根号)
+      - [导数](#导数)
 
 <!-- /code_chunk_output -->
 
-## 一.Markdown 基本要素
-
-### 1.1 什么是 Markdown
-
 Markdown 是一种文本格式。可以用它来控制文档的显示。使用 markdown，可以创建粗体的文字，斜体的文字，添加图片，并创建列表等等。基本上，Markdown 就是普通的文字加上 # 或者 \* 等符号。
 
-## 二. 语法说明
+## 一. 语法说明
 
 ### 标题
 
@@ -293,7 +322,7 @@ cond(yes)->e
 cond(no)->sub->io
 ```
 
-## 三. markdown-preview-enhanced 插件扩展语法
+## 二. markdown-preview-enhanced 插件扩展语法
 
 ### 表格合并
 
@@ -401,3 +430,314 @@ absolute_image_path `可选`
 
 export_on_save `可选`
 设置是否自动保存
+
+## 三. LaTex 语法
+
+LaTex 是一种排版系统，常用于科学、技术和数学领域的文档编写。有两种公式：
+
+- **行内公式**：使用单个美元符号 `$` 包围公式，例如 `$E=mc^2$`。
+- **独立公式**：使用双美元符号 `$$` 包围公式，例如 `$$\sum_{i=1}^{n} i^2$$`。
+
+### 3.1 文本 & 变量
+
+#### 加粗
+
+$$
+\textbf{A} \newline
+\boldsymbol{A} \newline
+$$
+
+#### 斜体
+
+$$
+\textit{我们} \newline
+\it{我们}
+$$
+
+#### 矢量
+
+使用 `\vec{v}` 表示矢量
+
+$$
+\vec{v}
+$$
+
+#### 对变量
+
+使用 `\hat{y}` 表示变量 y 的估计值或预测值。这种符号通常用于统计学和机器学习中，表示对某个变量的估计值或预测值。
+
+$$
+\hat{y}
+$$
+
+#### 平均值
+
+$$
+\bar{x} \newline
+\overline{x}
+$$
+
+#### 波浪号
+
+$$
+\tilde x \newline
+\widetilde x \newline
+\tilde{AB} \newline
+\widetilde{AB}
+$$
+
+#### 换行
+
+$$
+第一行 \\
+第二行 \newline
+第三行
+$$
+
+#### 分式
+
+使用 `\frac{numerator}{denominator}`
+
+$$
+\frac{1}{2}
+$$
+
+#### 花体
+
+花体字母的标记，通常用于表示集合或某种特殊的数学符号
+
+$$
+\mathcal{X}、
+$$
+
+#### 黑板粗体
+
+黑板粗体字母的标记，通常用于表示自然数集合。这些符号通常用于数学中，表示特定的符号、集合或数学结构。
+
+$$
+\mathbb{N}
+$$
+
+### 3.2 公式
+
+#### 对齐与颜色
+
+- `\begin{aligned}`、`\end{aligned}`
+
+  - 通过加 & 可实现指定位置对齐
+  - {\color{颜色名}要加颜色的内容}
+
+  $$
+  \begin{aligned}
+  dp[i][j] &= \max\{dp[i-1][j], {\color{red}dp[i-1][j-w_i] + v_i},{\color{green}dp[i-1][j-2*w_i] + 2*v_i},...,{\color{blue}dp[i-1][j-k*w_i] + k * v_i}\},\quad 0<=k*w_i<=j\\
+  dp[i][j-w_i] &= \max\{{\color{red}dp[i-1][j-w_i]}, {\color{green}dp[i-1][j-2*w_i] + v_i},...,{\color{blue}dp[i-1][j-k*w_i] + (k-1) * v_i}\},\quad 0<=k*w_i<=j\\
+  将(2)式代入(1)式，得dp[i][j] &= \max\{dp[i-1][j], {\color{red}dp[i]}[j-w_i]+v_i\},\quad 0<=w_i<=j\\
+  \end{aligned}
+  $$
+
+- `\begin{gathered}`、`\end{gathered}`：自动居中对齐
+
+  $$
+  \begin{gathered}
+  dp[i][j] = \max\{dp[i-1][j], {\color{red}dp[i-1][j-w_i] + v_i},{\color{green}dp[i-1][j-2*w_i] + 2*v_i},...,{\color{blue}dp[i-1][j-k*w_i] + k * v_i}\},\quad 0<=k*w_i<=j\\
+  dp[i][j-w_i] = \max\{{\color{red}dp[i-1][j-w_i]}, {\color{green}dp[i-1][j-2*w_i] + v_i},...,{\color{blue}dp[i-1][j-k*w_i] + (k-1) * v_i}\},\quad 0<=k*w_i<=j\\
+  将(2)式代入(1)式，得dp[i][j] = \max\{dp[i-1][j], {\color{red}dp[i]}[j-w_i]+v_i\},\quad 0<=w_i<=j\\
+  \end{gathered}
+  $$
+
+#### 上下标
+
+- 上标：使用 `^` 符号，$x^2$。
+- 下标：使用 `_` 符号，$H_2O$
+
+#### 求和 & 积分符号
+
+- 求和符号：使用 `\sum`，例如 $\sum_{i=1}^{n} i$。
+- 积分符号：使用 `\int`，例如 $\int_{0}^{1} x^2 dx$。
+
+#### 矩阵
+
+使用 `bmatrix` 环境表示方括号矩阵，例如
+
+```math
+% 无括号矩阵
+\begin{matrix}
+-1 & 1 & 2\\
+0 & 1 & 4\\
+\end{matrix}
+
+\newline
+% 圆括号矩阵
+\begin{pmatrix}
+-1 & 1 & 2\\
+0 & 1 & 4\\
+\end{pmatrix}
+
+\newline
+% 单竖线矩阵
+\begin{vmatrix}
+-1 & 1 & 2\\
+0 & 1 & 4\\
+\end{vmatrix}
+
+\newline
+% 双竖线矩阵
+\begin{Vmatrix}
+-1 & 1 & 2\\
+0 & 1 & 4\\
+\end{Vmatrix}
+
+\newline
+% 方括号矩阵
+\begin{bmatrix}
+-1 & 1 & 2\\
+0 & 1 & 4\\
+\end{bmatrix}
+
+\newline
+% 花括号矩阵
+\begin{Bmatrix}
+-1 & 1 & 2\\
+0 & 1 & 4\\
+\end{Bmatrix}
+```
+
+### 3.3 符号
+
+#### 属于
+
+$$
+\in
+$$
+
+#### 集合之间的各种关系
+
+$$
+% A 是 B 的真子集
+A\subset B \newline
+% A 是 B 的真超集
+A\supset B \newline
+% A 是 B 的子集或等于 B
+A\subseteq B \newline
+% A 是 B 的超集或等于 B
+A\supseteq B \newline
+% A 和 B 的交集
+A\cap B \newline
+% A 和 B 的并集
+A\cup B \newline
+% 在 A 中但不在 B 中的元素组成的集合（差集）
+A\setminus B \newline
+% 空集
+\emptyset
+$$
+
+#### 任意
+
+$$
+\forall
+$$
+
+#### 存在
+
+$$
+\exist \newline
+\exists
+$$
+
+#### 因为 & 所以
+
+$$
+\because 和 \therefore
+$$
+
+#### 无穷大
+
+$$
+\infty +\infty -\infty
+$$
+
+#### 尖括号
+
+$$
+\langle a,b \rangle
+$$
+
+#### 小于等于 & 大于等于 & 不等于 & 恒等于 & 恒不等于
+
+$$
+\le 或者 \leq \newline
+\ge 或者 \geq \newline
+\ne 或者 \neq \newline
+\equiv \newline
+\not\equiv
+$$
+
+#### 远小于 & 远大于
+
+$$
+\ll \newline
+\gg
+$$
+
+#### 约等于
+
+$$
+\approx
+$$
+
+#### 向上取整 & 向下取整
+
+$$
+\lceil x \rceil \newline
+\lfloor x \rfloor
+$$
+
+#### 绝对值
+
+$$
+\left|-2\right| \newline
+\vert -2\vert \newline
+\lvert -2\rvert
+$$
+
+#### 双竖线
+
+$$
+\| A\| \newline
+\left\|A\right\| \newline
+\Vert A\Vert
+$$
+
+#### 花括号
+
+$$
+\{ A\} \newline
+\left\{ A \right\}
+$$
+
+#### 乘号
+
+$$
+\times \newline
+×
+$$
+
+#### 根号
+
+$$
+\sqrt{2}
+$$
+
+#### 导数
+
+$$
+% 求导
+\frac{\mathrm{d}y}{\mathrm{d}x} \newline
+% 高阶导
+\frac{\mathrm{d}^{n} y}{\mathrm{d}x^{n}} \newline
+% 求偏导
+\frac{\partial{Loss}}{\partial{w}} \newline
+% 二阶偏导
+\frac{\partial^{2}z}{\partial{x}^{2}} \newline
+\frac{\partial^{2}z}{\partial{x}\partial{y}} \newline
+$$

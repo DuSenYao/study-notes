@@ -26,13 +26,24 @@
       "command": "node ${workspaceFolder}/frontend/node.js/examples/computedAllMarkdownWordCount.mjs",
       "presentation": {
         "echo": false,
-        "reveal": "always",
         "focus": true,
-        "panel": "shared",
         "showReuseMessage": false,
         "clear": true
       },
       "detail": "计算当前工作区下的 markdown 文件总字数"
+    },
+    {
+      "label": "computed current file word count",
+      "type": "shell",
+      "group": "build",
+      "command": "node ${workspaceFolder}/frontend/node.js/examples/computedCurrentFileWordCount.mjs ${file}",
+      "presentation": {
+        "echo": false,
+        "focus": true,
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "detail": "计算当前文件的字数"
     },
     {
       "label": "markdown TOC",

@@ -359,7 +359,7 @@ let app2 = new Vue({
 
 ```html
 <div id="app-3">
-  <p v-if="seen">现在你看到我了</p>
+  <p v-if="seen">现在看到我了</p>
 </div>
 ```
 
@@ -582,7 +582,7 @@ vm.a; // => 3
 vm.b = 'hi';
 ```
 
-那么对 b 的改动将不会触发任何视图的更新。如果你知道你会在晚些时候需要一个 property，但是一开始它为空或不存在，那么仅需要设置一些初始值。比如：
+那么对 b 的改动将不会触发任何视图的更新。如果知道会在晚些时候需要一个 property，但是一开始它为空或不存在，那么仅需要设置一些初始值。比如：
 
 ```js
 data: {
@@ -2949,7 +2949,7 @@ const requireComponent = require.context(
   /Base[A-Z]\w+\.(vue|js)$/
 );
 
-requireComponent.keys().forEach(fileName => {
+requireComponent.keys().forEach((fileName) => {
   // 获取组件配置
   const componentConfig = requireComponent(fileName);
 
@@ -6755,7 +6755,7 @@ module.exports = {
     dist: {
       options: {
         // 该函数用来调整 grunt-browserify 的默认指令
-        configure: b =>
+        configure: (b) =>
           b
             .transform('vueify')
             .transform(

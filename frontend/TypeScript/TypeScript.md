@@ -228,6 +228,7 @@
       - [3.8.16 `ThisType<T>`](#3816-thistypet)
       - [3.8.17 `ConstructorParameters<T>`](#3817-constructorparameterst)
       - [3.8.18 `Awaited<T>`](#3818-awaitedt)
+      - [3.8.19 `NoInfer<T>`](#3819-noinfert)
     - [3.9 类型查询](#39-类型查询)
     - [3.10 类型断言](#310-类型断言)
       - [3.10.1 `<T>` 类型断言](#3101-t-类型断言)
@@ -328,6 +329,7 @@
       - [4.6.6 针对类型的模块导入与导出](#466-针对类型的模块导入与导出)
         - [4.6.6.1 背景介绍](#4661-背景介绍)
         - [4.6.6.2 导入与导出类型](#4662-导入与导出类型)
+        - [4.6.6.3 import type 上的 resolution-mode](#4663-import-type-上的-resolution-mode)
       - [4.6.7 动态模块导入](#467-动态模块导入)
       - [4.6.8 module 编译选项](#468-module-编译选项)
     - [4.7 外部声明](#47-外部声明)
@@ -476,7 +478,7 @@
 
 <!-- /code_chunk_output -->
 
-内容升级到 5.3
+内容升级到 5.4
 
 ## 一. 介绍
 
@@ -7264,6 +7266,49 @@ type C = Awaited<boolean | Promise<number>>;
 
 Awaited 有助于描述现有 API，比如 JS 内置的 Promise.all，Promise.race 等等。
 
+#### 3.8.19 `NoInfer<T>`
+
+假设 createStreetLight 函数接收一系列颜色名，以及一个默认颜色名。
+
+```ts
+function createStreetLight<C extends string>(colors: C[], defaultColor?: C) {
+  // ...
+}
+
+createStreetLight(['red', 'yellow', 'green'], 'red');
+
+// 当传入的 defaultColor 不在 colors 数组里会发生什么
+// 这是不可取，但也是允许的
+// 在这个调用中，类型推断决定 "blue" 与 "red"、"yellow" 或 "green" 一样有效。因此，TypeScript 推断 C 的类型为 "red" | "yellow" | "green" | "blue"。
+createStreetLight(['red', 'yellow', 'green'], 'blue');
+```
+
+目前处理这个问题的一种方式是添加一个独立的类型参数，该参数受现有类型参数的限制。
+
+```ts
+function createStreetLight<C extends string, D extends C>(colors: C[], defaultColor?: D) {}
+
+createStreetLight(['red', 'yellow', 'green'], 'blue');
+// error!
+// Argument of type '"blue"' is not assignable to parameter of type '"red" | "yellow" | "green" | undefined'.
+```
+
+所以 TypeScript 5.4 引入了一个新的 `NoInfer<T>` 实用类型。 将一个类型包裹在 `NoInfer<...>` 中向 TypeScript 发出一个信号，告诉它不要深入匹配内部类型以寻找类型推断的候选项。
+
+使用 `NoInfer`，可以将 createStreetLight 重写为以下形式：
+
+```ts
+function createStreetLight<C extends string>(colors: C[], defaultColor?: NoInfer<C>) {
+  // ...
+}
+
+createStreetLight(['red', 'yellow', 'green'], 'blue');
+// error!
+// Argument of type '"blue"' is not assignable to parameter of type '"red" | "yellow" | "green" | undefined'.
+```
+
+排除对 defaultColor 类型进行推断的探索意味着 "blue" 永远不会成为推断的候选项，类型检查器可以拒绝它。
+
 ### 3.9 类型查询
 
 `typeof` 是 JS 语言中的一个一元运算符，它能够获取操作数的数据类型。例如，当对一个字符串使用该运算符时，将返回固定的值 "string""：
@@ -9962,7 +10007,7 @@ TypeScript 5.3 支持了最新的 [import attributes](https://github.com/tc39/pr
 ```ts
 // 只想将其解释为 JSON
 // 不是扩展名为 “.json” 的可运行/恶意 JS 文件
-import obj from "./something.json" with { type: "json" };
+import obj from './something.json' with { type: 'json' };
 ```
 
 TypeScript 不会检查属性内容，因为它们是宿主环境相关的。TypeScript 会原样保留它们，浏览器和运行时会处理它们。
@@ -9970,7 +10015,7 @@ TypeScript 不会检查属性内容，因为它们是宿主环境相关的。Typ
 ```ts
 // TypeScript 对此很好
 // 但是浏览器呢？可能不会。
-import * as foo from "./foo.js" with { type: "fluffy bunny" };
+import * as foo from './foo.js' with { type: 'fluffy bunny' };
 ```
 
 动态的 `import()` 调用也可以在第二个参数里使用该特性。
@@ -10202,14 +10247,10 @@ TypeScript 5.3 在 import type 上支持了 resolution-mode。
 
 ```ts
 // 将 “pkg” 解析为使用 “require()” 导入
-import type { TypeFromRequire } from "pkg" with {
-    "resolution-mode": "require"
-};
+import type { TypeFromRequire } from 'pkg' with { 'resolution-mode': 'require' };
 
 // 将 “pkg” 解析为使用 “import” 进行导入
-import type { TypeFromImport } from "pkg" with {
-    "resolution-mode": "import"
-};
+import type { TypeFromImport } from 'pkg' with { 'resolution-mode': 'import' };
 
 export interface MergedType extends TypeFromRequire, TypeFromImport {}
 ```
@@ -10217,11 +10258,9 @@ export interface MergedType extends TypeFromRequire, TypeFromImport {}
 这些导入属性也可以用在 import() 类型上。
 
 ```ts
-export type TypeFromRequire =
-    import("pkg", { with: { "resolution-mode": "require" } }).TypeFromRequire;
+export type TypeFromRequire = import('pkg').TypeFromRequire;
 
-export type TypeFromImport =
-    import("pkg", { with: { "resolution-mode": "import" } }).TypeFromImport;
+export type TypeFromImport = import('pkg').TypeFromImport;
 
 export interface MergedType extends TypeFromRequire, TypeFromImport {}
 ```
@@ -10273,6 +10312,7 @@ TypeScript 编译器提供了 `--module` 编译选项来设置编译生成的 JS
 - ES2015
 - ES2020
 - ESNext
+- Preserve（TypeScript5.4 新增）：可以使用 `import ... = require(...)`
 
 下面将配置编译器来生成符合 CommonJS 模块格式的代码。例如，有如下目录结构的工程：
 
@@ -13755,7 +13795,7 @@ declare var settings: JQuery.AjaxSettings;
 
 `--target` 编译选项能够设置程序的目标运行环境，可选择的值为：
 
-- ES3（默认值）
+- ES3（默认值）（即将被弃用）
 - ES5
 - ES6/ES2015
 - ES2016
@@ -14813,7 +14853,7 @@ export function doSomeWork() {
 }
 ```
 
-将清理逻辑移动到 TempFile 本身没有带来多大的价值；仅仅是将清理的代码从 finally 提取到方法而已，你总是可以这样做。但如果该方法有一个众所周知的名字那么 JS 就可以基于此构造其它功能。
+将清理逻辑移动到 TempFile 本身没有带来多大的价值；仅仅是将清理的代码从 finally 提取到方法而已。但如果该方法有一个众所周知的名字那么 JS 就可以基于此构造其它功能。
 
 这将引出该功能的第一个亮点：**using 声明**。`using` 是一个新的关键字，支持声明新的不可变绑定，像 const 一样。**不同点是 using 声明的变量在即将离开其作用域时，它的 Symbol.dispose 方法会被调用**。
 

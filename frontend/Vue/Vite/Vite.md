@@ -332,7 +332,7 @@ init({
 - **字体类文件**：woff、woff2、eot、ttf 和 otf。
 - **文本类**：包括 webmanifest、pdf 和 txt。
 
-也就是说，你可以在 Vite 将这些类型的文件当做一个 ES 模块来导入使用。
+也就是说，可以在 Vite 将这些类型的文件当做一个 ES 模块来导入使用。
 
 ```js
 import imgUrl from './img.png';

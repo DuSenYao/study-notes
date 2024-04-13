@@ -2048,7 +2048,7 @@ if (!isBrowserSupported()) location.replace('staticpage.html');
 
 #### 15.10.2 浏览历史
 
-Window 对象的 `history` 属性引用的是窗口的 History 对象。History 对象将窗口的浏览历史建模为文档和文档状态的列表。History 对象的 `length` 属性是浏览历史列表中元素的数量。但出于安全考虑，脚本不能访问存储的 URL（如果可以访问，任何脚本都将可以窥探你的浏览历史）。
+Window 对象的 `history` 属性引用的是窗口的 History 对象。History 对象将窗口的浏览历史建模为文档和文档状态的列表。History 对象的 `length` 属性是浏览历史列表中元素的数量。但出于安全考虑，脚本不能访问存储的 URL（如果可以访问，任何脚本都将可以窥探浏览历史）。
 
 History 对象的 `back()` 和 `forward()` 方法就像浏览器的 “后退” 和 “前进” 按钮，可以让浏览器在浏览历史中后退或前进一步。另一个方法 `go()` 接收一个整数参数，可以在历史列表中前进（正整数）或后退（负整数）任意个页面：
 
