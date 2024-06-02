@@ -10,9 +10,11 @@
     "lval",
     "MISP",
     "nosources",
+    "OOCSS",
     "Pinia",
     "QUIC",
     "Skia",
+    "SMACSS",
     "SSIM",
     "Visio",
     "vorbis",
@@ -33,5 +35,7 @@
   },
   "peacock.color": "#215732",
   "emmet.extensionsPath": [".vscode"],
-  "liveServer.settings.port": 5501
+  "liveServer.settings.port": 5501,
+  "stylelint.packageManager": "pnpm",
+  "npm.packageManager": "pnpm"
 }

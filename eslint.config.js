@@ -21,18 +21,15 @@ export default [
       globals: { ...globals.browser, ...globals.node }
     }
   },
+  ...compat.plugins('@typescript-eslint'),
+  ...compat.plugins('html'),
   {
     files: ['frontend/**/*.ts'],
     languageOptions: {
       parserOptions: {
         parser: tsParse
       }
-    },
-    ...compat.plugins('@typescript-eslint')
-  },
-  {
-    files: ['frontend/**/*.html'],
-    ...compat.plugins('html')
+    }
   },
   {
     files: ['frontend/**/*.js'],
@@ -283,9 +280,11 @@ export default [
   {
     ignores: [
       'node_modules/',
+      '**/.*',
       'dist/',
-      '/frontend/微信小程序',
-      '/frontend/浏览器/浏览器的实现原理与API/示例文件/简易状态机实现.js'
+      'frontend/微信小程序',
+      'frontend/浏览器/浏览器的实现原理与API/示例文件/简易状态机实现.js',
+      'frontend/WebAssembly/examples/DIP'
     ]
   }
 ];

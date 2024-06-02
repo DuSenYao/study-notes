@@ -1,4 +1,3 @@
-/* eslint-disable */
 // @ts-nocheck
 
 const info = document.getElementById('info');

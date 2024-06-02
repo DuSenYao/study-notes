@@ -9,18 +9,15 @@
     "lint": "eslint"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.0.2",
-    "@eslint/js": "^9.0.0",
-    "@types/node": "^20.12.7",
-    "@typescript-eslint/eslint-plugin": "^7.6.0",
-    "@typescript-eslint/parser": "^7.6.0",
-    "eslint": "^9.0.0",
-    "eslint-plugin-html": "^8.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-n": "^17.2.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "globals": "^15.0.0",
-    "prettier": "3.2.5",
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.4.0",
+    "@types/node": "^20.13.0",
+    "@typescript-eslint/eslint-plugin": "^7.11.0",
+    "@typescript-eslint/parser": "^7.11.0",
+    "eslint": "^9.4.0",
+    "eslint-plugin-html": "^8.1.1",
+    "globals": "^15.3.0",
+    "prettier": "3.3.0",
     "typescript": "^5.4.5"
   },
   "repository": {

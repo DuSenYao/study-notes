@@ -8,9 +8,9 @@ function getFiles(path) {
   return readdirSync(path, { encoding: 'utf-8', withFileTypes: true });
 }
 
-let oldMarkdownWordCount = 3254917;
+let oldMarkdownWordCount = 3266639;
 let markdownWordCount = 0; // markdown 文件总字数
-let lastRunTime = '2024/4/13 19:41:57';
+let lastRunTime = '2024/4/14 22:30:31';
 
 /**
  * @param {import("fs").PathLike} [path] 文件路径
