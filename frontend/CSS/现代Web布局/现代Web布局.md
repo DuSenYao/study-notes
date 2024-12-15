@@ -70,6 +70,27 @@
         - [3.3.7.2 子网格](#3372-子网格)
         - [3.3.7.3 嵌套网格 VS 子网格](#3373-嵌套网格-vs-子网格)
         - [3.3.7.4 创建子网格](#3374-创建子网格)
+    - [3.4 Grid 布局实战](#34-grid-布局实战)
+      - [3.4.1 使用子网格构建 Web 布局](#341-使用子网格构建-web-布局)
+        - [3.4.1.1 卡片组件的布局](#3411-卡片组件的布局)
+        - [3.4.1.2 品牌页布局](#3412-品牌页布局)
+        - [3.4.1.3 交叉叠加布局](#3413-交叉叠加布局)
+        - [3.4.1.4 时间轴布局](#3414-时间轴布局)
+      - [3.4.2 Grid 构建经典布局](#342-grid-构建经典布局)
+        - [3.4.2.1 水平垂直居中](#3421-水平垂直居中)
+        - [3.4.2.2 圣杯布局](#3422-圣杯布局)
+        - [3.4.2.3 宽高比布局](#3423-宽高比布局)
+    - [3.5 Flexbox 与 Grid 布局的区别和使用场景](#35-flexbox-与-grid-布局的区别和使用场景)
+      - [3.5.1 二维 vs 一维](#351-二维-vs-一维)
+      - [3.5.2 布局优先 vs 内容优先](#352-布局优先-vs-内容优先)
+      - [3.5.3 对齐方式](#353-对齐方式)
+      - [3.5.4 项目的伸缩扩展](#354-项目的伸缩扩展)
+      - [3.5.5 排列方向与换行](#355-排列方向与换行)
+      - [3.5.6 改变顺序和间距](#356-改变顺序和间距)
+    - [3.6 display：contents 改变 Flexbox 和 Grid 布局模式](#36-displaycontents-改变-flexbox-和-grid-布局模式)
+      - [3.6.1 display 给文档流带来的变化](#361-display-给文档流带来的变化)
+      - [3.6.2 display: contents 给 Flexbox 和 Grid 布局带来的变化](#362-display-contents-给-flexbox-和-grid-布局带来的变化)
+      - [3.6.3 display: contents 的作用](#363-display-contents-的作用)
 
 <!-- /code_chunk_output -->
 
@@ -1566,7 +1587,7 @@ repeat() 函数的第一个参数除了可以接受一个整数值之外，还�
 
 - `auto-fill` 创建的重复轨道尺寸也是 minmax(120px, 1fr)，而且不会被折叠，所以网格容器的可用空间分的等份就更多（因为创建的三个空网格轨道占着位置），即 7 个 fr。同时网格容器可用空间也更小 （1000px - 10px × 2 - 10px × 6 = 920px），对应的 1fr = 1 / 7 = 14.28% × 920px = 131.43px，即网格轨道尺寸是介于 120px ~ 1fr （相当于 120px ~ 131.43px）之间：
 
-将 repeat() 函数和 minmax(min, max)、1fr 和 auto-fill（或 auto-fit）结合起来，可以很容易实现页面宽度变化时，子项目宽度自动在一定范围内改变，自动填满容器，同一列子项目数量自动随之变化。这种布局技术被称为 **RAM**（Repeat, Auto, Minmax）布局，一种无需依赖任何 CSS 媒体查询特性的响应式布局。
+将 `repeat()` 函数和 `minmax(min, max)`、`1fr` 和 `auto-fill`（或 `auto-fit`）结合起来，可以很容易实现页面宽度变化时，子项目宽度自动在一定范围内改变，自动填满容器，同一列子项目数量自动随之变化。这种布局技术被称为 **RAM**（Repeat, Auto, Minmax）布局，一种无需依赖任何 CSS 媒体查询特性的响应式布局。
 
 ```css
 .container {
@@ -2166,7 +2187,7 @@ CSS 网格布局中，网格项目的放置主要分为两种：
 <div class="container">
   <div class="item"></div>
   <div class="item"></div>
-  我是一个文本节点(TextNode)
+  一个文本节点(TextNode)
   <!-- 文本节点被称为匿名网格项目 -->
   <div class="item"></div>
   <div class="item"></div>
@@ -2183,7 +2204,7 @@ CSS 网格布局中，网格项目的放置主要分为两种：
    }
    ```
 
-   当自动放置网格项目算法试图将所有网格项目放在一个网格系统内时，发生的第一件事就是**创建“匿名网格项目”**（这个和 Flexbox 布局是相似的）。在网格系统中，**网格容器内的文本节点，被称为匿名网格项目**。比如代码中的“我是一个文本节点(TextNode)” 是网格容器 .container 直接内容，所以这行文本也是网格容器中的一个网格项目（即匿名网格项目）。
+   当自动放置网格项目算法试图将所有网格项目放在一个网格系统内时，发生的第一件事就是**创建“匿名网格项目”**（这个和 Flexbox 布局是相似的）。在网格系统中，**网格容器内的文本节点，被称为匿名网格项目**。比如代码中的“一个文本节点(TextNode)” 是网格容器 .container 直接内容，所以这行文本也是网格容器中的一个网格项目（即匿名网格项目）。
 
    > **注意**：**网格容器的伪元素 `::before` 和 `::after` 生成的内容也被称为网格项目**，但它们不是匿名网格项目。
 
@@ -2646,7 +2667,7 @@ Flexbox 中的主轴（Main Axis）和侧轴（Cross Axis）由 `flex-direction`
 
 > `justify-items` 取值是 `auto`、`normal` 和 `last baseline` 时与 `stretch` 值效果等同；`baseline` 和 `first baseline` 的效果与 `start` 等同：
 
-和 `align-items` 一样，当你在网格容器上设置了 `justify-items` 时，就等同于在所有网格项目上设置了 `justify-self`。
+和 `align-items` 一样，当在网格容器上设置了 `justify-items` 时，就等同于在所有网格项目上设置了 `justify-self`。
 
 ```css
 --justify-items: start;
@@ -3212,9 +3233,11 @@ grid-template-columns: subgrid <line-name-list>?
 
 ![子网格继承父网格gap值规则](./image/子网格继承父网格gap值规则.webp)
 
-#### 3.3.8 使用子网格构建 Web 布局
+### 3.4 Grid 布局实战
 
-##### 3.3.8.1 卡片组件的布局
+#### 3.4.1 使用子网格构建 Web 布局
+
+##### 3.4.1.1 卡片组件的布局
 
 卡片布局通常有两种：
 
@@ -3385,7 +3408,7 @@ grid-template-columns: subgrid <line-name-list>?
 1. 列数能够根据视窗大小自动调整，即自动断行。
 2. 同一行或列中的区域，其标题与标题对齐，菜单项与菜单项对齐。
 
-##### 3.3.8.2 品牌页布局
+##### 3.4.1.2 品牌页布局
 
 在 Web 页面的设计中，常常会有通栏的横幅的设计效果，往往把这种效果称为 Branding 。如下图所示：
 
@@ -3442,12 +3465,925 @@ grid-template-columns: subgrid <line-name-list>?
 .featured {
   /* 放置在列网格线2（起始位置），并且向右合并三列（span 3），相当于 grid-column: 2 / 5 ，即从第二列起始网格线跨越到第五列起始网格线。 */
   grid-column: 2 / span 3;
-
+  /* 为了让 .featured 网格项目能继承父网格（.branding）的网格特性，得到更好的控制，需将其设置为一个子网格（display 设置为 inherit 或 grid），并且将其 grid-template-columns 设置为 subgrid */
   display: inherit;
   grid-template-columns: subgrid;
+  /* 为了能更好地放置该网格中的网格项目，还可以显式设置 grid-template-areas 属性的值：内容区域占一列，缩略图占两列 */
+  grid-template-areas: 'content thumbnail thumbnail';
+}
+
+.featured__content {
+  grid-area: content;
+}
+
+.featured__thumbnail {
+  grid-area: thumbnail;
 }
 
 .card {
   grid-column: 5;
 }
 ```
+
+##### 3.4.1.3 交叉叠加布局
+
+[交叉叠加布局](https://codepen.io/airen/full/poKRPxz)
+
+```html
+<div class="grid">
+  <!-- 这个空链接标签很重要，实现交互效果需要用到它的伪元素，另外该标签一定要放在图片和卡片内容标签前面 -->
+  <a
+    href=""
+    class="link"
+  ></a>
+
+  <!-- 卡片上的缩略图 -->
+  <div class="grid__img">
+    <img
+      src="https://picsum.photos/800?random=5"
+      alt="卡片图片"
+    />
+  </div>
+
+  <!-- 卡片上的内容 -->
+  <div class="grid__card">
+    <h2>卡片标题</h2>
+    <p>卡片描述文本</p>
+
+    <!-- 这是链接提示文案 -->
+    <span class="fake-link">阅读更多<span>→</span></span>
+  </div>
+</div>
+```
+
+上面结构看上去很简单，但其中有一个细节尤其重要。添加了一个空的链接标签 `<a>`，它的位置必须放置在卡片图片 `.grid__img` 和 卡片内容 `.grid__card` 的前面。以便使用 CSS 的相邻选择器（~）来选中它们：
+
+```css
+.link:hover ~ .grid__img,
+.link:focus ~ .grid__img {
+}
+
+.link:hover ~ .grid__card,
+.link:focus ~ .grid__card {
+}
+```
+
+简单地分析一下布局的策略：
+
+```css
+body {
+  display: grid;
+  /* RAM 布局技术，实现卡片自动断行*/
+  grid-template-columns: repeat(auto-fit, minmax(min(100% - 3rem, 30rem), 1fr));
+  gap: 2rem;
+  align-content: start;
+}
+
+/* 1. 将卡片容器定义为一个三行三列的网格，将它的 grid-template-columns 和 grid-template-rows 属性的值都设置为 repeat(3, minmax(0, 1fr)) */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+}
+
+/* 将卡片上的缩略图放置到指定的位置 */
+.grid__img {
+  grid-area: 1 / 1 / 3 / 3;
+}
+
+/* 单双数卡片上缩略图位置刚好相反 */
+.grid:nth-child(2n) .grid__img {
+  grid-area: 2 / 2 / 4 / 4;
+}
+
+/* 将卡片上的内容放置到指定的位置 */
+.grid__card {
+  grid-area: 2 / 2 / 4 / 4;
+}
+
+/* 单双数卡片上的内容位置刚好相反 */
+.grid:nth-child(2n) .grid__card {
+  grid-area: 1 / 1 / 3 / 3;
+}
+```
+
+![交叉叠加布局-图一](./image/交叉叠加布局-图一.webp)
+
+需要将 a.link 的伪元素 ::before 和 ::after 分别遮盖在卡片的图片 `.grid__img` 和 `.grid__card` 上面，为了位置和大小能和它们完全相匹配，采用子网格是较好的一种策略：
+
+```css
+/* 1. .link 要和父网格一样的大，使用 grid-area 就可以轻易地实现，因为它也是父网格 .grid 的一个网格项目。 */
+.link {
+  grid-area: 1 / 1 / -1 / -1;
+  /* 2. 将 .link 也定义为一个网格，并且将它的 grid-template-columns 和 grid-template-rows 都设置为 `subgrid`，这样就完全继承父网格 .grid 的特性。 */
+  display: inherit;
+  grid-template-columns: subgrid;
+  grid-template-rows: subgrid;
+  z-index: 3; /* 确保该值大于 .grid__card 值*/
+}
+
+/* 3. 像放置卡片上的缩略图和内容一样，使用 grid-area 将链接 .link 的伪元素 .link::before、.link::after 放置到指定位置，它们的位置和卡片上缩略图和内容区域是相同的。 */
+.link::before {
+  grid-area: 1 / 1 / 3 / 3;
+}
+.link::after {
+  grid-area: 2 / 2 / 4 / 4;
+}
+
+.grid__card {
+  grid-area: 2 / 2 / 4 / 4;
+  z-index: 2;
+}
+
+.grid:nth-child(2n) .link::before {
+  grid-area: 1 / 1 / 3 / 3;
+}
+
+.grid:nth-child(2n) .link::after {
+  grid-area: 2 / 2 / 4 / 4;
+}
+```
+
+![交叉叠加布局-图二](./image/交叉叠加布局-图二.webp)
+
+##### 3.4.1.4 时间轴布局
+
+![时间轴布局-图一](./image/时间轴布局-图一.webp)
+
+使用网格和子网格，再借助 CSS 媒体查询，就可以很轻易构建出上图所示的[时间轴卡片组件](https://codepen.io/airen/full/KKeWVNq)：
+
+- 当浏览器视窗宽度大于 768px，卡片在时间轴上是错开排列的，单数居右，双数居中。
+- 当浏览器视窗宽度小于 768px，卡片在块轴方向垂直排列。
+- 每张卡片的数字指示器，都能和卡片的标题垂直对齐。
+
+上图所示的时间轴卡片组件所需的 HTML 的结构可能会像下面这样：
+
+```xml
+<div class="timeline">
+    <!-- 卡片容器 -->
+    <div class="card--wrapper">
+        <!-- 每张卡片的 HTML 结构 -->
+        <div class="card">
+            <h3 class="title">卡片标题</h3>
+            <div class="card__content">
+                <p>卡片描述内容</p>
+            </div>
+            <!-- 卡片脚部 -->
+            <blockquote>
+                <svg viewBox="0 0 512 512" width="80" title="quote-left" class="quote-icon">
+                  <path d="M46..." fill="currentColor" />
+                </svg>
+                <p>Dolor ce...</p>
+            </blockquote>
+        </div>
+    </div>
+    <!-- 省略其他卡片的 HTML 结构 -->
+</div>
+```
+
+对于构建上图这样的响应式时间轴卡片组件，遵循移动端先行的原则，即*时间轴卡片组件的轴和卡片的数字指示器都在卡片的左侧*：
+
+```scss
+/*
+ * 可以在 .timeline 中创建一个两列网格
+ * 第一列是用来放置轴和卡片数字指示器，如 4rem
+ * 第二列可以把网格的可用空间（除第一列和列间距之外的空间）都留给卡片
+ */
+.timeline {
+  display: grid;
+  grid-template-columns: minmax(4rem, max-content) 1fr;
+  gap: 2rem 4px;
+
+  /* 将时间轴线放置在 timeline 网格的第一列中 */
+  &::before {
+    grid-column: 1 / 2;
+
+    /* 绘制时间轴线 */
+    content: '';
+    width: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+
+    /* 采用绝对定位，让时间轴线跨越 timeline 网格的所有行, 并采用绝对定位，让其水平居中 */
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .card--wrapper {
+    grid-column: 1 / 3;
+  }
+}
+```
+
+![时间轴布局-图二](./image/时间轴布局-图二.webp)
+
+每张卡片都有两个部分组成，即**卡片数字指示器**和**卡片自身**，而且卡片数字指示器也是放在第一列，和时间轴线重叠在一起。所以，可以将 .card--wrapper 也定义为一个网格，并且继承其父网格 .timeline 的列网格轨道数量和尺寸，即设置 grid-template-columns 的值为 subgrid：
+
+```scss
+.card--wrapper {
+  grid-column: 1 / 3;
+
+  display: inherit;
+  grid-template-columns: subgrid;
+
+  /* 将卡片数字指示器 .card--wrapper::before 和卡片 .card 放置到指定的位置 */
+  &::before {
+    grid-column: 1 / 2;
+    align-self: center;
+  }
+
+  ​.card {
+    grid-column: 2;
+    grid-row: span 3;
+    /* 为了让卡片计数器能和卡片标题始终保持垂直对齐，还需要进一步将 .card 也定义为子网格，并且需要将它的 grid-template-rows 设置为 subgrid */
+    display: inherit;
+    grid-template-rows: subgrid;
+  }
+}
+```
+
+![时间轴布局-图三](./image/时间轴布局-图三.webp)
+
+使用媒体查询 `@media` 在浏览器视窗宽度大于 768px 的条件下，重新定义父网格 .timeline 的列网格轨道的数量和尺寸，并且调整卡时间轴线、卡片数字指示器和卡片的位置，就可以完成最终想要的效果：
+
+```css
+@media only screen and (min-width: 768px) {
+  /* 将网格列调整为三列 */
+  .timeline {
+    grid-template-columns: 1fr minmax(4rem, max-content) 1fr;
+  }
+
+  /* 时间轴线放置在第二列中 */
+  .timeline::before {
+    grid-column: 2 / 3;
+  }
+
+  /* 奇数卡片容器从第二列开始，并且跨越两列 */
+  .card--wrapper:nth-of-type(2n + 1) {
+    grid-column: 2 / span 2;
+  }
+
+  /* 偶数卡片容器从第一列开始，也跨越两列 */
+  .card--wrapper:nth-of-type(2n) {
+    grid-column: 1 / span 2;
+  }
+
+  /* 偶数卡片放置在第一列 */
+  .card--wrapper:nth-of-type(2n) .card {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+
+    /* 偶数卡片其他样式的微调整 */
+    filter: drop-shadow(-6px 6px 0px black);
+    margin-left: 0;
+    margin-right: 0.8rem;
+  }
+
+  /* 调整偶数卡片三角指向标的位置 */
+  .card--wrapper:nth-of-type(2n) .title::after {
+    right: auto;
+    left: calc(100% - 15px);
+    transform: translateY(-50%) rotate(-135deg);
+  }
+
+  /* 调整偶数卡片数字指示器位置 */
+  .card--wrapper:nth-of-type(2n)::before {
+    grid-column: 2 / 3;
+  }
+}
+```
+
+![时间轴布局-图四](./image/时间轴布局-图四.webp)
+
+#### 3.4.2 Grid 构建经典布局
+
+##### 3.4.2.1 水平垂直居中
+
+Web 布局中的水平垂直居中分为：
+
+- [单个元素](https://codepen.io/airen/full/BaVZWje)
+
+  1. 可以使用 `place-content` 属性来控制网格轨道的对齐方式：
+
+     ```html
+     <div class="container">
+       <div class="item">单个元素水平垂直居中</div>
+     </div>
+
+     <style>
+       .container {
+         display: grid; /* 或 inline-grid */
+
+         place-content: center;
+
+         /* 等同于 */
+         align-content: center; /* 网格轨道沿着块轴方向垂直居中  */
+         justify-content: center; /* 网格轨道沿着内联轴方向水平居中 */
+       }
+     </style>
+     ```
+
+  2. 也可以选择对齐方式来控制网格项目。CSS 网格布局中，控制网格项目对齐有两种方式：
+
+     - 运用于网格容器上的 `justify-items` 和 `align-items`，它将作用于网格容器中所有网格项目上。
+     - 运用于单个网格项目的 `justify-self` 和 `align-self`。
+
+     ```css
+     .container {
+       display: grid; /* 或 inline-grid */
+
+       place-items: center;
+
+       /* 等同于 */
+       align-items: center; /* 网格容器所有网格项目沿着块轴方向垂直居中 */
+       justify-items: center; /* 网格容器所有网格项目沿着内联轴方向水平垂直居中 */
+     }
+     ```
+
+  3. 使用 `margin: auto;`
+
+     ```css
+     .container {
+       display: grid;
+     }
+
+     .item {
+       margin: auto;
+
+       /* 等同于 */
+       margin-inline: auto; /* 网格项目沿着内联轴方向水平居中 */
+       margin-block: auto; /* 网格项目沿着块轴方向垂直居中 */
+     }
+     ```
+
+- [多个元素](https://codepen.io/airen/full/RwJggvy)
+
+  当网格容器中有多个元素（网格项目）时，它和单个元素（网格项目）有所不同，它会创建一个一列多行的网格，其中行数等同于网格项目的数量，要让它们在网格容器中水平垂直居中，只能通过控制网格轨道的对齐实现：
+
+  ```css
+  .container {
+    display: grid; /* 或 inline-grid */
+
+    place-content: center;
+
+    /* 等同于*/
+    align-content: center; /* 网格轨道沿着块轴方向垂直居中 */
+    justify-content: center; /* 网格轨道沿着内联轴方向水平居中 */
+  }
+
+  /*
+   * 如果网格项目宽度不相等，在渲染时浏览器将会以 auto 的行为来计算网格轨道尺寸
+   * 因此，还需要给所有网格项目设置一个 justify-self: center，告诉浏览器，所有网格项目在其所在网格区域中，沿着块轴方向水平居中
+   */
+  .container > * {
+    justify-self: center;
+  }
+  ```
+
+##### 3.4.2.2 圣杯布局
+
+Web 网站开发最经典的设计之一被称为“[圣杯](https://codepen.io/airen/full/wvXqYjo)（Holy Grail）”。它的最大特色就是包含了“页头”、“页脚”和三列，并且以内容先行为设计原则。
+
+![圣杯布局-图一](./image/圣杯布局-图一.webp)
+
+> 发展到现在为止，经典的“圣杯”布局所包含的内容并不总是都一样的，比如 Facebook、Medium 都在标准的“圣杯”(Holy Grail)布局上做了一个变化，他们去掉了一个突出的页脚。
+
+```html
+<header>.header</header>
+<!-- 内容先行 -->
+<main>.main</main>
+<nav>.nav</nav>
+<aside>.sidebar</aside>
+<footer>.footer</footer>
+
+<style>
+  body {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+    gap: 1.25rem;
+    /* 根据响应式布局中移动端先行的原则，将网格项目放置到相应的位置 */
+    grid-template-areas:
+      'header'
+      'main'
+      'nav'
+      'sidebar'
+      'footer';
+  }
+
+  .header {
+    grid-area: header;
+  }
+
+  .main {
+    grid-area: main;
+  }
+
+  .nav {
+    grid-area: nav;
+  }
+
+  .sidebar {
+    grid-area: sidebar;
+  }
+
+  .footer {
+    grid-area: footer;
+  }
+
+  /* 平板端布局 */
+  @media only screen and (min-width: 768px) {
+    body {
+      grid-template-columns: 220px 1fr;
+      grid-template-rows: auto minmax(0, 1fr) auto auto;
+      grid-template-areas:
+        'header  header'
+        'nav     main'
+        'nav     sidebar'
+        'footer  footer';
+    }
+  }
+
+  /* web 端布局 */
+  @media only screen and (min-width: 1024px) {
+    body {
+      grid-template-columns: 220px minmax(0, 1fr) 220px;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      grid-template-areas:
+        'header   header  header'
+        'nav      main    sidebar'
+        'footer   footer  footer';
+    }
+  }
+</style>
+```
+
+##### 3.4.2.3 宽高比布局
+
+按照宽高比的设计风格在 Web 页面中也很常见，但它一直受着技术实现的限制。虽然 CSS 的 [aspect-ratio](https://developer.mozilla.org/zh-CN/docs/Web/CSS/aspect-ratio) 得到大多主流浏览器的支持，但用于 Web 布局时，所受限制还是很大的。因为使用 `aspect-ratio` 总是会影响到元素盒子尺寸：
+
+- 提供元素宽度，根据宽高比计算元素高度
+- 提供元素高度，根据宽高比计算元素宽度
+
+但 Flexbox 和 Grid 布局中，Flex 项目和 Grid 项目尺寸会受对齐属性的影响。也正因此，在 Flexbox 布局中，一般将 `flex-grow` 和 `aspect-ratio` 设置同等比例，从而实现[宽高比的布局效果](https://codepen.io/airen/full/OJZvQop)。
+
+![宽高比布局-图一](./image/宽高比布局-图一.webp)
+
+可在 CSS 网格布局中，实现宽高比例布局，它所面对的环境更为复杂。除了对齐属性会影响网格项目尺寸之外，合并网格单元、网格轨道尺寸、网格轨道之间间距等都会对网格项目尺寸有所影响。比如下面这个[示例](https://codepen.io/airen/full/KKeyaKv)：
+
+```html
+<div class="container">
+  <div class="item">4:3</div>
+  <div class="item">4:3</div>
+  <div class="item">4:3</div>
+  <div class="item">4:3</div>
+</div>
+
+<style>
+  .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(0, 1fr));
+  }
+
+  .item {
+    aspect-ratio: 4 / 3;
+  }
+</style>
+```
+
+![宽高比布局-图二](./image/宽高比布局-图二.webp)
+
+如上图所示，当网格容器没有显式指定行网格轨道尺寸时，示例中的网格项目的宽高比都是 4:3 ，布局效果还算是完美的。但是，只要设置了网格轨道尺寸，比如 grid-auto-rows 设置为 200px，它小于计算出来的网格项目高度，这个时候网格项目虽然还保持着正常的宽高比，但会发现致命的问题，**网格项目重叠**在一起。
+
+即使行网格轨道尺寸是 `auto`，但网格项目总有不同的宽高比情况出现。网格项目具有不同宽高比时，行网格轨道将会以最高的网格项目尺寸为计算值，这样网格项目之间就会有空白空间出现：
+
+![宽高比布局-图三](./image/宽高比布局-图三.webp)
+
+可以使用 CSS 自定义属性，帮助找到一个较为适合的解决方案，允许**创建任何宽高比的网格单元格**。这个解决方案不能适用于所有场景，尤其是响应式布局中。并且这个方案必须要知道四个值：
+
+- **网格容器的尺寸**，最好是一个固定值或视窗单位值
+- **网格列轨道数量**
+- **网格列轨道之间的间距**
+- **单元格宽高比**
+
+```css
+:root {
+  --gridContainerWidth: 80vw; /* 网格容器尺寸 */
+  --columns: 4; /* 网格列轨道数量 */
+  --gap: 1rem; /* 网格列轨道之间间距 */
+  --ratio: 1; /* 网格单元格宽高比 */
+
+  /* 计算出网格行轨道尺寸 */
+  --rowSize: calc((var(--gridContainerWidth) - ((var(--columns) - 1) * var(--gap))) / var(--columns));
+}
+
+/* 使用 grid-template-columns 和 1fr 将网格分成 --columns 列 */
+.container {
+  inline-size: var(--gridContainerWidth);
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  gap: var(--gap);
+
+  grid-auto-rows: minmax(var(--rowSize), auto);
+  grid-auto-flow: dense;
+}
+```
+
+> 这里使用 `grid-auto-rows`，而不使用 `grid-template-rows`，原因是不知道网格会有多少行，所以使用 `grid-auto-rows` 来定义行网格轨道尺寸（隐式行网格轨道）。
+
+上面创建了一个四列 N 行的网格，而且每个单元格的宽高比都是 `1 : 1`：
+
+![宽高比布局-图四](./image/宽高比布局-图四.webp)
+
+根据需要，在网格项目上使用 grid-area （或 grid-row 和 grid-column ）放置网格项目，可以换作一个方式得到具有不同宽高比的网格项目：
+
+```css
+/* aspect-ratio: 1 / 1 */
+.item:nth-child(1) {
+  grid-row: span 2;
+  grid-column: span 2;
+}
+
+/* aspect-ratio: 2 / 1 */
+.item:nth-child(2) {
+  grid-column: span 2;
+}
+
+/* aspect-ratio: 1 / 1 */
+.item:nth-child(4) {
+  grid-row: 2 / span 2;
+  grid-column: 3 / span 2;
+}
+```
+
+![宽高比布局-图五](./image/宽高比布局-图五.webp)
+
+还可能会有 16:9、4:3 等等。在改变宽高比的同时，行网格轨道尺寸就会有变化，而且计算 --rowSize 时会比 1:1 宽高比时更复杂一点。上面示例中，定义了 `--ratio`，并且它的值是 `1`。现在需要将它拆分出两个部分，比如 `--ratioW`（宽）和 `--ratioH`（高），并且根据 --ratioW 和 --ratioH 计算出 --ratio：
+
+```css
+:root {
+  --gridContainerWidth: 80vw; /* 网格容器尺寸 */
+  --columns: 4; /* 网格列轨道数量 */
+  --gap: 1rem; /* 网格列轨道之间间距 */
+
+  /* 假设宽高比是 16:9 */
+  --ratioW: 16;
+  --ratioH: 9;
+
+  /* 计算出宽高比 */
+  --ratio: calc(var(--ratioW) / var(--ratioH));
+
+  /* 使用宽高比来计算乘法因子，计算行网格轨道需要使用 */
+  --factor: calc(1 / var(--ratio)); /* 等同于 calc(var(--ratioH) / var(--ratioW)) */
+  --rowSize: calc(((var(--gridContainerWidth) - ((var(--columns) - 1) * var(--gap))) / var(--columns)) * var(--factor));
+}
+
+/* 定义一个网格 */
+.container {
+  inline-size: var(--gridContainerWidth);
+
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  gap: var(--gap);
+
+  grid-auto-rows: minmax(var(--rowSize), auto);
+  grid-auto-flow: dense;
+}
+```
+
+如果需要不同网格单元格宽高比时，只需要调整 `--ratioW` 和 `--ratioH` 的值。
+
+### 3.5 Flexbox 与 Grid 布局的区别和使用场景
+
+CSS Grid 和 CSS Flexbox 的差异，主要可以从三个方面来对比：
+
+- CSS Grid 是二维，CSS Flexbox 是一维
+- CSS Grid **布局优先**（外在），CSS Flexbox **内容优先**（内在）
+- CSS Grid 用于页面布局（宏观布局），CSS Flexbox 用于组件布局（微观布局）
+
+#### 3.5.1 二维 vs 一维
+
+CSS Grid 和 CSS Flexbox **最核心的区别就是维度方面：二维 vs 一维**。
+
+CSS Grid 是二维的。即，Grid 是为二维布局而设计的，可以同时沿着内联轴和块轴排列元素：
+
+![Grid二维定位](./image/Grid二维定位.webp)
+
+而 CSS Flexbox 是一维布局， 这意味着可以将元素按行或列排列，但不能同时按行或列排列：
+
+![Flex一维定位](./image/Flex一维定位.webp)
+
+通常情况之下：
+
+- 一个布局是二维的（同时需要在行和列排列元素），则使用 CSS Grid 来布局
+- 一个布局是一维的（只在行或列排列元素），则使用 CSS Flexbox 来布局
+
+#### 3.5.2 布局优先 vs 内容优先
+
+CSS Grid 和 CSS Flexbox 除了一维和二维的区别之外，还有另一个区别：**布局优先（外在）vs 内容优先（内在）**。
+
+Flexbox 会监听它的内容，所以它是**内容优先（内在）**。使用 CSS Flexbox 布局的理想情形是有一组元素，希望它们：
+
+- 能平均地分布在 Flex 容器中
+- 内容的大小决定每个元素占据多少空间
+- 如果元素换到了新的一行，它们会根据新行的可用空间决定它们自己的大小
+
+![Flex布局内容优先](./image/Flex布局内容优先.webp)
+
+Grid 则是从布局入手。它提供了一种机制，可以根据预想的大小和结构来创建一个网格，然后再把元素放入网格中（放到一个网格单元格，或一个网格区域中），或者元素自动放置到网格中（根据网格项目自动放置算法放置）。
+
+不过，Grid 布局无论如何，都将坚持它的行和列，所以它是**布局优先**（一种外在的行为）。
+
+![Grid布局优先](./image/Grid布局优先.webp)
+
+#### 3.5.3 对齐方式
+
+Flexbox 除了可以让 Flex 项目能根据容器主尺寸进行伸缩扩展之外，还有一个，就是强大的对齐能力。让构建水平垂直居中、等高等布局变得很容易。Grid 也拥有强大的对齐能力，只不过，CSS Grid 和 CSS Flexbox 的对齐方式略有差异：
+
+![Grid和Flex布局对齐方式的对比](./image/Grid和Flex布局对齐方式的对比.webp)
+
+在 CSS Flexbox 中，其对齐方式主要分为：
+
+- `justify-content`：控制所有 Flex 项目在 Flex 容器主轴方向的对齐
+- `align-items`：控制所有 Flex 项目在 Flex 容器侧轴方向的对齐
+- `align-content`：控制 Flex 行在 Flex 容器侧轴方向的对齐，前提是 flex-wrap 属性的值是 wrap 或 wrap-reverse
+- `algin-self`：可以控制单个 Flex 项目在 Flex 容器侧轴方向的对齐
+- 由于 Flexbox 是一维布局，它不支持 `justify-items` 和 `justify-self` 两个属性。
+
+CSS Grid 中，对齐方式有些与 Flexbox 对齐方式是相似的，但其要分为三种使用情景：
+
+- `place-content`：（它的子属性 `align-content` 和 `justify-content`）控制网格轨道在网格容器的块轴和内联轴方向的对齐
+- `place-items`：（它的子属性 `align-items` 和 `justify-items`）控制所有网格项目在网格区域的块轴和内联轴方向的对齐
+- `place-self`：（它的子属性 `align-self` 和 `justify-self`）控制单个网格项目在网格区域的块轴和内联轴方向的对齐
+
+CSS Grid 和 CSS Flexbox 中的项目都可以显式设置 `margin` 的值来达到单个网格项目对齐。可以在这两种布局技术中，设置网格项目或 Flex 项目的 `margin-inline` 或 `margin-block` 值为 `auto`，实现水平居中或垂直居中。
+
+#### 3.5.4 项目的伸缩扩展
+
+CSS Flexbox 和 CSS Grid 布局中，Flex 容器和网格容器的直接子元素都被称为**项目**（Flex 项目和网格项目），它们都具备伸缩扩展的特性。
+
+![Flexbox和Grid布局项目的伸缩扩展对比](./image/Flexbox和Grid布局项目的伸缩扩展对比.webp)
+
+- Flexbox 布局中，在 Flex 项目上设置 flex 属性值为 `1 1 0%`（通常大部分开发者直接设置为 1），Flex 项目将根据 Flex 容器的剩余空间或不足空间进行收缩扩展
+- Grid 布局中，是在网格容器的 `grid-template-rows` 或 `grid-template-columns` 属性上设置 `fr` 单位的值（设置网格轨道尺寸），网格项目将根据网格容器的可用空间来进行收缩扩展
+
+如果要实现一个均分列（等宽）布局。要是使用 Flexbox 布局，可以在 Flex 项目上设置 flex 和 min-width：
+
+```css
+.flex-container {
+  display: flex;
+}
+
+.flex-item {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+```
+
+要是使用 CSS Grid 布局，需要将网格容器的 grid-template-columns 设置为：
+
+```css
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+```
+
+#### 3.5.5 排列方向与换行
+
+- Flexbox 布局中，不管是 flex 还是 inline-flex，默认情况下，都会让所有 Flex 项目排在一行或一列
+- Grid 布局中，不管是 grid 还是 inline-grid，默认情况下，都不会改变 Grid 项目的排列方式，将按照 HTML 结构中的源顺序排列，除非你在声明网格容器的时候，显式使用 `grid-template-*`（比如，grid-template-columns、grid-template-rows）改变其排列方式
+
+![Flex和Grid布局排列方向对比](./image/Flex和Grid布局排列方向对比.webp)
+
+显式改变排列方向的方式：
+
+- Flexbox 中，可以通过 `flex-direction` 属性来改变 Flex 项目在 Flex 容器中排列方式
+- Grid 中，可以通过 `grid-auto-flow` 属性来改变网格项目在网格容器中默认的排列方式
+
+![Flex和Grid布局显式改变排列方向](./image/Flex和Grid布局显式改变排列方向.webp)
+
+不同的是，Grid 布局还可以使用 `grid-template-rows` 或 `grid-template-columns` 来改变网格排列。比如：
+
+```css
+.grid-container {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 220px;
+  grid-template-rows: repeat(3, 100px);
+}
+```
+
+除此之外，还可以在网格项目上使用 `grid-row`、`grid-column` 或 `grid-area` 来改变网格项目的默认排列位置。这是在 Flexbox 布局中做不到的。
+
+Flexbox 布局中，自动换行是在 Flex 容器上显式设置 `flex-wrap` 的值为 `wrap`。
+
+在 CSS Grid 布局中要实现自动换行（列），需要采用网格布局中的 RAM 布局技术，即 `repeat()`、`minmax()` 函数结合起来，并且指定列（行）网格轨道数量时，不能使用具体的数值，要使用 `auto-fit` 或 `auto-fill` 关键词：
+
+![Grid布局实现自动换行](./image/Grid布局实现自动换行.webp)
+
+它们的差异在于：
+
+- 在 Flexbox 布局中，如果 Flex 项目具有伸缩扩展性（即 flex: 1），最后一行 Flex 项目有可能会填充整个 Flex 容器，比如最后一行只有一个 Flex 项目。
+- 在 Grid 布局中，所有网格项目的大小都会由 `minmax(MIN,MAX)` 函数来决定，最小值是 MIN，最大值是 MAX（一般是 1fr）。
+
+#### 3.5.6 改变顺序和间距
+
+CSS Flexbox 和 CSS Grid 有相似与差异之处，但它们有几个特性是完全一样的。比如改变项目的顺序：
+
+```css
+.item {
+  order: 1;
+}
+```
+
+![order属性](./image/order属性.webp)
+
+另一个相同的特性是 `gap`，在 Flex 容器和网格容器上设置 gap（或其子属性 `column-gap` 和 `row-gap`）属性，视觉表现结果是一致的，不同的是：
+
+- Flexbox 是用来控制 Flex 项目之间的间距
+- Grid 是用来控制网格轨道之间的间距
+
+### 3.6 display：contents 改变 Flexbox 和 Grid 布局模式
+
+#### 3.6.1 display 给文档流带来的变化
+
+从 CSS 盒模型中可以知道，文档树中的每个元素都是一个矩形框（盒子）。广义上讲，这个“矩形框”由两部分组成。首先，有实际的盒子，由 border、padding 和 margin 区域组成；其次，有盒子的内容，即内容区域：
+
+![盒模型](./image/盒模型.webp)
+
+默认情况之下，浏览器解析任何一个文档时，将会按下图方式来渲染文档流：
+
+- **垂直流**，也称为块流，一般就是块元素默认流向，在不改变书写模式下，它一般由上往下垂直排列
+- **水平流**，也称为内联流，一般就是文档所用语言的书写方式或阅读方式的流向。
+
+![垂直流和水平流](./image/垂直流和水平流.webp)
+
+通过 CSS 的 `display` 属性可以改变元素盒子及其后代元素以不同的上下文格式（即，产生不同的视觉格式化模型）在浏览器中渲染。每个格式化上下文都拥有不同的渲染规则，而这些规则是用来决定其子元素如何定位，以及和其他元素的关系。具体点说，当 `display` 取值分为六个种类：
+
+- **外部表现[`<display-outside>`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/display-outside)**：这些关键字规定元素的外部显示类型，实际上就是其在流式布局中的角色。
+
+  - `block`：该元素生成一个块级盒子，在正常的流中，该元素之前和之后产生换行。
+  - `inline`：该元素生成一个或多个行级盒子，它们之前或者之后并不会产生换行。在正常的流中，如果有空间，下一个元素将会在同一行上。
+
+  > 在支持多关键字语法的浏览器中，当 `display` 属性仅有一个外部值（例如 `display: block` 或 `display: inline`）时，内部值会被设置为 `flow`（例如 display: block flow 和 display: inline flow）。
+
+- **内部表现[`<display-inside>`](https://developer.mozilla.org/en-US/docs/Web/CSS/display-inside)**：这些关键字规定了元素的内部显示类型，其定义了该内容布局时的格式上下文的类型（假设它是一个非替换元素）。
+
+  - `flow`：该元素生成一个块级盒子，用于流式布局。如果它的外部显示类型是 inline 或 run-in，并且它参与一个区块或者行级格式上下文，那么它将生成一个行级盒子。
+  - `flow-root`：该元素生成一个块级元素盒，其会建立一个新的区块格式化上下文，定义格式化上下文（BFC）的根元素。
+  - `table`：该元素的行为类似于 HTML 中的 table 元素。它定义了一个块级别的盒子。
+  - `flex`：该元素的行为类似块级元素并且根据弹性盒模型布局它的内容。
+  - `grid`：该元素的行为类似块级元素并且根据网格模型布局它的内容。
+  - `ruby`：该元素的行为类似行级元素并且根据 ruby 格式化模型布局它的内容。它的行为像关联的 HTML 的 ruby 元素。
+
+  > 在支持多关键字语法的浏览器中，当 display 属性仅有一个内部值（例如 display: flex 或 display: grid）时，外部值会被设置为 `block`（例如 display: block flex 和 display: block grid）。
+
+- **列表元素`<display-listitem>`**：该元素为内容生成一个块级盒子和一个单独的列表元素行级盒子。
+
+  list-item 的单独值将导致元素的行为类似于一个列表元素。其可以与 [list-style-type](https://developer.mozilla.org/zh-CN/docs/Web/CSS/list-style-type) 和 [list-style-position](https://developer.mozilla.org/zh-CN/docs/Web/CSS/list-style-position) 一起使用。
+
+  list-item 也可以与任意的 `<display-outside>` 关键字和 `<display-inside>` 中的 flow 或 flow-root 关键字组合。
+
+- **内部[`<display-internal>`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/display-internal)**：一些布局模型，例如 table 和 ruby 有一个复杂的内置结构，它们的子孙后代可以扮演几个不同的角色。本节定义的这些 “内部” display 值，仅在特定的布局模式下有用。
+
+  - `table-row-group`：该元素的行为类似于 HTML 的 `<tbody>` 元素。
+  - `table-header-group`：该元素的行为类似于 HTML 的 `<thead>` 元素。
+  - `table-footer-group`：该元素的行为类似于 HTML 的 `<tfoot>` 元素。
+  - `table-row`：该元素的行为类似于 HTML 的 `<tr>` 元素。
+  - `table-cell`：该元素的行为类似于 HTML 的 `<td>` 元素。
+  - `table-column-group`：该元素的行为类似于 HTML 的 `<colgroup>` 元素。
+  - `table-column`：该元素的行为类似于 HTML `<col>` 元素。
+  - `table-caption`：该元素的行为类似于 HTML 的 `<caption>` 元素。
+  - `ruby-base`：该元素的行为类似于 HTML 的 `<rb>` 元素。
+  - `ruby-text`：该元素的行为类似于 HTML 的 `<rt>` 元素。
+  - `ruby-base-container`：该元素是作为匿名盒子生成的。
+  - `ruby-text-container`：该元素的行为类似于 HTML 的 `<rtc>` 元素。
+
+- **盒[`<display-box>`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/display-box)**：这些关键词定义一个元素到底是否产生 display 盒。
+
+  - `contents`：这些元素自身不会产生特定的盒子。它们被伪盒子（pseudo-box）和子盒子取代。注意，CSS Display Level 3 规范中定义了 contents 值如何影响“异常元素”——这些元素不是纯粹由 CSS 盒模型概念呈现的（例如替换元素）。更多的细节请参见[附录 B：display 的影响：异常元素的内容](https://drafts.csswg.org/css-display/#unbox)。
+
+  - `none`：使元素不再显示，其对布局不会有影响（文档渲染得好像这个元素并不存在）。所有的后代元素也不会再显示。
+
+- **预组合[`<display-legacy>`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/display-legacy)**：CSS 2 为 display 属性使用单关键字的预组合的语法，对相同布局模式的块级和行级变体需要单独的关键字。
+
+  - `inline-block`：该元素生成块级元素盒，如果它是一个单独的行级盒，它将和周围的内容一起流动（行为类似于替换元素）。它等同于 `inline flow-root`。
+
+  - `inline-table`：inline-table 值在 HTML 中没有直接的映射。它行为类似于 HTML 的 `<table>` 元素，但实际是一个行级盒，而不是一个块级盒子。table 盒内部是一个块级上下文。它等同于 `inline table`。
+
+  - `inline-flex`：元素的行为类似于行级元素并且它的内容根据弹性盒模型布局。它等同于 `inline flex`。
+
+  - `inline-grid`：元素的行为类似于行级元素并且它的内容根据网格盒模型布局。它等同于 `inline grid`。
+
+CSS display 模块描述了多关键字语法，可以使用 display 属性明确地定义外部和内部 display 值。支持单个关键字值（预组合 `<display-legacy>` 值）以实现向后兼容性。
+
+```css
+.container {
+  display: inline flex;
+  /* 等同于 */
+  display: inline-flex;
+}
+```
+
+#### 3.6.2 display: contents 给 Flexbox 和 Grid 布局带来的变化
+
+显式设置 display 属性值为 `contents` 的元素自身不会产生任何盒子，但它的子元素和伪元素仍会产生盒子，文本运行也正常。对于盒子的生成和布局，该元素必须被视为在元素树中被其内容所取代，包括其源文件的子元素和伪元素，比如 ::before 和 ::after 伪元素，它们在该元素的子元素之前或之后正常生成。简单地说，**display 为 contents 时，允许以某种方式从盒子树中移除一个元素，但仍保留其内容**。
+
+> **注意**：由于只有盒子树受到影响，任何基于文档树的语义，如选择器匹配、事件处理和属性继承，都不会受到影响。但它也会阻止可访问性工具（比如屏幕阅读器）访问该元素的语义。
+
+CSS Flexbox 还是 CSS Grid 布局，只要在某个元素上显式设置了 display 的值为：
+
+- `flex` 或 `inline-flex`，该元素就是一个 Flex 容器，它的直接子元素、伪元素、文本内容都被称为 Flex 项目。
+- `grid` 或 `inline-grid`，该元素就是一个网格容器，它的直接子元素、伪元素、文本内容都被称为网格项目。
+
+它们都有一个共同之处，后代元素不是 Flex 项目（或网格项目）。比如下面这个示例：
+
+```html
+<style>
+  header {
+    display: flex; /* inline-flex*/
+  }
+
+  /* 或者 */
+  header {
+    display: grid; /* inline-grid */
+  }
+</style>
+<header>
+  <h1>Logo</h1>
+  <ul class="nav">
+    <li><a href="">Home</a></li>
+    <li><a href="">Service</a></li>
+    <li><a href="">About</a></li>
+    <li><a href="">Blog</a></li>
+    <li><a href="">Contact us</a></li>
+  </ul>
+</header>
+```
+
+当 header 元素的 display 值为：
+
+- `flex` 或 `inline-flex`，header 元素就是一个 Flex 容器，它的直接子元素 h1 和 ul 就成了 Flex 项目。
+- `grid` 或 `inline-grid`，header 元素就是一个网格容器，它的直接子元素 h1 和 ul 就成了网格项目。
+
+但如果希望 header 的后代元素，比如 li 元素也变成 Flex 项目或网格项目，以往的做法就是在 li 的父元素 ul 上设置 display 的值为 `flex` 或 `grid`，或者直接继承它父元素的 display 值（inherit）：
+
+```css
+header {
+  display: flex; /* inline-flex*/
+}
+
+/* 或者 */
+header {
+  display: grid; /* inline-grid */
+}
+
+ul {
+  display: inherit;
+}
+```
+
+虽然这样操作，li 变成了 Flex 项目或网格项目，但它们与 Flex 容器或网格容器 header 没有一点关系，它始终只是 Flex 容器或网格容器 ul 的 Flex 项目或网格项目。同时，ul 既是 header 的 Flex 项目或网格项目，也是 li 的 Flex 容器或网格容器。如此一来就产生了嵌套的 Flexbox 或网格。也可以说，Flex 项目或网格项目 li 始终无法上升到 Flex 容器或网格容器 header 的项目。
+
+如果显式把 ul 的 display 属性值设置为 `contents`，那么 li 就能上升直接变成 Flex 容器或网格容器 header 的 Flex 项目或网格项目。
+
+```css
+header {
+  display: flex; /* inline-flex */
+}
+
+/* 或者 */
+header {
+  display: grid; /* inline-grid */
+}
+
+ul {
+  display: contents;
+}
+```
+
+[示例](https://codepen.io/airen/full/PoadMaL)
+
+#### 3.6.3 display: contents 的作用
+
+@Rachel Andrew 曾对 display: contents 作用有过这样的一段描述：
+
+> This value becomes useful if you want to add some element because it makes sense in terms of document semantics, but doesn’t in terms of display. Perhaps you have some content that makes sense marked up as an article, that article is then a flex item in your layout BUT the elements you really would like to be flex items are nested inside that article. Rather than flattening your markup and remove the article element to enable these inner elements to be part of the flex layout, you could remove the boxes generated by article using display: contents. You then get the best of both worlds, semantic markup plus the visual display your design requires. That sounds good to me. —— @Rachel Andrew
+
+大致意思是说：“如果想添加一些元素，这个值就很有用，因为**它在文档语义方面有意义，但在视觉呈现上没有意义**。也许在构建一个 Web 页面时，需要添加一些语义的标签元素，然后该标签在布局中是一个 Flex 项目，但真正想要的 Flex 项目是该元素的后代元素。与其扁平化标记而去删除一些有意义的标签，使其内部元素成为 Flexbox 布局的一部分，那还不如使用 `display: contents` 来删除该元素生成盒子框。这样，就可以同时获得两个优点，即**语义标记和设计所需的视觉呈现**”。
+
+### 3.7 Web 中的向左向右：Flexbox 和 Grid 布局中的 LTR 与 RTL
+
+#### 3.7.1 和方向有关的 CSS 功能模块
+
+在 CSS 中，可以控制排版方向的特性有很多，比如：
+
+- **文本对齐**：CSS Text Module Level 3 或 Level 4 中的 text-align，用来设置文本的对齐方式；
+- **浮动**：CSS Page Floats 中的 float 属性，用来改变流的水平方向；
+- **定位**：CSS Positioned Layout Module Level 3 的 position 以及 left 、right 也可以改变水平流的方向；
+- **Flexbox 布局**：CSS Flexible Box Layout Module Level 1 中的 flex-direction；
+- **Grid布局**：CSS Grid Layout Module Level 1 中的 grid-auto-flow；
+- **CSS 框对齐方式**：CSS Box Alignment Module Level 3
+- **书写模式**：CSS Writing Modes Level 3。

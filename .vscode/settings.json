@@ -37,5 +37,6 @@
   "emmet.extensionsPath": [".vscode"],
   "liveServer.settings.port": 5501,
   "stylelint.packageManager": "pnpm",
-  "npm.packageManager": "pnpm"
+  "npm.packageManager": "pnpm",
+  "eslint.useFlatConfig": true
 }

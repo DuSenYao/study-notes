@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <link
   rel="stylesheet"
   href="css/base.css"
@@ -115,7 +115,7 @@
       // 这段代码本意是一个变量 a 赋值，然后对一个数组执行 forEach，但是因为没有自动插入分号，被理解为下标运算符和逗号表达式
       (3, 2, 1, 0)
     ]
-      .forEach(e => console.log(e)); // 这里不会抛出错误，代码排查非常困难
+      .forEach((e) => console.log(e)); // 这里不会抛出错误，代码排查非常困难
   }
 
   // 3. 以正则表达式开头的语句

@@ -1,5 +1,7 @@
 import globals from 'globals';
-import tsParse from '@typescript-eslint/parser';
+import tsParser from '@typescript-eslint/parser';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
+import htmlPlugin from 'eslint-plugin-html';
 
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,21 +16,26 @@ const compat = new FlatCompat({
 });
 
 export default [
+  ...compat.extends('eslint:recommended'),
   {
     languageOptions: {
+      parser: tsParser,
       sourceType: 'module',
       ecmaVersion: 'latest',
       globals: { ...globals.browser, ...globals.node }
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+      html: htmlPlugin
     }
   },
-  ...compat.plugins('@typescript-eslint'),
-  ...compat.plugins('html'),
   {
     files: ['frontend/**/*.ts'],
-    languageOptions: {
-      parserOptions: {
-        parser: tsParse
-      }
+    rules: {
+      // 导入 TypeScript ESLint 推荐配置
+      ...tsPlugin.configs.recommended.rules,
+      // 其他自定义规则
+      '@typescript-eslint/explicit-function-return-type': 'warn'
     }
   },
   {

@@ -1,13 +1,13 @@
-const data = [];
+const data: number[] = [];
 let curValue = 0;
 
-function addRandomValue() {
+function addRandomValue(): void {
   const delta = Math.random() > 0.5 ? 1 : -1;
   data.push(curValue);
   curValue += delta;
 }
 
-function addManyRandomValues() {
+function addManyRandomValues(): void {
   for (let i = 0; i < 100; i++) {
     addRandomValue();
   }

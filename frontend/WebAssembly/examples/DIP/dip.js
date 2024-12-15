@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // autoplay the video.
   let promise = video.play();
   if (promise !== undefined) {
-    promise.catch(error => {
+    promise.catch((error) => {
       console.error('Can not autoplay!');
     });
   }

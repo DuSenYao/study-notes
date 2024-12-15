@@ -159,7 +159,7 @@
 : 查看 Web 应用的数据存储情况。
 
 1. 检查加载的所有资源
-2. IndexedDB 与 Web SQL
+2. IndexedDB
 3. 本地和会话存储，cookie
 4. 应用程序缓存，图像，字体和样式表
 
