@@ -22,6 +22,7 @@
     - [1.8 Electron 的原生能力](#18-electron-的原生能力)
       - [1.8.1 Node.js 调用原生能力](#181-nodejs-调用原生能力)
   - [二. 打包](#二-打包)
+    - [2.1 打包步骤](#21-打包步骤)
 
 <!-- /code_chunk_output -->
 
@@ -493,7 +494,7 @@ Electron 还提供了一些对操作系统底层能力的封装 API。常用的�
    ⨯ Get "https://registry.npmmirror.com/-/binary/electron/****": proxyconnect tcp: dial tcp :0: connectex: The requested address is not valid in its context.
    ```
 
-   1. 将 electron-v29.2.0-win32-x64.zip 压缩包放到 `C:\Users\用户名\AppData\Local\electron\Cache` 下。
+   1. 将 electron-v29.3.2-win32-x64.zip 压缩包放到 `C:\Users\用户名\AppData\Local\electron\Cache` 下。
 
    2. 将 winCodeSign-2.6.0.7z 压缩包解压后，放到 `C:\Users\用户名\AppData\Local\electron-builder\Cache\winCodeSign` 下。
 

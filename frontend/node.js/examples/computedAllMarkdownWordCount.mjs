@@ -9,9 +9,9 @@ function getFiles(path) {
   return readdirSync(path, { encoding: 'utf-8', withFileTypes: true });
 }
 
-let oldMarkdownWordCount = 3282548;
+let oldMarkdownWordCount = 3293839;
 let markdownWordCount = 0; // 最新的 markdown 文件字数
-let lastRunTime = '2024/6/17 04:45:56';
+let lastRunTime = '2026/1/25 03:33:46';
 
 /**
  * @param {import("fs").PathLike} [path] 文件路径
@@ -37,7 +37,7 @@ async function getAllFiles(path = process.cwd()) {
 
 // 更新 computedAllMarkdownWordCount.mjs 文件
 function updateFileContent() {
-  const fileURL = 'D:/GitHub/study-notes/frontend/node.js/examples/computedAllMarkdownWordCount.mjs';
+  const fileURL = 'C:/GitHub/study-notes/frontend/node.js/examples/computedAllMarkdownWordCount.mjs';
 
   // 使用 readline 逐行读取文件内容
   const rl = createInterface({

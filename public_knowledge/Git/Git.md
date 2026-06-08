@@ -511,6 +511,7 @@ git merge dev
 - `--continue`：合并冲突，结合 `git add 文件` 命令一起用与修复冲突，提示开发者，有没有解决冲突。
 - `--abort`：放弃合并，回到 rebase 操作之前的状态，之前的提交的不会丢弃
 - `--skip`：则会将引起冲突的 commits 丢弃掉（**慎用**）
+- `--autostash`：在执行 rebase（或带 rebase 的 pull）前，自动把工作区里未提交的改动临时 stash 起来，等 rebase 完成后再自动应用回来。
 
 #### 1.2.7 其他
 
@@ -569,7 +570,6 @@ C --> A: git merge FETCH_HEAD
 - `HEAD`：指向当前所在的分支
 - `config`：当前 **git** 的配置文件，这是个引用指向 **refs 文件夹** 下的 **heads 文件夹** 里的分支
 - `refs文件夹`：
-
   - **heads 文件夹**：存放当前项目的所有分支文件，每个分支文件存放的是当前分支对应的是哪个 commit（提交）
   - **remotes 文件夹**：存放远程分支
   - **tags 文件夹**：存放当前项目的所有标签
@@ -738,7 +738,6 @@ gitHooks 用来定义一个钩子，在 git 操作前/后执行一些命令。�
    ```
 
 3. 将 SSH 公钥添加到 GitHub 账户
-
    1. 将 SSH 公钥复制到剪贴板
 
       ```sh

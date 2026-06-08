@@ -255,7 +255,6 @@
 #### 2.1.3 代码片段的生效范围
 
 1. **语言维度**：定义代码对于哪些语言生效，每一个代码片段都可以在一种、多种或所有语言的范围内生效。
-
    - 一种语言的代码片段会被定义在对应语言的代码片段定义文件中，如：JavaScript 的代码片段被定义在 `javascript.json` 中
 
    - 多语言的代码片段被定义在以 `.code-snippets` 为结尾的 JSON 文件中，这个文件中有一个 `scope` 属性，它会包含一个或多个语言 ID，从而定义当前的代码片段对哪些语言生效，如果没有 `scope` 属性，当前的代码片段会对所有语言生效。
@@ -279,7 +278,6 @@
 : 通过 `$variable` 或 `${variable:default}` 可以插入变量的值。当变量为空时，会插入默认值或空字符串。
 
 - 可以使用的变量，如下所示：
-
   - `TM_SELECTED_TEXT`：当前被选中的文本
   - `TM_CURRENT_LINE`：当前光标所在行的文本
   - `TM_CURRENT_WORD`：当前光标所在的单词
@@ -297,7 +295,6 @@
   - `CURSOR_NUMBER`：基于一个索引的光标编号
 
 - 下面的变量可以用来插入**日期**和**时间**：
-
   - `CURRENT_YEAR`：当前的年份
   - `CURRENT_YEAR_SHORT`：当前年份的后两位数字
   - `CURRENT_MONTH`：当前月份的两位数字（如‘02’）
@@ -312,13 +309,11 @@
   - `CURRENT_SECONDS_UNIX`：UNIX 时间(从 UTC1970 年 1 月 1 日 0:0:0 开始到现在的总秒数)
 
 - 要插入随机值：
-
   - `RANDOM`：6 个随机十进制数字
   - `RANDOM_HEX`：6 个随机十六进制数字
   - `UUID`：版本 4 UUID
 
 - 下面的变量可以用来插入注释，并且会根据不同的语言插入相应的注释：
-
   - `BLOCK_COMMENT_START`：块注释的开始字符。比如，HTML 是 `<!--`
   - `BLOCK_COMMENT_END`：块注释的结束符。比如，HTML 是 `-->`
   - `LINE_COMMENT`：行注释，比如，HTML 是 `<!-- -->`
@@ -396,7 +391,6 @@ Task（任务）可以被用来**运行脚本**或**启动一个进程**。因�
 - `label`：在用户界面上展示的 Task 标签
 
 - `type`：Task 的类型，分为以下两种：
-
   - `shell`：作为 Shell 命令运行（如 bash、cmd、PowerShell 等）
   - `process`：作为一个进程运行
 
@@ -448,7 +442,6 @@ Task（任务）可以被用来**运行脚本**或**启动一个进程**。因�
 控制集成终端的输出行为，所有与输出相关的行为，都可以通过 `tasks.json` 中的 `presentation` 属性来定义，主要包含以下属性：
 
 - `reveal`：控制集成终端是否显示。
-
   - `always`：集成终端总是会在 Task 启动时显示。默认设置。
   - `never`：集成终端不会主动显示。
   - `silent`：当输出是错误和警告时，集成终端才会显示。
@@ -458,7 +451,6 @@ Task（任务）可以被用来**运行脚本**或**启动一个进程**。因�
 - `showReuseMessage`：控制是否显示"终端将被任务重用，按任意键关闭"提示信息。默认值是 true。
 
 - `panel`：控制不同的 Task 在运行时是否共享同一个集成终端。其设置包含以下三种：
-
   - `shared`：共享集成终端。其他 Task 的运行输出结果也显示在相同的集成终端中。默认设置。
   - `dedicated`：Task 会有一个专用的集成终端。如果相应的 Task 再次运行，集成终端就会被复用。但是，其他 Task 的运行输出结果会显示在不同的集成终端中。
   - `new`：每次运行 Task 都会创建一个新的集成终端。
@@ -479,7 +471,6 @@ Task（任务）可以被用来**运行脚本**或**启动一个进程**。因�
 ##### 2.3.2.3 变量替换
 
 - 预定义的变量
-
   - `${workspaceFolder}`：在 VSCode 中打开的文件夹的完整路径
   - `${workspaceFolderBasename}`：在 VSCode 中打开的文件夹名
   - `${fileWorkspaceFolder}`：VSCode 中打开的文件的工作区文件夹路径
@@ -512,14 +503,11 @@ Task（任务）可以被用来**运行脚本**或**启动一个进程**。因�
   有些时候，在运行 Task 时，每次都需要传入不同的变量，通过输入变量，可以轻松地对 Task 进行定制化。输入变量的语法是 `${input:variableID}`，variableID 引用了 `tasks.json` 中的 inputs 部分的配置内容。
 
   VSCode 支持以下三种类型的输入变量：
-
   - `promptString`：展示输入框，并获得用户的输入字符串
-
     - `description`：在文本输入框中展示的描述信息
     - `default`：输入的默认值
 
   - `pickString`：展示一个下拉列表，让用户选择其中一个选项
-
     - `description`：在下拉列表的输入框中展示的描述信息
     - `options`：选项数组，使用户可以在下拉列表中进行选择
     - `default`：输入的默认值。其值必须为下拉列表选项中的一个
@@ -550,14 +538,12 @@ Task（任务）可以被用来**运行脚本**或**启动一个进程**。因�
 `*.code-workspace` 工作区文件有以下属性：
 
 - `folders`：包含多个对象的数组，每个对象的属性有两个：
-
   - `path`：文件夹的路径，可以是绝对路径，也可以是相对路径
   - `name`：文件夹的可选名称
 
 - `settings`：为了避免各个文件设置的冲突，可以通过设置全局的工作区配置，对当前工作区的所有文件夹进行设置
 
 - `extensions`：插件建议
-
   - `recommendations`：向此工作区的用户推荐的扩展列表。扩展的标识符始终为 `${publisher}.${name}`。
   - `unwantedRecommendations`：不应向此工作区的用户推荐的扩展列表。扩展的标识符始终为 `${publisher}.${name}`。例如: "vscode.csharp"。
 
@@ -604,7 +590,6 @@ Task（任务）可以被用来**运行脚本**或**启动一个进程**。因�
 #### 2.4.2 与单文件夹的区别
 
 - **界面区别**：
-
   - 显示相对路径和符号
   - 面包屑导航会显示多文件夹的文件夹名
   - `Ctrl + P` 快速打开文件时，文件列表会显示文件夹名
@@ -646,12 +631,10 @@ launch.json 有 3 个属性：
 - `type`：调试器的类型。例如：内置的 Node.js 调试器是 node。
 
 - `request`：请求配置类型，有以下两种类型：
-
   - `launch`：启动程序（该程序定义在 program 设置项中）并调试
   - `attach`：将程序附加到一个正在运行的进程中进行调试
 
     如果想要附加到 Chrome 浏览器，针对不同系统，在命令行输入不同的命令来启动 Chrome 浏览器：
-
     - 在 Windows 下：`<path to chrome>/chrome.exe --remote-debugging-port=9222`，也可以打开 Chrome 快捷方式的属性 -> 目标，在最后添加 空格 + `--remote-debugging-port=9222`
     - 在 macOS 下：`/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote--debugging-port=9222`
     - 在 Linux 下：`google-chrome --remote-debugging-port=9222`
@@ -797,7 +780,6 @@ launch.json 有 3 个属性：
   ```
 
 - `console`：设置程序输出在哪里，该属性的可选值如下：
-
   - `internalConsole`：在 VSCode 的调试控制台输出，该值为默认值
   - `integratedTerminal`：在 VSCode 的集成终端输出
   - `externalTerminal`：在系统的终端输出
@@ -902,7 +884,6 @@ VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 
 
 - **普通断点**
   有两种方式添加普通断点：
-
   1. 单击左侧边栏
   2. 右键左侧边栏，选择添加断点
 
@@ -911,30 +892,25 @@ VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 
   代码抛了异常，想知道在哪抛的，这时候就可以用异常断点。
 
   ![异常断点](./image/%E5%BC%82%E5%B8%B8%E6%96%AD%E7%82%B9.png)
-
   - `Caught Exception`：在被 catch 处理的异常出断住。
   - `Uncaught Exception`：在没有被处理的错误或者 Promise 的 reject 处断住。更常用。
 
 - **日志断点**
   日志断点是普通断点的一种变体，区别在于**不会中断调试**，而是可以把信息记录到控制台。日志断点对于调试无法暂停或停止的服务时特别有用。步骤如下：
-
   1. 右击需要添加日志断点行的行标，选择**添加记录点**。
   2. 输入要日志断点的信息，可以用 `{}` 使用变量。
 
 - **条件断点**
   条件断点是表达式结果为 true 时才会进行断点：
-
   1. 右击需要添加日志断点行的行标，选择**添加条件断点**。
   2. 填写表达式
 
 - **命中计数断点**
   只有该行代码命中了指定次数，才会进行断点：
-
   1. 选择条件断点，切换为命中次数选项，填写命中次数。
 
 - **内联断点**
   仅当执行到达与内联断点关联的列时，才会命中内联断点。这在调试在一行中包含多个语句的缩小代码时特别有用。比如 for 循环，短路运算符等一行代码包含多个表达式时会特别有用。步骤如下：
-
   1. 在指定位置按 Shift + F9
   2. 调试之后，每次运行到该内联处的代码都会中断
 
@@ -947,7 +923,6 @@ VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 
 
 - **监听面板**
   可以将变量添加到监听面板，实时观察变量的变化。方式有以下两种：
-
   1. 在变量面板通过右键选择 “添加到监视” 将变量添加到监听面板。
   2. 直接在监听面板选择添加按钮进行变量添加。
 
@@ -989,7 +964,6 @@ VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 
 代码一键运行，支持 40 多种语言
 
 - 代码一键运行
-
   - 通过快捷键 `Ctrl+Alt+N`
   - 打开命令面板，输入并执行 Run Code
   - 在编辑区域的右键菜单中单击 Run Code
@@ -999,7 +973,6 @@ VSCode 内置的 Node.js 调试器支持远程调试，只需要在 launch.json 
 > **注意**：Code Runner 插件并不包含各个编程语言的编译器。需要自行安装相应编程语言的编译器，并且把路径添加到 PATH 环境变量中。
 
 - 停止代码运行
-
   - 通过 `Ctrl+Alt+M` 快捷键
   - 命令面板，输入并执行 Stop Code Run
   - 在输出面板的右键菜单中单击 Stop Code Run
@@ -1051,11 +1024,9 @@ yo code
 vscode 插件的核心实现主要在：
 
 - **package.json**：插件的声明文件，包含 2 个重要配置项。
-
   - **activationEvents**
 
     **主要用于指定插件的触发事件**。基于性能的考虑，vscode 插件都是 lazy load 的，只有激活的时候才启用插件。例子中用到的是 onCommand，在 Hello World 命令被调用时，插件才会被激活。目前支持 25 种激活事件：
-
     - **onLanguage**：${language:languageId} ：当打开特定语言时插件被激活
     - **onCommand**：${command}：调用某个 VSCode 命令时插件被激活
     - **onDebug**：Debug 时插件被激活
@@ -1268,7 +1239,6 @@ VSCode 自带的类型检查工具可以与其他 JS 检测工具（如：ESlint
 
 - Mocha Test Explorer
   Mocha 是常用的 JS 测试框架之一。Mocha Test Explorer 支持 Mocha 测试框架，支持的功能包括：
-
   - 单元测试的树状图单独显示在专有的测试资源管理器中。
   - 运行或调试单元测试
   - 测试覆盖率报告
@@ -1291,7 +1261,6 @@ TypeScript 是 JS 的超集，可以编译成 JS。与 JS 类似，不需要安�
    在 VSCode 中使用 Code Runner 插件，可以一键运行 TypeScript 代码。但是，需要安装 **ts-node**，ts-node 是一个基于 Node.js 的 TS 执行器。
 
    安装 ts-node，需要 Node.js 运行时及 TypeScript 编译器，在命令行输入 `npm install -g ts-node` 命令，安装 ts-node。在安装了 Code Runner 插件后，可以使用以下几种方式快捷的运行代码：
-
    - 输入快捷键 `Ctrl + Alt + N`
    - 通过 `Ctrl + Shift + P` 快捷键打开命令面板，输入并执行 Run Code
    - 在编辑区域的右侧菜单中选择 Run Code
@@ -1330,7 +1299,6 @@ tsc hello.ts --sourcemap
 
 - 快速调试
   VSCode 依赖于 TS 的映射文件将原始的 TS 文件与生成的 JS 文件进行映射。
-
   - 在 tsconfig.json 文件中需要添加 `sourceMap` 属性，并将其设置为 true。
 
   - 在集成终端中输入并执行 `tsc`。这条命令执行完毕后会在 `outDir` 属性定义的目录中生成一个 file.js.map 的源代码映射文件和一个 file.js 文件。
@@ -1340,7 +1308,6 @@ tsc hello.ts --sourcemap
 
 - 调试配置
   TS 文件在调试前，需要编译，所以使用了以下两个属性：
-
   - `preLaunchTask`：定义了在调试前要运行的任务（在 tasks.json 文件中设置），在调试 TS 之前，需要先编译 TS 文件
   - `outFiles`：定义了 JS 文件的输出路径，优先级小于 tsconfig.json 中的定义。
 
@@ -1353,27 +1320,22 @@ tsc hello.ts --sourcemap
 在代码编辑方面，TS 和 JS 主要的不同之处就是设置项的不同：
 
 - 启用 JSDoc
-
   - `typescript.suggest.completeJSDocs`
   - `javascript.suggest.completeJSDocs`
 
 - 启用自动导入
-
   - `typescript.autoImportSuggestions.enabled` -
   - `javascript.suggest.autoImports`
 
 - 启用代码格式化
-
   - `typescript.format.enable`
   - `javascript.format.enable`
 
 - 启用闭标签的自动补全
-
   - `typescript.autoClosingTags`
   - `javascript.autoClosingTags`
 
 - 启用重命名或移动文件时自动更新导入路径
-
   - `typescript.updateImportsOnFileMove.enabled`
   - `javascript.updateImportsOnFileMove.enabled`
 
@@ -1492,7 +1454,6 @@ VSCode 可以自定义额外的 HTML 数据格式。自定义的 HTML 标签、�
 - 使用 `Ctrl + Shift + [/]` 来折叠展开代码。
 
 - 可以通过区域标记来定义代码折叠的范围：
-
   - CSS/SCSS/Less：/\_#region\_/ 和 /\_#endregion\_/
   - SCSS/Less：//#region 和 //#endregion
 
@@ -1548,15 +1509,12 @@ Emmet 是 Web 开发者必不可少的工具，为 HTML 和 CSS 提供了丰富�
 #### 6.3.4 设置 Emmet
 
 - 如果想用 Tab 键来展开 Emmet 缩写，可以通过下面的设置项来设置:
-
   - `"emmet.triggerExpansionOnTab": true`
 
 - 通过以下设置，可以在建议列表中禁用 Emmet 缩写:
-
   - `"emmet.showExpandedAbbreviation": "never"`
 
 - 通过以下设置项，可以把 Emmet 缩写始终放在建议列表的顶部:
-
   - `"emmet.showSuggestionsAsSnippets": true`
   - `"editor.snippetSuggestions": "top"`
 
@@ -1564,7 +1522,6 @@ Emmet 是 Web 开发者必不可少的工具，为 HTML 和 CSS 提供了丰富�
   通过对 `"emmet.includeLanguages"` 进行设置，把文件类型绑定到其他支持 Emmet 的文件上，就能启用相应的文件。
 
   此外，还可以通过以下设置，使 Emmet 缩写只在与 HTML/CSS 相关的文件中启用：
-
   - `"emmet.showExpandedAbbreviation": "isMarkupAndStyleSheetFilesOnly"`
 
 #### 6.3.5 自定义 Emmet 片段
@@ -1621,7 +1578,6 @@ Emmet 是 Web 开发者必不可少的工具，为 HTML 和 CSS 提供了丰富�
 5. 启动调试
 
    启动调试之前，要确保 Vue 的程序 `http://localhost:8080` 已经运行，有三种方式启动调试：
-
    - 在顶部的菜单栏中选择 `Debug-Start Debugging`
    - 使用 `F5` 快捷键
    - 通过左侧的活动栏切换到调试视图，然后单击绿色的调试按钮

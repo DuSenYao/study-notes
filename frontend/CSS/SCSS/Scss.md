@@ -42,9 +42,9 @@
       - [2.3.9 `&` in SassScript](#239--in-sassscript)
       - [2.3.10 变量默认值 `!default`](#2310-变量默认值-default)
     - [2.4 `@-Rules` 与指令](#24--rules-与指令)
-      - [2.4.1 `@import`](#241-import)
+      - [2.4.1 `@use`](#241-use)
         - [2.4.1.1 局部模板](#2411-局部模板)
-        - [2.4.2.2 嵌套 `@import`](#2422-嵌套-import)
+        - [2.4.2.2 嵌套 `@use`](#2422-嵌套-use)
       - [2.4.2 `@media`](#242-media)
       - [2.4.3 `@extend`](#243-extend)
         - [2.4.3.1 工作原理](#2431-工作原理)
@@ -75,7 +75,11 @@
         - [2.6.3.1 参数变量（Variable Arguments）](#2631-参数变量variable-arguments)
       - [2.6.4 向混合样式中导入内容](#264-向混合样式中导入内容)
         - [2.6.4.1 可变范围和内容块](#2641-可变范围和内容块)
-    - [2.7 函数指令](#27-函数指令)
+    - [2.7 内置函数](#27-内置函数)
+      - [2.7.1 字符串函数](#271-字符串函数)
+        - [2.7.2 数学函数](#272-数学函数)
+        - [2.7.3 列表函数](#273-列表函数)
+    - [2.8 自定义函数](#28-自定义函数)
     - [2.8 输出格式（Output Style）](#28-输出格式output-style)
       - [2.8.1 `:nested`](#281-nested)
       - [2.8.2 `:expanded`](#282-expanded)
@@ -89,7 +93,6 @@
 Sass 是一款强化 CSS 的辅助工具，它在 CSS 语法的基础上增加了**变量（variables）**、**嵌套（nested rules）**、**混合（mixins）**、**导入（inline imports）** 等高级功能，这些拓展令 CSS 更加强大与优雅。使用 Sass 以及 Sass 的样式库（如 Compass）有助于更好地组织管理样式文件，以及更高效地开发项目。
 
 1. **特色功能**（Features）
-
    - 完全兼容 CSS3
    - 在 CSS 基础上增加变量、嵌套（nesting）、混合（mixins）等功能
    - 通过函数进行颜色值与属性值的运算
@@ -102,7 +105,7 @@ Sass 是一款强化 CSS 的辅助工具，它在 CSS 语法的基础上增加�
 
    另一种也是最早的 Sass 语法格式，被称为缩进格式（Indented Sass）通常简称 "Sass"，是一种简化格式。它使用 “缩进” 代替 “花括号” 表示属性属于某个选择器，用 “换行” 代替 “分号” 分隔属性，很多人认为这样做比 SCSS 更容易阅读，书写也更快速。缩进格式也可以使用 Sass 的全部功能，只是与 SCSS 相比个别地方采取了不同的表达方式，具体请查看 [the indented syntax reference](https://sass-lang.com/documentation/syntax)。这种格式以 `.sass` 作为拓展名。
 
-   任何一种格式可以直接 [导入 (@import)](#241-import) 到另一种格式中使用，或者通过 `sass-convert` 命令行工具转换成另一种格式：
+任何一种格式可以通过 [@use](#241-use) 引入到另一种格式中使用，或者通过 `sass-convert` 命令行工具转换成另一种格式：
 
 ### 1.1 安装 Sass 和 Compass
 
@@ -1111,107 +1114,61 @@ $content: 'Non-null content' !default;
 
 Sass 支持所有的 CSS3 @-Rules，以及 Sass 特有的 “指令”（directives）。更多资料看 [控制指令 (control directives)](#25-控制指令) 与 [混合指令 (mixin directives)](#26-混合指令mixin-directives) 两个部分。
 
-#### 2.4.1 `@import`
+#### 2.4.1 `@use`
 
-Sass 拓展了 `@import` 的功能，允许其导入 SCSS 或 Sass 文件。被导入的文件将合并编译到同一个 CSS 文件中，另外，被导入的文件中所包含的变量或者混合指令（mixin）都可以在导入的文件中使用。
+Sass 的模块系统推荐使用 `@use` 代替旧的导入写法。`@use` 会把文件作为一个模块加载，每个文件只会被加载一次，并且默认带有命名空间，避免变量、mixin 和函数污染全局作用域。
 
-Sass 在当前地址，或 Rack, Rails, Merb 的 Sass 文件地址寻找 Sass 文件，如果需要设定其他地址，可以用 `:load_paths` 选项，或者在命令行中输入 `--load-path` 命令。
+Sass 会在当前地址，或 Rack、Rails、Merb 的 Sass 文件地址寻找模块；如果需要设定其他地址，可以用 `:load_paths` 选项，或者在命令行中输入 `--load-path` 命令。
 
-通常，`@import` 寻找 Sass 文件并将其导入，但在以下情况下，`@import` 仅作为普通的 CSS 语句，不会导入任何 Sass 文件：
-
-- 文件拓展名是 `.css`
-- 文件名以 `http://` 开头；
-- 文件名是 `url()`
-- `@import` 包含 `media queries`
-
-如果不在上述情况内，文件的拓展名是 `.scss` 或 `.sass`，则导入成功。没有指定拓展名，Sass 将会试着寻找文件名相同，拓展名为 `.scss` 或 `.sass` 的文件并将其导入：
+`@use` 适用于导入 `.scss` 或 `.sass` 文件。没有指定拓展名时，Sass 会尝试寻找文件名相同、拓展名为 `.scss` 或 `.sass` 的文件：
 
 ```scss
-@import 'foo.scss';
-
-@import 'foo';
+@use 'foo';
 ```
 
-都会导入文件 foo.scss，但是：
+如果要访问模块中的变量或混合指令，通常需要通过命名空间引用：
 
 ```scss
-@import 'foo.css';
-@import 'foo' screen;
-@import 'http://foo.com/bar';
-@import url(foo);
+@use 'colors';
+
+.button {
+  color: colors.$primary;
+}
 ```
 
-编译为：
-
-```css
-@import 'foo.css';
-@import 'foo' screen;
-@import 'http://foo.com/bar';
-@import url(foo);
-```
-
-Sass 允许同时导入多个文件，例如同时导入 rounded-corners 与 text-shadow 两个文件：
+如果想去掉命名空间，可以使用 `as *`，但这会让作用域重新变得更宽，通常只建议在小范围内使用：
 
 ```scss
-@import 'rounded-corners', 'text-shadow';
+@use 'colors' as *;
+
+.button {
+  color: $primary;
+}
 ```
 
-导入文件也可以使用 `#{ }` 插值语句，但不是通过变量动态导入 Sass 文件，只能作用于 CSS 的 `url()` 导入方式：
+Sass 也支持通过 `with` 在加载模块时配置默认变量：
 
 ```scss
-$family: unquote('Droid+Sans');
-@import url('http://fonts.googleapis.com/css?family=\#{$family}');
-```
-
-编译为
-
-```css
-@import url('http://fonts.googleapis.com/css?family=Droid+Sans');
+@use 'theme' with (
+  $primary: #3b82f6
+);
 ```
 
 ##### 2.4.1.1 局部模板
 
-如果需要导入 SCSS 或者 Sass 文件，但又不希望将其编译为 CSS，只需要在文件名前添加下划线，这样会告诉 Sass 不要编译这些文件，但导入语句中却不需要添加下划线。
-
-例如，将文件命名为 `_colors.scss`，便不会编译 `_colours.css` 文件。
+如果需要引入 SCSS 或 Sass 文件，但又不希望把它直接暴露为独立模块文件，仍然可以把文件命名为带下划线的 partial，例如 `_colors.scss`。`@use 'colors';` 会自动解析到 `_colors.scss`。
 
 ```scss
-@import 'colors';
+@use 'colors';
 ```
 
-上面的例子，导入的其实是 `_colors.scss` 文件
+上面的例子，实际引用的是 `_colors.scss` 文件。
 
-> **注意**：不可以同时存在添加下划线与未添加下划线的同名文件，添加下划线的文件将会被忽略。
+> **注意**：`@use` 只能写在文件最外层，不能像旧的导入写法那样嵌套在选择器或 `@media` 里面。如果需要重新导出模块，应该配合 `@forward` 使用。
 
-##### 2.4.2.2 嵌套 `@import`
+##### 2.4.2.2 嵌套 `@use`
 
-大多数情况下，一般在文件的最外层（不在嵌套规则内）使用 `@import`，其实，也可以将 `@import` 嵌套进 CSS 样式或者 `@media` 中，与平时的用法效果相同，只是这样导入的样式只能出现在嵌套的层中。
-
-假设 example.scss 文件包含以下样式：
-
-```scss
-.example {
-  color: red;
-}
-```
-
-然后导入到 `#main` 样式内
-
-```scss
-#main {
-  @import 'example';
-}
-```
-
-将会被编译为
-
-```.css
-#main .example {
-  color: red;
-}
-```
-
-> **注意**：不可以在混合指令（mixin）或控制指令（control directives）中嵌套 `@import`。
+`@use` 不支持嵌套写法，模块必须在文件顶层加载。Sass 新的模块系统把这类场景改成了显式的顶层依赖管理，而不是通过嵌套来改变输出位置。
 
 #### 2.4.2 `@media`
 
@@ -2284,20 +2241,507 @@ $color: white;
 }
 ```
 
-### 2.7 函数指令
+### 2.7 内置函数
+
+#### 2.7.1 字符串函数
+
+- `quote()` 和 `unquote()`
+
+  `quote()` 函数将一个字符串转换为带引号的字符串，而 `unquote()` 函数将一个带引号的字符串转换为不带引号的字符串：
+
+  ```scss
+  $quoted: quote(Hello); // "Hello"
+  $unquoted: unquote('World'); // World
+  ```
+
+- `str-length()`：函数返回字符串的长度：
+
+  ```scss
+  $length: str-length('Hello'); // 5
+  ```
+
+- `str-insert()`：函数在指定位置插入一个字符串：
+
+  ```scss
+  $result: str-insert('Hello', ' ', 6); // "Hello "
+  ```
+
+- `str-index()`：函数返回一个字符串在另一个字符串中第一次出现的位置：
+
+  ```scss
+  $index: str-index('Hello, World', 'o'); // 5
+  ```
+
+- `str-slice()`：函数返回一个字符串的子字符串：
+
+  ```scss
+  $slice: str-slice('Hello, World', 1, 5); // "Hello"
+  ```
+
+- `to-upper-case()` 和 `to-lower-case()`：函数将字符串转换为大写或小写：
+
+  ```scss
+  $upper: to-upper-case('Hello'); // "HELLO"
+  $lower: to-lower-case('WORLD'); // "world"
+  ```
+
+- `unique-id()`：函数返回一个唯一的字符串标识符：
+
+  ```scss
+  $id: unique-id(); // "id-1"
+  ```
+
+- `index()`：函数返回一个字符串在另一个字符串中第一次出现的位置：
+
+  ```scss
+  $index: index('Hello, World', 'o'); // 5
+  ```
+
+- `type-of()`：函数返回一个值的类型：
+
+  ```scss
+  $type: type-of('Hello'); // "string"
+  ```
+
+- `unit()`：函数返回一个数值的单位：
+
+  ```scss
+  $unit: unit(10px); // "px"
+  ```
+
+- `unitless()`：函数检查一个数值是否没有单位：
+
+  ```scss
+  $is-unitless: unitless(10); // true
+  ```
+
+- `comparable()`：函数检查两个值是否可以比较，做加减乘除和合并：
+
+  ```scss
+  $can-compare: comparable(10px, 5em); // false
+  ```
+
+#### 2.7.2 数学函数
+
+- `abs()`：函数返回一个数值的绝对值：
+
+  ```scss
+  $absolute: abs(-10); // 10
+  ```
+
+- `ceil()`：函数返回一个数值的上限：
+
+  ```scss
+  $ceiling: ceil(4.2); // 5
+  ```
+
+- `floor()`：函数返回一个数值的下限：
+
+  ```scss
+  $floor: floor(4.8); // 4
+  ```
+
+- `round()`：函数返回一个数值的四舍五入值：
+
+  ```scss
+  $rounded: round(4.5); // 5
+  ```
+
+- `max()` 和 `min()`：函数返回一组数值中的最大值或最小值：
+
+  ```scss
+  $max: max(10px, 5em); // 10px
+  $min: min(10px, 5em); // 5em
+  ```
+
+- `random()`：函数返回一个随机数：
+
+  ```scss
+  $random: random(100); // 0-99之间的随机数
+  ```
+
+- `percentage()`：函数将一个数值转换为百分比：
+
+  ```scss
+  $percent: percentage(0.5); // 50%
+  ```
+
+- `round()`：函数将一个数值四舍五入到指定的小数位数：
+
+  ```scss
+  $rounded: round(4.5678, 2); // 4.57
+  ```
+
+- `sqrt()`：函数返回一个数值的平方根：
+
+  ```scss
+  $square-root: sqrt(16); // 4
+  ```
+
+- `pow()`：函数返回一个数值的幂：
+
+  ```scss
+  $power: pow(2, 3); // 8
+  ```
+
+- `hypot()`：函数返回一个数值的平方根：
+
+  ```scss
+  $hypotenuse: hypot(3, 4); // 5
+  ```
+
+- `log()`：函数返回一个数值的自然对数：
+
+  ```scss
+  $logarithm: log(10); // 2.302585092994046
+  ```
+
+- `exp()`：函数返回一个数值的指数：
+
+  ```scss
+  $exponential: exp(2); // 7.38905609893065
+  ```
+
+- `sin()`, `cos()`, `tan()`, `asin()`, `acos()`, `atan()`：函数返回一个数值的三角函数值：
+
+  ```scss
+  $sine: sin(45deg); // 0.7071067811865475
+  $cosine: cos(45deg); // 0.7071067811865476
+  $tangent: tan(45deg); // 1
+  $arcsine: asin(0.7071067811865475); // 45deg
+  $arccosine: acos(0.7071067811865476); // 45deg
+  $arctangent: atan(1); // 45deg
+  ```
+
+- `atan2()`：函数返回两个数值的反正切值：
+
+  ```scss
+  $arctangent2: atan2(1, 1); // 45deg
+  ```
+
+- `mod()`：函数返回两个数值的模：
+
+  ```scss
+  $modulus: mod(10, 3); // 1
+  ```
+
+- `clamp()`：函数将一个数值限制在一个范围内：
+
+  ```scss
+  $clamped: clamp(0, 5, 10); // 5
+  ```
+
+- `sign()`：函数返回一个数值的符号：
+
+  ```scss
+  $sign: sign(-10); // -1
+  ```
+
+#### 2.7.3 列表函数
+
+- `length()`：函数返回一个列表或字符串的长度：
+
+  ```scss
+  $length: length('Hello'); // 5
+  $lengthList: length(1px 2px 3px); // 3
+  ```
+
+- `nth()`：函数返回一个列表或字符串中指定位置的元素：
+
+  ```scss
+  $char: nth('Hello', 1); // "H"
+  $number: nth(1px 2px 3px, 2); // 2px
+  ```
+
+- `join()`：函数将两个列表连接成一个列表：
+
+  ```scss
+  $joined: join(1px 2px, 3px 4px); // 1px 2px 3px 4px
+  ```
+
+  不过 join() 只能将两个列表连接成一个列表，如果直接连接两个以上的列表将会报错。这个时候就需要将多个 join() 函数合并在一起使用：
+
+  ```scss
+  $joined: join(join(1px 2px, 3px 4px), 5px 6px); // 1px 2px 3px 4px 5px 6px
+  ```
+
+  在 `join()` 函数中还有一个参数 `$separator`，这个参数主要是用来给列表函数连接列表值时使用的分隔符号，默认值为 auto，表示连接后的列表分隔符与连接前的列表分隔符相同，如果连接前的列表分隔符不同，则使用空格作为连接后的列表分隔符。可以将 `$separator` 参数设置为 `comma` 或 `space` 来强制使用逗号或空格作为连接后的列表分隔符，也可以设置为 `slash` 来使用斜杠作为连接后的列表分隔符：
+
+  ```scss
+  $joined: join(1px 2px, 3px 4px, $separator: slash); // 1px 2px / 3px 4px
+  ```
+
+- `append()`：函数将一个值添加到列表的末尾：
+
+  ```scss
+  $appended: append(1px 2px, 3px); // 1px 2px 3px
+  ```
+
+  在 `append()` 函数中还有一个参数 `$separator`，这个参数的作用与 `join()` 函数中的 `$separator` 参数相同，用于指定连接后的列表分隔符。
+
+  ```scss
+  $appended: append(1px 2px, 3px, $separator: comma); // 1px 2px 3px
+  ```
+
+- `zip()`：函数将多个列表的元素按位置组合成一个列表：
+
+  ```scss
+  $zipped: zip(1px 2px, red green); // (1px red) (2px green)
+  ```
+
+  > **注意**：使用 zip()函数时，每个单一的列表个数值必须是相同的。
+
+- `index()`：函数返回一个值在列表中的位置：
+
+  ```scss
+  $index: index(1px 2px 3px, 2px); // 2
+  ```
+
+- `list-separator()`：函数返回一个列表的分隔符：
+
+  ```scss
+  $separator: list-separator(1px 2px 3px); // space
+  ```
+
+- `is-bracketed()`：函数检查一个列表是否被括号包围：
+
+  ```scss
+  $isBracketed: is-bracketed((1px 2px 3px)); // true
+  ```
+
+- `is-empty()`：函数检查一个列表是否为空：
+
+  ```scss
+  $isEmpty: is-empty(1px 2px 3px); // false
+  ```
+
+- `is-sequential()`：函数检查一个列表是否是顺序列表：
+
+  ```scss
+  $isSequential: is-sequential(1px 2px 3px); // true
+  ```
+
+#### 2.7.4 Map 函数
+
+Sass 的 map 常常被称为**数据地图**，因为它总是以 key:value 成对的出现，但其更像是一个 JSON 数据。
+
+```scss
+$theme-color: (
+  default: (
+    bgcolor: #fff,
+    text-color: #444,
+    link-color: #39f
+  ),
+  primary: (
+    bgcolor: #000,
+    text-color: #fff,
+    link-color: #93f
+  ),
+  negative: (
+    bgcolor: #f36,
+    text-color: #fefefe,
+    link-color: #d4e
+  )
+);
+```
+
+- `map-get()`：函数返回 map 中指定 key 的值：
+
+  ```scss
+  $default-bgcolor: map-get(map-get($theme-color, default), bgcolor); // #fff
+  ```
+
+- `map-has-key()`：函数检查 map 中是否存在指定的 key：
+
+  ```scss
+  $hasPrimary: map-has-key($theme-color, primary); // true
+  ```
+
+- `map-keys()`：函数返回 map 中所有的 key：
+
+  ```scss
+  $keys: map-keys($theme-color); // (default, primary, negative)
+  ```
+
+- `map-values()`：函数返回 map 中所有的 value：
+
+  ```scss
+  $values: map-values(
+    $theme-color
+  ); // ((bgcolor: #fff, text-color: #444, link-color: #39f), (bgcolor: #000, text-color: #fff, link-color: #93f), (bgcolor: #f36, text-color: #fefefe, link-color: #d4e))
+  ```
+
+- `map-merge()`：函数将两个 map 合并成一个 map：
+
+  ```scss
+  $merged: map-merge(
+    (
+      a: 1,
+      b: 2
+    ),
+    (
+      b: 3,
+      c: 4
+    )
+  ); // (a: 1, b: 3, c: 4)
+  ```
+
+- `map-remove()`：函数从 map 中移除指定的 key：
+
+  ```scss
+  $removed: map-remove(
+    (
+      a: 1,
+      b: 2,
+      c: 3
+    ),
+    b
+  ); // (a: 1, c: 3)
+  ```
+
+- `map-keys()`：函数返回 map 中所有的 key：
+
+  ```scss
+  $keys: map-keys(
+    (
+      a: 1,
+      b: 2,
+      c: 3
+    )
+  ); // (a, b, c)
+  ```
+
+#### 2.7.5 颜色函数
+
+##### 2.7.5.1 RGB 颜色函数
+
+- `rgb()`：函数返回一个 RGB 颜色值：
+
+  ```scss
+  $color: rgb(255, 0, 0); // red
+  ```
+
+- `rgba()`：函数返回一个 RGBA 颜色值：
+
+  ```scss
+  $color: rgba(255, 0, 0, 0.5); // semi-transparent red
+  ```
+
+- `red()`, `green()`, `blue()`：函数返回一个颜色的红、绿、蓝分量：
+
+  ```scss
+  $red: red(rgb(255, 0, 0)); // 255
+  $green: green(rgb(255, 0, 0)); // 0
+  $blue: blue(rgb(255, 0, 0)); // 0
+  ```
+
+- `mix()`：函数将两种颜色混合在一起：
+
+  ```scss
+  $mixed: mix(red, blue); // purple
+  ```
+
+##### 2.7.5.2 HSL 颜色函数
+
+- `hsl()`：函数返回一个 HSL 颜色值：
+
+  ```scss
+  $color: hsl(120, 100%, 50%); // green
+  ```
+
+- `hsla()`：函数返回一个 HSLA 颜色值：
+
+  ```scss
+  $color: hsla(120, 100%, 50%, 0.5); // semi-transparent green
+  ```
+
+- `hue()`, `saturation()`, `lightness()`：函数返回一个颜色的色相、饱和度、亮度：
+
+  ```scss
+  $hue: hue(hsl(120, 100%, 50%)); // 120
+  $saturation: saturation(hsl(120, 100%, 50%)); // 100%
+  $lightness: lightness(hsl(120, 100%, 50%)); // 50%
+  ```
+
+- `adjust-hue()`, `saturate()`, `desaturate()`, `lighten()`, `darken()`, `fade-in()`, `fade-out()`：函数调整一个颜色的色相、饱和度、亮度或 alpha 分量：
+
+  ```scss
+  $adjusted: adjust-hue(red, 120); // 调整颜色的色相
+  $saturated: saturate(red, 20%); // 增加颜色饱和度
+  $desaturated: desaturate(red, 20%); // 减少颜色饱和度
+  $lightened: lighten(red, 20%); // 增加颜色亮度
+  $darkened: darken(red, 20%); // 减少颜色亮度
+  $fadedIn: fade-in(red, 0.2); // 增加颜色不透明度
+  $fadedOut: fade-out(red, 0.2); // 减少颜色不透明度
+  ```
+
+- `grayscale()`, `invert()`, `complement()`：函数将一个颜色转换为灰度、反转、互补：
+
+  ```scss
+  $grayscale: grayscale(red); // 将一个颜色变成灰色，相当于 desaturate($color,100%)
+  $inverted: invert(red); // 反转颜色
+  $complement: complement(red); // 互补颜色
+  ```
+
+##### 2.7.5.3 Opacity 颜色函数
+
+- `alpha()`：函数返回一个颜色的 alpha 分量：
+
+  ```scss
+  $alpha: alpha(rgba(255, 0, 0, 0.5)); // 0.5
+  ```
+
+- `opacity()`：函数返回一个颜色的 alpha 分量：
+
+  ```scss
+  $opacity: opacity(rgba(255, 0, 0, 0.5)); // 0.5
+  ```
+
+- `opacify()`、`transparentize()`：函数增加或减少一个颜色的 alpha 分量：
+
+  ```scss
+  $opacified: opacify(red, 0.2); // 增加颜色不透明度
+  $transparentized: transparentize(red, 0.2); // 减少颜色不透明度
+  ```
+
+- `fade-in()`、`fade-out()`：函数增加或减少一个颜色的 alpha 分量：
+
+  ```scss
+  $fadedIn: fade-in(red, 0.2); // 增加颜色不透明度
+  $fadedOut: fade-out(red, 0.2); // 减少颜色不透明度
+  ```
+
+### 2.8 自定义函数
 
 Sass 支持自定义函数，并能在任何属性值或 SassScript 中使用：
 
 ```scss
-$grid-width: 40px;
-$gutter-width: 10px;
+@use 'sass:meta';
 
-@function grid-width($n) {
-  @return $n * $grid-width + ($n - 1) * $gutter-width;
+// 定义两个函数
+@function double($n) {
+  @return $n * 2;
 }
 
-#sidebar {
-  width: grid-width(5);
+@function triple($n) {
+  @return $n * 3;
+}
+
+// 高阶函数：接收函数名和参数
+@function apply($fn-name, $value) {
+  // meta.get-function($name) 是一个元函数（metafunction），它的作用是将一个函数的名称转换为一个函数值
+  $fn: meta.get-function($fn-name);
+  // 动态调用
+  @return call($fn, $value);
+}
+
+// 使用
+.result1 {
+  width: apply('double', 5px); // 10px
+}
+
+.result2 {
+  width: apply('triple', 5px); // 15px
 }
 ```
 
